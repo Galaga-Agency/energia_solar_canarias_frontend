@@ -17,12 +17,16 @@ const AuthenticationForm = () => {
   const isPrivacyChecked = watch("privacyPolicy");
 
   return (
-    <div className="p-8 bg-white shadow-lg rounded-lg max-w-md w-full z-20">
-      <h2 className="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
+    <div className="p-8 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg max-w-[90vw] w-full z-20 m-auto">
+      <h2 className="text-custom-light-gray text-2xl text-center mb-6 ">
+        Iniciar Sesión
+      </h2>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         {/* Campo de correo electrónico */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1">Correo Electrónico</label>
+          <label className="block text-custom-light-gray mb-1">
+            Correo Electrónico
+          </label>
           <input
             type="email"
             placeholder="Introduce tu correo electrónico"
@@ -44,7 +48,9 @@ const AuthenticationForm = () => {
 
         {/* Campo de contraseña */}
         <div className="mb-6">
-          <label className="block text-gray-700 mb-1">Contraseña</label>
+          <label className="block text-custom-light-gray mb-1">
+            Contraseña
+          </label>
           <input
             type="password"
             placeholder="Introduce tu contraseña"
@@ -77,11 +83,11 @@ const AuthenticationForm = () => {
                   "Debes aceptar la Política de Privacidad y el Aviso Legal",
               })}
             />
-            <span className="ml-2 text-gray-700">
+            <span className="ml-2 text-custom-light-gray">
               Acepto la{" "}
               <a
-                href="#"
-                className="text-blue-500 hover:underline"
+                href="https://www.energiasolarcanarias.es/politica-de-privacidad"
+                className="text-blue-300 hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -89,8 +95,8 @@ const AuthenticationForm = () => {
               </a>{" "}
               y el{" "}
               <a
-                href="#"
-                className="text-blue-500 hover:underline"
+                href="https://www.energiasolarcanarias.es/aviso-legal"
+                className="text-blue-300 hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -109,12 +115,12 @@ const AuthenticationForm = () => {
         <div className="mb-4 flex justify-between">
           <button
             type="button"
-            className="text-sm text-blue-500 hover:underline focus:outline-none"
+            className="text-sm text-blue-300 hover:underline focus:outline-none"
             onClick={() =>
               alert("Redirigir a la página de recuperación de contraseña")
             }
           >
-            ¿Olvidaste tu contraseña?
+            <p>¿Olvidaste tu contraseña?</p>
           </button>
         </div>
 
@@ -132,9 +138,9 @@ const AuthenticationForm = () => {
 
       {/* Enlace para registro */}
       <div className="mt-4 text-center">
-        <p className="text-gray-600 text-sm">
+        <p className="text-custom-light-gray text-sm">
           ¿No tienes una cuenta?{" "}
-          <a href="#" className="text-blue-500 hover:underline">
+          <a href="#" className="text-blue-300 hover:underline">
             Regístrate
           </a>
         </p>

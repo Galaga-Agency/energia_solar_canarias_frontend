@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-body, htñl {
-    padding: 0;
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
+
+@font-face {
+  font-family: "Adam Bold";
+  src: url("/assets/fonts/Adam-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Corbert";
+  src: url("/assets/fonts/Corbert-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+h2 {
+  @apply font-primary;
+  text-transform: uppercase;
+}
+
+label,
+p,
+input,
+span {
+  @apply font-secondary;
 }

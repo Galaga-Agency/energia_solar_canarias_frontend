@@ -48,9 +48,7 @@ const AuthenticationForm = () => {
 
         {/* Campo de contraseña */}
         <div className="mb-6">
-          <label className="block text-custom-light-gray mb-1">
-            Contraseña
-          </label>
+          <label className="block text-custom-light-gray mb-1">Codigo</label>
           <input
             type="password"
             placeholder="Introduce tu contraseña"
@@ -85,6 +83,15 @@ const AuthenticationForm = () => {
             />
             <span className="ml-2 text-custom-light-gray">
               Acepto la{" "}
+              <a
+                href="https://www.energiasolarcanarias.es/politica-de-cookies"
+                className="text-blue-300 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Política de Cookies
+              </a>
+              ,{" "}
               <a
                 href="https://www.energiasolarcanarias.es/politica-de-privacidad"
                 className="text-blue-300 hover:underline"

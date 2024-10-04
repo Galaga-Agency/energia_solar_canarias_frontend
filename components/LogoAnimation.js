@@ -66,7 +66,7 @@ const LogoAnimation = () => {
             }}
             exit={{ opacity: 0 }}
             transition={{
-              duration: 2,
+              duration: 1.5,
               ease: "easeInOut",
             }}
             className="z-40 fixed"

@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { FaDownload, FaTimes } from "react-icons/fa";
-import useDeviceType from "@/hooks/useDeviceType"; // Import your custom hook
+import useDeviceType from "@/hooks/useDeviceType";
+import { useTranslation } from "react-i18next";
 
 const InstallationGuide = () => {
+  const { t } = useTranslation();
   const [os, setOs] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const modalRef = useRef(null);
-  const { isMobile } = useDeviceType(); // Use the hook to determine device type
+  const { isMobile } = useDeviceType();
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
@@ -64,7 +66,9 @@ const InstallationGuide = () => {
           onClick={handleToggle}
         >
           <FaDownload className="text-lg" />
-          <span>{`Guía de instalación para ${os}`}</span>
+          <span>
+            {t("installationGuideTitle")} {`${os}`}
+          </span>
         </button>
       )}
 

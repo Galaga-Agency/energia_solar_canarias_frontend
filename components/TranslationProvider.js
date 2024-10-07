@@ -10,8 +10,10 @@ import Loading from "./Loading";
 
 const TranslationProvider = ({ children }) => {
   const [isI18nInitialized, setIsI18nInitialized] = useState(false);
+  const [minimumLoadingDone, setMinimumLoadingDone] = useState(false);
 
   useEffect(() => {
+    // Initialize i18n
     i18n
       .use(LanguageDetector)
       .use(initReactI18next)
@@ -33,12 +35,14 @@ const TranslationProvider = ({ children }) => {
         setIsI18nInitialized(true);
       });
 
-    const handleResize = () => {};
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const timer = setTimeout(() => {
+      setMinimumLoadingDone(true);
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  if (!isI18nInitialized) {
+  if (!isI18nInitialized || !minimumLoadingDone) {
     return (
       <div className="w-screen h-screen bg-custom-dark-blue flex items-center justify-center">
         <Loading />

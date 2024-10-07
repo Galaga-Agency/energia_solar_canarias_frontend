@@ -1,19 +1,24 @@
-export const loginOrRegister = async (data, isSignup) => {
-  try {
-    const endpoint = isSignup ? "/api/register" : "/api/login";
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+import axios from "axios";
 
-    if (!response.ok) {
-      throw new Error("Error al procesar tu solicitud.");
-    }
+const API_BASE_URL = "https://your-api-url.com";
 
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    throw new Error("Hubo un problema en el servidor.");
-  }
+export const loginUserAPI = async (email, password) => {
+  const response = await axios.post(`${API_BASE_URL}/login`, {
+    email,
+    password,
+  });
+  return response.data;
+};
+
+export const registerUserAPI = async (email, password) => {
+  const response = await axios.post(`${API_BASE_URL}/register`, {
+    email,
+    password,
+  });
+  return response.data;
+};
+
+export const logoutUserAPI = async () => {
+  const response = await axios.post(`${API_BASE_URL}/logout`);
+  return response.data;
 };

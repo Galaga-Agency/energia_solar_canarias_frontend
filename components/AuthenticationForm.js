@@ -5,18 +5,21 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/navigation";
 import {
   loginUserThunk,
-  logoutUserThunk,
+  registerUserThunk,
   selectUser,
   selectLoading,
   selectError,
 } from "@/store/slices/userSlice";
+import CustomButton from "./CustomButton";
 
 const AuthenticationForm = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const router = useRouter();
   const user = useSelector(selectUser);
   const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
@@ -30,24 +33,34 @@ const AuthenticationForm = () => {
 
   const isPrivacyChecked = watch("privacyPolicy");
 
+  const generateFakeUserId = () => {
+    return Math.floor(Math.random() * 100000);
+  };
+
   const onSubmit = async (data) => {
-    const { email, password } = data;
+    const { email, password, username } = data;
     if (isFlipped) {
-      // Registration logic
-      dispatch(loginUserThunk({ email, password }));
+      const result = await dispatch(
+        registerUserThunk({ email, password, username })
+      );
+      if (result.meta.requestStatus === "fulfilled") {
+        const userId = generateFakeUserId();
+        router.push(`/dashboard/${userId}`);
+      }
     } else {
-      // Login logic
-      dispatch(loginUserThunk({ email, password }));
+      const result = await dispatch(loginUserThunk({ email, password }));
+      if (result.meta.requestStatus === "fulfilled") {
+        const userId = generateFakeUserId();
+        router.push(`/dashboard/${userId}`);
+      }
     }
   };
 
   return (
-    <div className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-16">
+    <div className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8">
       <div
-        className="relative w-full h-[400px]"
-        style={{
-          perspective: "1000px",
-        }}
+        className="relative w-full h-[550px]"
+        style={{ perspective: "1000px" }}
       >
         <motion.div
           className="absolute w-full h-full"
@@ -59,22 +72,22 @@ const AuthenticationForm = () => {
         >
           {/* Front (Login Form) */}
           <motion.div
-            className="absolute w-full h-full p-8 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center"
-            style={{
-              backfaceVisibility: "hidden",
-              transform: "rotateY(0deg)",
-              position: "absolute",
-            }}
+            className="absolute w-full h-full p-6 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center space-y-4"
+            style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
           >
             {!isFlipped && (
               <>
                 {!user ? (
                   <>
-                    <h2 className="text-custom-light-gray text-2xl text-center mb-6">
+                    <h2 className="text-custom-light-gray text-2xl text-center mb-4">
                       {t("login")}
                     </h2>
-                    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                      <div className="mb-4">
+                    <form
+                      onSubmit={handleSubmit(onSubmit)}
+                      noValidate
+                      className="space-y-3"
+                    >
+                      <div>
                         <label className="block text-custom-light-gray mb-1">
                           {t("email")}
                         </label>
@@ -93,14 +106,16 @@ const AuthenticationForm = () => {
                             },
                           })}
                         />
-                        {errors.email && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.email.message}
-                          </p>
-                        )}
+                        <div className="min-h-[16px]">
+                          {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.email.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="mb-4">
+                      <div>
                         <label className="block text-custom-light-gray mb-1">
                           {t("password")}
                         </label>
@@ -120,31 +135,27 @@ const AuthenticationForm = () => {
                             },
                           })}
                         />
-                        {errors.password && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.password.message}
-                          </p>
-                        )}
+                        <div className="min-h-[16px]">
+                          {errors.password && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.password.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <button
-                        type="submit"
-                        className={`w-full bg-blue-500 text-white py-2 rounded-md ${
-                          loading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        disabled={loading}
-                      >
+                      <CustomButton type="submit" disabled={loading}>
                         {t("signIn")}
-                      </button>
+                      </CustomButton>
                     </form>
 
-                    {error && (
-                      <div className="text-center mt-4 text-red-500">
-                        {error}
-                      </div>
-                    )}
+                    <div className="min-h-[16px] mt-2">
+                      {error && (
+                        <div className="text-center text-red-500">{error}</div>
+                      )}
+                    </div>
 
-                    <div className="mt-4 text-center">
+                    <div className="mt-2 text-center">
                       <p className="text-custom-light-gray text-sm">
                         {t("noAccount")}{" "}
                         <button
@@ -168,7 +179,7 @@ const AuthenticationForm = () => {
 
           {/* Back (Registration Form) */}
           <motion.div
-            className="absolute w-full h-full p-8 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center"
+            className="absolute w-full h-full p-6 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center space-y-4"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
@@ -178,11 +189,40 @@ const AuthenticationForm = () => {
               <>
                 {!user ? (
                   <>
-                    <h2 className="text-custom-light-gray text-2xl text-center mb-6">
+                    <h2 className="text-custom-light-gray text-2xl text-center">
                       {t("register")}
                     </h2>
-                    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                      <div className="mb-4">
+                    <form
+                      onSubmit={handleSubmit(onSubmit)}
+                      noValidate
+                      className="space-y-3"
+                    >
+                      <div>
+                        <label className="block text-custom-light-gray mb-1">
+                          {t("username")}
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={t("usernamePlaceholder")}
+                          className={`w-full px-4 py-2 border rounded-md ${
+                            errors.username
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                          {...register("username", {
+                            required: t("usernameRequired"),
+                          })}
+                        />
+                        <div className="min-h-[16px]">
+                          {errors.username && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.username.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
                         <label className="block text-custom-light-gray mb-1">
                           {t("email")}
                         </label>
@@ -201,14 +241,16 @@ const AuthenticationForm = () => {
                             },
                           })}
                         />
-                        {errors.email && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.email.message}
-                          </p>
-                        )}
+                        <div className="min-h-[16px]">
+                          {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.email.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="mb-4">
+                      <div>
                         <label className="block text-custom-light-gray mb-1">
                           {t("password")}
                         </label>
@@ -228,15 +270,17 @@ const AuthenticationForm = () => {
                             },
                           })}
                         />
-                        {errors.password && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.password.message}
-                          </p>
-                        )}
+                        <div className="min-h-[16px]">
+                          {errors.password && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.password.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
                       {/* Checkbox for Privacy Policy */}
-                      <div className="mb-6">
+                      <div>
                         <label className="inline-flex items-center">
                           <input
                             type="checkbox"
@@ -249,31 +293,24 @@ const AuthenticationForm = () => {
                             {t("privacyPolicy")}
                           </span>
                         </label>
-                        {errors.privacyPolicy && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.privacyPolicy.message}
-                          </p>
-                        )}
+                        <div className="min-h-[16px]">
+                          {errors.privacyPolicy && (
+                            <p className="text-red-500 text-sm -mt-1">
+                              {errors.privacyPolicy.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <button
+                      <CustomButton
                         type="submit"
-                        className={`w-full bg-blue-500 text-white py-2 rounded-md ${
-                          loading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
                         disabled={loading || !isPrivacyChecked}
                       >
                         {t("register")}
-                      </button>
+                      </CustomButton>
                     </form>
 
-                    {error && (
-                      <div className="text-center mt-4 text-red-500">
-                        {error}
-                      </div>
-                    )}
-
-                    <div className="mt-4 text-center">
+                    <div className="text-center">
                       <p className="text-custom-light-gray text-sm">
                         {t("alreadyAccount")}{" "}
                         <button

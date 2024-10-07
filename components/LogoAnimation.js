@@ -8,6 +8,7 @@ import TransitionEffect from "./TransitionEffect";
 import AuthenticationForm from "./AuthenticationForm";
 import useDeviceType from "@/hooks/useDeviceType";
 import RetroGrid from "./magicui/retro-grid";
+import LanguageSelector from "./LanguageSelector";
 
 const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);

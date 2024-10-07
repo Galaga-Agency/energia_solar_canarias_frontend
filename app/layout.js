@@ -1,5 +1,6 @@
 import "./globals.css";
 import Head from "next/head";
+import TranslationProvider from "@/components/TranslationProvider";
 
 export const metadata = {
   title: "Energia Solar Canarias",
@@ -15,17 +16,19 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
           name="description"
-          content="Energia Solar Canarias ofrece instalación de paneles solares, energía solar fotovoltaica y soluciones de autoconsumo solar en Tenerife, Gran Canaria, Lanzarote, y más. Aprovecha la energía renovable y limpia con nuestros sistemas solares."
+          content="Energia Solar Canarias ofrece instalación de paneles solares, energía solar fotovoltaica y soluciones de autoconsumo solar en Tenerife, Gran Canaria, Lanzarote, y más."
         />
         <meta name="author" content="Energia Solar Canarias" />
         <title>
           Energia Solar Canarias - Instalación de Paneles Solares y Energía
           Renovable
         </title>
-        <link rel="icon" href="./icon.png" sizes="any" />
+        <link rel="icon" href="/icon.png" sizes="any" />
       </Head>
 
-      <body>{children}</body>
+      <body>
+        <TranslationProvider>{children}</TranslationProvider>
+      </body>
     </html>
   );
 }

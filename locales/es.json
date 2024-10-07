@@ -1,0 +1,18 @@
+{
+    "login": "Iniciar Sesión",
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "Introduce tu correo electrónico",
+    "emailRequired": "El correo electrónico es obligatorio",
+    "emailInvalid": "Correo electrónico no válido",
+    "termsRequired": "Debes aceptar los términos.",
+    "privacyPolicy": "Política de Privacidad",
+    "signIn": "Iniciar Sesión",
+    "noAccount": "¿No tienes una cuenta?",
+    "register": "Regístrate",
+    "alreadyAccount": "¿Ya tienes una cuenta?",
+    "registrationSuccess": "¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.",
+    "loginSuccess": "Haz click en el enlace que hemos enviado a tu correo electrónico.",
+    "registrationError": "Error en la creación de cuenta, intentalo de nuevo más tarde.",
+    "loginError": "Error en el inicio de sesión, intentalo de nuevo más tarde."
+  }
+  

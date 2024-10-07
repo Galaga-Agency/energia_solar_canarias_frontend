@@ -1,7 +1,16 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { motion } from "framer-motion";
+import { loginOrRegister } from "@/services/api";
+import { useTranslation } from "next-i18next";
 
 const AuthenticationForm = () => {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -9,148 +18,244 @@ const AuthenticationForm = () => {
     watch,
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data); // Maneja el envío del formulario (lógica de inicio de sesión)
-  };
-
-  // Watch for checkbox state to disable the submit button if not checked
   const isPrivacyChecked = watch("privacyPolicy");
 
+  const onSubmit = async (data) => {
+    try {
+      const response = await loginOrRegister(data, isFlipped);
+      setFeedbackMessage(
+        isFlipped ? t("registrationSuccess") : t("loginSuccess")
+      );
+      setIsError(false);
+      setIsSubmitted(true);
+    } catch (error) {
+      setFeedbackMessage(isFlipped ? t("registrationError") : t("loginError"));
+      setIsError(true);
+      setIsSubmitted(true);
+    }
+  };
+
   return (
-    <div className="p-8 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg max-w-[90vw] w-full z-20 m-auto">
-      <h2 className="text-custom-light-gray text-2xl text-center mb-6 ">
-        Iniciar Sesión
-      </h2>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        {/* Campo de correo electrónico */}
-        <div className="mb-4">
-          <label className="block text-custom-light-gray mb-1">
-            Correo Electrónico
-          </label>
-          <input
-            type="email"
-            placeholder="Introduce tu correo electrónico"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-500 ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            }`}
-            {...register("email", {
-              required: "El correo electrónico es obligatorio",
-              pattern: {
-                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                message: "Correo electrónico no válido",
-              },
-            })}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-          )}
-        </div>
-
-        {/* Campo de contraseña */}
-        <div className="mb-6">
-          <label className="block text-custom-light-gray mb-1">Codigo</label>
-          <input
-            type="password"
-            placeholder="Introduce tu contraseña"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-500 ${
-              errors.password ? "border-red-500" : "border-gray-300"
-            }`}
-            {...register("password", {
-              required: "La contraseña es obligatoria",
-              minLength: {
-                value: 6,
-                message: "La contraseña debe tener al menos 6 caracteres",
-              },
-            })}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.password.message}
-            </p>
-          )}
-        </div>
-
-        {/* Checkbox para aceptar la Política de Privacidad y Aviso Legal */}
-        <div className="mb-6">
-          <label className="inline-flex items-center">
-            <input
-              type="checkbox"
-              className="form-checkbox h-5 w-5 text-blue-600"
-              {...register("privacyPolicy", {
-                required:
-                  "Debes aceptar la Política de Privacidad y el Aviso Legal",
-              })}
-            />
-            <span className="ml-2 text-custom-light-gray">
-              Acepto la{" "}
-              <a
-                href="https://www.energiasolarcanarias.es/politica-de-cookies"
-                className="text-blue-300 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Política de Cookies
-              </a>
-              ,{" "}
-              <a
-                href="https://www.energiasolarcanarias.es/politica-de-privacidad"
-                className="text-blue-300 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Política de Privacidad
-              </a>{" "}
-              y el{" "}
-              <a
-                href="https://www.energiasolarcanarias.es/aviso-legal"
-                className="text-blue-300 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Aviso Legal
-              </a>
-            </span>
-          </label>
-          {errors.privacyPolicy && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.privacyPolicy.message}
-            </p>
-          )}
-        </div>
-
-        {/* Enlace para recuperar contraseña */}
-        <div className="mb-4 flex justify-between">
-          <button
-            type="button"
-            className="text-sm text-blue-300 hover:underline focus:outline-none"
-            onClick={() =>
-              alert("Redirigir a la página de recuperación de contraseña")
-            }
-          >
-            <p>¿Olvidaste tu contraseña?</p>
-          </button>
-        </div>
-
-        {/* Botón de enviar (deshabilitado hasta que el checkbox esté marcado) */}
-        <button
-          type="submit"
-          className={`w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 focus:outline-none ${
-            !isPrivacyChecked ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={!isPrivacyChecked}
+    <div className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-16">
+      <div
+        className="relative w-full h-[400px]"
+        style={{
+          perspective: "1000px",
+        }}
+      >
+        <motion.div
+          className="absolute w-full h-full"
+          style={{
+            transformStyle: "preserve-3d",
+            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            transition: "transform 0.8s ease-in-out",
+          }}
         >
-          Iniciar Sesión
-        </button>
-      </form>
+          {/* Front (Login Form) */}
+          <motion.div
+            className="absolute w-full h-full p-8 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center"
+            style={{
+              backfaceVisibility: "hidden",
+              transform: "rotateY(0deg)",
+              position: "absolute",
+            }}
+          >
+            {!isFlipped && (
+              <>
+                {!isSubmitted ? (
+                  <>
+                    <h2 className="text-custom-light-gray text-2xl text-center mb-6">
+                      {t("login")}
+                    </h2>
+                    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                      <div className="mb-4">
+                        <label className="block text-custom-light-gray mb-1">
+                          {t("email")}
+                        </label>
+                        <input
+                          type="email"
+                          placeholder={t("emailPlaceholder")}
+                          className={`w-full px-4 py-2 border rounded-md ${
+                            errors.email ? "border-red-500" : "border-gray-300"
+                          }`}
+                          {...register("email", {
+                            required: t("emailRequired"),
+                            pattern: {
+                              value:
+                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                              message: t("emailInvalid"),
+                            },
+                          })}
+                        />
+                        {errors.email && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.email.message}
+                          </p>
+                        )}
+                      </div>
 
-      {/* Enlace para registro */}
-      <div className="mt-4 text-center">
-        <p className="text-custom-light-gray text-sm">
-          ¿No tienes una cuenta?{" "}
-          <a href="#" className="text-blue-300 hover:underline">
-            Regístrate
-          </a>
-        </p>
+                      {/* Checkbox for Privacy Policy */}
+                      <div className="mb-6">
+                        <label className="inline-flex items-center">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-5 w-5 text-blue-600"
+                            {...register("privacyPolicy", {
+                              required: t("termsRequired"),
+                            })}
+                          />
+                          <span className="ml-2 text-custom-light-gray">
+                            {t("privacyPolicy")}
+                          </span>
+                        </label>
+                        {errors.privacyPolicy && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.privacyPolicy.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <button
+                        type="submit"
+                        className={`w-full bg-blue-500 text-white py-2 rounded-md ${
+                          !isPrivacyChecked
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
+                        disabled={!isPrivacyChecked}
+                      >
+                        {t("signIn")}
+                      </button>
+                    </form>
+
+                    <div className="mt-4 text-center">
+                      <p className="text-custom-light-gray text-sm">
+                        {t("noAccount")}{" "}
+                        <button
+                          type="button"
+                          onClick={() => setIsFlipped(true)}
+                          className="text-blue-300 hover:underline"
+                        >
+                          {t("register")}
+                        </button>
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    className={`text-center p-6 rounded-md ${
+                      isError ? "bg-red-500" : "bg-green-500"
+                    }`}
+                  >
+                    <p className="text-white text-lg">{feedbackMessage}</p>
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+
+          {/* Back (Signup Form) */}
+          <motion.div
+            className="absolute w-full h-full p-8 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center"
+            style={{
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+            }}
+          >
+            {isFlipped && (
+              <>
+                {!isSubmitted ? (
+                  <>
+                    <h2 className="text-custom-light-gray text-2xl text-center mb-6">
+                      {t("register")}
+                    </h2>
+                    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                      <div className="mb-4">
+                        <label className="block text-custom-light-gray mb-1">
+                          {t("email")}
+                        </label>
+                        <input
+                          type="email"
+                          placeholder={t("emailPlaceholder")}
+                          className={`w-full px-4 py-2 border rounded-md ${
+                            errors.email ? "border-red-500" : "border-gray-300"
+                          }`}
+                          {...register("email", {
+                            required: t("emailRequired"),
+                            pattern: {
+                              value:
+                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                              message: t("emailInvalid"),
+                            },
+                          })}
+                        />
+                        {errors.email && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.email.message}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Checkbox for Privacy Policy */}
+                      <div className="mb-6">
+                        <label className="inline-flex items-center">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-5 w-5 text-blue-600"
+                            {...register("privacyPolicy", {
+                              required: t("termsRequired"),
+                            })}
+                          />
+                          <span className="ml-2 text-custom-light-gray">
+                            {t("privacyPolicy")}
+                          </span>
+                        </label>
+                        {errors.privacyPolicy && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.privacyPolicy.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <button
+                        type="submit"
+                        className={`w-full bg-blue-500 text-white py-2 rounded-md ${
+                          !isPrivacyChecked
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
+                        disabled={!isPrivacyChecked}
+                      >
+                        {t("register")}
+                      </button>
+                    </form>
+
+                    <div className="mt-4 text-center">
+                      <p className="text-custom-light-gray text-sm">
+                        {t("alreadyAccount")}{" "}
+                        <button
+                          type="button"
+                          onClick={() => setIsFlipped(false)}
+                          className="text-blue-300 hover:underline"
+                        >
+                          {t("signIn")}
+                        </button>
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    className={`text-center p-6 rounded-md ${
+                      isError ? "bg-red-500" : "bg-green-500"
+                    }`}
+                  >
+                    <p className="text-white text-lg">{feedbackMessage}</p>
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

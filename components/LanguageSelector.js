@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import englishFlag from "@/public/assets/icons/en.webp";
-import spanishFlag from "@/public/assets/icons/es.webp";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 
 const languages = [
-  { code: "en", flag: englishFlag, alt: "English Flag" },
-  { code: "es", flag: spanishFlag, alt: "Spanish Flag" },
+  { code: "en", flagPath: "/assets/icons/en.webp", alt: "English Flag" },
+  { code: "es", flagPath: "/assets/icons/es.webp", alt: "Spanish Flag" },
 ];
 
 const LanguageSelector = () => {
@@ -33,14 +31,14 @@ const LanguageSelector = () => {
   );
 
   return (
-    <div className="fixed top-4 right-4 z-50  rounded-full shadow-white-shadow">
+    <div className="fixed top-[20px] right-[20px] z-50 rounded-full shadow-white-shadow">
       <div
         className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden"
         onClick={() => setIsOpen(!isOpen)}
       >
         {currentLanguage && (
           <Image
-            src={currentLanguage.flag}
+            src={currentLanguage.flagPath}
             alt={currentLanguage.alt}
             layout="fill"
             objectFit="cover"
@@ -55,7 +53,7 @@ const LanguageSelector = () => {
           onClick={() => changeLanguage(otherLanguage.code)}
         >
           <Image
-            src={otherLanguage.flag}
+            src={otherLanguage.flagPath}
             alt={otherLanguage.alt}
             layout="fill"
             objectFit="cover"

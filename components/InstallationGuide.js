@@ -70,7 +70,7 @@ const InstallationGuide = () => {
 
       {isExpanded && (
         <div
-          className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-80"
+          className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-60"
           style={{ backdropFilter: "blur(5px)" }}
         >
           <div

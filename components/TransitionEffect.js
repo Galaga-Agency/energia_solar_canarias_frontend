@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const TransitionEffect = () => {
   return (
-    <div className="z-50">
+    <div className="z-[999]">
       <motion.div
         className="fixed top-0 bottom-0 right-full w-screen h-screen z-30 bg-custom-yellow"
         initial={{ x: "100%", width: "100%" }}

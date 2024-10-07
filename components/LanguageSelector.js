@@ -31,9 +31,10 @@ const LanguageSelector = () => {
   );
 
   return (
-    <div className="fixed top-[20px] right-[20px] z-50 rounded-full shadow-white-shadow">
+    <div className="fixed top-[20px] right-[20px] z-50">
+      {/* Current Language Flag */}
       <div
-        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden"
+        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden shadow-white-shadow"
         onClick={() => setIsOpen(!isOpen)}
       >
         {currentLanguage && (
@@ -47,11 +48,19 @@ const LanguageSelector = () => {
         )}
       </div>
 
-      {isOpen && otherLanguage && (
-        <div
-          className="absolute top-12 right-0 w-8 h-8 rounded-full cursor-pointer flex items-center justify-center shadow-md overflow-hidden"
-          onClick={() => changeLanguage(otherLanguage.code)}
-        >
+      {/* Other Language Flag Sliding Down */}
+      <div
+        className={`absolute w-8 h-8 rounded-full cursor-pointer flex items-center justify-center overflow-hidden shadow-md bg-white transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-y-12 opacity-100" : "translate-y-0 opacity-0"
+        }`}
+        style={{
+          top: "40px",
+          transformOrigin: "top",
+          transform: isOpen ? "scaleY(1)" : "scaleY(0)",
+        }}
+        onClick={() => otherLanguage && changeLanguage(otherLanguage.code)}
+      >
+        {otherLanguage && (
           <Image
             src={otherLanguage.flagPath}
             alt={otherLanguage.alt}
@@ -59,8 +68,8 @@ const LanguageSelector = () => {
             objectFit="cover"
             className="rounded-full"
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

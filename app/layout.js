@@ -1,6 +1,8 @@
 import "./globals.css";
 import Head from "next/head";
 import TranslationProvider from "@/components/TranslationProvider";
+import store from "@/store/store";
+import StoreProvider from "@/components/StoreProvider";
 
 export const metadata = {
   title: "Energia Solar Canarias",
@@ -27,7 +29,9 @@ export default function RootLayout({ children }) {
       </Head>
 
       <body>
-        <TranslationProvider>{children}</TranslationProvider>
+        <TranslationProvider>
+          <StoreProvider>{children}</StoreProvider>
+        </TranslationProvider>
       </body>
     </html>
   );

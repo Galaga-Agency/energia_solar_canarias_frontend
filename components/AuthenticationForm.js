@@ -1,16 +1,26 @@
 "use client";
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { loginOrRegister } from "@/services/api";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
+import {
+  loginUserThunk,
+  logoutUserThunk,
+  selectUser,
+  selectLoading,
+  selectError,
+} from "@/store/slices/userSlice";
 
 const AuthenticationForm = () => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
+
   const {
     register,
     handleSubmit,
@@ -21,17 +31,13 @@ const AuthenticationForm = () => {
   const isPrivacyChecked = watch("privacyPolicy");
 
   const onSubmit = async (data) => {
-    try {
-      const response = await loginOrRegister(data, isFlipped);
-      setFeedbackMessage(
-        isFlipped ? t("registrationSuccess") : t("loginSuccess")
-      );
-      setIsError(false);
-      setIsSubmitted(true);
-    } catch (error) {
-      setFeedbackMessage(isFlipped ? t("registrationError") : t("loginError"));
-      setIsError(true);
-      setIsSubmitted(true);
+    const { email, password } = data;
+    if (isFlipped) {
+      // Registration logic
+      dispatch(loginUserThunk({ email, password }));
+    } else {
+      // Login logic
+      dispatch(loginUserThunk({ email, password }));
     }
   };
 
@@ -62,7 +68,7 @@ const AuthenticationForm = () => {
           >
             {!isFlipped && (
               <>
-                {!isSubmitted ? (
+                {!user ? (
                   <>
                     <h2 className="text-custom-light-gray text-2xl text-center mb-6">
                       {t("login")}
@@ -94,23 +100,29 @@ const AuthenticationForm = () => {
                         )}
                       </div>
 
-                      {/* Checkbox for Privacy Policy */}
-                      <div className="mb-6">
-                        <label className="inline-flex items-center">
-                          <input
-                            type="checkbox"
-                            className="form-checkbox h-5 w-5 text-blue-600"
-                            {...register("privacyPolicy", {
-                              required: t("termsRequired"),
-                            })}
-                          />
-                          <span className="ml-2 text-custom-light-gray">
-                            {t("privacyPolicy")}
-                          </span>
+                      <div className="mb-4">
+                        <label className="block text-custom-light-gray mb-1">
+                          {t("password")}
                         </label>
-                        {errors.privacyPolicy && (
+                        <input
+                          type="password"
+                          placeholder={t("passwordPlaceholder")}
+                          className={`w-full px-4 py-2 border rounded-md ${
+                            errors.password
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                          {...register("password", {
+                            required: t("passwordRequired"),
+                            minLength: {
+                              value: 6,
+                              message: t("passwordMinLength"),
+                            },
+                          })}
+                        />
+                        {errors.password && (
                           <p className="text-red-500 text-sm mt-1">
-                            {errors.privacyPolicy.message}
+                            {errors.password.message}
                           </p>
                         )}
                       </div>
@@ -118,15 +130,19 @@ const AuthenticationForm = () => {
                       <button
                         type="submit"
                         className={`w-full bg-blue-500 text-white py-2 rounded-md ${
-                          !isPrivacyChecked
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
+                          loading ? "opacity-50 cursor-not-allowed" : ""
                         }`}
-                        disabled={!isPrivacyChecked}
+                        disabled={loading}
                       >
                         {t("signIn")}
                       </button>
                     </form>
+
+                    {error && (
+                      <div className="text-center mt-4 text-red-500">
+                        {error}
+                      </div>
+                    )}
 
                     <div className="mt-4 text-center">
                       <p className="text-custom-light-gray text-sm">
@@ -142,19 +158,15 @@ const AuthenticationForm = () => {
                     </div>
                   </>
                 ) : (
-                  <div
-                    className={`text-center p-6 rounded-md ${
-                      isError ? "bg-red-500" : "bg-green-500"
-                    }`}
-                  >
-                    <p className="text-white text-lg">{feedbackMessage}</p>
+                  <div className="text-center text-green-500">
+                    {t("loginSuccess")}
                   </div>
                 )}
               </>
             )}
           </motion.div>
 
-          {/* Back (Signup Form) */}
+          {/* Back (Registration Form) */}
           <motion.div
             className="absolute w-full h-full p-8 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center"
             style={{
@@ -164,7 +176,7 @@ const AuthenticationForm = () => {
           >
             {isFlipped && (
               <>
-                {!isSubmitted ? (
+                {!user ? (
                   <>
                     <h2 className="text-custom-light-gray text-2xl text-center mb-6">
                       {t("register")}
@@ -196,6 +208,33 @@ const AuthenticationForm = () => {
                         )}
                       </div>
 
+                      <div className="mb-4">
+                        <label className="block text-custom-light-gray mb-1">
+                          {t("password")}
+                        </label>
+                        <input
+                          type="password"
+                          placeholder={t("passwordPlaceholder")}
+                          className={`w-full px-4 py-2 border rounded-md ${
+                            errors.password
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                          {...register("password", {
+                            required: t("passwordRequired"),
+                            minLength: {
+                              value: 6,
+                              message: t("passwordMinLength"),
+                            },
+                          })}
+                        />
+                        {errors.password && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.password.message}
+                          </p>
+                        )}
+                      </div>
+
                       {/* Checkbox for Privacy Policy */}
                       <div className="mb-6">
                         <label className="inline-flex items-center">
@@ -220,15 +259,19 @@ const AuthenticationForm = () => {
                       <button
                         type="submit"
                         className={`w-full bg-blue-500 text-white py-2 rounded-md ${
-                          !isPrivacyChecked
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
+                          loading ? "opacity-50 cursor-not-allowed" : ""
                         }`}
-                        disabled={!isPrivacyChecked}
+                        disabled={loading || !isPrivacyChecked}
                       >
                         {t("register")}
                       </button>
                     </form>
+
+                    {error && (
+                      <div className="text-center mt-4 text-red-500">
+                        {error}
+                      </div>
+                    )}
 
                     <div className="mt-4 text-center">
                       <p className="text-custom-light-gray text-sm">
@@ -244,12 +287,8 @@ const AuthenticationForm = () => {
                     </div>
                   </>
                 ) : (
-                  <div
-                    className={`text-center p-6 rounded-md ${
-                      isError ? "bg-red-500" : "bg-green-500"
-                    }`}
-                  >
-                    <p className="text-white text-lg">{feedbackMessage}</p>
+                  <div className="text-center text-green-500">
+                    {t("registrationSuccess")}
                   </div>
                 )}
               </>

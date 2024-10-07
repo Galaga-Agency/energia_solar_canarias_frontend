@@ -75,10 +75,10 @@ const InstallationGuide = () => {
         >
           <div
             ref={modalRef}
-            className="relative w-full max-w-[90%] md:max-w-[700px] p-4 bg-white rounded-lg shadow-lg"
+            className="relative w-full max-w-[90%] md:max-w-[700px] p-1 bg-white rounded-lg shadow-lg"
           >
             <button
-              className="absolute -top-3 -right-3 text-custom-dark-blue text-2xl bg-custom-yellow rounded-full p-1 hover:shadow-white-shadow z-60"
+              className="absolute -top-3 -right-3 text-custom-dark-blue text-2xl bg-custom-yellow rounded-full p-1 hover:shadow-white-shadow z-[999]"
               onClick={handleToggle}
             >
               <FaTimes className="text-2xl" />

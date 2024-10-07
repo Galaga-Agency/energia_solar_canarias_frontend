@@ -6,6 +6,7 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import enTranslation from "@/locales/en.json";
 import esTranslation from "@/locales/es.json";
+import Loading from "./Loading";
 
 const TranslationProvider = ({ children }) => {
   const [isI18nInitialized, setIsI18nInitialized] = useState(false);
@@ -39,8 +40,8 @@ const TranslationProvider = ({ children }) => {
 
   if (!isI18nInitialized) {
     return (
-      <div className="w-screen h-screen bg-gray-900 flex items-center justify-center">
-        <p className="text-white">Loading...</p>
+      <div className="w-screen h-screen bg-custom-dark-blue flex items-center justify-center">
+        <Loading />
       </div>
     );
   }

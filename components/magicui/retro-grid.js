@@ -25,7 +25,7 @@ const RetroGrid = ({ className, angle = 65 }) => {
         />
       </div>
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent to-30% dark:from-black" />
+      <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent to-30% dark:from-custom-dark-blue" />
     </div>
   );
 };

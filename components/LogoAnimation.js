@@ -6,7 +6,6 @@ import Image from "next/image";
 import logo from "@/public/assets/img/logo.webp";
 import TransitionEffect from "./TransitionEffect";
 import AuthenticationForm from "./AuthenticationForm";
-import SunRayVideo from "./SunRayVideo";
 import useDeviceType from "@/hooks/useDeviceType";
 import RetroGrid from "./magicui/retro-grid";
 
@@ -14,7 +13,6 @@ const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);
   const [showLogo, setShowLogo] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [showSunRayVideo, setShowSunRayVideo] = useState(false);
   const { isMobile, isTablet } = useDeviceType();
 
   const initialLogoSize = isMobile ? 350 : isTablet ? 500 : "auto";
@@ -27,15 +25,10 @@ const LogoAnimation = () => {
       setShowForm(true);
     }, 3000);
 
-    const sunRayVideoTimer = setTimeout(() => {
-      setShowSunRayVideo(true);
-    }, 5000); // Delay for 5 seconds
-
     return () => {
       clearTimeout(transitionTimer);
       clearTimeout(logoTimer);
       clearTimeout(moveLogoTimer);
-      clearTimeout(sunRayVideoTimer);
     };
   }, []);
 
@@ -94,7 +87,6 @@ const LogoAnimation = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* {showSunRayVideo && <SunRayVideo />} */}
       <RetroGrid />
     </div>
   );

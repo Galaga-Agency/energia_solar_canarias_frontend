@@ -30,6 +30,7 @@ module.exports = {
       boxShadow: {
         "dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 16px",
         "white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 16px",
+        "hover-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 32px",
       },
       keyframes: {
         grid: {

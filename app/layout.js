@@ -1,14 +1,7 @@
 import "./globals.css";
 import Head from "next/head";
 import TranslationProvider from "@/components/TranslationProvider";
-import store from "@/store/store";
 import StoreProvider from "@/components/StoreProvider";
-
-export const metadata = {
-  title: "Energia Solar Canarias",
-  description:
-    "Energia Solar Canarias ofrece instalación de paneles solares, energía solar fotovoltaica y soluciones de autoconsumo solar en Tenerife, Gran Canaria, Lanzarote, y más.",
-};
 
 export default function RootLayout({ children }) {
   return (
@@ -26,6 +19,24 @@ export default function RootLayout({ children }) {
           Renovable
         </title>
         <link rel="icon" href="/icon.png" sizes="any" />
+        <link
+          rel="icon"
+          type="image/png"
+          href="/favicon-48x48.png"
+          sizes="48x48"
+        />
+        <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+        <link rel="shortcut icon" href="/icons/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/icons/apple-touch-icon.png"
+        />
+        <meta
+          name="apple-mobile-web-app-title"
+          content="Energia Solar Canarias"
+        />
+        <link rel="manifest" href="/manifest.json" />
       </Head>
 
       <body>

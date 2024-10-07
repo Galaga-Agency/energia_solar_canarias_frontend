@@ -34,7 +34,7 @@ const LanguageSelector = () => {
     <div className="fixed top-[20px] right-[20px] z-50">
       {/* Current Language Flag */}
       <div
-        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden shadow-white-shadow"
+        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden shadow-white-shadow hover:shadow-hover-shadow transition-all duration-300 ease-in-out"
         onClick={() => setIsOpen(!isOpen)}
       >
         {currentLanguage && (

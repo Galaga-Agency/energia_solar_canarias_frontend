@@ -286,11 +286,29 @@ const AuthenticationForm = () => {
                             type="checkbox"
                             className="form-checkbox h-5 w-5 text-blue-600"
                             {...register("privacyPolicy", {
-                              required: t("termsRequired"),
+                              required:
+                                "Debes aceptar la Política de Privacidad y el Aviso Legal",
                             })}
                           />
                           <span className="ml-2 text-custom-light-gray">
-                            {t("privacyPolicy")}
+                            Acepto la{" "}
+                            <a
+                              href="https://www.energiasolarcanarias.es/politica-de-privacidad"
+                              className="text-blue-300 hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Política de Privacidad
+                            </a>{" "}
+                            y el{" "}
+                            <a
+                              href="https://www.energiasolarcanarias.es/aviso-legal"
+                              className="text-blue-300 hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Aviso Legal
+                            </a>
                           </span>
                         </label>
                         <div className="min-h-[16px]">

@@ -20,5 +20,8 @@
   "registrationSuccess": "Registration successful! Check your email to confirm your account.",
   "loginSuccess": "Click the link we sent to your email to log in.",
   "registrationError": "Error creating account, please try again later.",
-  "loginError": "Error logging in, please try again later."
+  "loginError": "Error logging in, please try again later.",
+  "installationGuideTitle": "Installation Guide for {{os}}",
+  "loadingMessage": "Loading installation guide..."
+  
 }

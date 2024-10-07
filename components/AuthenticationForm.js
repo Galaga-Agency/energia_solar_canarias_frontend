@@ -57,7 +57,7 @@ const AuthenticationForm = () => {
   };
 
   return (
-    <div className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8">
+    <div className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8 z-0">
       <div
         className="relative w-full h-[550px]"
         style={{ perspective: "1000px" }}
@@ -72,7 +72,7 @@ const AuthenticationForm = () => {
         >
           {/* Front (Login Form) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center space-y-4"
+            className="absolute w-full h-full p-6 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center space-y-4 z-0"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
           >
             {!isFlipped && (

@@ -20,5 +20,7 @@
   "registrationSuccess": "¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.",
   "loginSuccess": "Haz click en el enlace que hemos enviado a tu correo electrónico.",
   "registrationError": "Error en la creación de cuenta, intentalo de nuevo más tarde.",
-  "loginError": "Error en el inicio de sesión, intentalo de nuevo más tarde."
+  "loginError": "Error en el inicio de sesión, intentalo de nuevo más tarde.",
+  "installationGuideTitle": "Guía de instalación para {{os}}",
+  "loadingMessage": "Cargando la guía de instalación..."
 }

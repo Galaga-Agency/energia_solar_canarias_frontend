@@ -9,6 +9,7 @@ import AuthenticationForm from "./AuthenticationForm";
 import useDeviceType from "@/hooks/useDeviceType";
 import RetroGrid from "./magicui/retro-grid";
 import LanguageSelector from "./LanguageSelector";
+import InstallationGuide from "./InstallationGuide"; // Import the guide component
 
 const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);
@@ -82,12 +83,16 @@ const LogoAnimation = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, ease: "easeInOut" }}
-            className="z-50 absolute w-full"
+            className="z-30 absolute w-full"
           >
             <AuthenticationForm />
           </motion.div>
         )}
       </AnimatePresence>
+      <div className="absolute top-4 right-4 z-50 flex gap-4">
+        <LanguageSelector />
+        <InstallationGuide />
+      </div>
       <RetroGrid />
     </div>
   );

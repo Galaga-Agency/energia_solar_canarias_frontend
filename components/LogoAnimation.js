@@ -9,7 +9,7 @@ import AuthenticationForm from "./AuthenticationForm";
 import useDeviceType from "@/hooks/useDeviceType";
 import RetroGrid from "./magicui/retro-grid";
 import LanguageSelector from "./LanguageSelector";
-import InstallationGuide from "./InstallationGuide"; // Import the guide component
+import InstallationGuide from "./InstallationGuide";
 
 const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);
@@ -72,6 +72,7 @@ const LogoAnimation = () => {
               layout="responsive"
               width={100}
               height={100}
+              priority
             />
           </motion.div>
         )}

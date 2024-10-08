@@ -5,7 +5,6 @@
   "emailRequired": "El correo electrónico es obligatorio",
   "emailInvalid": "Correo electrónico no válido",
   "termsRequired": "Debes aceptar los términos.",
-  "privacyPolicy": "Política de Privacidad",
   "signIn": "Iniciar Sesión",
   "noAccount": "¿No tienes una cuenta?",
   "register": "Regístrate",
@@ -19,8 +18,14 @@
   "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
   "registrationSuccess": "¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.",
   "loginSuccess": "Haz click en el enlace que hemos enviado a tu correo electrónico.",
-  "registrationError": "Error en la creación de cuenta, intentalo de nuevo más tarde.",
-  "loginError": "Error en el inicio de sesión, intentalo de nuevo más tarde.",
+  "registrationError": "Error en la creación de cuenta, recarga la página o intentalo de nuevo más tarde.",
+  "loginError": "Error en el inicio de sesión, recarga la página o intentalo de nuevo más tarde.",
   "installationGuideTitle": "Guía de instalación para",
-  "loadingMessage": "Cargando la guía de instalación..."
+  "loadingMessage": "Cargando la guía de instalación...",
+  "privacyPolicyConsent": "Debes aceptar las condiciones.",
+  "privacyPolicyLabel": "Acepto la ",
+  "cookiesPolicy": "Política de Cookies",
+  "privacyPolicy": "Política de Privacidad",
+  "legalNotice": "Aviso Legal",
+  "andTheLegalNoticePrefix": "y el"
 }

@@ -15,6 +15,7 @@ module.exports = {
       animation: {
         "spin-slow": "spin 3s linear infinite",
         grid: "grid 150s linear infinite",
+        "spin-fast": "spin 1s linear infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -40,6 +41,10 @@ module.exports = {
           "100%": {
             transform: "translateY(0)",
           },
+        },
+        spin: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
         },
       },
     },

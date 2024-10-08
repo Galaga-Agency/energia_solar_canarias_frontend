@@ -1,11 +1,11 @@
 {
+  "display_override": "standalone",
   "name": "Energia Solar Canarias",
   "short_name": "ESC",
   "description": "A web application for Energia Solar Canarias",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay"],
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait",

@@ -1,4 +1,3 @@
-// /pages/_offline.js
 export default function OfflinePage() {
   return (
     <div>

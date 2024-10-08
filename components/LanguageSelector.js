@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import "/node_modules/flag-icons/css/flag-icons.min.css";
+import englishFlag from "@/public/assets/icons/en.webp";
+import spanishFlag from "@/public/assets/icons/es.webp";
 
 const languages = [
-  { code: "en", name: "English", countryCode: "gb" },
-  { code: "es", name: "Español", countryCode: "es" },
+  { code: "en", name: "English", flagPath: englishFlag },
+  { code: "es", name: "Español", flagPath: spanishFlag },
 ];
 
 const LanguageSelector = () => {
@@ -53,28 +54,30 @@ const LanguageSelector = () => {
         aria-expanded={isOpen}
       >
         {selectedLanguage && (
-          <span
-            className={`fi fis fi-${selectedLanguage.countryCode} rounded-full text-4xl`}
+          <img
+            src={selectedLanguage.flagPath.src}
+            alt={`${selectedLanguage.name} Flag`}
+            className="w-9 h-9 rounded-full object-cover"
           />
         )}
       </button>
 
       {isOpen && (
-        <div
-          className="absolute rounded-md shadow-lg ring-1 ring-black ring-opacity-5 mt-2"
-          role="menu"
-        >
+        <div className="absolute rounded-md shadow-lg" role="menu">
           <div className="py-1" role="none">
             {availableLanguages.map((language) => (
               <button
                 key={language.code}
                 onClick={() => handleLanguageChange(language.code)}
-                className="inline-flex items-center justify-center w-full rounded-full shadow-white-shadow hover:shadow-hover-shadow"
+                className="flex items-center justify-start w-full py-1 text-sm"
                 role="menuitem"
               >
-                <span
-                  className={`fi fis fi-${language.countryCode} text-4xl rounded-full`}
+                <img
+                  src={language.flagPath.src}
+                  alt={`${language.name} Flag`}
+                  className="w-9 h-9 rounded-full object-cover"
                 />
+                {language.name}
               </button>
             ))}
           </div>

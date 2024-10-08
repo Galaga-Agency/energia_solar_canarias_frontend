@@ -3,6 +3,7 @@ import withPWAInit from "next-pwa";
 const withPWA = withPWAInit({
   dest: "public",
   register: true,
+  sw: "/sw.js",
   skipWaiting: true,
   runtimeCaching: [
     // Cache static assets such as JavaScript, CSS, etc.
@@ -19,7 +20,7 @@ const withPWA = withPWAInit({
     },
     // Cache images
     {
-      urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|webp)/,
+      urlPattern: /.*\.(?:png|jpg|ico|jpeg|svg|gif|webp)/,
       handler: "CacheFirst",
       options: {
         cacheName: "image-cache",
@@ -56,6 +57,23 @@ const withPWA = withPWAInit({
         cacheableResponse: {
           statuses: [0, 200],
         },
+      },
+    },
+    {
+      urlPattern: /[.](css)/,
+      handler: "CacheFirst",
+      options: {
+        cacheName: "css-cache",
+        cacheableResponse: {
+          statuses: [0, 200],
+        },
+      },
+    },
+    {
+      urlPattern: /^http.*/,
+      handler: "NetworkFirst",
+      options: {
+        cacheName: "http-cache",
       },
     },
     // Cache the homepage

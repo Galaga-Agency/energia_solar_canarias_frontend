@@ -41,7 +41,7 @@ const LanguageSelector = () => {
           <Image
             src={currentLanguage.flagPath}
             alt={currentLanguage.alt}
-            layout="fill"
+            fill
             objectFit="cover"
             className="rounded-full"
             priority
@@ -65,7 +65,7 @@ const LanguageSelector = () => {
           <Image
             src={otherLanguage.flagPath}
             alt={otherLanguage.alt}
-            layout="fill"
+            fill
             objectFit="cover"
             className="rounded-full"
             priority

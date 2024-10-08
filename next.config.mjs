@@ -58,16 +58,14 @@ const withPWA = withPWAInit({
         },
       },
     },
-  ],
-  // Exclude server-side and middleware files from being cached
-  exclude: [
-    ({ asset }) => asset.name.includes("server"),
-    ({ asset }) => asset.name.includes("middleware"),
-    ({ asset }) => asset.name.endsWith(".map"),
-    ({ asset }) => asset.name.includes("middleware-build-manifest"),
-    ({ asset }) => asset.name.includes("app-build-manifest"),
-    ({ asset }) => asset.name.includes("routes-manifest"),
-    ({ asset }) => asset.name.includes("ssg-manifest"),
+    // Cache main app routes
+    {
+      urlPattern: new RegExp("^/$"),
+      handler: "StaleWhileRevalidate",
+      options: {
+        cacheName: "home-cache",
+      },
+    },
   ],
 });
 

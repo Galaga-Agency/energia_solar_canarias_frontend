@@ -10,21 +10,33 @@ const InstallationGuide = () => {
   const [os, setOs] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const modalRef = useRef(null);
-  const { isMobile } = useDeviceType();
+  const { isMobile, isTablet, isDesktop } = useDeviceType();
 
   useEffect(() => {
-    const userAgent = navigator.userAgent;
-    if (userAgent.includes("Win")) {
-      setOs("Windows");
-    } else if (userAgent.includes("Mac")) {
-      setOs("macOS");
-    } else if (userAgent.includes("Linux")) {
-      setOs("Linux");
-    } else if (userAgent.includes("Android")) {
+    const userAgent = navigator.userAgent.toLowerCase();
+    console.log("User Agent:", userAgent);
+    console.log("Is Mobile:", isMobile);
+    console.log("Is Tablet:", isTablet);
+    console.log("Is Desktop:", isDesktop);
+
+    if (userAgent.includes("android")) {
       setOs("Android");
-    } else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) {
+    } else if (
+      userAgent.includes("iphone") ||
+      userAgent.includes("ipad") ||
+      userAgent.includes("ipod") ||
+      (userAgent.includes("mac") && "ontouchend" in document)
+    ) {
       setOs("iOS");
+    } else if (userAgent.includes("win")) {
+      setOs("Windows");
+    } else if (userAgent.includes("mac")) {
+      setOs("macOS");
+    } else if (userAgent.includes("linux")) {
+      setOs("Linux");
     }
+
+    console.log("Detected OS:", os);
 
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -41,7 +53,7 @@ const InstallationGuide = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isExpanded]);
+  }, [isExpanded, isMobile, isTablet, isDesktop, os]);
 
   const videoSources = {
     Windows: "/videos/windows-installation.mp4",
@@ -62,7 +74,7 @@ const InstallationGuide = () => {
           className={`flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all 
           fixed z-50 
           bottom-4 right-4 md:bottom-auto md:top-4 md:right-6 
-          ${!isMobile ? "mr-12" : ""}`}
+          ${isDesktop | isTablet ? "mr-12" : ""}`}
           onClick={handleToggle}
         >
           <FaDownload className="text-lg" />

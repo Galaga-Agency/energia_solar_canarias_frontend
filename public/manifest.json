@@ -49,9 +49,9 @@
       "description": "Quick access to the shortcut feature",
       "icons": [
         {
-          "src": "/assets/icons/icon-48x48.png",
+          "src": "/assets/icons/icon-96x96.png",
           "type": "image/png",
-          "sizes": "48x48"
+          "sizes": "96x96"
         }
       ]
     }

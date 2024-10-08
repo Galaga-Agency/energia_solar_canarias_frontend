@@ -44,6 +44,7 @@ const LanguageSelector = () => {
             layout="fill"
             objectFit="cover"
             className="rounded-full"
+            priority
           />
         )}
       </div>
@@ -67,6 +68,7 @@ const LanguageSelector = () => {
             layout="fill"
             objectFit="cover"
             className="rounded-full"
+            priority
           />
         )}
       </div>

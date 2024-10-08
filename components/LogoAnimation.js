@@ -90,7 +90,7 @@ const LogoAnimation = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="absolute top-4 right-4 z-50 flex gap-4">
+      <div className="absolute top-4 right-0 z-50 flex gap-4">
         <LanguageSelector />
         <InstallationGuide />
       </div>

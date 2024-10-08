@@ -19,11 +19,6 @@ const useDeviceType = (mobileBreakpoint = 767, tabletBreakpoint = 1024) => {
       // Detect landscape mode
       const landscape = width > height;
       setIsLandscape(landscape);
-
-      // Log landscape changes for debugging
-      console.log(
-        `Width: ${width}, Height: ${height}, Landscape: ${landscape}`
-      );
     };
 
     // Initial check

@@ -2,6 +2,7 @@ import "./globals.css";
 import TranslationProvider from "@/components/TranslationProvider";
 import StoreProvider from "@/components/StoreProvider";
 import Head from "next/head";
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 export const metadata = {
   title:

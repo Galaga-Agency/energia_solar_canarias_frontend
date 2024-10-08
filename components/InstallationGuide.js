@@ -59,9 +59,9 @@ const InstallationGuide = () => {
     <div className="flex flex-col items-end">
       {os && (
         <button
-          className={`flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 py-2 rounded-md shadow-md hover:bg-opacity-90 transition-all 
+          className={`flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all 
           fixed z-50 
-          bottom-4 right-4 md:bottom-auto md:top-4 md:right-4 
+          bottom-4 right-4 md:bottom-auto md:top-4 md:right-6 
           ${!isMobile ? "mr-12" : ""}`}
           onClick={handleToggle}
         >

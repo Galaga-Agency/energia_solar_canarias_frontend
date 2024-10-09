@@ -6,10 +6,12 @@ import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
-  loginUserThunk,
-  registerUserThunk,
-  selectUser,
+  mockLogin,
+  // Uncomment when backend is ready
+  // loginUserThunk,
+  // registerUserThunk,
   selectLoading,
+  selectUser,
   selectError,
 } from "@/store/slices/userSlice";
 import CustomButton from "./CustomButton";
@@ -22,28 +24,34 @@ const AuthenticationForm = () => {
   const [submissionResult, setSubmissionResult] = useState(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const user = useSelector(selectUser);
+  const router = useRouter();
+
+  // Getting loading state from Redux store
   const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
-  const router = useRouter();
+  const user = useSelector(selectUser);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm();
-
-  const isPrivacyChecked = watch("privacyPolicy");
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    const { email, password, username } = data;
-    let result;
 
+    // For development, mock successful login with hardcoded user
+    dispatch(mockLogin());
+    setIsSubmitting(false);
+    setSubmissionResult("loginSuccess");
+    setShowResultFace(true);
+    router.push(`/dashboard/123`); // Redirect to the dashboard for Thomas Augot
+
+    // Uncomment and adjust below for actual API integration in the future
+    /*
+    const { email, password, username } = data;
     if (isFlipped) {
       result = await dispatch(registerUserThunk({ email, password, username }));
-      setIsSubmitting(false);
       if (result.meta.requestStatus === "fulfilled") {
         setSubmissionResult("registrationSuccess");
       } else {
@@ -51,17 +59,15 @@ const AuthenticationForm = () => {
       }
     } else {
       result = await dispatch(loginUserThunk({ email, password }));
-      setIsSubmitting(false);
       if (result.meta.requestStatus === "fulfilled") {
         setSubmissionResult("loginSuccess");
       } else {
         setSubmissionResult("loginError");
       }
     }
-
     setShowResultFace(true);
+    */
   };
-
   return (
     <div className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8 z-0">
       <div

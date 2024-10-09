@@ -11,15 +11,22 @@ const DashboardPage = ({ params }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to login if user is not logged in
+    // Mock development login check
+    if (!user || user.id !== "123") {
+      router.push("/");
+    }
+
+    // Uncomment this when backend is ready
+    /*
     if (!user || user.id !== params.userid) {
       router.push("/");
     }
+    */
   }, [user, params.userid, router]);
 
   return (
     <div className="p-6">
-      {user && user.id === params.userid ? (
+      {user && user.id === "123" ? ( // For development, checks mock user
         <h1 className="text-2xl">Welcome, {user.name}!</h1>
       ) : (
         <Loading />

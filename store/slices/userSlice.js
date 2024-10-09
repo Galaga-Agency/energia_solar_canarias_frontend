@@ -8,6 +8,15 @@ const initialState = {
   isLoggedIn: false,
 };
 
+// Mock user details for development
+const mockUser = {
+  id: "123",
+  name: "Thomas Augot",
+  email: "thomas.augot@hotmail.fr",
+};
+
+// Commented out original thunks for future use
+/*
 export const loginUserThunk = createAsyncThunk(
   "user/login",
   async ({ email, password }, { rejectWithValue }) => {
@@ -46,12 +55,27 @@ export const logoutUserThunk = createAsyncThunk(
     }
   }
 );
+*/
 
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    // Mock login action for development
+    mockLogin: (state) => {
+      state.user = mockUser;
+      state.isLoggedIn = true;
+      state.error = null;
+    },
+    // Mock logout action for development
+    mockLogout: (state) => {
+      state.user = null;
+      state.isLoggedIn = false;
+    },
+  },
   extraReducers: (builder) => {
+    // Uncomment the following for actual API logic in the future
+    /*
     builder
       .addCase(loginUserThunk.pending, (state) => {
         state.loading = true;
@@ -95,8 +119,11 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Logout failed.";
       });
+    */
   },
 });
+
+export const { mockLogin, mockLogout } = userSlice.actions;
 
 export const selectUser = (state) => state.user.user;
 export const selectIsLoggedIn = (state) => state.user.isLoggedIn;

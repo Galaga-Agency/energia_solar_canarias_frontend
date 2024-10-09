@@ -13,6 +13,7 @@ import {
   selectError,
 } from "@/store/slices/userSlice";
 import CustomButton from "./CustomButton";
+import { useRouter } from "next/navigation";
 
 const AuthenticationForm = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -24,6 +25,7 @@ const AuthenticationForm = () => {
   const user = useSelector(selectUser);
   const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
+  const router = useRouter();
 
   const {
     register,
@@ -146,6 +148,16 @@ const AuthenticationForm = () => {
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      className="text-blue-300 hover:underline"
+                      onClick={() => router.push("/forgot-password")}
+                    >
+                      {t("forgotPassword")}
+                    </button>
                   </div>
 
                   <CustomButton

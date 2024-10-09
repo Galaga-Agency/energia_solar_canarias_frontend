@@ -27,5 +27,10 @@
   "cookiesPolicy": "Política de Cookies",
   "privacyPolicy": "Política de Privacidad",
   "legalNotice": "Aviso Legal",
-  "andTheLegalNoticePrefix": "y el"
+  "andTheLegalNoticePrefix": "y el",
+  "forgotPassword": "Olvidé mi contraseña",
+  "sendResetLink": "Enviar enlace",
+  "resetLinkSent": "Se ha enviado un enlace de restablecimiento a tu correo.",
+  "resetError": "Error al enviar el enlace. Inténtalo de nuevo más tarde.",
+  "goBackHome": "Volver a Inicio"
 }

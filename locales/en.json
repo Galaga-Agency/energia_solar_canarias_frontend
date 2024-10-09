@@ -27,5 +27,10 @@
   "cookiesPolicy": "Cookies Policy",
   "privacyPolicy": "Privacy Policy",
   "legalNotice": "Legal Notice",
-  "andTheLegalNoticePrefix": "and the"
+  "andTheLegalNoticePrefix": "and the",
+  "forgotPassword": "Forgot Password ?",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "A reset link has been sent to your email.",
+  "resetError": "Error sending reset link. Please try again later.",
+  "goBackHome": "Go Back Home"
 }

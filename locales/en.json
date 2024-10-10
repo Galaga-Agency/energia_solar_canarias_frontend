@@ -28,7 +28,7 @@
   "privacyPolicy": "Privacy Policy",
   "legalNotice": "Legal Notice",
   "andTheLegalNoticePrefix": "and the",
-  "forgotPassword": "Forgot Password ?",
+  "forgotPassword": "Forgot Your Password ?",
   "sendResetLink": "Send Reset Link",
   "resetLinkSent": "A reset link has been sent to your email.",
   "resetError": "Error sending reset link. Please try again later.",

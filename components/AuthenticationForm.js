@@ -7,16 +7,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
   mockLogin,
-  // Uncomment when backend is ready
-  // loginUserThunk,
-  // registerUserThunk,
   selectLoading,
-  selectUser,
   selectError,
 } from "@/store/slices/userSlice";
 import CustomButton from "./CustomButton";
 import { useRouter } from "next/navigation";
-
+import useAuth from "@/hooks/useAuth";
 const AuthenticationForm = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,10 +22,10 @@ const AuthenticationForm = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // Getting loading state from Redux store
   const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
-  const user = useSelector(selectUser);
+
+  const { saveAuthData } = useAuth();
 
   const {
     register,
@@ -40,34 +36,42 @@ const AuthenticationForm = () => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
 
-    // For development, mock successful login with hardcoded user
-    dispatch(mockLogin());
+    const mockUser = { id: "123", name: "Thomas Augot" };
+    dispatch(mockLogin(mockUser));
+    saveAuthData("mockAuthToken", mockUser);
     setIsSubmitting(false);
     setSubmissionResult("loginSuccess");
     setShowResultFace(true);
-    router.push(`/dashboard/123`); // Redirect to the dashboard for Thomas Augot
+    router.push(`/dashboard/${mockUser.id}/plants`);
 
     // Uncomment and adjust below for actual API integration in the future
     /*
     const { email, password, username } = data;
-    if (isFlipped) {
-      result = await dispatch(registerUserThunk({ email, password, username }));
-      if (result.meta.requestStatus === "fulfilled") {
-        setSubmissionResult("registrationSuccess");
+    try {
+      let result;
+      if (isFlipped) {
+        result = await dispatch(registerUserThunk({ email, password, username }));
+        if (result.meta.requestStatus === "fulfilled") {
+          setSubmissionResult("registrationSuccess");
+        } else {
+          setSubmissionResult("registrationError");
+        }
       } else {
-        setSubmissionResult("registrationError");
+        result = await dispatch(loginUserThunk({ email, password }));
+        if (result.meta.requestStatus === "fulfilled") {
+          setSubmissionResult("loginSuccess");
+          router.push(`/dashboard/${result.payload.id}/plants`); // Redirect to the dynamic dashboard
+        } else {
+          setSubmissionResult("loginError");
+        }
       }
-    } else {
-      result = await dispatch(loginUserThunk({ email, password }));
-      if (result.meta.requestStatus === "fulfilled") {
-        setSubmissionResult("loginSuccess");
-      } else {
-        setSubmissionResult("loginError");
-      }
+    } catch (error) {
+      console.error("Authentication failed:", error);
     }
     setShowResultFace(true);
     */
   };
+
   return (
     <div className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8 z-0">
       <div
@@ -288,54 +292,6 @@ const AuthenticationForm = () => {
                       {errors.password && (
                         <p className="text-red-500 text-sm mt-1">
                           {errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="inline-flex items-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                        {...register("privacyPolicy", {
-                          required: t("privacyPolicyConsent"),
-                        })}
-                      />
-                      <span className="ml-2 text-custom-light-gray">
-                        {t("privacyPolicyLabel")}
-                        <a
-                          href="https://www.energiasolarcanarias.es/politica-de-cookies"
-                          className="text-blue-300 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {t("cookiesPolicy")}
-                        </a>
-                        ,{" "}
-                        <a
-                          href="https://www.energiasolarcanarias.es/politica-de-privacidad"
-                          className="text-blue-300 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {t("privacyPolicy")}
-                        </a>{" "}
-                        {t("andTheLegalNoticePrefix")}{" "}
-                        <a
-                          href="https://www.energiasolarcanarias.es/aviso-legal"
-                          className="text-blue-300 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {t("legalNotice")}
-                        </a>
-                      </span>
-                    </label>
-                    <div className="min-h-[10px] mb-4">
-                      {errors.privacyPolicy && (
-                        <p className="text-red-500 text-sm mt-0">
-                          {errors.privacyPolicy.message}
                         </p>
                       )}
                     </div>

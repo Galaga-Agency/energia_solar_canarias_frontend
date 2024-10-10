@@ -50,7 +50,7 @@ const ForgotPassword = () => {
         <LanguageSelector />
       </div>
       <div
-        className="relative w-full max-w-[90vw] md:max-w-[40vw] lg:max-w-[30vw] xl:max-w-[25vw] mx-auto p-6 h-[60vh] flex justify-center z-10"
+        className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8 h-[60vh] z-10"
         style={{ perspective: "1000px" }}
       >
         <motion.div

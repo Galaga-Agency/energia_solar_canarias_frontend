@@ -11,24 +11,19 @@ const useDeviceType = (mobileBreakpoint = 767, tabletBreakpoint = 1024) => {
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      // Detect device type
       setIsMobile(width <= mobileBreakpoint);
       setIsTablet(width > mobileBreakpoint && width <= tabletBreakpoint);
       setIsDesktop(width > tabletBreakpoint);
 
-      // Detect landscape mode
       const landscape = width > height;
       setIsLandscape(landscape);
     };
 
-    // Initial check
     handleResize();
 
-    // Add event listeners
     window.addEventListener("resize", handleResize);
     window.addEventListener("orientationchange", handleResize);
 
-    // Cleanup listeners on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);

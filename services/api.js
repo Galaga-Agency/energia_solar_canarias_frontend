@@ -4,10 +4,16 @@ const API_BASE_URL = "https://your-api-url.com";
 
 // Mock login API function
 export const loginUserAPI = async (email, password) => {
-  // Mock implementation
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve({ user: { id: "123", name: "Thomas Augot", email } });
+      // Simulate receiving a token from the backend
+      const token = "mockToken123";
+      const user = { id: "123", name: "Thomas Augot", email };
+
+      // Save token and user to local storage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      resolve({ user });
     }, 1000);
   });
 
@@ -17,16 +23,25 @@ export const loginUserAPI = async (email, password) => {
     email,
     password,
   });
+  const { token, user } = response.data;
+  localStorage.setItem("authToken", token);
+  localStorage.setItem("user", JSON.stringify(user));
   return response.data;
   */
 };
 
 // Mock register API function
 export const registerUserAPI = async (email, password, username) => {
-  // Mock implementation
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve({ user: { id: "124", name: username, email } });
+      // Simulate receiving a token from the backend
+      const token = "mockToken124";
+      const user = { id: "124", name: username, email };
+
+      // Save token and user to local storage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      resolve({ user });
     }, 1000);
   });
 
@@ -37,22 +52,9 @@ export const registerUserAPI = async (email, password, username) => {
     password,
     username,
   });
-  return response.data;
-  */
-};
-
-// Mock logout API function
-export const logoutUserAPI = async () => {
-  // Mock implementation
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ message: "Logged out" });
-    }, 1000);
-  });
-
-  // Uncomment when the actual backend is set up
-  /*
-  const response = await axios.post(`${API_BASE_URL}/logout`);
+  const { token, user } = response.data;
+  localStorage.setItem("authToken", token);
+  localStorage.setItem("user", JSON.stringify(user));
   return response.data;
   */
 };

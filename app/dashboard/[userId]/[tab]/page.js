@@ -11,6 +11,7 @@ import MessageTab from "@/components/MessageTab";
 import DiscoveryTab from "@/components/DiscoveryTab";
 import ProfileTab from "@/components/ProfileTab";
 import BottomNavbar from "@/components/BottomNavbar";
+import TransitionEffect from "@/components/TransitionEffect";
 
 const DashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
@@ -49,6 +50,7 @@ const DashboardPage = ({ params }) => {
         <Loading />
       ) : user && user.id === userId ? (
         <div className="h-screen w-screen flex flex-col bg-gray-900 relative overflow-hidden">
+          <TransitionEffect />
           <div className="flex-grow">{renderTabContent()}</div>
           <BottomNavbar userId={userId} />
         </div>

@@ -28,6 +28,10 @@ module.exports = {
         "custom-light-gray": "rgb(201, 202, 202)",
         "custom-dark-gray": "rgb(88, 91, 92)",
       },
+      backgroundImage: {
+        "custom-gradient":
+          "linear-gradient(to right, rgb(255, 213, 122), rgb(0, 44, 63))",
+      },
       boxShadow: {
         "dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 16px",
         "white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 16px",

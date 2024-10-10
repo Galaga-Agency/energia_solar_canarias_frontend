@@ -58,3 +58,7 @@ export const registerUserAPI = async (email, password, username) => {
   return response.data;
   */
 };
+
+export const sendPasswordResetEmail = async (email) => {
+  // function logic here
+};

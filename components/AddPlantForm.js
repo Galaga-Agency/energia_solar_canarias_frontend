@@ -27,7 +27,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
   };
 
   const onMapLocationSelect = (location, address) => {
-    setValue("address", address);
+    setValue("address", address); // Set the selected address in the form
     setIsMapOpen(false);
   };
 
@@ -113,7 +113,8 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   className="w-full border rounded p-2"
                 />
                 <p className="text-gray-500 text-sm">
-                  If you don't know the code, you can leave this field empty.
+                  If you don&apos;t know the code, you can leave this field
+                  empty.
                 </p>
               </div>
               <div className="mb-4">

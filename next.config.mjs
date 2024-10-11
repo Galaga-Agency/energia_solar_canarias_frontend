@@ -3,8 +3,9 @@ import withPWAInit from "next-pwa";
 const withPWA = withPWAInit({
   dest: "public",
   register: true,
-  sw: "/sw.js",
   skipWaiting: true,
+  buildExcludes: [/middleware-manifest\.json$/],
+  maximumFileSizeToCacheInBytes: 5000000,
   runtimeCaching: [
     // Cache static assets such as JavaScript, CSS, etc.
     {

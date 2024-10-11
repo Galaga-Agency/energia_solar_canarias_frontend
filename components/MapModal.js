@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import MapComponent from "./MapComponent";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "next-i18next";
 
 const MapModal = ({ isOpen, onClose, onLocationSelect }) => {
+  const { t } = useTranslation();
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState("");
 
@@ -15,13 +17,13 @@ const MapModal = ({ isOpen, onClose, onLocationSelect }) => {
 
   const handlePlaceSelected = (location, address) => {
     setSelectedLocation(location);
-    setSelectedAddress(address); // Store the selected address
+    setSelectedAddress(address);
   };
 
   const handleSubmit = () => {
     if (selectedLocation && selectedAddress) {
-      onLocationSelect(selectedLocation, selectedAddress); // Pass selected location and address to parent
-      onClose(); // Close the modal after selection
+      onLocationSelect(selectedLocation, selectedAddress);
+      onClose();
     }
   };
 
@@ -51,7 +53,7 @@ const MapModal = ({ isOpen, onClose, onLocationSelect }) => {
             className="bg-white rounded-lg shadow-xl w-[90vw] md:w-[80vw] max-w-4xl md:max-w-5xl relative z-10 overflow-y-auto h-auto md:h-auto"
           >
             <div className="bg-gradient-to-br from-custom-yellow to-custom-dark-blue text-white p-4 flex items-center">
-              <h2 className="text-lg font-bold">Select a Location</h2>
+              <h2 className="text-lg font-bold">{t("selectLocation")}</h2>
             </div>
             <MapComponent onPlaceSelected={handlePlaceSelected} />
             <div className="p-4 flex justify-end">
@@ -59,10 +61,10 @@ const MapModal = ({ isOpen, onClose, onLocationSelect }) => {
                 onClick={handleSubmit}
                 className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded"
               >
-                Submit
+                {t("submit")}
               </button>
               <button onClick={onClose} className="ml-4 text-red-500">
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </motion.div>

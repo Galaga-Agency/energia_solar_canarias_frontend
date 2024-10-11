@@ -6,6 +6,7 @@ import {
   Autocomplete,
 } from "@react-google-maps/api";
 import axios from "axios";
+import { useTranslation } from "next-i18next";
 
 const mapContainerStyle = {
   height: "400px",
@@ -18,6 +19,7 @@ const center = {
 };
 
 const MapComponent = ({ onPlaceSelected }) => {
+  const { t } = useTranslation();
   const [selectedLocation, setSelectedLocation] = useState(center);
   const [address, setAddress] = useState("");
   const autocompleteRef = useRef(null);
@@ -43,7 +45,7 @@ const MapComponent = ({ onPlaceSelected }) => {
       if (response.data.results.length > 0) {
         return response.data.results[0].formatted_address;
       } else {
-        return "Address not found";
+        return t("addressNotFound");
       }
     } catch (error) {
       console.error("Error fetching address:", error);
@@ -108,34 +110,35 @@ const MapContent = ({
   address,
   setAddress,
   selectedLocation,
-  setSelectedLocation,
-  onPlaceSelected,
   handlePlaceChanged,
   handleMapClick,
   autocompleteRef,
-}) => (
-  <div className="p-4">
-    <Autocomplete
-      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
-      onPlaceChanged={handlePlaceChanged}
-    >
-      <input
-        type="text"
-        placeholder="Search for a location"
-        className="border rounded p-2 mb-2 w-full"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-      />
-    </Autocomplete>
-    <GoogleMap
-      mapContainerStyle={mapContainerStyle}
-      center={selectedLocation}
-      zoom={10}
-      onClick={handleMapClick}
-    >
-      <Marker position={selectedLocation} />
-    </GoogleMap>
-  </div>
-);
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="p-4">
+      <Autocomplete
+        onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+        onPlaceChanged={handlePlaceChanged}
+      >
+        <input
+          type="text"
+          placeholder={t("searchLocationPlaceholder")}
+          className="border rounded p-2 mb-2 w-full"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+        />
+      </Autocomplete>
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={selectedLocation}
+        zoom={10}
+        onClick={handleMapClick}
+      >
+        <Marker position={selectedLocation} />
+      </GoogleMap>
+    </div>
+  );
+};
 
 export default MapComponent;

@@ -8,8 +8,6 @@ import TransitionEffect from "./TransitionEffect";
 import AuthenticationForm from "./AuthenticationForm";
 import useDeviceType from "@/hooks/useDeviceType";
 import RetroGrid from "./magicui/retro-grid";
-import LanguageSelector from "./LanguageSelector";
-import InstallationGuide from "./InstallationGuide";
 
 const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);
@@ -35,7 +33,7 @@ const LogoAnimation = () => {
   }, []);
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center bg-gray-900 relative overflow-hidden">
+    <div className="h-screen w-screen flex justify-center items-center bg-custom-dark-gray dark:bg-gray-900 text-gray-900 dark:text-gray-100 relative overflow-hidden transition-colors duration-500">
       {showTransition && <TransitionEffect />}
       <AnimatePresence>
         {showLogo && (
@@ -90,10 +88,6 @@ const LogoAnimation = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="absolute top-4 right-0 z-50 flex gap-4">
-        <LanguageSelector />
-        <InstallationGuide />
-      </div>
       <RetroGrid />
     </div>
   );

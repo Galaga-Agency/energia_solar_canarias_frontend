@@ -13,6 +13,7 @@ import {
 import CustomButton from "./CustomButton";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
+
 const AuthenticationForm = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,12 +93,12 @@ const AuthenticationForm = () => {
         >
           {/* Front (Login Form) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center space-y-4 z-40"
+            className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 z-40 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
           >
             {!isFlipped && !showResultFace && (
               <>
-                <h2 className="text-custom-light-gray text-2xl text-center mb-4">
+                <h2 className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-4">
                   {t("login")}
                 </h2>
                 <form
@@ -106,7 +107,7 @@ const AuthenticationForm = () => {
                   className="space-y-3"
                 >
                   <div>
-                    <label className="block text-custom-light-gray mb-1">
+                    <label className="block text-gray-700 dark:text-gray-300 mb-1">
                       {t("email")}
                     </label>
                     <input
@@ -134,7 +135,7 @@ const AuthenticationForm = () => {
                   </div>
 
                   <div>
-                    <label className="block text-custom-light-gray mb-1">
+                    <label className="block text-gray-700 dark:text-gray-300 mb-1">
                       {t("password")}
                     </label>
                     <input
@@ -163,7 +164,7 @@ const AuthenticationForm = () => {
                   <div className="text-center">
                     <button
                       type="button"
-                      className="text-blue-300 hover:underline"
+                      className="text-blue-500 hover:underline dark:text-blue-300"
                       onClick={() => router.push("/forgot-password")}
                     >
                       {t("forgotPassword")}
@@ -186,12 +187,12 @@ const AuthenticationForm = () => {
                 </div>
 
                 <div className="mt-2 text-center">
-                  <p className="text-custom-light-gray text-sm">
+                  <p className="text-gray-800 dark:text-gray-200 text-sm">
                     {t("noAccount")}{" "}
                     <button
                       type="button"
                       onClick={() => setIsFlipped(true)}
-                      className="text-blue-300 hover:underline"
+                      className="text-blue-500 hover:underline dark:text-blue-300"
                     >
                       {t("register")}
                     </button>
@@ -203,7 +204,7 @@ const AuthenticationForm = () => {
 
           {/* Back (Registration Form) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center space-y-4"
+            className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray  rounded-lg flex flex-col justify-center space-y-4 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
@@ -211,7 +212,7 @@ const AuthenticationForm = () => {
           >
             {isFlipped && !showResultFace && (
               <>
-                <h2 className="text-custom-light-gray text-2xl text-center">
+                <h2 className="text-gray-800 dark:text-gray-200 text-2xl text-center">
                   {t("register")}
                 </h2>
                 <form
@@ -220,7 +221,7 @@ const AuthenticationForm = () => {
                   className="space-y-1"
                 >
                   <div>
-                    <label className="block text-custom-light-gray mb-1">
+                    <label className="block text-gray-700 dark:text-gray-300 mb-1">
                       {t("username")}
                     </label>
                     <input
@@ -243,7 +244,7 @@ const AuthenticationForm = () => {
                   </div>
 
                   <div>
-                    <label className="block text-custom-light-gray mb-1">
+                    <label className="block text-gray-700 dark:text-gray-300 mb-1">
                       {t("email")}
                     </label>
                     <input
@@ -271,7 +272,7 @@ const AuthenticationForm = () => {
                   </div>
 
                   <div>
-                    <label className="block text-custom-light-gray mb-1">
+                    <label className="block text-gray-700 dark:text-gray-300 mb-1">
                       {t("password")}
                     </label>
                     <input
@@ -306,12 +307,12 @@ const AuthenticationForm = () => {
                   </CustomButton>
                 </form>
                 <div className="mt-2 text-center">
-                  <p className="text-custom-light-gray text-sm">
+                  <p className="text-gray-800 dark:text-gray-200 text-sm">
                     {t("alreadyAccount")}{" "}
                     <button
                       type="button"
                       onClick={() => setIsFlipped(false)}
-                      className="text-blue-300 hover:underline"
+                      className="text-blue-500 hover:underline dark:text-blue-300"
                     >
                       {t("signIn")}
                     </button>
@@ -323,7 +324,7 @@ const AuthenticationForm = () => {
 
           {/* Third Face (Result Message) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-custom-dark-blue bg-opacity-30 shadow-white-shadow rounded-lg flex flex-col justify-center space-y-4"
+            className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 dark:from-gray-800 dark:to-gray-900"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(360deg)",

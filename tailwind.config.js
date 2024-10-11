@@ -26,7 +26,7 @@ module.exports = {
         "custom-yellow": "rgb(255, 213, 122)",
         "custom-dark-blue": "rgb(0, 44, 63)",
         "custom-light-gray": "rgb(201, 202, 202)",
-        "custom-dark-gray": "rgb(88, 91, 92)",
+        "custom-dark-gray": "rgb(161, 161, 170)",
       },
       backgroundImage: {
         "custom-gradient":
@@ -35,7 +35,8 @@ module.exports = {
       boxShadow: {
         "dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 16px",
         "white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 16px",
-        "hover-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 32px",
+        "hover-white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 32px",
+        "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },
       keyframes: {
         grid: {

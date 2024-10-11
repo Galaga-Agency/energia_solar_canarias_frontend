@@ -13,6 +13,7 @@ import ProfileTab from "@/components/ProfileTab";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import { fetchUserData } from "@/services/api";
+import LanguageSelector from "@/components/LanguageSelector";
 
 const DashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
@@ -68,7 +69,10 @@ const DashboardPage = ({ params }) => {
       ) : user && user.id === userId ? (
         <div className="h-screen w-screen flex flex-col bg-gray-900 relative overflow-hidden">
           <TransitionEffect />
-          <div className="flex-grow">{renderTabContent()}</div>
+          <div className="flex-grow">
+            <LanguageSelector />
+            {renderTabContent()}
+          </div>
           <BottomNavbar userId={userId} />
         </div>
       ) : null}

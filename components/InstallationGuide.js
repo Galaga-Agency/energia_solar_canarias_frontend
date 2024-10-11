@@ -14,10 +14,6 @@ const InstallationGuide = () => {
 
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
-    console.log("User Agent:", userAgent);
-    console.log("Is Mobile:", isMobile);
-    console.log("Is Tablet:", isTablet);
-    console.log("Is Desktop:", isDesktop);
 
     if (userAgent.includes("android")) {
       setOs("Android");
@@ -35,8 +31,6 @@ const InstallationGuide = () => {
     } else if (userAgent.includes("linux")) {
       setOs("Linux");
     }
-
-    console.log("Detected OS:", os);
 
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -71,10 +65,7 @@ const InstallationGuide = () => {
     <div className="flex flex-col items-end">
       {os && (
         <button
-          className={`flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all 
-          fixed z-50 
-          bottom-4 right-4 md:bottom-auto md:top-4 md:right-6 
-          ${isDesktop | isTablet ? "mr-12" : ""}`}
+          className="flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all"
           onClick={handleToggle}
         >
           <FaDownload className="text-lg" />

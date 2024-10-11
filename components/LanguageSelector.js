@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
@@ -11,16 +9,17 @@ const languages = [
 
 const LanguageSelector = () => {
   const { i18n } = useTranslation();
-  const [activeLanguage, setActiveLanguage] = useState("es");
+  const [activeLanguage, setActiveLanguage] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isI18nReady, setIsI18nReady] = useState(false);
 
   useEffect(() => {
     const initializeI18n = async () => {
+      // Wait for i18n to be initialized
       await i18n.initPromise;
       setIsI18nReady(true);
-      setActiveLanguage(i18n.language || "es");
+      setActiveLanguage(i18n.language || "en");
     };
 
     initializeI18n();
@@ -28,34 +27,32 @@ const LanguageSelector = () => {
 
   useEffect(() => {
     if (isI18nReady) {
-      setActiveLanguage(i18n.language || "es");
+      setActiveLanguage(i18n.language || "en");
     }
   }, [i18n.language, isI18nReady]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    setActiveLanguage(lng);
     setIsOpen(false);
     setImageLoaded(false);
   };
 
   const currentLanguage =
     languages.find((language) => language.code === activeLanguage) ||
-    languages.find((language) => language.code === "es");
-
+    languages[0];
   const otherLanguage = languages.find(
     (language) => language.code !== activeLanguage
   );
 
   if (!isI18nReady) {
-    return null;
+    return null; // or return a loading indicator
   }
 
   return (
-    <div className="fixed top-[20px] right-[20px] z-50">
+    <div className="fixed z-50">
       {/* Current Language Flag */}
       <div
-        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden shadow-white-shadow hover:shadow-hover-shadow transition-all duration-300 ease-in-out"
+        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden shadow-dark-shadow dark:shadow-white-shadow hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow transition-all duration-300 ease-in-out"
         onClick={() => setIsOpen(!isOpen)}
       >
         {!imageLoaded && (

@@ -4,16 +4,19 @@ import { FiPlus } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import MapModal from "./MapModal";
 import Image from "next/image";
+import { useTranslation } from "next-i18next";
 
 const AddPlantForm = ({ onClose, isOpen }) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm();
   const [images, setImages] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]); // State for image previews
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [isMapOpen, setIsMapOpen] = useState(false);
 
   useEffect(() => {
@@ -27,12 +30,15 @@ const AddPlantForm = ({ onClose, isOpen }) => {
     const files = Array.from(e.target.files);
     setImages((prevImages) => [...prevImages, ...files]);
 
-    // Generate image previews
     const previews = files.map((file) => ({
       name: file.name,
       url: URL.createObjectURL(file),
     }));
     setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
+  };
+
+  const truncateName = (name) => {
+    return name.length > 10 ? `${name.substring(0, 10)}...` : name;
   };
 
   const onMapLocationSelect = (location, address) => {
@@ -42,7 +48,9 @@ const AddPlantForm = ({ onClose, isOpen }) => {
 
   const handleFormSubmit = (data) => {
     console.log("Form Data:", data);
-    // Handle form submission logic here
+    reset();
+    setImages([]);
+    setImagePreviews([]);
     onClose();
   };
 
@@ -74,7 +82,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
           >
             <div className="bg-gradient-to-br from-custom-yellow to-custom-dark-blue text-white p-4 flex items-center">
               <FiPlus className="text-2xl mr-2" />
-              <h2 className="text-lg font-bold">Add a New Plant</h2>
+              <h2 className="text-lg font-bold">{t("addPlant")}</h2>
             </div>
             <form
               onSubmit={handleSubmit(handleFormSubmit)}
@@ -82,11 +90,10 @@ const AddPlantForm = ({ onClose, isOpen }) => {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">Email*</label>
+                  <label className="block mb-1">{t("email")}*</label>
                   <input
                     type="email"
-                    required
-                    {...register("email", { required: "Email is required" })}
+                    {...register("email", { required: t("emailRequired") })}
                     className={`w-full border rounded p-2 ${
                       errors.email ? "border-red-500" : ""
                     }`}
@@ -96,12 +103,11 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1">Plant Name*</label>
+                  <label className="block mb-1">{t("plantName")}*</label>
                   <input
                     type="text"
-                    required
                     {...register("plantName", {
-                      required: "Plant name is required",
+                      required: t("plantNameRequired"),
                     })}
                     className={`w-full border rounded p-2 ${
                       errors.plantName ? "border-red-500" : ""
@@ -113,27 +119,20 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block mb-1">
-                  Installer&apos;s Organization Code (optional)
-                </label>
+                <label className="block mb-1">{t("installerCode")}</label>
                 <input
                   type="text"
                   {...register("installerCode")}
                   className="w-full border rounded p-2"
                 />
-                <p className="text-gray-500 text-sm">
-                  If you don&apos;t know the code, you can leave this field
-                  empty.
-                </p>
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Address of the Plant*</label>
+                <label className="block mb-1">{t("address")}*</label>
                 <div className="flex items-center">
                   <input
                     type="text"
-                    required
                     {...register("address", {
-                      required: "Address is required",
+                      required: t("addressRequired"),
                     })}
                     className={`flex-grow border rounded p-2 ${
                       errors.address ? "border-red-500" : ""
@@ -153,23 +152,24 @@ const AddPlantForm = ({ onClose, isOpen }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">Classification*</label>
+                  <label className="block mb-1">{t("classification")}*</label>
                   <select
-                    required
                     {...register("classification", {
-                      required: "Classification is required",
+                      required: t("classificationRequired"),
                     })}
                     className={`w-full border rounded p-2 ${
                       errors.classification ? "border-red-500" : ""
                     }`}
                   >
-                    <option value="">Select classification</option>
-                    <option value="residential">Residential</option>
-                    <option value="ground-mounted">Ground-mounted</option>
+                    <option value="">{t("selectClassification")}</option>
+                    <option value="residential">{t("residential")}</option>
+                    <option value="ground-mounted">{t("groundMounted")}</option>
                     <option value="commercial-rooftop">
-                      Commercial Rooftop
+                      {t("commercialRooftop")}
                     </option>
-                    <option value="battery-storage">Battery Storage</option>
+                    <option value="battery-storage">
+                      {t("batteryStorage")}
+                    </option>
                   </select>
                   {errors.classification && (
                     <p className="text-red-500">
@@ -178,12 +178,11 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1">Capacity* (in kW)</label>
+                  <label className="block mb-1">{t("capacity")}*</label>
                   <input
                     type="number"
-                    required
                     {...register("capacity", {
-                      required: "Capacity is required",
+                      required: t("capacityRequired"),
                     })}
                     className={`w-full border rounded p-2 ${
                       errors.capacity ? "border-red-500" : ""
@@ -196,14 +195,11 @@ const AddPlantForm = ({ onClose, isOpen }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">
-                    Module* (amount of solar panels)
-                  </label>
+                  <label className="block mb-1">{t("module")}*</label>
                   <input
                     type="number"
-                    required
                     {...register("module", {
-                      required: "Module amount is required",
+                      required: t("moduleRequired"),
                     })}
                     className={`w-full border rounded p-2 ${
                       errors.module ? "border-red-500" : ""
@@ -214,14 +210,11 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1">
-                    Profit Ratio* (in USD/kW)
-                  </label>
+                  <label className="block mb-1">{t("profitRatio")}*</label>
                   <input
                     type="number"
-                    required
                     {...register("profitRatio", {
-                      required: "Profit ratio is required",
+                      required: t("profitRatioRequired"),
                     })}
                     className={`w-full border rounded p-2 ${
                       errors.profitRatio ? "border-red-500" : ""
@@ -233,7 +226,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Upload Photos</label>
+                <label className="block mb-1">{t("uploadPhotos")}</label>
                 <input
                   type="file"
                   className="w-full border rounded p-2"
@@ -242,41 +235,40 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   onChange={handleImageChange}
                 />
                 {imagePreviews.length > 0 && (
-                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="mt-2 flex gap-2 flex-wrap">
                     {imagePreviews.map((img, index) => (
-                      <div key={index} className="relative">
+                      <div
+                        key={index}
+                        className="relative flex flex-col justify-between items-center p-1"
+                      >
                         <Image
                           src={img.url}
                           alt={img.name}
-                          width={50}
-                          height={50}
+                          width={70}
+                          height={70}
                           className="object-cover rounded"
                         />
-                        <p className="text-xs text-center mt-1">{img.name}</p>
+                        <p className="text-xs text-center mt-1">
+                          {truncateName(img.name)}
+                        </p>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
-              <div className="mb-4">
-                <p className="text-gray-500">
-                  Tips: After adding meter, battery, generator, please restart
-                  the inverter to refresh plant view.
-                </p>
               </div>
               <div className="flex justify-end">
                 <button
                   type="submit"
                   className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded"
                 >
-                  Add Plant
+                  {t("submit")}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
                   className="ml-4 text-red-500"
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
               </div>
             </form>

@@ -12,6 +12,7 @@ import DiscoveryTab from "@/components/DiscoveryTab";
 import ProfileTab from "@/components/ProfileTab";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
+import { fetchUserData } from "@/services/api";
 
 const DashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
@@ -26,6 +27,22 @@ const DashboardPage = ({ params }) => {
       setIsLoading(false);
     }
   }, [user, userId, router]);
+
+  useEffect(() => {
+    const testAPI = async () => {
+      try {
+        const data = await fetchUserData(
+          "thomas.augot@hotmail.fr",
+          "mockPassword"
+        );
+        console.log("----------------------------API Response:", data);
+      } catch (error) {
+        console.error("---------------------API Error:", error);
+      }
+    };
+
+    testAPI();
+  }, []);
 
   const renderTabContent = () => {
     switch (tab) {

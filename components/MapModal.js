@@ -48,7 +48,7 @@ const MapModal = ({ isOpen, onClose, onLocationSelect }) => {
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-white rounded-lg shadow-xl w-[90vw] md:w-[80vw] max-w-4xl md:max-w-5xl relative z-10 overflow-y-auto h-[90vh] md:h-auto"
+            className="bg-white rounded-lg shadow-xl w-[90vw] md:w-[80vw] max-w-4xl md:max-w-5xl relative z-10 overflow-y-auto h-auto md:h-auto"
           >
             <div className="bg-gradient-to-br from-custom-yellow to-custom-dark-blue text-white p-4 flex items-center">
               <h2 className="text-lg font-bold">Select a Location</h2>

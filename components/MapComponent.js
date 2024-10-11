@@ -5,6 +5,7 @@ import {
   Marker,
   Autocomplete,
 } from "@react-google-maps/api";
+import axios from "axios";
 
 const mapContainerStyle = {
   height: "400px",
@@ -12,8 +13,8 @@ const mapContainerStyle = {
 };
 
 const center = {
-  lat: -3.745, // Default latitude
-  lng: -38.523, // Default longitude
+  lat: 27.9965,
+  lng: -15.4177,
 };
 
 const MapComponent = ({ onPlaceSelected }) => {
@@ -30,14 +31,43 @@ const MapComponent = ({ onPlaceSelected }) => {
       };
       setSelectedLocation(location);
       setAddress(place.formatted_address);
-      onPlaceSelected(location, place.formatted_address); // Pass selected location and address back to parent
+      onPlaceSelected(location, place.formatted_address);
     }
   };
 
-  // Reset the map state when the modal opens
+  const fetchAddressFromCoordinates = async (lat, lng) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+      );
+      if (response.data.results.length > 0) {
+        return response.data.results[0].formatted_address;
+      } else {
+        return "Address not found";
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      return "";
+    }
+  };
+
+  const handleMapClick = async (event) => {
+    const location = {
+      lat: event.latLng.lat(),
+      lng: event.latLng.lng(),
+    };
+    setSelectedLocation(location);
+    const fetchedAddress = await fetchAddressFromCoordinates(
+      location.lat,
+      location.lng
+    );
+    setAddress(fetchedAddress);
+    onPlaceSelected(location, fetchedAddress);
+  };
+
   useEffect(() => {
-    setSelectedLocation(center); // Reset to default center
-    setAddress(""); // Clear the address
+    setSelectedLocation(center);
+    setAddress("");
   }, []);
 
   return (
@@ -54,6 +84,7 @@ const MapComponent = ({ onPlaceSelected }) => {
             setSelectedLocation={setSelectedLocation}
             onPlaceSelected={onPlaceSelected}
             handlePlaceChanged={handlePlaceChanged}
+            handleMapClick={handleMapClick}
             autocompleteRef={autocompleteRef}
           />
         </LoadScript>
@@ -65,6 +96,7 @@ const MapComponent = ({ onPlaceSelected }) => {
           setSelectedLocation={setSelectedLocation}
           onPlaceSelected={onPlaceSelected}
           handlePlaceChanged={handlePlaceChanged}
+          handleMapClick={handleMapClick}
           autocompleteRef={autocompleteRef}
         />
       )}
@@ -79,6 +111,7 @@ const MapContent = ({
   setSelectedLocation,
   onPlaceSelected,
   handlePlaceChanged,
+  handleMapClick,
   autocompleteRef,
 }) => (
   <div className="p-4">
@@ -98,13 +131,7 @@ const MapContent = ({
       mapContainerStyle={mapContainerStyle}
       center={selectedLocation}
       zoom={10}
-      onClick={(event) => {
-        setSelectedLocation({
-          lat: event.latLng.lat(),
-          lng: event.latLng.lng(),
-        });
-        setAddress(""); // Clear address when clicked on map
-      }}
+      onClick={handleMapClick}
     >
       <Marker position={selectedLocation} />
     </GoogleMap>

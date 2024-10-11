@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import MapModal from "./MapModal";
+import Image from "next/image";
 
 const AddPlantForm = ({ onClose, isOpen }) => {
   const {
@@ -12,6 +13,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
     formState: { errors },
   } = useForm();
   const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]); // State for image previews
   const [isMapOpen, setIsMapOpen] = useState(false);
 
   useEffect(() => {
@@ -24,10 +26,17 @@ const AddPlantForm = ({ onClose, isOpen }) => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setImages((prevImages) => [...prevImages, ...files]);
+
+    // Generate image previews
+    const previews = files.map((file) => ({
+      name: file.name,
+      url: URL.createObjectURL(file),
+    }));
+    setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
   };
 
   const onMapLocationSelect = (location, address) => {
-    setValue("address", address); // Set the selected address in the form
+    setValue("address", address);
     setIsMapOpen(false);
   };
 
@@ -232,14 +241,20 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   accept="image/*"
                   onChange={handleImageChange}
                 />
-                {images.length > 0 && (
-                  <div className="mt-2">
-                    <p>Selected Images:</p>
-                    <ul>
-                      {images.map((img, index) => (
-                        <li key={index}>{img.name}</li>
-                      ))}
-                    </ul>
+                {imagePreviews.length > 0 && (
+                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {imagePreviews.map((img, index) => (
+                      <div key={index} className="relative">
+                        <Image
+                          src={img.url}
+                          alt={img.name}
+                          width={50}
+                          height={50}
+                          className="object-cover rounded"
+                        />
+                        <p className="text-xs text-center mt-1">{img.name}</p>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

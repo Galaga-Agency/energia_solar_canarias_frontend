@@ -1,6 +1,26 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://your-api-url.com";
+// Base URL for your API
+const API_BASE_URL =
+  "http://ec2-51-92-121-143.eu-south-2.compute.amazonaws.com/esc-backend";
+
+// Function to fetch user data from the API (added for testing purposes)
+export const fetchUserData = async (usuario, apiKey) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/usuarios`, {
+      headers: {
+        usuario,
+        apiKey,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    throw error;
+  }
+};
+
+// Existing API functions (kept intact)
 
 // Mock login API function
 export const loginUserAPI = async (email, password) => {
@@ -59,6 +79,7 @@ export const registerUserAPI = async (email, password, username) => {
   */
 };
 
+// Function for sending a password reset email (placeholder for further development)
 export const sendPasswordResetEmail = async (email) => {
-  // function logic here
+  // Add your logic for sending the password reset email
 };

@@ -1,8 +1,7 @@
 import axios from "axios";
 
 // Base URL for your API
-const API_BASE_URL =
-  "http://ec2-51-92-121-143.eu-south-2.compute.amazonaws.com/esc-backend";
+const API_BASE_URL = "https://app-energiasolarcanarias-backend.com";
 
 // Function to fetch user data from the API (added for testing purposes)
 export const fetchUserData = async (usuario, apiKey) => {

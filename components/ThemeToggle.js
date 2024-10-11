@@ -6,7 +6,7 @@ import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 
 const ThemeToggle = () => {
   const [theme, setTheme] = useLocalStorageState("theme", {
-    defaultValue: "dark",
+    defaultValue: "light",
   });
 
   useEffect(() => {

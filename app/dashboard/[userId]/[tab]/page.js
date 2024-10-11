@@ -1,9 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { selectUser } from "@/store/slices/userSlice";
 import Loading from "@/components/Loading";
 import PlantsTab from "@/components/PlantsTab";
 import WifiTab from "@/components/WifiTab";
@@ -14,12 +13,16 @@ import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import { fetchUserData } from "@/services/api";
 import LanguageSelector from "@/components/LanguageSelector";
+import ThemeToggle from "@/components/ThemeToggle";
+import useLocalStorageState from "use-local-storage-state";
+import { selectUser } from "@/store/slices/userSlice";
 
 const DashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
   const router = useRouter();
   const { userId, tab } = params;
   const [isLoading, setIsLoading] = useState(true);
+  const [theme] = useLocalStorageState("theme", { defaultValue: "light" });
 
   useEffect(() => {
     if (!user || user.id !== userId) {
@@ -67,10 +70,23 @@ const DashboardPage = ({ params }) => {
       {isLoading ? (
         <Loading />
       ) : user && user.id === userId ? (
-        <div className="h-screen w-screen flex flex-col bg-gray-900 relative overflow-hidden">
+        <div
+          className={`h-screen w-screen flex flex-col ${
+            theme === "dark"
+              ? "bg-gray-900"
+              : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
+          } relative overflow-hidden`}
+        >
           <TransitionEffect />
           <div className="flex-grow">
-            <LanguageSelector />
+            <div className="absolute top-4 right-4 z-50 flex flex-col items-end gap-2">
+              <div className="flex flex-col items-end">
+                <ThemeToggle />
+              </div>
+              <div className="flex flex-col items-end">
+                <LanguageSelector />
+              </div>
+            </div>
             {renderTabContent()}
           </div>
           <BottomNavbar userId={userId} />

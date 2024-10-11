@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import AddPlantForm from "./AddPlantForm";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const PlantsTab = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -15,20 +16,23 @@ const PlantsTab = () => {
   };
 
   return (
-    <div className="p-8">
-      <h2 className="text-4xl text-custom-yellow">Plants Overview</h2>
-      <p className="text-custom-light-gray mt-4">
+    <div className="p-8 relative h-full">
+      <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue">
+        Plants
+      </h2>
+      <p className="text-custom-dark-gray dark:text-custom-light-gray mt-4 max-w-[80vw] ">
         Here you can manage your plants and view detailed information about each
         one.
       </p>
-      <button
-        onClick={handleAddPlantClick}
-        className="mt-4 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded"
-      >
-        Add Plant
-      </button>
 
       <AddPlantForm onClose={closeForm} isOpen={isFormOpen} />
+
+      <button
+        onClick={handleAddPlantClick}
+        className="absolute bottom-20 right-4 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"
+      >
+        <PlusIcon className="w-6 h-6" />
+      </button>
     </div>
   );
 };

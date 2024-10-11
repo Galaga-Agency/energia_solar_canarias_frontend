@@ -52,7 +52,7 @@ const LanguageSelector = () => {
     <div className="fixed z-50">
       {/* Current Language Flag */}
       <div
-        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden shadow-dark-shadow dark:shadow-white-shadow hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow transition-all duration-300 ease-in-out"
+        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"
         onClick={() => setIsOpen(!isOpen)}
       >
         {!imageLoaded && (

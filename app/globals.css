@@ -48,3 +48,7 @@ input,
 span {
   @apply font-secondary;
 }
+
+.button-shadow {
+  @apply shadow-dark-shadow dark:shadow-white-shadow hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow;
+}

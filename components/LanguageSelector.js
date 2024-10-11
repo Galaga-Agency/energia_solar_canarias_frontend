@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
+import enFlag from "@/public/assets/icons/en.webp";
+import esFlag from "@/public/assets/icons/es.webp";
 
 const languages = [
-  { code: "en", flagPath: "/assets/icons/en.webp", alt: "English Flag" },
-  { code: "es", flagPath: "/assets/icons/es.webp", alt: "Spanish Flag" },
+  {
+    code: "en",
+    flagPath: enFlag,
+    alt: "English Flag",
+  },
+  {
+    code: "es",
+    flagPath: esFlag,
+    alt: "Spanish Flag",
+  },
 ];
 
 const LanguageSelector = () => {
@@ -19,7 +29,7 @@ const LanguageSelector = () => {
       // Wait for i18n to be initialized
       await i18n.initPromise;
       setIsI18nReady(true);
-      setActiveLanguage(i18n.language || "en");
+      setActiveLanguage(i18n.language || "es");
     };
 
     initializeI18n();
@@ -27,7 +37,7 @@ const LanguageSelector = () => {
 
   useEffect(() => {
     if (isI18nReady) {
-      setActiveLanguage(i18n.language || "en");
+      setActiveLanguage(i18n.language || "es");
     }
   }, [i18n.language, isI18nReady]);
 

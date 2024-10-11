@@ -105,7 +105,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
               </div>
               <div className="mb-4">
                 <label className="block mb-1">
-                  Installer's Organization Code (optional)
+                  Installer&apos;s Organization Code (optional)
                 </label>
                 <input
                   type="text"

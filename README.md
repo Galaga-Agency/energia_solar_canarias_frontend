@@ -75,10 +75,7 @@ Luego abre http://localhost:3000 en tu navegador para ver la aplicación en func
 
 ## Despliegue en AWS Amplify
 
-El proyecto está configurado para su despliegue en AWS Amplify. Si deseas acceder al panel de control de AWS Amplify, usa las siguientes credenciales:
-
-Correo electrónico: soporte@galagaagency.com <br/>
-Contraseña: Galagaagency2024\*
+El proyecto está configurado para su despliegue en AWS Amplify. Si deseas acceder al panel de control de AWS Amplify, pide los credenciales al equipo:
 
 Pasos para el despliegue:
 

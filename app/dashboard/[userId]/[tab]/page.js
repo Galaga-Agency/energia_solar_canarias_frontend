@@ -11,7 +11,7 @@ import DiscoveryTab from "@/components/DiscoveryTab";
 import ProfileTab from "@/components/ProfileTab";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
-import { fetchUserData } from "@/services/api";
+import { fetchUserData, fetchUsuarios } from "@/services/api";
 import LanguageSelector from "@/components/LanguageSelector";
 import ThemeToggle from "@/components/ThemeToggle";
 import useLocalStorageState from "use-local-storage-state";
@@ -23,6 +23,7 @@ const DashboardPage = ({ params }) => {
   const { userId, tab } = params;
   const [isLoading, setIsLoading] = useState(true);
   const [theme] = useLocalStorageState("theme", { defaultValue: "light" });
+  const [usuarios, setUsuarios] = useState([]);
 
   useEffect(() => {
     if (!user || user.id !== userId) {
@@ -33,19 +34,21 @@ const DashboardPage = ({ params }) => {
   }, [user, userId, router]);
 
   useEffect(() => {
-    const testAPI = async () => {
+    const fetchAndUpdateUsuarios = async () => {
       try {
-        const data = await fetchUserData(
-          "thomas.augot@hotmail.fr",
-          "mockPassword"
-        );
-        console.log("----------------------------API Response:", data);
+        const data = await fetchUserData();
+        setUsuarios(data);
       } catch (error) {
-        console.error("---------------------API Error:", error);
+        console.error("Error fetching usuarios:", error);
       }
     };
 
-    testAPI();
+    // Fetch the data immediately and then set up an interval to fetch every 10 seconds
+    fetchAndUpdateUsuarios();
+    const intervalId = setInterval(fetchAndUpdateUsuarios, 10000); // 10 seconds
+
+    // Clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, []);
 
   const renderTabContent = () => {
@@ -88,6 +91,17 @@ const DashboardPage = ({ params }) => {
               </div>
             </div>
             {renderTabContent()}
+
+            {/* Render list of usuarios */}
+            <div className="p-4">
+              {usuarios.length > 0 ? (
+                usuarios.map((usuario, index) => (
+                  <p key={index}>{usuario.name}</p>
+                ))
+              ) : (
+                <p>No users found.</p>
+              )}
+            </div>
           </div>
           <BottomNavbar userId={userId} />
         </div>

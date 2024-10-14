@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import i18n from "i18next";
+import { useRouter } from "next/router";
 import { initReactI18next } from "react-i18next";
 import enTranslation from "@/locales/en.json";
 import esTranslation from "@/locales/es.json";
@@ -43,6 +44,25 @@ const TranslationProvider = ({ children }) => {
       </div>
     );
   }
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = async (url) => {
+      if ("serviceWorker" in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        reg.active.postMessage({
+          type: "CACHE_URLS",
+          payload: [url],
+        });
+      }
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
 
   return <>{children}</>;
 };

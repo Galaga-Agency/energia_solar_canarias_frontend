@@ -59,7 +59,7 @@ const LanguageSelector = () => {
   }
 
   return (
-    <div className="fixed z-50">
+    <div className="fixed z-50 mt-8">
       {/* Current Language Flag */}
       <div
         className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"

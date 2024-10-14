@@ -1,26 +1,11 @@
 "use client";
-import { useEffect } from "react";
-import { fetchUserData } from "@/services/api";
+
 import InstallationGuide from "@/components/InstallationGuide";
 import LanguageSelector from "@/components/LanguageSelector";
 import LogoAnimation from "@/components/LogoAnimation";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
-  useEffect(() => {
-    console.log("useEffect is running");
-    const testAPI = async () => {
-      console.log("API call is being made");
-      try {
-        const data = await fetchUserData("anfego1", "Abfe04**");
-        console.log("API Response:", data);
-      } catch (error) {
-        console.error("API Error:", error);
-      }
-    };
-    testAPI();
-  }, []);
-
   return (
     <div className="h-screen w-screen bg-white dark:bg-custom-dark-blue overflow-hidden relative">
       <div className="fixed top-4 right-4 z-50 hidden md:block">

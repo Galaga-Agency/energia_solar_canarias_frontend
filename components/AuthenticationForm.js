@@ -6,13 +6,14 @@ import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
-  mockLogin,
   selectLoading,
   selectError,
+  mockLogin,
 } from "@/store/slices/userSlice";
 import CustomButton from "./CustomButton";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
+import { fetchUserMock } from "@/services/api";
 
 const AuthenticationForm = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -36,41 +37,25 @@ const AuthenticationForm = () => {
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
+    const { email, password } = data;
 
-    const mockUser = { id: "123", name: "Thomas Augot" };
-    dispatch(mockLogin(mockUser));
-    saveAuthData("mockAuthToken", mockUser);
-    setIsSubmitting(false);
-    setSubmissionResult("loginSuccess");
-    setShowResultFace(true);
-    router.push(`/dashboard/${mockUser.id}/plants`);
-
-    // Uncomment and adjust below for actual API integration in the future
-    /*
-    const { email, password, username } = data;
     try {
-      let result;
-      if (isFlipped) {
-        result = await dispatch(registerUserThunk({ email, password, username }));
-        if (result.meta.requestStatus === "fulfilled") {
-          setSubmissionResult("registrationSuccess");
-        } else {
-          setSubmissionResult("registrationError");
-        }
-      } else {
-        result = await dispatch(loginUserThunk({ email, password }));
-        if (result.meta.requestStatus === "fulfilled") {
-          setSubmissionResult("loginSuccess");
-          router.push(`/dashboard/${result.payload.id}/plants`); // Redirect to the dynamic dashboard
-        } else {
-          setSubmissionResult("loginError");
-        }
-      }
+      // Call the mock API to fetch the user
+      const user = await fetchUserMock(email, password);
+
+      dispatch(mockLogin(user));
+
+      saveAuthData("mockAuthToken", user);
+
+      setSubmissionResult("loginSuccess");
+      setShowResultFace(true);
+      router.push(`/dashboard/${user.id}/plants`);
     } catch (error) {
+      setSubmissionResult("loginError");
       console.error("Authentication failed:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-    setShowResultFace(true);
-    */
   };
 
   return (
@@ -113,7 +98,7 @@ const AuthenticationForm = () => {
                     <input
                       type="email"
                       placeholder={t("emailPlaceholder")}
-                      className={`w-full px-4 py-2 border rounded-md ${
+                      className={`w-full px-4 py-2 border rounded-md dark:text-black ${
                         errors.email ? "border-red-500" : "border-gray-300"
                       }`}
                       {...register("email", {
@@ -141,7 +126,7 @@ const AuthenticationForm = () => {
                     <input
                       type="password"
                       placeholder={t("passwordPlaceholder")}
-                      className={`w-full px-4 py-2 border rounded-md ${
+                      className={`w-full px-4 py-2 border rounded-md dark:text-black ${
                         errors.password ? "border-red-500" : "border-gray-300"
                       }`}
                       {...register("password", {

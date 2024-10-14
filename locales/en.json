@@ -57,5 +57,16 @@
   "profitRatioRequired": "Profit ratio is required",
   "selectLocation": "Select a Location",
   "searchLocationPlaceholder": "Search for a location",
-  "addressNotFound": "Address not found"
+  "addressNotFound": "Address not found",
+  "loadingPlants": "Loading plants...",
+  "location": "Location",
+  "powerOutput": "Power Output",
+  "todaysGeneration": "Today's Generation",
+  "totalIncome": "Total Income",
+  "noPlantsFound": "No plants found.",
+  "sortByName": "Sort by Name",
+  "sortByCreationDate": "Sort by Creation Date",
+  "sortByPowerOutput": "Sort by Power Output",
+  "previous": "Previous",
+  "next": "Next"
 }

@@ -78,7 +78,32 @@ export const registerUserAPI = async (email, password, username) => {
   */
 };
 
-// Function for sending a password reset email (placeholder for further development)
 export const sendPasswordResetEmail = async (email) => {
   // Add your logic for sending the password reset email
+};
+
+export const fetchPlantsMock = async () => {
+  const response = await fetch("/plants.json");
+  const data = await response.json();
+  console.log("my data ----------> ", data);
+  return data.plants;
+};
+
+export const fetchUserMock = async (email, password) => {
+  try {
+    const response = await fetch("/user.json");
+    if (!response.ok) {
+      throw new Error(`Error fetching user: ${response.statusText}`);
+    }
+    const user = await response.json();
+
+    if (user.email === email && user.password === password) {
+      return user;
+    } else {
+      throw new Error("Invalid email or password");
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    throw error;
+  }
 };

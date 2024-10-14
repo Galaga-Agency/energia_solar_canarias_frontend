@@ -78,9 +78,9 @@ const AddPlantForm = ({ onClose, isOpen }) => {
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-white rounded-lg shadow-xl w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto"
+            className="dark:bg-custom-dark-blue bg-gradient-to-b from-gray-200 to-custom-dark-gray  text-custom-dark-blue dark:text-custom-light-gray rounded-lg shadow-xl w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto"
           >
-            <div className="bg-gradient-to-br from-custom-yellow to-custom-dark-blue text-white p-4 flex items-center">
+            <div className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-yellow dark:text-custom-dark-blue p-4 flex items-center">
               <FiPlus className="text-2xl mr-2" />
               <h2 className="text-lg font-bold">{t("addPlant")}</h2>
             </div>
@@ -90,12 +90,14 @@ const AddPlantForm = ({ onClose, isOpen }) => {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">{t("email")}*</label>
+                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                    {t("email")}*
+                  </label>
                   <input
                     type="email"
                     {...register("email", { required: t("emailRequired") })}
-                    className={`w-full border rounded p-2 ${
-                      errors.email ? "border-red-500" : ""
+                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
+                      errors.email ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.email && (
@@ -103,14 +105,16 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1">{t("plantName")}*</label>
+                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                    {t("plantName")}*
+                  </label>
                   <input
                     type="text"
                     {...register("plantName", {
                       required: t("plantNameRequired"),
                     })}
-                    className={`w-full border rounded p-2 ${
-                      errors.plantName ? "border-red-500" : ""
+                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
+                      errors.plantName ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.plantName && (
@@ -119,28 +123,32 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block mb-1">{t("installerCode")}</label>
+                <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                  {t("installerCode")}
+                </label>
                 <input
                   type="text"
                   {...register("installerCode")}
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray"
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1">{t("address")}*</label>
+                <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                  {t("address")}*
+                </label>
                 <div className="flex items-center">
                   <input
                     type="text"
                     {...register("address", {
                       required: t("addressRequired"),
                     })}
-                    className={`flex-grow border rounded p-2 ${
-                      errors.address ? "border-red-500" : ""
+                    className={`flex-grow border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
+                      errors.address ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   <button
                     type="button"
-                    className="ml-2 p-2 bg-gray-200 rounded"
+                    className="ml-2 p-2 bg-gray-200 dark:bg-custom-dark-gray rounded text-gray-700 dark:text-custom-light-gray"
                     onClick={() => setIsMapOpen(true)}
                   >
                     📍
@@ -152,13 +160,17 @@ const AddPlantForm = ({ onClose, isOpen }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">{t("classification")}*</label>
+                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                    {t("classification")}*
+                  </label>
                   <select
                     {...register("classification", {
                       required: t("classificationRequired"),
                     })}
-                    className={`w-full border rounded p-2 ${
-                      errors.classification ? "border-red-500" : ""
+                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
+                      errors.classification
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                   >
                     <option value="">{t("selectClassification")}</option>
@@ -178,14 +190,16 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1">{t("capacity")}*</label>
+                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                    {t("capacity")}*
+                  </label>
                   <input
                     type="number"
                     {...register("capacity", {
                       required: t("capacityRequired"),
                     })}
-                    className={`w-full border rounded p-2 ${
-                      errors.capacity ? "border-red-500" : ""
+                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
+                      errors.capacity ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.capacity && (
@@ -195,14 +209,16 @@ const AddPlantForm = ({ onClose, isOpen }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">{t("module")}*</label>
+                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                    {t("module")}*
+                  </label>
                   <input
                     type="number"
                     {...register("module", {
                       required: t("moduleRequired"),
                     })}
-                    className={`w-full border rounded p-2 ${
-                      errors.module ? "border-red-500" : ""
+                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
+                      errors.module ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.module && (
@@ -210,14 +226,16 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1">{t("profitRatio")}*</label>
+                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                    {t("profitRatio")}*
+                  </label>
                   <input
                     type="number"
                     {...register("profitRatio", {
                       required: t("profitRatioRequired"),
                     })}
-                    className={`w-full border rounded p-2 ${
-                      errors.profitRatio ? "border-red-500" : ""
+                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
+                      errors.profitRatio ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.profitRatio && (
@@ -226,10 +244,12 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block mb-1">{t("uploadPhotos")}</label>
+                <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                  {t("uploadPhotos")}
+                </label>
                 <input
                   type="file"
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray"
                   multiple
                   accept="image/*"
                   onChange={handleImageChange}

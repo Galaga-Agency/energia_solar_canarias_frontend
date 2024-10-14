@@ -57,5 +57,16 @@
   "profitRatioRequired": "El ratio de beneficio es obligatorio",
   "selectLocation": "Seleccionar una Ubicación",
   "searchLocationPlaceholder": "Buscar una ubicación",
-  "addressNotFound": "Dirección no encontrada"
+  "addressNotFound": "Dirección no encontrada",
+  "loadingPlants": "Cargando plantas...",
+  "location": "Ubicación",
+  "powerOutput": "Salida de energía",
+  "todaysGeneration": "Generación de hoy",
+  "totalIncome": "Ingresos totales",
+  "noPlantsFound": "No se encontraron plantas.",
+  "sortByName": "Ordenar por Nombre",
+  "sortByCreationDate": "Ordenar por Fecha de Creación",
+  "sortByPowerOutput": "Ordenar por Salida de Energía",
+  "previous": "Anterior",
+  "next": "Siguiente"
 }

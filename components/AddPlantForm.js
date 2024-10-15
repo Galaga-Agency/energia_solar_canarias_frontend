@@ -49,7 +49,6 @@ const AddPlantForm = ({ onClose, isOpen }) => {
   };
 
   const handleFormSubmit = (data) => {
-    console.log("Form Data:", data);
     reset();
     setImages([]);
     setImagePreviews([]);

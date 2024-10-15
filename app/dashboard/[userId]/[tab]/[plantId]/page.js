@@ -8,7 +8,6 @@ import { useTranslation } from "next-i18next";
 const PlantDetailsPage = ({ params }) => {
   const { userId, tab, plantId } = params;
 
-  console.log("params: ", params);
   const plants = useSelector(selectPlants);
   const [plant, setPlant] = useState(null);
   const { t } = useTranslation();

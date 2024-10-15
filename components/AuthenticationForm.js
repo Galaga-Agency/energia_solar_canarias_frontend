@@ -50,7 +50,6 @@ const AuthenticationForm = () => {
       saveAuthData("mockAuthToken", user);
       setSubmissionResult("loginSuccess");
       setShowResultFace(true);
-      console.log("User ID after login:", user.id); // Should print "123"
       router.push(`/dashboard/${user.id}/plants`);
     } catch (error) {
       setSubmissionResult("loginError");

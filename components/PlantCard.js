@@ -8,8 +8,6 @@ const PlantCard = ({ plant, userId, tab }) => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  console.log("user id passed and tab --> ", userId, tab);
-
   const handleCardClick = () => {
     router.push(`/dashboard/${userId}/${tab}/${plant.id}`);
   };

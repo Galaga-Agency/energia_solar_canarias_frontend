@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// Base URL for your API
 const API_BASE_URL = "https://app-energiasolarcanarias-backend.com";
 
 // Function to fetch user data from the API (added for testing purposes)
@@ -78,16 +77,7 @@ export const registerUserAPI = async (email, password, username) => {
   */
 };
 
-export const sendPasswordResetEmail = async (email) => {
-  // Add your logic for sending the password reset email
-};
-
-export const fetchPlantsMock = async () => {
-  const response = await fetch("/plants.json");
-  const data = await response.json();
-  console.log("my data ----------> ", data);
-  return data.plants;
-};
+export const sendPasswordResetEmail = async (email) => {};
 
 export const fetchUserMock = async (email, password) => {
   try {
@@ -104,6 +94,23 @@ export const fetchUserMock = async (email, password) => {
     }
   } catch (error) {
     console.error("Error fetching user data:", error);
+    throw error;
+  }
+};
+
+export const fetchPlantsMock = async (userId) => {
+  try {
+    const response = await fetch("/plants.json");
+    if (!response.ok) {
+      throw new Error(`Error fetching plants: ${response.statusText}`);
+    }
+    const data = await response.json();
+    const plants = data.plants.filter((plant) => plant.userId === userId);
+
+    console.log("Filtered Plants:", plants);
+    return plants;
+  } catch (error) {
+    console.error("Error fetching plants data:", error);
     throw error;
   }
 };

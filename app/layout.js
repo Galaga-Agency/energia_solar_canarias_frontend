@@ -1,3 +1,4 @@
+import React from "react";
 import "./globals.css";
 import TranslationProvider from "@/components/TranslationProvider";
 import StoreProvider from "@/components/StoreProvider";

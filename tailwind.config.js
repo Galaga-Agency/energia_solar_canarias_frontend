@@ -38,6 +38,7 @@ module.exports = {
         "hover-white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 32px",
         "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },
+      backdropBlur: ["responsive"],
       keyframes: {
         grid: {
           "0%": {

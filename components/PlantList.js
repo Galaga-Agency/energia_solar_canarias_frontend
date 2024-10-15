@@ -1,43 +1,36 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { fetchPlantsMock } from "@/services/api";
-import { BsLightningFill, BsBuilding, BsCashCoin } from "react-icons/bs";
-import { RiPlantFill } from "react-icons/ri";
+import { useSelector } from "react-redux";
+import {
+  selectPlants,
+  selectLoading,
+  selectError,
+} from "@/store/slices/plantsSlice";
 import FilterInput from "@/components/FilterInput";
 import SortMenu from "@/components/SortMenu";
 import Pagination from "@/components/Pagination";
 import useFilter from "@/hooks/useFilter";
 import useSort from "@/hooks/useSort";
 import { useTranslation } from "next-i18next";
+import PlantCard from "@/components/PlantCard";
+import PlantsMapModal from "@/components/PlantsMapModal";
+import { FaMapMarkedAlt } from "react-icons/fa";
+import useGeocode from "@/hooks/useGeocode";
+import { selectUser } from "@/store/slices/userSlice";
 
-const PlantList = () => {
+const PlantList = ({ onClose, isOpen, openMap, userId, tab }) => {
   const { t } = useTranslation();
-  const [plants, setPlants] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const plants = useSelector(selectPlants);
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const plantsPerPage = 6; // Show a maximum of 6 plants per page
+  const plantsPerPage = 6;
 
   const { filteredItems: filteredPlants, filterItems } = useFilter(
     plants,
     "name"
   );
   const { sortedItems: sortedPlants, sortItems } = useSort(filteredPlants);
-
-  useEffect(() => {
-    const fetchAndUpdatePlants = async () => {
-      try {
-        const data = await fetchPlantsMock();
-        setPlants(data);
-      } catch (error) {
-        console.error("Error fetching plants:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAndUpdatePlants();
-  }, []);
 
   const totalPages = Math.ceil(sortedPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
@@ -54,61 +47,54 @@ const PlantList = () => {
     );
   }
 
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
+
   return (
-    <div className="p-4 space-y-6">
+    <div className="py-10 lg:py-4 space-y-6">
       <FilterInput onFilterChange={filterItems} />
-      <SortMenu onSortChange={sortItems} />
+      <div className="flex gap-4 justify-start">
+        <SortMenu onSortChange={sortItems} />
+        <button
+          onClick={openMap}
+          className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex-shrink-0 button-shadow"
+        >
+          <FaMapMarkedAlt className="text-2xl" />
+        </button>
+      </div>
+
       {paginatedPlants.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {paginatedPlants.map((plant) => (
-            <div
-              key={plant.id}
-              className="bg-white dark:bg-custom-dark-blue p-6 rounded-lg shadow-lg transition duration-500 hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow"
-            >
-              <h3 className="text-2xl font-primary font-bold text-custom-dark-blue dark:text-custom-yellow mb-4">
-                <RiPlantFill className="inline mr-2 text-custom-yellow" />
-                {plant.name}
-              </h3>
-              <div className="space-y-2">
-                <p className="flex items-center text-lg text-gray-700 dark:text-custom-light-gray truncate max-w-lg">
-                  <BsBuilding className="inline mr-2 text-custom-yellow" />
-                  <span className="font-secondary truncate block w-full max-w-xs">
-                    {t("location")}: {plant.location}
-                  </span>
-                </p>
-                <p className="text-lg text-gray-700 dark:text-custom-light-gray">
-                  <BsLightningFill className="inline mr-2 text-custom-yellow" />
-                  <span className="font-secondary">
-                    {t("powerOutput")}: {plant.currentPowerOutputKW} kW
-                  </span>
-                </p>
-                <p className="text-lg text-gray-700 dark:text-custom-light-gray">
-                  <BsLightningFill className="inline mr-2 text-custom-yellow" />
-                  <span className="font-secondary">
-                    {t("todaysGeneration")}: {plant.dailyGenerationKWh} kWh
-                  </span>
-                </p>
-                <p className="text-lg text-gray-700 dark:text-custom-light-gray">
-                  <BsCashCoin className="inline mr-2 text-custom-yellow" />
-                  <span className="font-secondary">
-                    {t("totalIncome")}: {plant.totalIncomeEUR} EUR
-                  </span>
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {paginatedPlants.map((plant) => (
+              <PlantCard
+                key={plant.id}
+                plant={plant}
+                userId={userId}
+                tab={tab}
+              />
+            ))}
+          </div>
+
+          <PlantsMapModal
+            isOpen={isOpen}
+            onClose={onClose}
+            plants={sortedPlants}
+          />
+
+          {sortedPlants.length > plantsPerPage && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
+        </>
       ) : (
         <p className="text-center text-lg text-custom-dark-gray">
           {t("noPlantsFound")}
         </p>
-      )}
-      {sortedPlants.length > plantsPerPage && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
       )}
     </div>
   );

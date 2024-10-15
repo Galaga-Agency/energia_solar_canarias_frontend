@@ -6,11 +6,11 @@ const SortMenu = ({ onSortChange }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex justify-end mb-6">
-      <div className="relative inline-block">
+    <div className="flex w-auto">
+      <div className="relative w-full md:w-auto">
         <select
           onChange={(e) => onSortChange(e.target.value)}
-          className="appearance-none bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 pr-8 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
+          className="appearance-none w-full md:w-auto bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 pr-8 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
         >
           <option value="name">
             <BsSortAlphaDown className="inline mr-2" />

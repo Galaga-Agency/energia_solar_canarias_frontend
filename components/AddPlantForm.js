@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus } from "react-icons/fi";
 import { useForm } from "react-hook-form";
-import MapModal from "./MapModal";
+import SelectAddressOnMap from "./SelectAddressOnMap";
 import Image from "next/image";
+import { IoLocationSharp } from "react-icons/io5";
+
 import { useTranslation } from "next-i18next";
 
 const AddPlantForm = ({ onClose, isOpen }) => {
@@ -62,7 +64,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 grid place-items-center overflow-hidden rounded-lg"
+          className="fixed inset-0 -mt-12 z-50 grid place-items-center overflow-hidden rounded-lg"
         >
           <motion.div
             initial={{ opacity: 0 }}
@@ -78,9 +80,9 @@ const AddPlantForm = ({ onClose, isOpen }) => {
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="dark:bg-custom-dark-blue bg-gradient-to-b from-gray-200 to-custom-dark-gray  text-custom-dark-blue dark:text-custom-light-gray rounded-lg shadow-xl w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto"
+            className="bg-custom-light-gray dark:bg-custom-dark-blue  text-custom-dark-blue dark:text-custom-light-gray rounded-lg shadow-dark-shadow w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto"
           >
-            <div className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-yellow dark:text-custom-dark-blue p-4 flex items-center">
+            <div className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-yellow dark:text-custom-dark-blue p-4 flex items-center shadow-dark-shadow">
               <FiPlus className="text-2xl mr-2" />
               <h2 className="text-lg font-bold">{t("addPlant")}</h2>
             </div>
@@ -148,10 +150,10 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   />
                   <button
                     type="button"
-                    className="ml-2 p-2 bg-gray-200 dark:bg-custom-dark-gray rounded text-gray-700 dark:text-custom-light-gray"
+                    className="ml-2 p-2 bg-gray-200 dark:bg-custom-dark-gray rounded text-gray-700 dark:text-custom-light-gray button-shadow"
                     onClick={() => setIsMapOpen(true)}
                   >
-                    📍
+                    <IoLocationSharp className="text-2xl text-custom-dark-blue" />
                   </button>
                 </div>
                 {errors.address && (
@@ -279,7 +281,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded"
+                  className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg button-shadow"
                 >
                   {t("submit")}
                 </button>
@@ -293,7 +295,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
               </div>
             </form>
           </motion.div>
-          <MapModal
+          <SelectAddressOnMap
             isOpen={isMapOpen}
             onClose={() => setIsMapOpen(false)}
             onLocationSelect={onMapLocationSelect}

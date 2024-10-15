@@ -7,7 +7,7 @@ import logo from "@/public/assets/img/logo.webp";
 import TransitionEffect from "./TransitionEffect";
 import AuthenticationForm from "./AuthenticationForm";
 import useDeviceType from "@/hooks/useDeviceType";
-import RetroGrid from "./magicui/retro-grid";
+import RetroGrid from "./RetroGrid";
 
 const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);

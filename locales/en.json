@@ -68,5 +68,14 @@
   "sortByCreationDate": "Sort by Creation Date",
   "sortByPowerOutput": "Sort by Power Output",
   "previous": "Previous",
-  "next": "Next"
+  "next": "Next",
+  "plants": "Plants",
+  "wifi": "Wifi",
+  "message": "Message",
+  "discovery": "Discovery",
+  "profile": "Profile",
+  "showMap": "Show on Map",
+  "closeMap": "Close Map",
+  "todayGeneration": "Today's Generation",
+  "viewDetails": "View Details"
 }

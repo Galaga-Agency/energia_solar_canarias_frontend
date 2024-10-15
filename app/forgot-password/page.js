@@ -8,7 +8,7 @@ import CustomButton from "@/components/CustomButton";
 import { sendPasswordResetEmail } from "@/services/api";
 import TransitionEffect from "@/components/TransitionEffect";
 import { motion } from "framer-motion";
-import RetroGrid from "@/components/magicui/retro-grid";
+import RetroGrid from "@/components/RetroGrid";
 import LanguageSelector from "@/components/LanguageSelector";
 import { BiArrowBack } from "react-icons/bi";
 

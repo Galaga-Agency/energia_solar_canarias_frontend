@@ -1,31 +1,47 @@
-"use client";
-
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faLeaf,
   faWifi,
   faEnvelope,
   faCompass,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
-
-const icons = [
-  { icon: faLeaf, label: "Plants", path: "/dashboard/[userId]/plants" },
-  { icon: faWifi, label: "Wifi", path: "/dashboard/[userId]/wifi" },
-  { icon: faEnvelope, label: "Message", path: "/dashboard/[userId]/message" },
-  {
-    icon: faCompass,
-    label: "Discovery",
-    path: "/dashboard/[userId]/discovery",
-  },
-  { icon: faUser, label: "Profile", path: "/dashboard/[userId]/profile" },
-];
+import { PiSolarPanelFill } from "react-icons/pi";
+import { useTranslation } from "next-i18next";
 
 const BottomNavbar = ({ userId }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const currentPath = usePathname();
+
+  const icons = [
+    {
+      icon: <PiSolarPanelFill className="text-2xl" />,
+      label: t("plants"),
+      path: "/dashboard/[userId]/plants",
+    },
+    {
+      icon: <FontAwesomeIcon icon={faWifi} className="text-2xl" />,
+      label: t("wifi"),
+      path: "/dashboard/[userId]/wifi",
+    },
+    {
+      icon: <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />,
+      label: t("message"),
+      path: "/dashboard/[userId]/message",
+    },
+    {
+      icon: <FontAwesomeIcon icon={faCompass} className="text-2xl" />,
+      label: t("discovery"),
+      path: "/dashboard/[userId]/discovery",
+    },
+    {
+      icon: <FontAwesomeIcon icon={faUser} className="text-2xl" />,
+      label: t("profile"),
+      path: "/dashboard/[userId]/profile",
+    },
+  ];
 
   const handleNavigation = (path) => {
     const formattedPath = path.replace("[userId]", userId);
@@ -46,7 +62,7 @@ const BottomNavbar = ({ userId }) => {
               isActive ? "text-custom-yellow" : "text-custom-light-gray"
             } hover:rotate-6 hover:text-custom-yellow`}
           >
-            <FontAwesomeIcon icon={item.icon} className="text-2xl" />
+            {item.icon}
             <span className="mt-1 text-sm">{item.label}</span>
           </div>
         );

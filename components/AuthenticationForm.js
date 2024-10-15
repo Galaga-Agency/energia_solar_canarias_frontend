@@ -14,6 +14,7 @@ import CustomButton from "./CustomButton";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
 import { fetchUserMock } from "@/services/api";
+import { fetchPlants } from "@/store/slices/plantsSlice";
 
 const AuthenticationForm = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -40,15 +41,16 @@ const AuthenticationForm = () => {
     const { email, password } = data;
 
     try {
-      // Call the mock API to fetch the user
       const user = await fetchUserMock(email, password);
-
       dispatch(mockLogin(user));
 
-      saveAuthData("mockAuthToken", user);
+      // Dispatch fetchPlants with user.id
+      dispatch(fetchPlants(user.id));
 
+      saveAuthData("mockAuthToken", user);
       setSubmissionResult("loginSuccess");
       setShowResultFace(true);
+      console.log("User ID after login:", user.id); // Should print "123"
       router.push(`/dashboard/${user.id}/plants`);
     } catch (error) {
       setSubmissionResult("loginError");
@@ -76,7 +78,6 @@ const AuthenticationForm = () => {
             transition: "transform 0.8s ease-in-out",
           }}
         >
-          {/* Front (Login Form) */}
           <motion.div
             className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 z-40 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
@@ -118,7 +119,6 @@ const AuthenticationForm = () => {
                       )}
                     </div>
                   </div>
-
                   <div>
                     <label className="block text-gray-700 dark:text-gray-300 mb-1">
                       {t("password")}
@@ -145,7 +145,6 @@ const AuthenticationForm = () => {
                       )}
                     </div>
                   </div>
-
                   <div className="text-center">
                     <button
                       type="button"
@@ -155,7 +154,6 @@ const AuthenticationForm = () => {
                       {t("forgotPassword")}
                     </button>
                   </div>
-
                   <CustomButton
                     type="submit"
                     disabled={loading || isSubmitting}
@@ -164,13 +162,11 @@ const AuthenticationForm = () => {
                     {t("signIn")}
                   </CustomButton>
                 </form>
-
                 <div className="min-h-[16px] mt-2">
                   {error && (
                     <div className="text-center text-red-500">{error}</div>
                   )}
                 </div>
-
                 <div className="mt-2 text-center">
                   <p className="text-gray-800 dark:text-gray-200 text-sm">
                     {t("noAccount")}{" "}
@@ -187,9 +183,8 @@ const AuthenticationForm = () => {
             )}
           </motion.div>
 
-          {/* Back (Registration Form) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray  rounded-lg flex flex-col justify-center space-y-4 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
+            className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
@@ -307,7 +302,6 @@ const AuthenticationForm = () => {
             )}
           </motion.div>
 
-          {/* Third Face (Result Message) */}
           <motion.div
             className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 dark:from-gray-800 dark:to-gray-900"
             style={{

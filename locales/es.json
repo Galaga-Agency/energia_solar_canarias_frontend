@@ -68,5 +68,14 @@
   "sortByCreationDate": "Ordenar por Fecha de Creación",
   "sortByPowerOutput": "Ordenar por Salida de Energía",
   "previous": "Anterior",
-  "next": "Siguiente"
+  "next": "Siguiente",
+  "plants": "Plantas",
+  "wifi": "Wifi",
+  "message": "Mensaje",
+  "discovery": "Descubre",
+  "profile": "Perfil",
+  "showMap": "Mostrar en el Mapa",
+  "closeMap": "Cerrar Mapa",
+  "todayGeneration": "Generación de hoy",
+  "viewDetails": "Ver detalles"
 }

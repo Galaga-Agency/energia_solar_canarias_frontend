@@ -18,7 +18,6 @@ import { selectUser } from "@/store/slices/userSlice";
 import PlantCard from "@/components/PlantCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import GoogleMapsLoader from "./GoogleMapsLoader";
 import { useTranslation } from "next-i18next";
 
 const PlantsTab = () => {

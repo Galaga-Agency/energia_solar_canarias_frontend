@@ -1,15 +1,17 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
-import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api"; // Removed LoadScript
+import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
+import useGoogleMapsLoader from "../hooks/useGoogleMapsLoader"; // Adjust the import path accordingly
 
 const mapContainerStyle = {
   height: "400px",
   width: "100%",
 };
 
-// Default center to Telde, Spain
 const defaultCenter = {
   lat: 27.9945,
   lng: -15.4162,
@@ -17,6 +19,7 @@ const defaultCenter = {
 
 const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
   const { t } = useTranslation();
+  const { isLoaded, loadError } = useGoogleMapsLoader();
   const [selectedLocation, setSelectedLocation] = useState(defaultCenter);
   const [address, setAddress] = useState("");
   const autocompleteRef = useRef(null);
@@ -65,12 +68,10 @@ const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
             setSelectedLocation(location);
           },
           () => {
-            // User denied permission, set to default center (Telde)
             setSelectedLocation(defaultCenter);
           }
         );
       } else {
-        // Geolocation is not supported, set to default center (Telde)
         setSelectedLocation(defaultCenter);
       }
     };
@@ -83,9 +84,11 @@ const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
     };
   }, [isOpen]);
 
+  if (loadError) return <div>Error loading Google Maps</div>;
+
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen && isLoaded && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -96,7 +99,7 @@ const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/30 backdrop-blur-md"
             onClick={onClose}
           />
           <motion.div

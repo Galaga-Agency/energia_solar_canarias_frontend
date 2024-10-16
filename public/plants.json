@@ -21,6 +21,7 @@
         "plantedTrees": 81,
         "coalSavingsTons": 0.6
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -59,6 +60,7 @@
         "plantedTrees": 100,
         "coalSavingsTons": 0.7
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -97,6 +99,7 @@
         "plantedTrees": 70,
         "coalSavingsTons": 0.5
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -135,6 +138,7 @@
         "plantedTrees": 150,
         "coalSavingsTons": 1.0
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -173,6 +177,7 @@
         "plantedTrees": 95,
         "coalSavingsTons": 0.65
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -211,6 +216,7 @@
         "plantedTrees": 110,
         "coalSavingsTons": 0.7
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -249,6 +255,7 @@
         "plantedTrees": 85,
         "coalSavingsTons": 0.65
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -287,6 +294,7 @@
         "plantedTrees": 130,
         "coalSavingsTons": 0.85
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -325,6 +333,7 @@
         "plantedTrees": 130,
         "coalSavingsTons": 0.85
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -363,6 +372,7 @@
         "plantedTrees": 85,
         "coalSavingsTons": 0.65
       },
+      "images": [],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },

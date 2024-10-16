@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { GoogleMap, Marker } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
 import PlantDetailsModal from "./PlantDetailsModal";
 import { useTranslation } from "next-i18next";
 import useGeocode from "@/hooks/useGeocode";
+import useGoogleMapsLoader from "@/hooks/useGoogleMapsLoader"; // Adjust the import path accordingly
 
 const mapContainerStyle = {
   height: "400px",
@@ -15,14 +16,10 @@ const mapContainerStyle = {
 const PlantsMapModal = ({ isOpen, onClose, plants }) => {
   const { t } = useTranslation();
   const { geocodeAddress, error: geocodeError } = useGeocode();
+  const { isLoaded, loadError } = useGoogleMapsLoader();
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [plantCoordinates, setPlantCoordinates] = useState([]);
   const mapRef = useRef(null); // Ref for the map instance
-
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  });
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -30,7 +27,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
         const location = await geocodeAddress(plant.location);
         return {
           id: plant.id,
-          name: plant.name, // Include plant name for modal
+          name: plant.name,
           location: plant.location,
           currentPowerOutputKW: plant.currentPowerOutputKW,
           dailyGenerationKWh: plant.dailyGenerationKWh,
@@ -84,6 +81,14 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
         <div className="text-lg text-custom-dark-gray">
           Loading Google Maps...
         </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="p-8 md:p-10 h-full flex items-center justify-center">
+        <div className="text-lg text-red-500">Error loading Google Maps</div>
       </div>
     );
   }

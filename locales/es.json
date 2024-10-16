@@ -77,5 +77,18 @@
   "showMap": "Mostrar en el Mapa",
   "closeMap": "Cerrar Mapa",
   "todayGeneration": "Generación de hoy",
-  "viewDetails": "Ver detalles"
+  "viewDetails": "Ver detalles",
+  "loadingPlantDetails": "Cargando detalles de la planta...",
+  "goBack": "Regresar",
+  "plantDetails": "Detalles de la Planta",
+  "currentPowerOutput": "Salida de Energía Actual",
+  "environmentalImpact": "Impacto Ambiental",
+  "co2Reduction": "Reducción de CO2",
+  "plantedTrees": "Árboles Plantados",
+  "coalSavings": "Ahorros de Carbón",
+  "energyStatistics": "Estadísticas Energéticas",
+  "monthlyGeneration": "Generación Mensual",
+  "totalGenerated": "Total Generado",
+  "powerKW": "Potencia (kW)",
+  "powerTimeSeries": "Serie Temporal de Potencia"
 }

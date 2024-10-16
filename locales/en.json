@@ -77,5 +77,18 @@
   "showMap": "Show on Map",
   "closeMap": "Close Map",
   "todayGeneration": "Today's Generation",
-  "viewDetails": "View Details"
+  "viewDetails": "View Details",
+  "loadingPlantDetails": "Loading plant details...",
+  "goBack": "Go Back",
+  "plantDetails": "Plant Details",
+  "currentPowerOutput": "Current Power Output",
+  "environmentalImpact": "Environmental Impact",
+  "co2Reduction": "CO2 Reduction",
+  "plantedTrees": "Planted Trees",
+  "coalSavings": "Coal Savings",
+  "energyStatistics": "Energy Statistics",
+  "monthlyGeneration": "Monthly Generation",
+  "totalGenerated": "Total Generated",
+  "powerKW": "Power (KW)",
+  "powerTimeSeries": "Power Time Series"
 }

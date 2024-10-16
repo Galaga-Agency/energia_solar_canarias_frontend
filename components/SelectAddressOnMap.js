@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
+import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api"; // Removed LoadScript
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
-import { IoMdClose } from "react-icons/io";
 
 const mapContainerStyle = {
   height: "400px",
@@ -97,7 +96,7 @@ const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/30 backdrop-blur-md"
+            className="fixed inset-0 bg-black/50"
             onClick={onClose}
           />
           <motion.div

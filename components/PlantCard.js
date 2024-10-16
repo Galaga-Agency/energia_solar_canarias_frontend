@@ -9,7 +9,7 @@ const PlantCard = ({ plant, userId, tab }) => {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/dashboard/${userId}/${tab}/${plant.id}`);
+    router.push(`/dashboard/${userId}/plants/${plant.id}`);
   };
 
   return (

@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+"use client";
+
+import React, { useEffect, useState, useRef } from "react";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
 import PlantDetailsModal from "./PlantDetailsModal";
 import { useTranslation } from "next-i18next";
+import useGeocode from "@/hooks/useGeocode";
 
 const mapContainerStyle = {
   height: "400px",
@@ -11,8 +14,54 @@ const mapContainerStyle = {
 
 const PlantsMapModal = ({ isOpen, onClose, plants }) => {
   const { t } = useTranslation();
+  const { geocodeAddress, error: geocodeError } = useGeocode();
   const [selectedPlant, setSelectedPlant] = useState(null);
-  const [map, setMap] = useState(null);
+  const [plantCoordinates, setPlantCoordinates] = useState([]);
+  const mapRef = useRef(null); // Ref for the map instance
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  });
+
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      const coordsPromises = plants.map(async (plant) => {
+        const location = await geocodeAddress(plant.location);
+        return {
+          id: plant.id,
+          name: plant.name, // Include plant name for modal
+          location: plant.location,
+          currentPowerOutputKW: plant.currentPowerOutputKW,
+          dailyGenerationKWh: plant.dailyGenerationKWh,
+          totalIncomeEUR: plant.totalIncomeEUR,
+          coordinates: location,
+        };
+      });
+
+      const coordinates = await Promise.all(coordsPromises);
+      setPlantCoordinates(coordinates.filter((coord) => coord.coordinates));
+    };
+
+    if (isOpen && plants.length > 0) {
+      fetchCoordinates();
+    }
+  }, [isOpen, plants]);
+
+  useEffect(() => {
+    if (mapRef.current && plantCoordinates.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      plantCoordinates.forEach((plant) => {
+        if (plant.coordinates) {
+          bounds.extend({
+            lat: plant.coordinates.lat,
+            lng: plant.coordinates.lng,
+          });
+        }
+      });
+      mapRef.current.fitBounds(bounds); // Fit bounds after coordinates change
+    }
+  }, [plantCoordinates]);
 
   const handleMarkerClick = (plant) => {
     setSelectedPlant(plant);
@@ -26,20 +75,26 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
   }, [isOpen]);
 
   const onLoad = (mapInstance) => {
-    setMap(mapInstance);
-    const bounds = new window.google.maps.LatLngBounds();
-
-    plants.forEach((plant) => {
-      if (plant.coordinates) {
-        bounds.extend({
-          lat: plant.coordinates.lat,
-          lng: plant.coordinates.lng,
-        });
-      }
-    });
-
-    mapInstance.fitBounds(bounds);
+    mapRef.current = mapInstance; // Store the map instance
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="p-8 md:p-10 h-full flex items-center justify-center">
+        <div className="text-lg text-custom-dark-gray">
+          Loading Google Maps...
+        </div>
+      </div>
+    );
+  }
+
+  if (geocodeError) {
+    return (
+      <div className="p-8 md:p-10 h-full flex items-center justify-center">
+        <div className="text-lg text-red-500">{geocodeError}</div>
+      </div>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -54,7 +109,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/30"
+            className="fixed inset-0 bg-black/50"
             onClick={onClose}
           />
           <motion.div
@@ -62,14 +117,14 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-custom-light-gray dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray rounded-lg w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-auto p-4 pb-0"
+            className="bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray rounded-lg w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-auto p-4 pb-0"
           >
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               onLoad={onLoad}
               zoom={10}
             >
-              {plants.map((plant) => (
+              {plantCoordinates.map((plant) => (
                 <Marker
                   key={plant.id}
                   position={{

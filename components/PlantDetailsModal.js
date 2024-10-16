@@ -1,9 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
 import { useTranslation } from "next-i18next";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/store/slices/userSlice";
+import Link from "next/link"; // Import Link from Next.js
 
 const PlantDetailsModal = ({ selectedPlant, onClose }) => {
   const { t } = useTranslation();
+  const userId = useSelector(selectUser).id;
 
   return (
     <AnimatePresence>
@@ -54,14 +58,10 @@ const PlantDetailsModal = ({ selectedPlant, onClose }) => {
                 <strong>{t("totalIncome")}: </strong>
                 {selectedPlant.totalIncomeEUR || "N/A"} EUR
               </p>
-              <p className="mt-2 underline text-custom-yellow dark:text-custom-light-gray">
-                <a
-                  href={`http://localhost:3000/dashboard/123/plants/${selectedPlant.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              <p className="mt-2 underline text-custom-yellow">
+                <Link href={`/dashboard/${userId}/plants/${selectedPlant.id}`}>
                   {t("viewDetails")}
-                </a>
+                </Link>
               </p>
             </div>
           </motion.div>

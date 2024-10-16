@@ -15,12 +15,14 @@ const useGeocode = () => {
       );
       setLoading(false);
       if (response.data.results.length > 0) {
-        return response.data.results[0].geometry.location;
+        const location = response.data.results[0].geometry.location;
+        return location;
       } else {
         setError("Address not found");
         return null;
       }
     } catch (err) {
+      console.error("Geocoding error:", err);
       setError("Error geocoding address");
       setLoading(false);
       return null;

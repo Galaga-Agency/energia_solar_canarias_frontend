@@ -78,10 +78,6 @@ const PlantsTab = () => {
     startIndex + plantsPerPage
   );
 
-  console.log("Plants fetched from Redux:", plants);
-  console.log("Loading state:", isLoading);
-  console.log("Error in fetching plants:", error);
-
   if (isLoading) {
     return (
       <div className="p-8 md:p-10 h-full flex items-center justify-center">
@@ -92,7 +88,7 @@ const PlantsTab = () => {
 
   return (
     <div className="p-8 md:p-10 h-full pb-24">
-      <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue">
+      <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-10 md:mb-2">
         Plants
       </h2>
 

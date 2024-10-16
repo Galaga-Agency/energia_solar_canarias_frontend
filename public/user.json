@@ -1,6 +1,16 @@
 {
-  "id": "123",
-  "name": "Thomas Augot",
-  "email": "thomas.augot@example.com",
-  "password": "password123"
+  "users": [
+    {
+      "id": "123",
+      "name": "Thomas Augot",
+      "email": "thomas.augot@example.com",
+      "password": "password123"
+    },
+    {
+      "id": "124",
+      "name": "Andrés Felipe",
+      "email": "andres.felipe@example.com",
+      "password": "password123"
+    }
+  ]
 }

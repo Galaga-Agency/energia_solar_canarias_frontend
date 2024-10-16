@@ -13,11 +13,11 @@ const useSort = (items) => {
       case "alphabetical":
         sorted.sort((a, b) => a.name.localeCompare(b.name));
         break;
+      case "creationDate":
+        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
       case "powerOutput":
         sorted.sort((a, b) => b.currentPowerOutputKW - a.currentPowerOutputKW);
-        break;
-      case "income":
-        sorted.sort((a, b) => b.totalIncomeEUR - a.totalIncomeEUR);
         break;
       default:
         sorted = items;

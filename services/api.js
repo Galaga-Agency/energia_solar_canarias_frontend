@@ -85,9 +85,12 @@ export const fetchUserMock = async (email, password) => {
     if (!response.ok) {
       throw new Error(`Error fetching user: ${response.statusText}`);
     }
-    const user = await response.json();
+    const data = await response.json();
+    const user = data.users.find(
+      (user) => user.email === email && user.password === password
+    );
 
-    if (user.email === email && user.password === password) {
+    if (user) {
       return user;
     } else {
       throw new Error("Invalid email or password");

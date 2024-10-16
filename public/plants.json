@@ -303,6 +303,82 @@
         { "time": "12:00", "powerKW": 3.0 },
         { "time": "13:00", "powerKW": 2.9 }
       ]
+    },
+    {
+      "id": 9,
+      "userId": "124",
+      "name": "La Palma Eco Power Station",
+      "location": "Calle La Encarnación, 12, 38700 Santa Cruz de La Palma, España",
+      "createdAt": "2018-06-01",
+      "capacityKW": 6.8,
+      "totalGeneratedMWh": 3.1,
+      "monthlyGenerationKWh": 350.0,
+      "dailyGenerationKWh": 8.5,
+      "totalIncomeEUR": 380.0,
+      "currentPowerOutputKW": 1.4,
+      "inHouseUsageKWh": 7.0,
+      "feedInKWh": 0.5,
+      "loadConsumptionKWh": 11.5,
+      "batterySOC": 21,
+      "environmentalImpact": {
+        "co2ReductionTons": 1.9,
+        "plantedTrees": 130,
+        "coalSavingsTons": 0.85
+      },
+      "timeSeriesPowerData": [
+        { "time": "00:00", "powerKW": 0 },
+        { "time": "01:00", "powerKW": 0 },
+        { "time": "02:00", "powerKW": 0.2 },
+        { "time": "03:00", "powerKW": 0.4 },
+        { "time": "04:00", "powerKW": 0.6 },
+        { "time": "05:00", "powerKW": 0.8 },
+        { "time": "06:00", "powerKW": 1.2 },
+        { "time": "07:00", "powerKW": 1.5 },
+        { "time": "08:00", "powerKW": 1.8 },
+        { "time": "09:00", "powerKW": 2.3 },
+        { "time": "10:00", "powerKW": 2.6 },
+        { "time": "11:00", "powerKW": 2.8 },
+        { "time": "12:00", "powerKW": 3.0 },
+        { "time": "13:00", "powerKW": 2.9 }
+      ]
+    },
+    {
+      "id": 10,
+      "userId": "124",
+      "name": "Fuerteventura Wind & Solar Plant",
+      "location": "FV-1, 35600 Puerto del Rosario, Fuerteventura, España",
+      "createdAt": "2020-12-12",
+      "capacityKW": 4.9,
+      "totalGeneratedMWh": 1.9,
+      "monthlyGenerationKWh": 270.0,
+      "dailyGenerationKWh": 6.2,
+      "totalIncomeEUR": 275.0,
+      "currentPowerOutputKW": 0.9,
+      "inHouseUsageKWh": 6.5,
+      "feedInKWh": 0.4,
+      "loadConsumptionKWh": 10.0,
+      "batterySOC": 24,
+      "environmentalImpact": {
+        "co2ReductionTons": 1.25,
+        "plantedTrees": 85,
+        "coalSavingsTons": 0.65
+      },
+      "timeSeriesPowerData": [
+        { "time": "00:00", "powerKW": 0 },
+        { "time": "01:00", "powerKW": 0 },
+        { "time": "02:00", "powerKW": 0.1 },
+        { "time": "03:00", "powerKW": 0.2 },
+        { "time": "04:00", "powerKW": 0.35 },
+        { "time": "05:00", "powerKW": 0.5 },
+        { "time": "06:00", "powerKW": 0.7 },
+        { "time": "07:00", "powerKW": 1.0 },
+        { "time": "08:00", "powerKW": 1.4 },
+        { "time": "09:00", "powerKW": 1.8 },
+        { "time": "10:00", "powerKW": 2.0 },
+        { "time": "11:00", "powerKW": 2.3 },
+        { "time": "12:00", "powerKW": 2.4 },
+        { "time": "13:00", "powerKW": 2.2 }
+      ]
     }
   ]
 }

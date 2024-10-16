@@ -1,19 +1,16 @@
-"use client";
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
+  authenticateUser,
   selectLoading,
   selectError,
-  mockLogin,
 } from "@/store/slices/userSlice";
 import CustomButton from "./CustomButton";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
-import { fetchUserMock } from "@/services/api";
 import { fetchPlants } from "@/store/slices/plantsSlice";
 
 const AuthenticationForm = () => {
@@ -41,15 +38,13 @@ const AuthenticationForm = () => {
     const { email, password } = data;
 
     try {
-      const user = await fetchUserMock(email, password);
-      dispatch(mockLogin(user));
-
-      // Dispatch fetchPlants with user.id
-      dispatch(fetchPlants(user.id));
-
+      const user = await dispatch(
+        authenticateUser({ email, password })
+      ).unwrap();
       saveAuthData("mockAuthToken", user);
       setSubmissionResult("loginSuccess");
       setShowResultFace(true);
+      console.log("user logged in ---->", user);
       router.push(`/dashboard/${user.id}/plants`);
     } catch (error) {
       setSubmissionResult("loginError");

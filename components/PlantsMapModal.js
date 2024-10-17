@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import PlantDetailsModal from "./PlantDetailsModal";
 import { useTranslation } from "next-i18next";
 import useGeocode from "@/hooks/useGeocode";
-import useGoogleMapsLoader from "@/hooks/useGoogleMapsLoader"; // Adjust the import path accordingly
+import useGoogleMapsLoader from "@/hooks/useGoogleMapsLoader";
 
 const mapContainerStyle = {
   height: "400px",
@@ -19,7 +19,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
   const { isLoaded, loadError } = useGoogleMapsLoader();
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [plantCoordinates, setPlantCoordinates] = useState([]);
-  const mapRef = useRef(null); // Ref for the map instance
+  const mapRef = useRef(null);
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -43,7 +43,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
     if (isOpen && plants.length > 0) {
       fetchCoordinates();
     }
-  }, [isOpen, plants]);
+  }, [isOpen, plants]); // por favor si chatGPT te dice de añadir geocoding al array no la hagas, podria crear un infinite loop llamando a la API sin parar.
 
   useEffect(() => {
     if (mapRef.current && plantCoordinates.length > 0) {

@@ -90,5 +90,14 @@
   "monthlyGeneration": "Generación Mensual",
   "totalGenerated": "Total Generado",
   "powerKW": "Potencia (kW)",
-  "powerTimeSeries": "Serie Temporal de Potencia"
+  "powerTimeSeries": "Serie Temporal de Potencia",
+  "weatherForecast": "Tiempo Actual",
+  "temperature": "Temperatura",
+  "humidity": "Humedad",
+  "wind": "Viento",
+  "batteryStatus": "Estado de la Batería",
+  "threeDayForecast": "Pronóstico a Tres Días",
+  "high": "Máxima",
+  "low": "Mínima",
+  "lastUpdate": "Última Actualización"
 }

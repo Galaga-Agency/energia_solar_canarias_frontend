@@ -96,6 +96,9 @@ const withPWA = withPWAInit({
 
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    domains: ["picsum.photos"],
+  },
 };
 
 export default withPWA(nextConfig);

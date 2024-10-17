@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectPlants } from "@/store/slices/plantsSlice";
@@ -25,6 +26,12 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import WeatherWidget from "@/components/WeatherWidget";
+import ImageCarousel from "@/components/ImageCarousel";
+import BatteryIndicator from "@/components/BatteryIndicator";
+import useDeviceType from "@/hooks/useDeviceType";
+import PageTransition from "@/components/PageTransition";
+import useLocalStorageState from "use-local-storage-state";
 
 ChartJS.register(
   CategoryScale,
@@ -38,15 +45,44 @@ ChartJS.register(
 
 const PlantDetailsPage = ({ params }) => {
   const { userId, plantId } = params;
-
   const plants = useSelector(selectPlants);
   const [plant, setPlant] = useState(null);
   const { t } = useTranslation();
+  const [weatherData, setWeatherData] = useState(null);
+  const apiKey = process.env.NEXT_PUBLIC_WEATHERAPI_API_KEY;
+  const { isMobile, isDesktop } = useDeviceType();
+  const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
 
   useEffect(() => {
     const selectedPlant = plants.find((p) => p.id === parseInt(plantId));
     setPlant(selectedPlant);
   }, [plantId, plants]);
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      if (plant) {
+        const cityName = plant.location;
+        try {
+          let response;
+
+          if (!isMobile) {
+            response = await axios.get(
+              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=3&aqi=no&alerts=no`
+            );
+          } else {
+            response = await axios.get(
+              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=2&aqi=no&alerts=no`
+            );
+          }
+
+          setWeatherData(response.data);
+        } catch (error) {
+          console.error("Error fetching weather data:", error);
+        }
+      }
+    };
+    fetchWeatherData();
+  }, [plant, apiKey, isMobile]);
 
   if (!plant) {
     return <p>{t("loadingPlantDetails")}</p>;
@@ -82,128 +118,182 @@ const PlantDetailsPage = ({ params }) => {
   };
 
   return (
-    <div className="min-h-screen bg-custom-light-gray p-6 dark:bg-custom-dark-blue transition-colors duration-300">
-      <div className="flex justify-between items-center mb-6 gap-6">
-        <button onClick={() => window.history.back()}>
-          <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />
-        </button>
-        <h1 className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow">
-          {plant.name}
-        </h1>
-      </div>
-
-      <div className="bg-white dark:bg-custom-dark-gray shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
-        <h2 className="text-xl font-primary mb-4">{t("plantDetails")}</h2>
-        <div className="flex items-start justify-between gap-2 mb-4">
-          <div className="flex items-center">
-            <FontAwesomeIcon
-              icon={faLocationDot}
-              className="text-custom-dark-blue dark:text-custom-yellow text-3xl mr-2"
-            />
-            <strong className="text-lg">{t("location")}</strong>
-          </div>
-          <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow text-right">
-            {plant.location}
-          </span>
+    <PageTransition>
+      <div
+        className={`min-h-screen w-screen flex flex-col ${
+          theme === "dark"
+            ? "bg-gray-900"
+            : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
+        } relative overflow-y-auto p-6`}
+      >
+        <div className="flex justify-between items-center mb-6 gap-6">
+          <button onClick={() => window.history.back()}>
+            <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />
+          </button>
+          <h1 className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow text-right">
+            {plant.name}
+          </h1>
         </div>
-
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center">
-            <FontAwesomeIcon
-              icon={faSeedling}
-              className="text-green-500 text-3xl mr-2"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:mb-6 ">
+          {weatherData && (
+            <WeatherWidget
+              weatherData={weatherData}
+              batterySOC={plant.batterySOC}
             />
-            <strong className="text-lg">{t("currentPowerOutput")}: </strong>
-          </div>
-          <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow text-right">
-            {plant.currentPowerOutputKW} kW
-          </span>
+          )}
+          {plant.images.length > 0 ? (
+            <ImageCarousel images={plant.images} />
+          ) : (
+            <p>No images available</p>
+          )}
         </div>
-
-        <div className="flex items-start justify-between">
-          <div className="flex items-center">
-            <FontAwesomeIcon
-              icon={faEuroSign}
-              className="text-custom-dark-blue text-3xl mr-2"
-            />
-            <strong className="text-lg">{t("totalIncome")}: </strong>
-          </div>
-          <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow text-right">
-            {plant.totalIncomeEUR} EUR
-          </span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-custom-dark-gray shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
-          <h2 className="text-xl font-primary mb-4">
-            {t("environmentalImpact")}
+        <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
+          <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
+            {t("plantDetails")}
           </h2>
-
-          <div className="flex items-start justify-between mb-4">
-            <MdOutlineCo2 className="text-custom-dark-blue dark:text-custom-yellow text-3xl mr-2" />
-            <strong className="text-lg">{t("co2Reduction")}: </strong>
-            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-              {plant.environmentalImpact.co2ReductionTons} tons
+          <div className="flex items-start justify-between gap-2 mb-4">
+            <div className="flex items-left">
+              <FontAwesomeIcon
+                icon={faLocationDot}
+                className="text-custom-dark-blue dark:text-custom-yellow text-3xl mr-2"
+              />
+              <strong className="text-lg dark:text-custom-light-gray">
+                {t("location")}
+              </strong>
+            </div>
+            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow text-right">
+              {plant.location}
             </span>
           </div>
 
           <div className="flex items-start justify-between mb-4">
-            <FontAwesomeIcon
-              icon={faTree}
-              className="text-green-500 text-3xl mr-2"
-            />
-            <strong className="text-lg">{t("plantedTrees")}: </strong>
-            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-              {plant.environmentalImpact.plantedTrees}
+            <div className="flex items-left">
+              <FontAwesomeIcon
+                icon={faSeedling}
+                className="text-green-500 text-3xl mr-2"
+              />
+              <strong className="text-lg dark:text-custom-light-gray">
+                {t("currentPowerOutput")}{" "}
+              </strong>
+            </div>
+            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow text-right">
+              {plant.currentPowerOutputKW} kW
             </span>
           </div>
 
           <div className="flex items-start justify-between">
-            <FontAwesomeIcon
-              icon={faWind}
-              className="text-custom-dark-blue dark:text-custom-yellow text-3xl mr-2"
-            />
-            <strong className="text-lg">{t("coalSavings")}: </strong>
-            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-              {plant.environmentalImpact.coalSavingsTons} tons
+            <div className="flex items-left">
+              <FontAwesomeIcon
+                icon={faEuroSign}
+                className="text-custom-dark-blue dark:text-custom-yellow text-3xl mr-2"
+              />
+              <strong className="text-lg dark:text-custom-light-gray">
+                {t("totalIncome")}
+              </strong>
+            </div>
+            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow text-right">
+              {plant.totalIncomeEUR} EUR
             </span>
           </div>
         </div>
+        {!isDesktop && (
+          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
+            <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
+              {t("batteryStatus")}
+            </h2>
+            <BatteryIndicator batterySOC={plant.batterySOC} />
+          </div>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
+            <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
+              {t("environmentalImpact")}
+            </h2>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-left">
+                <MdOutlineCo2 className="text-custom-dark-blue dark:text-custom-yellow text-3xl mr-2" />
+                <strong className="text-lg dark:text-custom-light-gray">
+                  {t("co2Reduction")}
+                </strong>
+              </div>
+              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                {plant.environmentalImpact.co2ReductionTons} tons
+              </span>
+            </div>
 
-        <div className="bg-white dark:bg-custom-dark-gray shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
-          <h2 className="text-xl font-primary mb-4">{t("energyStatistics")}</h2>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-left">
+                <FontAwesomeIcon
+                  icon={faTree}
+                  className="text-green-500 text-3xl mr-2"
+                />
+                <strong className="text-lg dark:text-custom-light-gray">
+                  {t("plantedTrees")}
+                </strong>
+              </div>
+              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                {plant.environmentalImpact.plantedTrees}
+              </span>
+            </div>
 
-          <div className="flex items-start justify-between mb-4">
-            <strong className="text-lg">{t("capacity")}: </strong>
-            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-              {plant.capacityKW} kW
-            </span>
+            <div className="flex items-start justify-between">
+              <div className="flex items-left">
+                <FontAwesomeIcon
+                  icon={faWind}
+                  className="text-custom-dark-blue dark:text-custom-yellow text-3xl mr-2"
+                />
+                <strong className="text-lg dark:text-custom-light-gray">
+                  {t("coalSavings")}
+                </strong>
+              </div>
+              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                {plant.environmentalImpact.coalSavingsTons} tons
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-start justify-between mb-4">
-            <strong className="text-lg">{t("monthlyGeneration")}: </strong>
-            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-              {plant.monthlyGenerationKWh} kWh
-            </span>
-          </div>
+          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
+            <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
+              {t("energyStatistics")}
+            </h2>
+            <div className="flex items-start justify-between mb-4">
+              <strong className="text-lg dark:text-custom-light-gray">
+                {t("capacity")}
+              </strong>
+              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                {plant.capacityKW} kW
+              </span>
+            </div>
 
-          <div className="flex items-start justify-between">
-            <strong className="text-lg">{t("totalGenerated")}: </strong>
-            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-              {plant.totalGeneratedMWh} MWh
-            </span>
+            <div className="flex items-start justify-between mb-4">
+              <strong className="text-lg dark:text-custom-light-gray">
+                {t("monthlyGeneration")}
+              </strong>
+              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                {plant.monthlyGenerationKWh} kWh
+              </span>
+            </div>
+
+            <div className="flex items-start justify-between">
+              <strong className="text-lg dark:text-custom-light-gray">
+                {t("totalGenerated")}
+              </strong>
+              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                {plant.totalGeneratedMWh} MWh
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mt-6 transition-all duration-300">
+          <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
+            {t("powerTimeSeries")}
+          </h2>
+          <div id="powerChart">
+            <Line data={powerData} options={options} />
           </div>
         </div>
       </div>
-
-      <div className="bg-white dark:bg-custom-dark-gray shadow-lg rounded-lg p-6 mt-6 transition-all duration-300">
-        <h2 className="text-xl font-primary mb-4">{t("powerTimeSeries")}</h2>
-        <div id="powerChart">
-          <Line data={powerData} options={options} />
-        </div>
-      </div>
-    </div>
+    </PageTransition>
   );
 };
 

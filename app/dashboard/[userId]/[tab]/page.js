@@ -73,7 +73,7 @@ const DashboardPage = ({ params }) => {
         theme === "dark"
           ? "bg-gray-900"
           : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
-      } relative overflow-auto`}
+      } relative overflow-y-auto`}
     >
       <TransitionEffect />
       <div className="flex-grow">

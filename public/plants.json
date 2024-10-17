@@ -21,7 +21,10 @@
         "plantedTrees": 81,
         "coalSavingsTons": 0.6
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -37,7 +40,13 @@
         { "time": "11:00", "powerKW": 1.5 },
         { "time": "12:00", "powerKW": 2.0 },
         { "time": "13:00", "powerKW": 1.8 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 2,
@@ -60,7 +69,10 @@
         "plantedTrees": 100,
         "coalSavingsTons": 0.7
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -76,7 +88,13 @@
         { "time": "11:00", "powerKW": 2.5 },
         { "time": "12:00", "powerKW": 2.8 },
         { "time": "13:00", "powerKW": 2.6 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 3,
@@ -99,7 +117,10 @@
         "plantedTrees": 70,
         "coalSavingsTons": 0.5
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -115,7 +136,13 @@
         { "time": "11:00", "powerKW": 1.5 },
         { "time": "12:00", "powerKW": 1.8 },
         { "time": "13:00", "powerKW": 1.6 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 4,
@@ -138,7 +165,10 @@
         "plantedTrees": 150,
         "coalSavingsTons": 1.0
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -154,7 +184,13 @@
         { "time": "11:00", "powerKW": 2.5 },
         { "time": "12:00", "powerKW": 2.8 },
         { "time": "13:00", "powerKW": 2.7 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 5,
@@ -177,7 +213,10 @@
         "plantedTrees": 95,
         "coalSavingsTons": 0.65
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -193,7 +232,13 @@
         { "time": "11:00", "powerKW": 2.4 },
         { "time": "12:00", "powerKW": 2.6 },
         { "time": "13:00", "powerKW": 2.5 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 6,
@@ -216,7 +261,10 @@
         "plantedTrees": 110,
         "coalSavingsTons": 0.7
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -232,7 +280,13 @@
         { "time": "11:00", "powerKW": 2.6 },
         { "time": "12:00", "powerKW": 2.7 },
         { "time": "13:00", "powerKW": 2.5 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 7,
@@ -255,7 +309,10 @@
         "plantedTrees": 85,
         "coalSavingsTons": 0.65
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -271,7 +328,13 @@
         { "time": "11:00", "powerKW": 2.3 },
         { "time": "12:00", "powerKW": 2.4 },
         { "time": "13:00", "powerKW": 2.2 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 8,
@@ -294,7 +357,10 @@
         "plantedTrees": 130,
         "coalSavingsTons": 0.85
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -310,7 +376,13 @@
         { "time": "11:00", "powerKW": 2.8 },
         { "time": "12:00", "powerKW": 3.0 },
         { "time": "13:00", "powerKW": 2.9 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 9,
@@ -333,7 +405,10 @@
         "plantedTrees": 130,
         "coalSavingsTons": 0.85
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -349,7 +424,13 @@
         { "time": "11:00", "powerKW": 2.8 },
         { "time": "12:00", "powerKW": 3.0 },
         { "time": "13:00", "powerKW": 2.9 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     },
     {
       "id": 10,
@@ -372,7 +453,10 @@
         "plantedTrees": 85,
         "coalSavingsTons": 0.65
       },
-      "images": [],
+      "images": [
+        "/assets/img/placeholder-solar-panel-1.jpg",
+        "/assets/img/placeholder-solar-panel-2.jpg"
+      ],
       "timeSeriesPowerData": [
         { "time": "00:00", "powerKW": 0 },
         { "time": "01:00", "powerKW": 0 },
@@ -388,7 +472,13 @@
         { "time": "11:00", "powerKW": 2.3 },
         { "time": "12:00", "powerKW": 2.4 },
         { "time": "13:00", "powerKW": 2.2 }
-      ]
+      ],
+      "sensors": {
+        "temperature": 22,
+        "humidity": 50,
+        "batteryStatus": "Good",
+        "lastUpdate": "2023-01-18T12:00:00Z"
+      }
     }
   ]
 }

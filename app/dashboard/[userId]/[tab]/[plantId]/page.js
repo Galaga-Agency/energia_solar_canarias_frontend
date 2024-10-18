@@ -68,11 +68,11 @@ const PlantDetailsPage = ({ params }) => {
 
           if (!isDesktop) {
             response = await axios.get(
-              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=2&aqi=no&alerts=no`
+              `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=2&aqi=no&alerts=no`
             );
           } else {
             response = await axios.get(
-              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=3&aqi=no&alerts=no`
+              `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=3&aqi=no&alerts=no`
             );
           }
 

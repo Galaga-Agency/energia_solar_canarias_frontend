@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "next-i18next";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import useDeviceType from "@/hooks/useDeviceType";
-import Image from "next/image";
 
 const WeatherWidget = ({ weatherData, batterySOC }) => {
   const { t } = useTranslation();

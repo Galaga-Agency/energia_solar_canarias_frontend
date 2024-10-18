@@ -271,6 +271,54 @@ const AuthenticationForm = () => {
                     </div>
                   </div>
 
+                  <div>
+                    <label className="inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                        {...register("privacyPolicy", {
+                          required: t("privacyPolicyConsent"),
+                        })}
+                      />
+                      <span className="ml-2 text-custom-light-gray">
+                        {t("privacyPolicyLabel")}
+                        <a
+                          href="https://www.energiasolarcanarias.es/politica-de-cookies"
+                          className="text-blue-300 hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {t("cookiesPolicy")}
+                        </a>
+                        ,{" "}
+                        <a
+                          href="https://www.energiasolarcanarias.es/politica-de-privacidad"
+                          className="text-blue-300 hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {t("privacyPolicy")}
+                        </a>{" "}
+                        {t("andTheLegalNoticePrefix")}{" "}
+                        <a
+                          href="https://www.energiasolarcanarias.es/aviso-legal"
+                          className="text-blue-300 hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {t("legalNotice")}
+                        </a>
+                      </span>
+                    </label>
+                    <div className="min-h-[10px] mb-4">
+                      {errors.privacyPolicy && (
+                        <p className="text-red-500 text-sm mt-0">
+                          {errors.privacyPolicy.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
                   <CustomButton
                     type="submit"
                     disabled={loading || isSubmitting}

@@ -22,6 +22,8 @@ import { useTranslation } from "next-i18next";
 import Loading from "./Loading";
 import { PiSolarPanelFill } from "react-icons/pi";
 import PlantStatuses from "./PlantStatuses";
+import Image from "next/image";
+import companyIcon from "@/public/assets/icons/icon-512x512.png";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
@@ -85,9 +87,16 @@ const PlantsTab = () => {
 
   return (
     <div className="p-8 md:p-10 h-full pb-24">
-      <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-10 md:mb-2">
-        {t("plants")}
-      </h2>
+      <div className="flex items-center mb-10 md:mb-2">
+        <Image
+          src={companyIcon}
+          alt="Company Icon"
+          className="w-12 h-12 mr-2"
+        />
+        <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue">
+          {t("plants")}
+        </h2>
+      </div>
 
       <AddPlantForm onClose={closeForm} isOpen={isFormOpen} />
       <PlantsMapModal

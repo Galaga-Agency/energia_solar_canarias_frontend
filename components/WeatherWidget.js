@@ -18,7 +18,7 @@ const WeatherWidget = ({ weatherData, batterySOC }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsMounted(true);
-    }, 1000); // Simulated delay to show skeleton for a bit
+    }, 1500); // Simulated delay to show skeleton for a bit
 
     return () => clearTimeout(timer);
   }, []);

@@ -4,6 +4,13 @@ import { FaLocationDot } from "react-icons/fa6";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
 
+const statusColors = {
+  working: "bg-green-500",
+  error: "bg-red-500",
+  waiting: "bg-yellow-500",
+  disconnected: "bg-gray-500",
+};
+
 const PlantCard = ({ plant, userId, tab }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -15,8 +22,15 @@ const PlantCard = ({ plant, userId, tab }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white dark:bg-custom-dark-blue p-6 rounded-lg shadow-lg transition duration-500 hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow cursor-pointer"
+      className="relative bg-white dark:bg-custom-dark-blue p-6 rounded-lg shadow-lg transition duration-500 hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow cursor-pointer"
     >
+      {/* Status Dot */}
+      <div
+        className={`absolute top-3 right-3 w-3 h-3 rounded-full ${
+          statusColors[plant.status]
+        }`}
+      />
+
       <h3 className="text-2xl font-primary font-bold text-custom-dark-blue dark:text-custom-yellow mb-4">
         <PiSolarPanelFill className="inline mr-2 text-custom-yellow" />
         {plant.name}

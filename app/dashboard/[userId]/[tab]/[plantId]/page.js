@@ -129,6 +129,13 @@ const PlantDetailsPage = ({ params }) => {
     },
   };
 
+  const statusColors = {
+    working: "bg-green-500",
+    error: "bg-red-500",
+    waiting: "bg-yellow-500",
+    disconnected: "bg-gray-500",
+  };
+
   if (!plant || !isMounted) {
     return (
       <PageTransition>
@@ -179,6 +186,19 @@ const PlantDetailsPage = ({ params }) => {
               <CustomSkeleton width="80px" height="24px" theme={theme} />
             </div>
           </div>
+
+          {/* Skeleton for environmental impact */}
+          {!isDesktop && (
+            <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
+              <CustomSkeleton
+                width="150px"
+                height="30px"
+                className="mb-4"
+                theme={theme}
+              />
+              <CustomSkeleton width="100px" height="64px" theme={theme} />
+            </div>
+          )}
 
           {/* Skeleton for environmental impact */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -256,9 +276,25 @@ const PlantDetailsPage = ({ params }) => {
           <button onClick={() => window.history.back()}>
             <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />
           </button>
-          <h1 className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow text-right">
-            {plant.name}
-          </h1>
+          <div className="flex items-center">
+            {!isMobile && (
+              <div
+                className={`w-5 h-5 rounded-full p-2 mt-1 mr-4 ${
+                  statusColors[plant.status]
+                }`}
+              />
+            )}
+            <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right">
+              {plant.name}
+            </h1>
+            {isMobile && (
+              <div
+                className={`w-5 h-5 rounded-full p-2 mt-1 ml-3  ${
+                  statusColors[plant.status]
+                }`}
+              />
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 ">
           {weatherData && (

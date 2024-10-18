@@ -21,6 +21,7 @@
         "plantedTrees": 81,
         "coalSavingsTons": 0.6
       },
+      "status": "working",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -69,6 +70,7 @@
         "plantedTrees": 100,
         "coalSavingsTons": 0.7
       },
+      "status": "working",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -117,6 +119,7 @@
         "plantedTrees": 70,
         "coalSavingsTons": 0.5
       },
+      "status": "waiting",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -165,6 +168,7 @@
         "plantedTrees": 150,
         "coalSavingsTons": 1.0
       },
+      "status": "error",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -213,6 +217,7 @@
         "plantedTrees": 95,
         "coalSavingsTons": 0.65
       },
+      "status": "waiting",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -261,6 +266,7 @@
         "plantedTrees": 110,
         "coalSavingsTons": 0.7
       },
+      "status": "working",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -309,6 +315,7 @@
         "plantedTrees": 85,
         "coalSavingsTons": 0.65
       },
+      "status": "disconnected",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -357,6 +364,7 @@
         "plantedTrees": 130,
         "coalSavingsTons": 0.85
       },
+      "status": "working",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -405,6 +413,7 @@
         "plantedTrees": 130,
         "coalSavingsTons": 0.85
       },
+      "status": "waiting",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"
@@ -453,6 +462,7 @@
         "plantedTrees": 85,
         "coalSavingsTons": 0.65
       },
+      "status": "working",
       "images": [
         "/assets/img/placeholder-solar-panel-1.jpg",
         "/assets/img/placeholder-solar-panel-2.jpg"

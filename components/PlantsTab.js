@@ -21,6 +21,7 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import { useTranslation } from "next-i18next";
 import Loading from "./Loading";
 import { PiSolarPanelFill } from "react-icons/pi";
+import PlantStatuses from "./PlantStatuses";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
@@ -96,17 +97,18 @@ const PlantsTab = () => {
       />
 
       <FilterInput onFilterChange={filterItems} />
-      <div className="flex gap-4 justify-start">
-        <SortMenu onSortChange={sortItems} />
-        <button
-          onClick={openMap}
-          className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex-shrink-0 button-shadow"
-        >
-          <FaMapMarkedAlt className="text-2xl" />
-        </button>
+      <div className="flex flex-col md:flex-row md:justify-between">
+        <div className="flex gap-4 justify-start mb-6 md:mb-0">
+          <SortMenu onSortChange={sortItems} />
+          <button
+            onClick={openMap}
+            className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex-shrink-0 button-shadow"
+          >
+            <FaMapMarkedAlt className="text-2xl" />
+          </button>
+        </div>
+        <PlantStatuses />
       </div>
-
-      {error && <p className="text-center text-red-500">{error}</p>}
 
       {paginatedPlants.length > 0 ? (
         <>

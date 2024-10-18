@@ -100,5 +100,17 @@
   "twoDayForecast": "Two Day Forecast",
   "high": "High",
   "low": "Low",
-  "lastUpdate": "Last Update"
+  "lastUpdate": "Last Update",
+  "status": {
+    "working": "Working",
+    "error": "Error",
+    "waiting": "Waiting",
+    "disconnected": "Disconnected"
+  },
+  "statusDescriptions": {
+    "working": "All inverters in the plant are operating normally.",
+    "waiting": "No inverter alarms or offline status, but at least one inverter is in a waiting state.",
+    "disconnected": "No inverter alarms, but at least one inverter is offline or there are no inverters in the plant.",
+    "error": "At least one inverter in the plant is issuing an alarm."
+  }
 }

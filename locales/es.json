@@ -100,5 +100,17 @@
   "twoDayForecast": "Pronóstico a Dos Días",
   "high": "Máxima",
   "low": "Mínima",
-  "lastUpdate": "Última Actualización"
+  "lastUpdate": "Última Actualización",
+  "status": {
+    "working": "Funcionando",
+    "error": "Error",
+    "waiting": "Esperando",
+    "disconnected": "Desconectado"
+  },
+  "statusDescriptions": {
+    "working": "Todos los inversores de la planta están funcionando con normalidad.",
+    "waiting": "No hay alarmas de inversor ni está fuera de línea en la planta, pero al menos un inversor está en estado de espera.",
+    "disconnected": "No hay alarmas de inversores en la planta, pero al menos un inversor está fuera de línea o no hay ningún inversor en la planta.",
+    "error": "Al menos un inversor de la planta emite una alarma."
+  }
 }

@@ -161,7 +161,7 @@ const PlantDetailsPage = ({ params }) => {
             )}
           </div>
           {/* Skeleton for plant details */}
-          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
+          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between min-h-[235px]">
             <CustomSkeleton
               width="60%"
               height="30px"

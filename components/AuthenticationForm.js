@@ -44,7 +44,6 @@ const AuthenticationForm = () => {
       saveAuthData("mockAuthToken", user);
       setSubmissionResult("loginSuccess");
       setShowResultFace(true);
-      console.log("user logged in ---->", user);
       router.push(`/dashboard/${user.id}/plants`);
     } catch (error) {
       setSubmissionResult("loginError");

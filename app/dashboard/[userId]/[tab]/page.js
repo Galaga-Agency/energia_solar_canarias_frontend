@@ -69,7 +69,7 @@ const DashboardPage = ({ params }) => {
 
   return (
     <div
-      className={`min-h-screen w-screen flex flex-col ${
+      className={`min-h-screen w-auto flex flex-col ${
         theme === "dark"
           ? "bg-gray-900"
           : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"

@@ -11,6 +11,18 @@
       "name": "Andrés Felipe",
       "email": "andres.felipe@example.com",
       "password": "password123"
+    },
+    {
+      "id": "124",
+      "name": "Julio Rubio Robles",
+      "email": "juliorubiorobles@iidos.com",
+      "password": "password123"
+    },
+    {
+      "id": "124",
+      "name": "Carla Isari Díaz",
+      "email": "carlaisari@energiasolarcanarias.es",
+      "password": "password123"
     }
   ]
 }

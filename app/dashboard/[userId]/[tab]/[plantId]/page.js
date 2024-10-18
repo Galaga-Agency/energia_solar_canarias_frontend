@@ -33,6 +33,8 @@ import useDeviceType from "@/hooks/useDeviceType";
 import PageTransition from "@/components/PageTransition";
 import useLocalStorageState from "use-local-storage-state";
 import Loading from "@/components/Loading";
+import "react-loading-skeleton/dist/skeleton.css";
+import CustomSkeleton from "@/components/Skeleton";
 
 ChartJS.register(
   CategoryScale,
@@ -53,11 +55,20 @@ const PlantDetailsPage = ({ params }) => {
   const apiKey = process.env.NEXT_PUBLIC_WEATHERAPI_API_KEY;
   const { isMobile, isDesktop } = useDeviceType();
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const selectedPlant = plants.find((p) => p.id === parseInt(plantId));
     setPlant(selectedPlant);
   }, [plantId, plants]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchWeatherData = async () => {
@@ -118,10 +129,124 @@ const PlantDetailsPage = ({ params }) => {
     },
   };
 
+  if (!plant || !isMounted) {
+    return (
+      <PageTransition>
+        <div
+          className={`min-h-screen w-auto flex flex-col ${
+            theme === "dark"
+              ? "bg-gray-900"
+              : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
+          } relative overflow-y-auto p-6`}
+        >
+          <div className="flex justify-between items-center mb-6 gap-6">
+            <button onClick={() => window.history.back()}>
+              <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />
+            </button>
+            <h1 className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow text-right">
+              {plant.name}
+            </h1>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 ">
+            {weatherData && (
+              <WeatherWidget
+                weatherData={weatherData}
+                batterySOC={plant.batterySOC}
+              />
+            )}
+            {plant.images.length > 0 ? (
+              <ImageCarousel images={plant.images} />
+            ) : (
+              <p>No images available</p>
+            )}
+          </div>
+          {/* Skeleton for plant details */}
+          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
+            <CustomSkeleton
+              width="60%"
+              height="30px"
+              className="mb-4"
+              theme={theme}
+            />
+            <div className="flex items-start justify-between gap-2 mb-4">
+              <CustomSkeleton
+                width="30px"
+                height="30px"
+                className="mr-2"
+                theme={theme}
+              />
+              <CustomSkeleton width="120px" height="24px" theme={theme} />
+              <CustomSkeleton width="80px" height="24px" theme={theme} />
+            </div>
+          </div>
+
+          {/* Skeleton for environmental impact */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
+              <CustomSkeleton
+                width="60%"
+                height="30px"
+                className="mb-4"
+                theme={theme}
+              />
+              <CustomSkeleton
+                width="80%"
+                height="24px"
+                className="mb-4"
+                theme={theme}
+              />
+              <CustomSkeleton
+                width="80%"
+                height="24px"
+                className="mb-4"
+                theme={theme}
+              />
+              <CustomSkeleton width="80%" height="24px" theme={theme} />
+            </div>
+
+            {/* Skeleton for energy statistics */}
+            <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
+              <CustomSkeleton
+                width="60%"
+                height="30px"
+                className="mb-4"
+                theme={theme}
+              />
+              <CustomSkeleton
+                width="80%"
+                height="24px"
+                className="mb-4"
+                theme={theme}
+              />
+              <CustomSkeleton
+                width="80%"
+                height="24px"
+                className="mb-4"
+                theme={theme}
+              />
+              <CustomSkeleton width="80%" height="24px" theme={theme} />
+            </div>
+          </div>
+
+          {/* Skeleton for power time series */}
+          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mt-6 transition-all duration-300">
+            <CustomSkeleton
+              width="60%"
+              height="30px"
+              className="mb-4"
+              theme={theme}
+            />
+            <CustomSkeleton width="100%" height="300px" theme={theme} />
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
   return (
     <PageTransition>
       <div
-        className={`min-h-screen w-screen flex flex-col ${
+        className={`min-h-screen w-auto flex flex-col ${
           theme === "dark"
             ? "bg-gray-900"
             : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
@@ -135,7 +260,7 @@ const PlantDetailsPage = ({ params }) => {
             {plant.name}
           </h1>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:mb-6 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 ">
           {weatherData && (
             <WeatherWidget
               weatherData={weatherData}

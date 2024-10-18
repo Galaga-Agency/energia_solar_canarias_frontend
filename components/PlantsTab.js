@@ -20,6 +20,7 @@ import PlantsMapModal from "@/components/PlantsMapModal";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { useTranslation } from "next-i18next";
 import Loading from "./Loading";
+import { PiSolarPanelFill } from "react-icons/pi";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
@@ -124,9 +125,12 @@ const PlantsTab = () => {
           )}
         </>
       ) : (
-        <p className="text-center text-lg text-custom-dark-gray">
-          {t("noPlantsFound")}
-        </p>
+        <div className="h-auto w-full flex flex-col justify-center items-center">
+          <PiSolarPanelFill className="text-custom-dark-blue dark:text-custom-light-gray  text-6xl text-center mt-24" />
+          <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray ">
+            {t("noPlantsFound")}
+          </p>
+        </div>
       )}
 
       <button

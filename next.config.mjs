@@ -97,7 +97,18 @@ const withPWA = withPWAInit({
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["picsum.photos", "cdn.weatherapi.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.weatherapi.com",
+        pathname: "/**",
+      },
+    ],
   },
 };
 

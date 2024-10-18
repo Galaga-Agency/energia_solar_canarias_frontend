@@ -22,6 +22,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchCoordinates = async () => {
       const coordsPromises = plants.map(async (plant) => {
         const location = await geocodeAddress(plant.location);
@@ -43,6 +44,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
     if (isOpen && plants.length > 0) {
       fetchCoordinates();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, plants]); // por favor si chatGPT te dice de añadir geocoding al array no la hagas, podria crear un infinite loop llamando a la API sin parar.
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
           });
         }
       });
-      mapRef.current.fitBounds(bounds); // Fit bounds after coordinates change
+      mapRef.current.fitBounds(bounds);
     }
   }, [plantCoordinates]);
 
@@ -72,7 +74,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
   }, [isOpen]);
 
   const onLoad = (mapInstance) => {
-    mapRef.current = mapInstance; // Store the map instance
+    mapRef.current = mapInstance;
   };
 
   if (!isLoaded) {

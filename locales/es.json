@@ -97,6 +97,7 @@
   "wind": "Viento",
   "batteryStatus": "Estado de la Batería",
   "threeDayForecast": "Pronóstico a Tres Días",
+  "twoDayForecast": "Pronóstico a Dos Días",
   "high": "Máxima",
   "low": "Mínima",
   "lastUpdate": "Última Actualización"

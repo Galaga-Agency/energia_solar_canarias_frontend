@@ -32,6 +32,7 @@ import BatteryIndicator from "@/components/BatteryIndicator";
 import useDeviceType from "@/hooks/useDeviceType";
 import PageTransition from "@/components/PageTransition";
 import useLocalStorageState from "use-local-storage-state";
+import Loading from "@/components/Loading";
 
 ChartJS.register(
   CategoryScale,
@@ -65,13 +66,13 @@ const PlantDetailsPage = ({ params }) => {
         try {
           let response;
 
-          if (!isMobile) {
+          if (!isDesktop) {
             response = await axios.get(
-              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=3&aqi=no&alerts=no`
+              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=2&aqi=no&alerts=no`
             );
           } else {
             response = await axios.get(
-              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=2&aqi=no&alerts=no`
+              `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=3&aqi=no&alerts=no`
             );
           }
 
@@ -82,10 +83,10 @@ const PlantDetailsPage = ({ params }) => {
       }
     };
     fetchWeatherData();
-  }, [plant, apiKey, isMobile]);
+  }, [plant, apiKey, isMobile, isDesktop]);
 
   if (!plant) {
-    return <p>{t("loadingPlantDetails")}</p>;
+    return <Loading />;
   }
 
   const powerData = {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AddPlantForm from "./AddPlantForm";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import FilterInput from "@/components/FilterInput";
@@ -19,6 +19,7 @@ import PlantCard from "@/components/PlantCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { useTranslation } from "next-i18next";
+import Loading from "./Loading";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
@@ -26,10 +27,18 @@ const PlantsTab = () => {
   const error = useSelector(selectError);
   const isLoading = useSelector(selectLoading);
   const userId = useSelector(selectUser)?.id;
-  const [isDataReady, setIsDataReady] = useState(false);
 
+  const [isDataReady, setIsDataReady] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const plantsPerPage = 6;
+
+  const { filteredItems: filteredPlants, filterItems } = useFilter(
+    plants,
+    "name"
+  );
+  const { sortedItems: sortedPlants, sortItems } = useSort(filteredPlants);
 
   useEffect(() => {
     if (!isLoading && plants.length > 0) {
@@ -61,15 +70,6 @@ const PlantsTab = () => {
     setIsMapOpen(false);
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const plantsPerPage = 6;
-
-  const { filteredItems: filteredPlants, filterItems } = useFilter(
-    plants,
-    "name"
-  );
-  const { sortedItems: sortedPlants, sortItems } = useSort(filteredPlants);
-
   const totalPages = Math.ceil(sortedPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = sortedPlants.slice(
@@ -78,11 +78,7 @@ const PlantsTab = () => {
   );
 
   if (isLoading) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-custom-dark-gray">Loading...</div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

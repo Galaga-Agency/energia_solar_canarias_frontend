@@ -9,7 +9,7 @@ const ImageCarousel = ({ images }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-64 mb-6 md:mb-0 md:h-auto">
       <Swiper
         modules={[Autoplay, Thumbs]}
         autoplay={{ delay: 3000 }}

@@ -26,7 +26,6 @@ const LanguageSelector = () => {
 
   useEffect(() => {
     const initializeI18n = async () => {
-      // Wait for i18n to be initialized
       await i18n.initPromise;
       setIsI18nReady(true);
       setActiveLanguage(i18n.language || "es");
@@ -55,14 +54,14 @@ const LanguageSelector = () => {
   );
 
   if (!isI18nReady) {
-    return null; // or return a loading indicator
+    return null;
   }
 
   return (
     <div className="fixed z-50 mt-8">
       {/* Current Language Flag */}
       <div
-        className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"
+        className="relative w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"
         onClick={() => setIsOpen(!isOpen)}
       >
         {!imageLoaded && (
@@ -71,14 +70,14 @@ const LanguageSelector = () => {
         <Image
           src={currentLanguage.flagPath}
           alt={currentLanguage.alt}
-          layout="fill"
-          objectFit="cover"
-          className={`rounded-full ${
+          fill
+          className={`rounded-full object-cover ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
           onError={() => console.error("Failed to load image")}
           priority
+          sizes="(max-width: 768px) 32px, (max-width: 1024px) 40px, 48px"
         />
       </div>
 
@@ -98,9 +97,9 @@ const LanguageSelector = () => {
           <Image
             src={otherLanguage.flagPath}
             alt={otherLanguage.alt}
-            layout="fill"
-            objectFit="cover"
-            className="rounded-full"
+            fill
+            className="rounded-full object-cover"
+            sizes="(max-width: 768px) 32px, (max-width: 1024px) 40px, 48px"
           />
         )}
       </div>

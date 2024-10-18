@@ -1,3 +1,8 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "next/image-required-height-or-width": "off",
+    "next/image-optimized": "off",
+    "next/next/no-img-element": "off"
+  }
 }

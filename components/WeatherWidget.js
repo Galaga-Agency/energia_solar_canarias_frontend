@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "next-i18next";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import useDeviceType from "@/hooks/useDeviceType";
+import Image from "next/image";
 
 const WeatherWidget = ({ weatherData, batterySOC }) => {
   const { t } = useTranslation();
@@ -25,9 +26,9 @@ const WeatherWidget = ({ weatherData, batterySOC }) => {
       <div className="flex justify-between">
         <div className="flex items-center mb-4">
           <img
-            src={weatherData.current.condition.icon}
+            src={`https:${weatherData.current.condition.icon}`}
             alt="Weather Icon"
-            className="w-20 h-20"
+            className="w-16 h-16"
           />
           <div className="ml-4">
             <h3 className="text-lg dark:text-white">
@@ -66,16 +67,24 @@ const WeatherWidget = ({ weatherData, batterySOC }) => {
         </div>
         {isDesktop && (
           <div>
-            <h2 className="text-xl font-primary mb-4">{t("batteryStatus")}</h2>
+            <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
+              {t("batteryStatus")}
+            </h2>
             <BatteryIndicator batterySOC={batterySOC} />
           </div>
         )}
       </div>
+      {isDesktop ? (
+        <h2 className="text-lg my-2 mt-4 text-custom-dark-blue dark:text-custom-yellow">
+          {t("threeDayForecast")}
+        </h2>
+      ) : (
+        <h2 className="text-lg my-2 mt-4 text-custom-dark-blue dark:text-custom-yellow">
+          {t("twoDayForecast")}
+        </h2>
+      )}
 
-      <h2 className="text-lg my-2 mt-4 text-custom-dark-blue dark:text-custom-yellow">
-        {t("threeDayForecast")}
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {weatherData.forecast.forecastday.map((day) => (
           <div
             key={day.date}
@@ -85,9 +94,9 @@ const WeatherWidget = ({ weatherData, batterySOC }) => {
               {day.date}
             </p>
             <img
-              src={day.day.condition.icon}
+              src={`https:${day.day.condition.icon}`}
               alt="Weather Icon"
-              className="w-12 h-12 mx-auto"
+              className="w-10 h-10 mx-auto"
             />
             <div className="flex justify-center dark:text-custom-light-gray">
               <p>{day.day.maxtemp_c}°C</p>

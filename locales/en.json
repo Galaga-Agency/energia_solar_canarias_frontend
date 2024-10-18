@@ -97,6 +97,7 @@
   "wind": "Wind",
   "batteryStatus": "Battery Status",
   "threeDayForecast": "Three Day Forecast",
+  "twoDayForecast": "Two Day Forecast",
   "high": "High",
   "low": "Low",
   "lastUpdate": "Last Update"

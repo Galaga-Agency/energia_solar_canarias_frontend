@@ -15,8 +15,8 @@ const LogoAnimation = () => {
   const [showForm, setShowForm] = useState(false);
   const { isMobile, isTablet } = useDeviceType();
 
-  const initialLogoSize = isMobile ? 350 : isTablet ? 500 : "auto";
-  const finalLogoSize = isMobile ? 150 : isTablet ? 200 : 250;
+  const initialLogoSize = isMobile ? 350 : isTablet ? 500 : 350;
+  const finalLogoSize = isMobile ? 150 : isTablet ? 200 : 200;
 
   useEffect(() => {
     const transitionTimer = setTimeout(() => setShowTransition(false), 1500);
@@ -67,10 +67,11 @@ const LogoAnimation = () => {
             <Image
               src={logo}
               alt="Logo"
-              layout="responsive"
-              width={100}
-              height={100}
+              width={initialLogoSize} // Set width according to initial size
+              height={initialLogoSize} // Set height according to initial size
+              className="object-contain w-full h-auto" // Ensure logo maintains aspect ratio
               priority
+              sizes="(max-width: 768px) 150px, (max-width: 1024px) 200px, 250px" // Add sizes prop
             />
           </motion.div>
         )}

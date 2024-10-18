@@ -86,7 +86,7 @@ const PlantsTab = () => {
   return (
     <div className="p-8 md:p-10 h-full pb-24">
       <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-10 md:mb-2">
-        Plants
+        {t("plants")}
       </h2>
 
       <AddPlantForm onClose={closeForm} isOpen={isFormOpen} />
@@ -128,13 +128,12 @@ const PlantsTab = () => {
         </>
       ) : (
         <div className="h-auto w-full flex flex-col justify-center items-center">
-          <PiSolarPanelFill className="text-custom-dark-blue dark:text-custom-light-gray  text-6xl text-center mt-24" />
+          <PiSolarPanelFill className="text-custom-dark-blue dark:text-custom-light-gray text-6xl text-center mt-24" />
           <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray ">
             {t("noPlantsFound")}
           </p>
         </div>
       )}
-
       <button
         onClick={handleAddPlantClick}
         className="absolute bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"

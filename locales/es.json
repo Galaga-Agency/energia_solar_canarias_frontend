@@ -112,5 +112,6 @@
     "waiting": "No hay alarmas de inversor ni está fuera de línea en la planta, pero al menos un inversor está en estado de espera.",
     "disconnected": "No hay alarmas de inversores en la planta, pero al menos un inversor está fuera de línea o no hay ningún inversor en la planta.",
     "error": "Al menos un inversor de la planta emite una alarma."
-  }
+  },
+  "filterPlaceholder": "Filtrar plantas por nombre..."
 }

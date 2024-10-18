@@ -112,5 +112,6 @@
     "waiting": "No inverter alarms or offline status, but at least one inverter is in a waiting state.",
     "disconnected": "No inverter alarms, but at least one inverter is offline or there are no inverters in the plant.",
     "error": "At least one inverter in the plant is issuing an alarm."
-  }
+  },
+  "filterPlaceholder": "Filter plants by name..."
 }

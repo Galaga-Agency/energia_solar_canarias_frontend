@@ -1,6 +1,120 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://app-energiasolarcanarias-backend.com";
+export const loginRequestAPI = async (userData) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+          apiKey: process.env.NEXT_PUBLIC_API_KEY,
+        },
+        body: JSON.stringify(userData),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Login failed (unknown error)");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Login request error:", error);
+    throw error;
+  }
+};
+
+export const validateTokenRequestAPI = async (userId, token) => {
+  return new Promise((resolve, reject) => {
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/token`, {
+      method: "POST",
+      body: { id: userId, token },
+      headers: {
+        "Content-Type": "application/json",
+        usuario: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+        apiKey: process.env.NEXT_PUBLIC_API_KEY,
+      },
+    })
+      .then((response) => {
+        // Check if the response status is not ok (4xx or 5xx)
+        if (!response.ok) {
+          // Attempt to parse the error response as JSON
+          return response
+            .clone()
+            .json()
+            .then((errorData) => {
+              const errorResponse = {
+                status: "error",
+                code: response.status,
+                message: errorData.message || "Unknown error",
+                errors: errorData,
+              };
+              resolve(errorResponse);
+            })
+            .catch(() => {
+              // If not possible to parse as JSON, get it as text
+              return response.text().then((errorText) => {
+                const errorResponse = {
+                  status: "error",
+                  code: response.status,
+                  message: errorText || "Unknown error",
+                  errors: errorText,
+                };
+                resolve(errorResponse);
+              });
+            });
+        }
+
+        // If response is successful, return the parsed JSON data
+        return response
+          .clone()
+          .json()
+          .then((data) => {
+            resolve(data);
+          })
+          .catch(() => {
+            // If not possible to parse as JSON, get it as text
+            return response.text().then((errorText) => {
+              const errorResponse = {
+                status: "error",
+                code: response.status,
+                message: errorText || "Unknown error",
+                errors: errorText,
+              };
+              resolve(errorResponse);
+            });
+          });
+      })
+      .catch((error) => {
+        // Handle network errors
+        if (error.message === "Failed to fetch") {
+          const errorResponse = {
+            status: "error",
+            code: 0,
+            message: "Network error: Unable to connect to the server.",
+            errors: error,
+          };
+          resolve(errorResponse);
+        } else {
+          // Handle other types of errors
+          const errorResponse = {
+            status: "error",
+            code: 0,
+            message: error.message || "Unknown error",
+            errors: error,
+          };
+          resolve(errorResponse);
+        }
+      });
+  });
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// EVRYTHING BELOW THIS SHOULD BE REMOVED ONCE THE ENTIRE BACKEND IS FINISHED
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Function to fetch user data from the API (added for testing purposes)
 export const fetchUserData = async (usuario, apiKey) => {

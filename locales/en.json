@@ -113,5 +113,17 @@
     "disconnected": "No inverter alarms, but at least one inverter is offline or there are no inverters in the plant.",
     "error": "At least one inverter in the plant is issuing an alarm."
   },
-  "filterPlaceholder": "Filter plants by name..."
+  "filterPlaceholder": "Filter plants by name...",
+  "enterToken": "Enter Token",
+  "tokenPlaceholder": "Enter your token",
+  "validateToken": "Validate Token",
+  "backToLogin": "Back to Login",
+  "loading": "Loading...",
+  "enterCode": "Enter Code",
+  "codeSentMessage": "An email has been sent to you with a one-time code.",
+  "codePlaceholder": "Enter your code",
+  "validateCode": "Validate Code",
+  "internalServerError": "Could not connect to the server. Please try again later. If the error persists, contact support@galagaagency.com.",
+  "invalidUser": "User not found, please check your credentials.",
+  "invalidPassword": "Invalid password, please try again."
 }

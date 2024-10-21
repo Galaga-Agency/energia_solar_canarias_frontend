@@ -2,7 +2,6 @@ import React from "react";
 import "./globals.css";
 import TranslationProvider from "@/components/TranslationProvider";
 import StoreProvider from "@/components/StoreProvider";
-import Head from "next/head";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 export const metadata = {
@@ -22,9 +21,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
-      <Head>
-        <link rel="manifest" href="/manifest.json" />
-      </Head>
       <body>
         <TranslationProvider>
           <StoreProvider>{children}</StoreProvider>

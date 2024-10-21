@@ -1,18 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchUserMock } from "@/services/api";
+import { loginRequestAPI, validateTokenRequestAPI } from "@/services/api";
 
+// Async thunk for authentication (login)
 export const authenticateUser = createAsyncThunk(
   "user/authenticateUser",
-  async ({ email, password }, { rejectWithValue }) => {
+  async (userData, { rejectWithValue }) => {
     try {
-      const user = await fetchUserMock(email, password);
-      return user;
+      const response = await loginRequestAPI(userData);
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
+// Async thunk for token validation
+export const validateToken = createAsyncThunk(
+  "user/validateToken",
+  async ({ userId, token }, { rejectWithValue }) => {
+    try {
+      const response = await validateTokenRequestAPI(userId, token);
+      console.log("redux response --->", response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Initial state
 const initialState = {
   user: null,
   loading: false,
@@ -20,17 +36,19 @@ const initialState = {
   isLoggedIn: false,
 };
 
+// Create user slice
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    mockLogout: (state) => {
+    logout: (state) => {
       state.user = null;
       state.isLoggedIn = false;
     },
   },
   extraReducers: (builder) => {
     builder
+      // Handle authentication (login)
       .addCase(authenticateUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -43,13 +61,27 @@ const userSlice = createSlice({
       .addCase(authenticateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Handle token validation
+      .addCase(validateToken.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(validateToken.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isLoggedIn = true;
+        state.loading = false;
+      })
+      .addCase(validateToken.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-// Selectors
-export const { mockLogout } = userSlice.actions;
-
+// Export actions and reducer
+export const { logout } = userSlice.actions;
 export const selectUser = (state) => state.user.user;
 export const selectIsLoggedIn = (state) => state.user.isLoggedIn;
 export const selectLoading = (state) => state.user.loading;

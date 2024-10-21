@@ -113,5 +113,17 @@
     "disconnected": "No hay alarmas de inversores en la planta, pero al menos un inversor está fuera de línea o no hay ningún inversor en la planta.",
     "error": "Al menos un inversor de la planta emite una alarma."
   },
-  "filterPlaceholder": "Filtrar plantas por nombre..."
+  "filterPlaceholder": "Filtrar plantas por nombre...",
+  "enterToken": "Introduce el Token",
+  "tokenPlaceholder": "Introduce tu token",
+  "validateToken": "Validar Token",
+  "backToLogin": "Volver a Iniciar Sesión",
+  "loading": "Cargando...",
+  "enterCode": "Introduce el Código",
+  "codeSentMessage": "Se te ha enviado un correo electrónico con un código de un solo uso.",
+  "codePlaceholder": "Introduce tu código",
+  "validateCode": "Validar Código",
+  "internalServerError": "No se pudo conectar al servidor. Por favor, intenta de nuevo más tarde. Si el error persiste, contacta a soporte@galagaagency.com.",
+  "invalidUser": "Usuario inválido, por favor verifica tus credenciales.",
+  "invalidPassword": "Contraseña inválida, por favor intenta de nuevo."
 }

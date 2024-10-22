@@ -39,6 +39,8 @@ const ProfileTab = () => {
   );
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [apiKeyRequested, setApiKeyRequested] = useState(false);
   const router = useRouter();
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
 
@@ -77,12 +79,31 @@ const ProfileTab = () => {
     router.push("/");
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put("/api/change-password", { newPassword });
+      alert(t("passwordChangeSuccess")); // Notify user
+    } catch (error) {
+      console.error("Error changing password:", error);
+    }
+  };
+
+  const handleRequestApiKey = async () => {
+    try {
+      await axios.post("/api/request-api-key");
+      setApiKeyRequested(true);
+    } catch (error) {
+      console.error("Error requesting API key:", error);
+    }
+  };
+
   return (
-    <div className="relative p-8 md:p-10 h-full min-h-screen flex flex-col items-center">
-      <div className="absolute bottom-0 -right-[50%] z-0 flex items-center justify-center">
+    <div className="relative p-8 md:p-10 h-full min-h-screen flex flex-col items-center pb-24 lg:pb-36">
+      <div className="absolute bottom-0 -right-[50%] md:-right-[30%] lg:-right-[20%] xl:-right-[15%] md:bottom-12 z-0 flex items-center justify-center">
         <FontAwesomeIcon
           icon={faUser}
-          className="text-custom-dark-gray dark:custom-dark-blue opacity-50 dark:opacity-5 text-[110vw]"
+          className="text-custom-dark-gray dark:custom-dark-blue opacity-40 dark:opacity-10 text-[110vw] md:text-[90vw] lg:text-[50vw] xl:text-[40vw]"
         />
       </div>
       <div className="flex items-center mb-10 justify-start w-full z-10">
@@ -95,7 +116,6 @@ const ProfileTab = () => {
           {t("profile")}
         </h2>
       </div>
-
       <div className="flex flex-col items-center mb-6 z-30">
         <img
           src={profilePic}
@@ -115,7 +135,7 @@ const ProfileTab = () => {
         </label>
       </div>
 
-      <div className="relative h-full w-full md:max-w-[50vw] lg:max-w-[25vw] bg-custom-dark-gray bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 p-6 pt-16 -mt-24 z-10 rounded-lg shadow-dark-shadow">
+      <div className="relative h-full w-full md:max-w-[50vw] lg:max-w-[45vw] xl:max-w-[25vw] bg-custom-dark-gray bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 p-6 pt-16 -mt-24 z-10 rounded-lg shadow-dark-shadow">
         <form
           onSubmit={handleUpdateProfile}
           className="space-y-4 w-full max-w-md"
@@ -240,10 +260,82 @@ const ProfileTab = () => {
         </button>
       </div>
 
+      {/* Administration Section */}
+      <div className="relative h-full w-full md:max-w-[50vw] lg:max-w-[45vw] xl:max-w-[25vw] bg-custom-dark-gray bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 p-6 pt-16 z-10 rounded-lg shadow-dark-shadow my-4">
+        <h3 className="text-lg text-center text-custom-dark-blue dark:text-custom-yellow mb-4">
+          {t("adminSection")}
+        </h3>
+        <form onSubmit={handlePasswordChange} className="space-y-4">
+          <div>
+            <label className="block mb-1 text-gray-500 dark:text-custom-dark-gray">
+              {t("newPassword")}
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="pb-1 w-full text-custom-dark-blue dark:text-custom-yellow border-b bg-transparent text-lg focus:outline-none transition duration-600 border-custom-dark-blue dark:border-custom-yellow"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg"
+          >
+            {t("changePassword")}
+          </button>
+        </form>
+        <button
+          onClick={handleRequestApiKey}
+          className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg mt-4"
+        >
+          {t("requestApiKey")}
+        </button>
+      </div>
+
+      {/* Company Documents Section */}
+      <div className="relative h-full w-full md:max-w-[50vw] lg:max-w-[45vw] xl:max-w-[25vw] bg-custom-dark-gray bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 p-6 pt-16 z-10 rounded-lg shadow-dark-shadow my-4">
+        <h3 className="text-lg text-center text-custom-dark-blue dark:text-custom-yellow mb-4">
+          {t("companyDocuments")}
+        </h3>
+        <ul className="space-y-2">
+          <li>
+            <a
+              href="https://www.energiasolarcanarias.es/politica-de-cookies"
+              className="text-blue-300 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("cookiesPolicy")}
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.energiasolarcanarias.es/politica-de-privacidad"
+              className="text-blue-300 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("privacyPolicy")}
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.energiasolarcanarias.es/aviso-legal"
+              className="text-blue-300 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("legalNotice")}
+            </a>
+          </li>
+        </ul>
+      </div>
+
       <div className="flex justify-center items-center mt-8">
         <button
           onClick={handleLogout}
-          className="py-2 text-red-500 hover:underline"
+          className="py-2 text-red-500 hover:underline font-secondary text-lg"
         >
           {t("logout")}
         </button>

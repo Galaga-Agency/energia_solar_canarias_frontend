@@ -78,8 +78,8 @@ const PlantsTab = () => {
   }
 
   return (
-    <div className="relative p-8 md:p-10 h-screen pb-24">
-      <div className="absolute bottom-0 right-0 flex items-center justify-center w-full z-0">
+    <div className="relative p-8 md:p-10 h-screen pb-24 md:overflow-hidden">
+      <div className="absolute -bottom-12 right-0 flex items-center justify-center w-full z-0">
         <PiSolarPanelFill className="text-custom-dark-gray dark:custom-dark-blue opacity-40 dark:opacity-5 text-[110vw] md:text-[90vw] lg:text-[50vw] xl:text-[40vw]" />
       </div>
 

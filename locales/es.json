@@ -125,5 +125,9 @@
   "validateCode": "Validar Código",
   "internalServerError": "No se pudo conectar al servidor. Por favor, intenta de nuevo más tarde. Si el error persiste, contacta a soporte@galagaagency.com.",
   "invalidUser": "Usuario inválido, por favor verifica tus credenciales.",
-  "invalidPassword": "Contraseña inválida, por favor intenta de nuevo."
+  "invalidPassword": "Contraseña inválida, por favor intenta de nuevo.",
+  "name": "Nombre",
+  "surname": "Apellido(s)",
+  "clase": "Clase",
+  "logout": "Cerrar sesión"
 }

@@ -4,8 +4,36 @@ import InstallationGuide from "@/components/InstallationGuide";
 import LanguageSelector from "@/components/LanguageSelector";
 import LogoAnimation from "@/components/LogoAnimation";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useEffect } from "react";
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/slices/userSlice";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    const userCookie = Cookies.get("user");
+    if (userCookie) {
+      try {
+        const user = JSON.parse(userCookie);
+        console.log("user cookie retrieved: ", user);
+        if (user && user.id && user.clase === "cliente") {
+          dispatch(setUser(user));
+          router.push(`/dashboard/${user.id}/plants`);
+        } else {
+          console.warn("User cookie data is invalid:", user);
+        }
+      } catch (error) {
+        console.error("Error parsing user cookie:", error);
+      }
+    } else {
+      console.log("No user cookie found.");
+    }
+  }, [dispatch]);
+
   return (
     <div className="h-screen w-screen bg-white dark:bg-custom-dark-blue overflow-hidden relative">
       <div className="fixed top-4 right-4 z-50 hidden md:block">

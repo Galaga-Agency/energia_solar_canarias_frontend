@@ -27,11 +27,13 @@ export const loginRequestAPI = async (userData) => {
   }
 };
 
-export const validateTokenRequestAPI = async (userId, token) => {
+export const validateTokenRequestAPI = async (id, token) => {
+  const requestBody = JSON.stringify({ id, token });
+
   return new Promise((resolve, reject) => {
     fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/token`, {
       method: "POST",
-      body: { id: userId, token },
+      body: requestBody,
       headers: {
         "Content-Type": "application/json",
         usuario: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
@@ -39,9 +41,7 @@ export const validateTokenRequestAPI = async (userId, token) => {
       },
     })
       .then((response) => {
-        // Check if the response status is not ok (4xx or 5xx)
         if (!response.ok) {
-          // Attempt to parse the error response as JSON
           return response
             .clone()
             .json()
@@ -55,7 +55,6 @@ export const validateTokenRequestAPI = async (userId, token) => {
               resolve(errorResponse);
             })
             .catch(() => {
-              // If not possible to parse as JSON, get it as text
               return response.text().then((errorText) => {
                 const errorResponse = {
                   status: "error",
@@ -68,7 +67,6 @@ export const validateTokenRequestAPI = async (userId, token) => {
             });
         }
 
-        // If response is successful, return the parsed JSON data
         return response
           .clone()
           .json()
@@ -76,7 +74,6 @@ export const validateTokenRequestAPI = async (userId, token) => {
             resolve(data);
           })
           .catch(() => {
-            // If not possible to parse as JSON, get it as text
             return response.text().then((errorText) => {
               const errorResponse = {
                 status: "error",
@@ -89,7 +86,6 @@ export const validateTokenRequestAPI = async (userId, token) => {
           });
       })
       .catch((error) => {
-        // Handle network errors
         if (error.message === "Failed to fetch") {
           const errorResponse = {
             status: "error",
@@ -99,7 +95,6 @@ export const validateTokenRequestAPI = async (userId, token) => {
           };
           resolve(errorResponse);
         } else {
-          // Handle other types of errors
           const errorResponse = {
             status: "error",
             code: 0,

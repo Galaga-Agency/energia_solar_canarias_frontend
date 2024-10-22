@@ -8,10 +8,12 @@ import {
   selectLoading,
   selectError,
   validateToken,
+  setUser,
 } from "@/store/slices/userSlice";
 import CustomButton from "./CustomButton";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
+import Cookies from "js-cookie";
 
 const AuthenticationForm = () => {
   const [currentFace, setCurrentFace] = useState("login");
@@ -132,26 +134,29 @@ const AuthenticationForm = () => {
   };
 
   const handleTokenSubmit = async () => {
-    if (!tokenInput.trim() || !userToValidate) return; // Ensure userToValidate is set
+    if (!tokenInput.trim() || !userToValidate) return;
     try {
       const response = await dispatch(
-        validateToken({ userId: userToValidate, token: tokenInput }) // Dispatch with userId
+        validateToken({ id: userToValidate, token: tokenInput })
       ).unwrap();
 
-      // Check if response is successful and handle the redirect
       if (response.status === "success") {
-        router.push(`/dashboard/${userToValidate}/plants`); // Redirect to dashboard
+        dispatch(setUser(response.data));
+        Cookies.set("user", JSON.stringify(response.data), { expires: 7 });
+        setTokenInput("");
+        router.push(`/dashboard/${userToValidate}/plants`);
       } else {
+        setTokenInput("");
         setSubmissionResult({
           status: "loginError",
-          message: t("invalidUser"), // Handle invalid user case
+          message: t("invalidUser"),
         });
       }
     } catch (error) {
       console.error("Token validation error:", error);
       setSubmissionResult({
         status: "loginError",
-        message: t("invalidUser"), // Show error message for invalid token
+        message: t("invalidUser"),
       });
     }
   };

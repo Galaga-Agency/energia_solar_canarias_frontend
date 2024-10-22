@@ -125,5 +125,9 @@
   "validateCode": "Validate Code",
   "internalServerError": "Could not connect to the server. Please try again later. If the error persists, contact support@galagaagency.com.",
   "invalidUser": "User not found, please check your credentials.",
-  "invalidPassword": "Invalid password, please try again."
+  "invalidPassword": "Invalid password, please try again.",
+  "name": "Firstname",
+  "surname": "Surname",
+  "clase": "Status",
+  "logout": "Logout"
 }

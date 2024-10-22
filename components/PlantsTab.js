@@ -50,14 +50,6 @@ const PlantsTab = () => {
     }
   }, [isLoading, plants]);
 
-  if (!isDataReady && (isLoading || plants.length === 0)) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-custom-dark-gray">Loading...</div>
-      </div>
-    );
-  }
-
   const handleAddPlantClick = () => {
     setIsFormOpen(true);
   };
@@ -86,8 +78,12 @@ const PlantsTab = () => {
   }
 
   return (
-    <div className="p-8 md:p-10 h-full pb-24">
-      <div className="flex items-center mb-10 md:mb-2">
+    <div className="relative p-8 md:p-10 h-screen pb-24">
+      <div className="absolute bottom-0 right-0 flex items-center justify-center w-full z-0">
+        <PiSolarPanelFill className="text-custom-dark-gray dark:custom-dark-blue opacity-40 dark:opacity-5 text-[110vw] md:text-[90vw] lg:text-[50vw] xl:text-[40vw]" />
+      </div>
+
+      <div className="flex items-center mb-10 md:mb-2 z-10">
         <Image
           src={companyIcon}
           alt="Company Icon"
@@ -137,8 +133,8 @@ const PlantsTab = () => {
         </>
       ) : (
         <div className="h-auto w-full flex flex-col justify-center items-center">
-          <PiSolarPanelFill className="text-custom-dark-blue dark:text-custom-light-gray text-6xl text-center mt-24" />
-          <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray ">
+          {/* <PiSolarPanelFill className="text-custom-dark-blue dark:text-custom-light-gray text-6xl text-center mt-24" /> */}
+          <p className="mt-24 text-center text-lg text-custom-dark-blue dark:text-custom-light-gray ">
             {t("noPlantsFound")}
           </p>
         </div>

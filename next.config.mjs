@@ -108,6 +108,11 @@ const nextConfig = {
         hostname: "cdn.weatherapi.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "app-energiasolarcanarias-backend.com",
+        pathname: "/**",
+      },
     ],
   },
 };

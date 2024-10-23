@@ -10,7 +10,7 @@ import {
   validateToken,
   setUser,
 } from "@/store/slices/userSlice";
-import CustomButton from "./CustomButton";
+import PrimaryButton from "./PrimaryButton";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
 import Cookies from "js-cookie";
@@ -113,6 +113,7 @@ const AuthenticationForm = () => {
     } catch (err) {
       let errorMessage;
 
+      // Handle different errors
       if (err === "Failed to fetch") {
         errorMessage = t("internalServerError");
       } else if (err.includes("la contraseña es inválida")) {
@@ -196,13 +197,13 @@ const AuthenticationForm = () => {
           type="password"
           placeholder={t("passwordPlaceholder")}
         />
-        <CustomButton
+        <PrimaryButton
           type="submit"
           disabled={loading || isSubmitting}
           isLoading={isSubmitting}
         >
           {t("signIn")}
-        </CustomButton>
+        </PrimaryButton>
       </form>
       <div className="mt-2 text-center">
         <p className="text-gray-800 dark:text-gray-200 text-sm">
@@ -305,13 +306,13 @@ const AuthenticationForm = () => {
               )}
             </div>
           </div>
-          <CustomButton
+          <PrimaryButton
             type="submit"
             disabled={loading || isSubmitting}
             isLoading={isSubmitting}
           >
             {t("register")}
-          </CustomButton>
+          </PrimaryButton>
         </form>
         {error && <div className="text-center text-red-500 mt-4">{error}</div>}
         <div className="mt-2 text-center">
@@ -356,13 +357,13 @@ const AuthenticationForm = () => {
             placeholder={t("codePlaceholder")}
             className="w-full px-4 py-2 border rounded-md dark:text-black"
           />
-          <CustomButton
+          <PrimaryButton
             onClick={handleTokenSubmit}
             disabled={loading}
             isLoading={isSubmitting}
           >
             {t("validateCode")}
-          </CustomButton>
+          </PrimaryButton>
         </div>
       );
     }

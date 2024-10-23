@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/navigation";
-import CustomButton from "@/components/CustomButton";
+import PrimaryButton from "@/components/PrimaryButton";
 import { sendPasswordResetEmail } from "@/services/api";
 import TransitionEffect from "@/components/TransitionEffect";
 import { motion } from "framer-motion";
@@ -96,14 +96,14 @@ const ForgotPassword = () => {
                   )}
                 </div>
               </div>
-              <CustomButton
+              <PrimaryButton
                 type="submit"
                 disabled={isSubmitting}
                 isLoading={isSubmitting}
                 className="w-full py-3 text-center text-custom-dark-blue font-secondary"
               >
                 {t("sendResetLink")}
-              </CustomButton>
+              </PrimaryButton>
             </form>
           </motion.div>
 

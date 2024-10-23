@@ -51,3 +51,19 @@ span {
 .button-shadow {
   @apply shadow-dark-shadow dark:shadow-white-shadow hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow;
 }
+
+.perspective {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}

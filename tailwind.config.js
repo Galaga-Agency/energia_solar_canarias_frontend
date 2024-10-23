@@ -33,8 +33,8 @@ module.exports = {
           "linear-gradient(to right, rgb(255, 213, 122), rgb(0, 44, 63))",
       },
       boxShadow: {
-        "dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 16px",
-        "white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 16px",
+        "dark-shadow": "rgba(0, 0, 0, 1) 0px 0px 8px",
+        "white-shadow": "rgba(255, 255, 255, 1) 0px 0px 8px",
         "hover-white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 32px",
         "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },

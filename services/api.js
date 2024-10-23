@@ -1,5 +1,7 @@
 import axios from "axios";
 
+console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+
 export const loginRequestAPI = async (userData) => {
   try {
     const response = await fetch(
@@ -14,7 +16,10 @@ export const loginRequestAPI = async (userData) => {
         body: JSON.stringify(userData),
       }
     );
-
+    console.log(
+      "Making request to:",
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`
+    );
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Login failed (unknown error)");

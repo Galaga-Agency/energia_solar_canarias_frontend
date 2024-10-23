@@ -32,7 +32,7 @@ export default function Home() {
     } else {
       console.log("No user cookie found.");
     }
-  }, [dispatch]);
+  }, [dispatch, router]);
 
   return (
     <div className="h-screen w-screen bg-white dark:bg-custom-dark-blue overflow-hidden relative">

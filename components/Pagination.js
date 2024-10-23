@@ -35,7 +35,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
-    <div className="flex justify-center items-center space-x-2 mt-6">
+    <div className="flex justify-center items-center space-x-2 mt-6 mb-12 z-[999]">
       <button
         className={`p-2 rounded-full border transition-all duration-300 ${
           currentPage === 1
@@ -51,7 +51,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       {renderPageNumbers()}
 
       <button
-        className={`p-2 rounded-full border transition-all duration-300 ${
+        className={`p-2 rounded-full border transition-all duration-300 z-[999] ${
           currentPage === totalPages
             ? "opacity-50 cursor-not-allowed"
             : "hover:bg-custom-yellow hover:text-black text-white bg-custom-dark-blue"

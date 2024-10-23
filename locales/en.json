@@ -152,5 +152,7 @@
   "cifNif": "CIF/NIF",
   "userStatus": "Status",
   "save": "Save",
-  "userAdress": "Address"
+  "userAdress": "Address",
+  "noDataFound": "No Data Found",
+  "tryAgainLater": "Please try again later or check your connection."
 }

@@ -147,7 +147,7 @@ const PlantsTab = () => {
 
       <button
         onClick={handleAddPlantClick}
-        className="absolute bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"
+        className="fixed bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"
       >
         <PlusIcon className="w-6 h-6" />
       </button>

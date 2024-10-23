@@ -6,7 +6,7 @@ const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const loginRequestAPI = async (userData) => {
   try {
-    const response = await fetch(`${process.env.API_BASE_URL}/login`, {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -15,7 +15,9 @@ export const loginRequestAPI = async (userData) => {
       },
       body: JSON.stringify(userData),
     });
-    console.log("Making request to:", `${process.env.API_BASE_URL}/login`);
+
+    console.log("Making request to:", `${API_BASE_URL}/login`);
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Login failed (unknown error)");

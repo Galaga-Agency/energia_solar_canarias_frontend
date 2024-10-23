@@ -48,7 +48,8 @@ ChartJS.register(
 
 const PlantDetailsPage = ({ params }) => {
   const { userId, plantId } = params;
-  const plants = useSelector(selectPlants);
+  // const plants = useSelector(selectPlants);
+  const [plants, setPlants] = useState([]);
   const [plant, setPlant] = useState(null);
   const { t } = useTranslation();
   const [weatherData, setWeatherData] = useState(null);
@@ -56,6 +57,22 @@ const PlantDetailsPage = ({ params }) => {
   const { isMobile, isDesktop } = useDeviceType();
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
   const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const fetchPlantsData = async () => {
+      try {
+        const response = await fetch("/plants.json");
+        const data = await response.json();
+        setPlants(data.plants);
+      } catch (error) {
+        console.error("Error fetching the plants data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlantsData();
+  }, []);
 
   useEffect(() => {
     const selectedPlant = plants.find((p) => p.id === parseInt(plantId));

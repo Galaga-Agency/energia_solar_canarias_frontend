@@ -16,8 +16,6 @@ export const loginRequestAPI = async (userData) => {
       body: JSON.stringify(userData),
     });
 
-    console.log("Making request to:", `${API_BASE_URL}/login`);
-
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Login failed (unknown error)");
@@ -34,7 +32,7 @@ export const validateTokenRequestAPI = async (id, token) => {
   const requestBody = JSON.stringify({ id, token });
 
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.API_BASE_URL}/token`, {
+    fetch(`${API_BASE_URL}/token`, {
       method: "POST",
       body: requestBody,
       headers: {

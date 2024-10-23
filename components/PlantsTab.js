@@ -8,13 +8,6 @@ import SortMenu from "@/components/SortMenu";
 import Pagination from "@/components/Pagination";
 import useFilter from "@/hooks/useFilter";
 import useSort from "@/hooks/useSort";
-import { useSelector } from "react-redux";
-import {
-  selectPlants,
-  selectError,
-  selectLoading,
-} from "@/store/slices/plantsSlice";
-import { selectUser } from "@/store/slices/userSlice";
 import PlantCard from "@/components/PlantCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { FaMapMarkedAlt } from "react-icons/fa";
@@ -27,11 +20,8 @@ import companyIcon from "@/public/assets/icons/icon-512x512.png";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
-  const plants = useSelector(selectPlants);
-  const error = useSelector(selectError);
-  const isLoading = useSelector(selectLoading);
-  const userId = useSelector(selectUser)?.id;
-
+  const [plants, setPlants] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDataReady, setIsDataReady] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -43,6 +33,22 @@ const PlantsTab = () => {
     "name"
   );
   const { sortedItems: sortedPlants, sortItems } = useSort(filteredPlants);
+
+  useEffect(() => {
+    const fetchPlantsData = async () => {
+      try {
+        const response = await fetch("/plants.json");
+        const data = await response.json();
+        setPlants(data.plants);
+      } catch (error) {
+        console.error("Error fetching the plants data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlantsData();
+  }, []);
 
   useEffect(() => {
     if (!isLoading && plants.length > 0) {
@@ -119,7 +125,7 @@ const PlantsTab = () => {
         <>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10">
             {paginatedPlants.map((plant) => (
-              <PlantCard key={plant.id} plant={plant} userId={userId} />
+              <PlantCard key={plant.id} plant={plant} />
             ))}
           </div>
 
@@ -133,12 +139,12 @@ const PlantsTab = () => {
         </>
       ) : (
         <div className="h-auto w-full flex flex-col justify-center items-center">
-          {/* <PiSolarPanelFill className="text-custom-dark-blue dark:text-custom-light-gray text-6xl text-center mt-24" /> */}
-          <p className="mt-24 text-center text-lg text-custom-dark-blue dark:text-custom-light-gray ">
+          <p className="mt-24 text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
             {t("noPlantsFound")}
           </p>
         </div>
       )}
+
       <button
         onClick={handleAddPlantClick}
         className="absolute bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"

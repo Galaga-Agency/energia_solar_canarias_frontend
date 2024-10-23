@@ -19,7 +19,6 @@ export default function Home() {
     if (userCookie) {
       try {
         const user = JSON.parse(userCookie);
-        console.log("user cookie retrieved: ", user);
         if (user && user.id && user.clase === "cliente") {
           dispatch(setUser(user));
           router.push(`/dashboard/${user.id}/plants`);

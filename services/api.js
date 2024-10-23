@@ -1,25 +1,21 @@
 import axios from "axios";
 
-console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const USUARIO = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const loginRequestAPI = async (userData) => {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          usuario: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
-          apiKey: process.env.NEXT_PUBLIC_API_KEY,
-        },
-        body: JSON.stringify(userData),
-      }
-    );
-    console.log(
-      "Making request to:",
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`
-    );
+    const response = await fetch(`${process.env.API_BASE_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+      },
+      body: JSON.stringify(userData),
+    });
+    console.log("Making request to:", `${process.env.API_BASE_URL}/login`);
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Login failed (unknown error)");
@@ -36,13 +32,13 @@ export const validateTokenRequestAPI = async (id, token) => {
   const requestBody = JSON.stringify({ id, token });
 
   return new Promise((resolve, reject) => {
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/token`, {
+    fetch(`${process.env.API_BASE_URL}/token`, {
       method: "POST",
       body: requestBody,
       headers: {
         "Content-Type": "application/json",
-        usuario: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
-        apiKey: process.env.NEXT_PUBLIC_API_KEY,
+        usuario: USUARIO,
+        apiKey: API_KEY,
       },
     })
       .then((response) => {

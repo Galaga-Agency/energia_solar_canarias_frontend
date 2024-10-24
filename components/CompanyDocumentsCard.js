@@ -1,24 +1,47 @@
 import { useTranslation } from "next-i18next";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 const CompanyDocumentsCard = () => {
   const { t } = useTranslation();
 
+  const documents = [
+    {
+      key: "cookiesPolicy",
+      url: "https://www.energiasolarcanarias.es/politica-de-cookies",
+      description: t("cookiesPolicyDescription"), // Translated description
+    },
+    {
+      key: "privacyPolicy",
+      url: "https://www.energiasolarcanarias.es/politica-de-privacidad",
+      description: t("privacyPolicyDescription"), // Translated description
+    },
+    {
+      key: "legalNotice",
+      url: "https://www.energiasolarcanarias.es/aviso-legal",
+      description: t("legalNoticeDescription"), // Translated description
+    },
+  ];
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-dark-shadow border border-gray-200 dark:border-gray-700 p-6">
-      <h2 className="text-xl  mb-4 border-b pb-2 text-gray-800 dark:text-gray-200">
+    <div className="w-full h-full bg-white/50 dark:bg-gray-800/60 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-sm backdrop-filter">
+      <h2 className="text-xl mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
         {t("companyDocuments")}
       </h2>
       <ul className="space-y-3">
-        {["cookiesPolicy", "privacyPolicy", "legalNotice"].map((doc) => (
-          <li key={doc}>
+        {documents.map((doc) => (
+          <li key={doc.key}>
             <a
-              href={`https://www.energiasolarcanarias.es/${doc.toLowerCase()}`}
-              className="text-custom-dark-blue dark:text-custom-yellow hover:opacity-80 transition-opacity font-secondary"
+              href={doc.url}
+              className="text-custom-dark-blue dark:text-custom-light-gray underline underline-offset-2 hover:opacity-80 transition-opacity font-secondary"
               target="_blank"
               rel="noopener noreferrer"
             >
-              {t(doc)}
+              {t(doc.key)}
+              <FaExternalLinkAlt className="inline ml-1" />
             </a>
+            <p className="text-gray-600 dark:text-gray-400">
+              {doc.description}
+            </p>
           </li>
         ))}
       </ul>

@@ -13,10 +13,11 @@ import PlantsMapModal from "@/components/PlantsMapModal";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { useTranslation } from "next-i18next";
 import Loading from "./Loading";
-import { PiSolarPanelFill } from "react-icons/pi";
+import { PiSolarPanelFill, PiSolarPanelThin } from "react-icons/pi";
 import PlantStatuses from "./PlantStatuses";
 import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
+import Texture from "./Texture";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
@@ -84,43 +85,37 @@ const PlantsTab = () => {
   }
 
   return (
-    <div className="relative p-8 md:p-10 h-screen pb-24 md:overflow-hidden">
-      <div className="absolute -bottom-12 right-0 flex items-center justify-center w-full z-0">
-        <PiSolarPanelFill className="text-custom-dark-gray dark:custom-dark-blue opacity-40 dark:opacity-5 text-[110vw] md:text-[90vw] lg:text-[50vw] xl:text-[40vw]" />
-      </div>
-
+    <div className="relative p-8 md:p-10 h-auto z-10">
+      <Texture />
       <div className="flex items-center mb-10 md:mb-2 z-10">
         <Image
           src={companyIcon}
           alt="Company Icon"
-          className="w-12 h-12 mr-2"
+          className="w-12 h-12 mr-2 z-10"
         />
-        <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue">
+        <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
           {t("plants")}
         </h2>
       </div>
-
       <AddPlantForm onClose={closeForm} isOpen={isFormOpen} />
       <PlantsMapModal
         isOpen={isMapOpen}
         onClose={closeMap}
         plants={sortedPlants}
       />
-
       <FilterInput onFilterChange={filterItems} />
-      <div className="flex flex-col md:flex-row md:justify-between">
+      <div className="flex flex-col md:flex-row md:justify-between z-30">
         <div className="flex gap-4 justify-start mb-6 md:mb-0">
           <SortMenu onSortChange={sortItems} />
           <button
             onClick={openMap}
-            className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex-shrink-0 button-shadow"
+            className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex-shrink-0 button-shadow"
           >
             <FaMapMarkedAlt className="text-2xl" />
           </button>
         </div>
         <PlantStatuses />
       </div>
-
       {paginatedPlants.length > 0 ? (
         <>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10">
@@ -139,12 +134,12 @@ const PlantsTab = () => {
         </>
       ) : (
         <div className="h-auto w-full flex flex-col justify-center items-center">
-          <p className="mt-24 text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
+          <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+          <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
             {t("noPlantsFound")}
           </p>
         </div>
       )}
-
       <button
         onClick={handleAddPlantClick}
         className="fixed bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"

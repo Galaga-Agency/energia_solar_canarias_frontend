@@ -54,7 +54,7 @@ const SortMenu = ({ onSortChange }) => {
 
   return (
     <div
-      className="relative w-full md:w-auto md:min-w-[16rem]"
+      className="relative w-full md:w-auto md:min-w-[16rem] z-30"
       ref={dropdownRef}
     >
       <button

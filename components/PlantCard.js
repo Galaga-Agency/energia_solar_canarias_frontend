@@ -22,7 +22,7 @@ const PlantCard = ({ plant, userId, tab }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="relative bg-white dark:bg-custom-dark-blue p-6 rounded-lg shadow-lg transition duration-500 hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow cursor-pointer"
+      className="relative bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 backdrop-blur-lg backdrop-filter p-6 rounded-lg shadow-lg transition duration-500 hover:shadow-hover-dark-shadow dark:hover:shadow-hover-white-shadow cursor-pointer"
     >
       {/* Status Dot */}
       <div

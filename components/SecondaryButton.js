@@ -11,7 +11,7 @@ const SecondaryButton = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`relative mt-4 flex items-center justify-center mx-auto px-6 py-2 w-full max-w-[200px] h-10 rounded-md font-secondary tracking-wide transition-all duration-300 ease-in-out
+      className={`text-nowrap text-red-500 relative mt-4 flex items-center justify-center mx-auto px-6 py-2 w-full max-w-[200px] h-10 rounded-md font-secondary tracking-wide transition-all duration-300 ease-in-out
         ${
           disabled ? "opacity-50 cursor-not-allowed" : "hover:scale-105"
         } bg-transparent text-custom-dark-blue dark:text-custom-dark-gray  font-semibold shadow-lg hover:shadow-white

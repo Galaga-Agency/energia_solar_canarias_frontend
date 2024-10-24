@@ -20,7 +20,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       pageNumbers.push(
         <button
           key={i}
-          className={`mx-1 px-4 py-2 rounded-full border transition-colors duration-300 ${
+          className={`mx-1 px-4 py-2 rounded-full border transition-colors duration-300 z-30 ${
             currentPage === i
               ? "bg-custom-yellow text-black"
               : "bg-custom-dark-blue text-white hover:bg-custom-yellow hover:text-black"
@@ -35,9 +35,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
-    <div className="flex justify-center items-center space-x-2 mt-6 mb-12 z-[999]">
+    <div className="flex justify-center items-center space-x-2 mt-6 mb-20 z-30">
       <button
-        className={`p-2 rounded-full border transition-all duration-300 ${
+        className={`p-2 rounded-full border transition-all duration-300 z-30 ${
           currentPage === 1
             ? "opacity-50 cursor-not-allowed"
             : "hover:bg-custom-yellow hover:text-black text-white bg-custom-dark-blue"
@@ -45,13 +45,13 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         disabled={currentPage === 1}
         onClick={handlePrevPage}
       >
-        <FiChevronLeft className="text-xl dark:text-custom-yellow" />
+        <FiChevronLeft className="text-xl dark:text-custom-yellow z-30" />
       </button>
 
       {renderPageNumbers()}
 
       <button
-        className={`p-2 rounded-full border transition-all duration-300 z-[999] ${
+        className={`p-2 rounded-full border transition-all duration-300 z-30 ${
           currentPage === totalPages
             ? "opacity-50 cursor-not-allowed"
             : "hover:bg-custom-yellow hover:text-black text-white bg-custom-dark-blue"

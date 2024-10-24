@@ -77,32 +77,6 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
     mapRef.current = mapInstance;
   };
 
-  if (!isLoaded) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-custom-dark-gray">
-          Loading Google Maps...
-        </div>
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-red-500">Error loading Google Maps</div>
-      </div>
-    );
-  }
-
-  if (geocodeError) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-red-500">{geocodeError}</div>
-      </div>
-    );
-  }
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -116,7 +90,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50 z-50"
             onClick={onClose}
           />
           <motion.div
@@ -124,7 +98,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray rounded-lg w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-auto p-4 pb-0"
+            className="bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray rounded-lg w-[90vw] md:w-[80vw] max-w-4xl relative z-50 overflow-y-auto h-auto p-4 pb-0"
           >
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
@@ -145,7 +119,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
             </GoogleMap>
             <button
               onClick={onClose}
-              className="text-red-500 py-2 px-4 flex ml-auto"
+              className="text-red-500 py-2 px-4 flex ml-auto z-50"
             >
               {t("closeMap")}
             </button>

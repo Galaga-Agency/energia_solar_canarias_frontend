@@ -36,8 +36,8 @@ const Texture = () => {
             <path
               d="M15.986 4.186 4.1 16.072v.58L16.566 4.186Zm7.62 0 12.38 12.38v-.58l-11.8-11.8Zm12.38 19.248L23.52 35.9h.58l11.886-11.886ZM4.1 23.52v.58l11.8 11.8h.58z"
               transform="translate(4,0)"
-              stroke-linecap="square"
-              stroke-width="1"
+              strokeLinecap="square"
+              strokeWidth="1"
               stroke="rgba(255, 255, 255, 0.3)"
               fill="none"
               opacity={theme === "dark" ? "0.1" : "0.5"}

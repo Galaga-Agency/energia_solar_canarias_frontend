@@ -15,7 +15,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 
 const ProfileOverviewCard = ({
   user,
-  onUpdateProfile,
+  onUpdateAdmin,
   profilePic,
   setProfilePic,
 }) => {
@@ -24,7 +24,7 @@ const ProfileOverviewCard = ({
   const { register, handleSubmit } = useForm();
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
 
-  const fileInputRef = useRef(null); // Ref for hidden file input
+  const fileInputRef = useRef(null);
 
   // Handle profile picture change
   const handleProfilePicChange = (e) => {
@@ -91,21 +91,23 @@ const ProfileOverviewCard = ({
           <div className="space-y-4 text-gray-700 dark:text-gray-300 mb-2">
             {/* Profile Info */}
             {[
-              { label: t("name"), value: user?.nombre },
-              { label: t("surname"), value: user?.apellido },
-              { label: t("email"), value: user?.email },
-              { label: t("mobile"), value: user?.movil },
-              { label: t("company"), value: user?.company },
-              { label: t("userAdress"), value: user?.address },
-              { label: t("city"), value: user?.city },
-              { label: t("postcode"), value: user?.postcode },
-              { label: t("regionState"), value: user?.region },
-              { label: t("country"), value: user?.country },
-              { label: t("cifNif"), value: user?.cifNif },
+              { label: t("name"), value: user?.nombre || "N/A" },
+              { label: t("surname"), value: user?.apellido || "N/A" },
+              { label: t("email"), value: user?.email || "N/A" },
+              { label: t("mobile"), value: user?.movil || "N/A" },
+              { label: t("company"), value: user?.company || "N/A" },
+              { label: t("userAdress"), value: user?.address || "N/A" },
+              { label: t("city"), value: user?.city || "N/A" },
+              { label: t("postcode"), value: user?.postcode || "N/A" },
+              { label: t("regionState"), value: user?.region || "N/A" },
+              { label: t("country"), value: user?.country || "N/A" },
+              { label: t("cifNif"), value: user?.cifNif || "N/A" },
               {
                 label: t("userStatus"),
                 value:
-                  user?.clase.charAt(0).toUpperCase() + user?.clase.slice(1),
+                  user?.clase.charAt(0).toUpperCase() ||
+                  "N/A" + user?.clase.slice(1) ||
+                  "N/A",
               },
             ].map((field, index) => (
               <p key={index} className="flex justify-between gap-2">
@@ -113,7 +115,7 @@ const ProfileOverviewCard = ({
                   {field.label}:
                 </span>
                 <span className="text-custom-dark-blue dark:text-custom-yellow text-right">
-                  {field.value}
+                  {field.value || "N/A"}
                 </span>
               </p>
             ))}
@@ -255,8 +257,8 @@ const ProfileOverviewCard = ({
               className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
               placeholder={t("cifNif")}
             />
-            <div className="flex mt-6 justify-center">
-              <PrimaryButton type="submit">{t("save")}</PrimaryButton>{" "}
+            <div className="flex mt-6 pt-4 justify-center">
+              <PrimaryButton type="submit">{t("save")}</PrimaryButton>
               <SecondaryButton type="SecondaryB" onClick={handleCancelEdit}>
                 {t("cancel")}
               </SecondaryButton>

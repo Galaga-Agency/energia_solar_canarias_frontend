@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { useTranslation } from "next-i18next";
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import PrimaryButton from "./PrimaryButton";
-import SecondaryButton from "./SecondaryButton"; // Assuming you have this component
 
 const PasswordChangeCard = ({ onChangePassword }) => {
   const { t } = useTranslation();
@@ -16,7 +15,7 @@ const PasswordChangeCard = ({ onChangePassword }) => {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
 
-    if (newPassword !== repeatPassword) {
+    if (newPassword && newPassword !== repeatPassword) {
       setFeedbackMessage(t("passwordsDoNotMatch"));
       setIsSuccess(false);
       setIsFlipped(true);
@@ -25,7 +24,7 @@ const PasswordChangeCard = ({ onChangePassword }) => {
     }
 
     try {
-      const response = await onChangePassword(newPassword); // Assuming this returns a promise
+      const response = await onChangePassword(newPassword);
       if (response.success) {
         setFeedbackMessage(t("passwordChangeSuccess"));
         setIsSuccess(true);
@@ -50,7 +49,7 @@ const PasswordChangeCard = ({ onChangePassword }) => {
   };
 
   return (
-    <div className="relative w-full perspective">
+    <div className="relative w-full perspective md:-mt-6">
       <div
         className={`relative h-[280px] transition-transform duration-700 transform-style-3d ${
           isFlipped ? "rotate-y-180" : ""
@@ -61,7 +60,7 @@ const PasswordChangeCard = ({ onChangePassword }) => {
           <h2 className="text-xl mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
             {t("changePassword")}
           </h2>
-          <form onSubmit={handlePasswordChange} className="space-y-4">
+          <form onSubmit={handlePasswordChange} className="space-y-6">
             <input
               type="password"
               value={newPassword}
@@ -92,12 +91,12 @@ const PasswordChangeCard = ({ onChangePassword }) => {
             ) : (
               <AiOutlineCloseCircle className="flex mx-auto text-5xl text-red-500 mb-4" />
             )}
-            <p className="text-xl text-gray-800 dark:text-gray-200">
+            <p className="text-xl text-gray-800 dark:text-gray-200 mb-6">
               {feedbackMessage}
             </p>
-            <SecondaryButton onClick={() => setIsFlipped(false)}>
+            <PrimaryButton onClick={() => setIsFlipped(false)}>
               {t("backToForm")}
-            </SecondaryButton>
+            </PrimaryButton>
           </div>
         </div>
       </div>

@@ -5,10 +5,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
 import PlantsTab from "@/components/PlantsTab";
-import WifiTab from "@/components/WifiTab";
-import MessageTab from "@/components/MessageTab";
-import DiscoveryTab from "@/components/DiscoveryTab";
-import ProfileTab from "@/components/ProfileTab";
+import NotificationsTab from "@/components/NotificationsTab";
+import SettingsTab from "@/components/SettingsTab";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import useLocalStorageState from "use-local-storage-state";
@@ -29,13 +27,21 @@ const DashboardPage = ({ params }) => {
   const loading = useSelector(selectLoading);
   const plants = useSelector(selectPlants);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [loadingPlants, setLoadingPlants] = useState(true);
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
 
   useEffect(() => {
     const initializeDashboard = async () => {
       if (user && user.id === userId) {
-        await dispatch(fetchPlants(userId));
-        setIsInitialLoad(false);
+        setLoadingPlants(true);
+        try {
+          await dispatch(fetchPlants(userId));
+        } catch (error) {
+          console.error("Failed to fetch plants:", error);
+        } finally {
+          setLoadingPlants(false);
+          setIsInitialLoad(false);
+        }
       } else {
         router.push("/");
       }
@@ -46,7 +52,7 @@ const DashboardPage = ({ params }) => {
     }
   }, [user, userId, dispatch, router, isInitialLoad]);
 
-  if (isInitialLoad && (loading || plants.length === 0)) {
+  if (loadingPlants || (isInitialLoad && plants.length === 0)) {
     return <Loading />;
   }
 
@@ -54,14 +60,10 @@ const DashboardPage = ({ params }) => {
     switch (tab) {
       case "plants":
         return <PlantsTab />;
-      case "wifi":
-        return <WifiTab />;
-      case "message":
-        return <MessageTab />;
-      case "discovery":
-        return <DiscoveryTab />;
-      case "profile":
-        return <ProfileTab />;
+      case "notifications":
+        return <NotificationsTab />;
+      case "settings":
+        return <SettingsTab />;
       default:
         return <PlantsTab />;
     }
@@ -78,12 +80,8 @@ const DashboardPage = ({ params }) => {
       <TransitionEffect />
       <div className="flex-grow">
         <div className="absolute top-4 right-4 z-50 flex flex-col items-end gap-2">
-          <div className="flex flex-col items-end">
-            <ThemeToggle />
-          </div>
-          <div className="flex flex-col items-end">
-            <LanguageSelector />
-          </div>
+          <ThemeToggle />
+          <LanguageSelector />
         </div>
         {renderTabContent()}
       </div>

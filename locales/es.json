@@ -225,5 +225,22 @@
   "notificationSettingInfo": "La configuración entrará en vigor aproximadamente 1 hora después de finalizar.",
   "receiveEmailAlerts": "Recibir alertas por correo electrónico",
   "receiveSmsAlerts": "Recibir alertas por SMS",
-  "enterYourPhone": "Introduce tu número de teléfono"
+  "enterYourPhone": "Introduce tu número de teléfono",
+  "admin": "Admin",
+  "apiKeyRequestDescription": "Solicita una clave API para acceder a nuestros servicios.",
+  "viewApiGuide": "Ver guía de API",
+  "enterYourPhoneNumber": "Introduce tu número de teléfono",
+  "metricsConfiguration": "Configuración de Métricas",
+  "metricSystem": "Sistema Métrico",
+  "imperialSystem": "Sistema Imperial",
+  "dateFormat": "Formato de Fecha",
+  "dd-mm-yyyy": "DD-MM-AAAA",
+  "mm-dd-yyyy": "MM-DD-AAAA",
+  "yyyy-mm-dd": "AAAA-MM-DD",
+  "changesSaved": "Cambios guardados",
+  "changesCancelled": "Cambios cancelados",
+  "temperatureUnit": "Temperature Unit",
+  "celsius": "Celsius",
+  "fahrenheit": "Fahrenheit",
+  "settings": "Configuración"
 }

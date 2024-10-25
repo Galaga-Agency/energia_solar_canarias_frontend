@@ -1,14 +1,10 @@
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faWifi,
-  faEnvelope,
-  faCompass,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
+import { FaUserCog } from "react-icons/fa";
 
 const BottomNavbar = ({ userId }) => {
   const { t } = useTranslation();
@@ -22,24 +18,14 @@ const BottomNavbar = ({ userId }) => {
       path: "/dashboard/[userId]/plants",
     },
     {
-      icon: <FontAwesomeIcon icon={faWifi} className="text-2xl" />,
-      label: t("wifi"),
-      path: "/dashboard/[userId]/wifi",
-    },
-    {
       icon: <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />,
-      label: t("message"),
-      path: "/dashboard/[userId]/message",
+      label: t("notifications"),
+      path: "/dashboard/[userId]/notifications",
     },
     {
-      icon: <FontAwesomeIcon icon={faCompass} className="text-2xl" />,
-      label: t("discovery"),
-      path: "/dashboard/[userId]/discovery",
-    },
-    {
-      icon: <FontAwesomeIcon icon={faUser} className="text-2xl" />,
-      label: t("profile"),
-      path: "/dashboard/[userId]/profile",
+      icon: <FaUserCog className="text-2xl" />,
+      label: t("settings"),
+      path: "/dashboard/[userId]/settings",
     },
   ];
 

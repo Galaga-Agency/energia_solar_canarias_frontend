@@ -16,6 +16,7 @@ module.exports = {
         "spin-slow": "spin 3s linear infinite",
         grid: "grid 150s linear infinite",
         "spin-fast": "spin 1s linear infinite",
+        flash: "flash 1.5s ease-in-out forwards", // Adjusted duration
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -27,10 +28,6 @@ module.exports = {
         "custom-dark-blue": "rgb(0, 44, 63)",
         "custom-light-gray": "rgb(201, 202, 202)",
         "custom-dark-gray": "rgb(161, 161, 170)",
-      },
-      backgroundImage: {
-        "custom-gradient":
-          "linear-gradient(to right, rgb(255, 213, 122), rgb(0, 44, 63))",
       },
       boxShadow: {
         "dark-shadow": "rgba(0, 0, 0, 1) 0px 0px 8px",
@@ -51,6 +48,14 @@ module.exports = {
         spin: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
+        },
+        flash: {
+          "0%": { boxShadow: "0 0 0 rgba(255, 255, 255, 0)" },
+          "50%": {
+            boxShadow: "0 0 25px rgba(255, 255, 255, 1)",
+            borderRadius: "20px",
+          },
+          "100%": { boxShadow: "0 0 0 rgba(255, 255, 255, 0)" },
         },
       },
     },

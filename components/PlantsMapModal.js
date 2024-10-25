@@ -77,6 +77,30 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
     mapRef.current = mapInstance;
   };
 
+  if (!isLoaded) {
+    return (
+      <div className="p-8 md:p-10 h-full flex items-center justify-center">
+        <div className="text-lg text-custom-dark-gray">
+          Loading Google Maps...
+        </div>
+      </div>
+    );
+  }
+  if (loadError) {
+    return (
+      <div className="p-8 md:p-10 h-full flex items-center justify-center">
+        <div className="text-lg text-red-500">Error loading Google Maps</div>
+      </div>
+    );
+  }
+  if (geocodeError) {
+    return (
+      <div className="p-8 md:p-10 h-full flex items-center justify-center">
+        <div className="text-lg text-red-500">{geocodeError}</div>
+      </div>
+    );
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (

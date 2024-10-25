@@ -8,22 +8,22 @@ const CompanyDocumentsCard = () => {
     {
       key: "cookiesPolicy",
       url: "https://www.energiasolarcanarias.es/politica-de-cookies",
-      description: t("cookiesPolicyDescription"), // Translated description
+      description: t("cookiesPolicyDescription"),
     },
     {
       key: "privacyPolicy",
       url: "https://www.energiasolarcanarias.es/politica-de-privacidad",
-      description: t("privacyPolicyDescription"), // Translated description
+      description: t("privacyPolicyDescription"),
     },
     {
       key: "legalNotice",
       url: "https://www.energiasolarcanarias.es/aviso-legal",
-      description: t("legalNoticeDescription"), // Translated description
+      description: t("legalNoticeDescription"),
     },
   ];
 
   return (
-    <div className="w-full h-full bg-white/50 dark:bg-gray-800/60 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-sm backdrop-filter">
+    <div className="w-full h-full bg-white/50 dark:bg-gray-800/60 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-sm backdrop-filter md:mt-6 xl:mt-0">
       <h2 className="text-xl mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
         {t("companyDocuments")}
       </h2>

@@ -225,5 +225,22 @@
   "notificationSettingInfo": "The settings will take effect approximately 1 hour after completion.",
   "receiveEmailAlerts": "Receive alerts via email",
   "receiveSmsAlerts": "Receive alerts via SMS",
-  "enterYourPhone": "Enter your phone number"
+  "enterYourPhone": "Enter your phone number",
+  "admin": "Admin",
+  "apiKeyRequestDescription": "Request an API key to access our services.",
+  "viewApiGuide": "View API Guide",
+  "enterYourPhoneNumber": "Enter your phone number",
+  "metricsConfiguration": "Metrics Configuration",
+  "metricSystem": "Metric System",
+  "imperialSystem": "Imperial System",
+  "dateFormat": "Date Format",
+  "dd-mm-yyyy": "DD-MM-YYYY",
+  "mm-dd-yyyy": "MM-DD-YYYY",
+  "yyyy-mm-dd": "YYYY-MM-DD",
+  "changesSaved": "Changes saved",
+  "changesCancelled": "Changes cancelled",
+  "temperatureUnit": "Unidad de Temperatura",
+  "celsius": "Celsius",
+  "fahrenheit": "Fahrenheit",
+  "settings": "Settings"
 }

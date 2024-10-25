@@ -4,7 +4,7 @@ import InstallationGuide from "@/components/InstallationGuide";
 import LanguageSelector from "@/components/LanguageSelector";
 import LogoAnimation from "@/components/LogoAnimation";
 import ThemeToggle from "@/components/ThemeToggle";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/slices/userSlice";
@@ -13,14 +13,16 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     const userCookie = Cookies.get("user");
-    if (userCookie) {
+    if (userCookie && !hasNavigated) {
       try {
         const user = JSON.parse(userCookie);
         if (user && user.id && user.clase === "cliente") {
           dispatch(setUser(user));
+          setHasNavigated(true); // Prevent further navigation
           router.push(`/dashboard/${user.id}/plants`);
         } else {
           console.warn("User cookie data is invalid:", user);
@@ -31,7 +33,7 @@ export default function Home() {
     } else {
       console.log("No user cookie found.");
     }
-  }, [dispatch, router]);
+  }, [dispatch, router, hasNavigated]);
 
   return (
     <div className="h-screen w-screen bg-white dark:bg-custom-dark-blue overflow-hidden relative">

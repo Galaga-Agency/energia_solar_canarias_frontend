@@ -38,7 +38,6 @@ export const updateUserProfile = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await updateUserProfileAPI(userData);
-      console.log("response from redux: ", response);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);

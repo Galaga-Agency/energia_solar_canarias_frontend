@@ -9,15 +9,15 @@ import NotificationsTab from "@/components/NotificationsTab";
 import SettingsTab from "@/components/SettingsTab";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
-import useLocalStorageState from "use-local-storage-state";
 import LanguageSelector from "@/components/LanguageSelector";
-import ThemeToggle from "@/components/ThemeToggle";
 import { selectUser } from "@/store/slices/userSlice";
 import {
   fetchPlants,
   selectLoading,
   selectPlants,
 } from "@/store/slices/plantsSlice";
+import { selectTheme } from "@/store/slices/themeSlice";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const DashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
@@ -26,8 +26,8 @@ const DashboardPage = ({ params }) => {
   const { userId, tab } = params;
   const loading = useSelector(selectLoading);
   const plants = useSelector(selectPlants);
+  const theme = useSelector(selectTheme);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -63,11 +63,8 @@ const DashboardPage = ({ params }) => {
 
   return (
     <div
-      className={`min-h-screen w-auto flex flex-col ${
-        theme === "dark"
-          ? "bg-gray-900"
-          : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
-      } relative overflow-y-auto`}
+      className={`min-h-screen w-auto flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900
+      relative overflow-y-auto p-8`}
     >
       <TransitionEffect />
       <div className="flex-grow">

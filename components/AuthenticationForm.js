@@ -133,6 +133,15 @@ const AuthenticationForm = () => {
             type="password"
             placeholder={t("passwordPlaceholder")}
           />
+          <div className="text-center">
+            <button
+              type="button"
+              className="text-blue-500 hover:underline font-secondary mt-2 dark:text-blue-300"
+              onClick={() => router.push("/forgot-password")}
+            >
+              {t("forgotPassword")}
+            </button>
+          </div>
           <br />
           <PrimaryButton type="submit" disabled={loading || isSubmitting}>
             {t("signIn")}
@@ -206,11 +215,11 @@ const AuthenticationForm = () => {
                   required: t("privacyPolicyConsent"),
                 })}
               />
-              <span className="ml-2 text-custom-light-gray">
+              <span className="ml-2 text-gray-800 dark:text-gray-200">
                 {t("privacyPolicyLabel")}
                 <a
                   href="https://www.energiasolarcanarias.es/politica-de-cookies"
-                  className="text-blue-300 hover:underline"
+                  className="text-blue-500 dark:text-blue-300 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -219,7 +228,7 @@ const AuthenticationForm = () => {
                 ,{" "}
                 <a
                   href="https://www.energiasolarcanarias.es/politica-de-privacidad"
-                  className="text-blue-300 hover:underline"
+                  className="text-blue-500 dark:text-blue-300 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -228,7 +237,7 @@ const AuthenticationForm = () => {
                 {t("andTheLegalNoticePrefix")}{" "}
                 <a
                   href="https://www.energiasolarcanarias.es/aviso-legal"
-                  className="text-blue-300 hover:underline"
+                  className="text-blue-500 dark:text-blue-300 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

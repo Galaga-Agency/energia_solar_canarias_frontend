@@ -85,68 +85,70 @@ const PlantsTab = () => {
   }
 
   return (
-    <div className="relative p-8 md:p-10 h-auto z-10">
+    <>
       <Texture />
-      <div className="flex items-center mb-10 md:mb-2 z-10">
-        <Image
-          src={companyIcon}
-          alt="Company Icon"
-          className="w-12 h-12 mr-2 z-10"
+      <div className="relative h-auto z-10">
+        <div className="flex items-center mb-10 md:mb-2 z-10">
+          <Image
+            src={companyIcon}
+            alt="Company Icon"
+            className="w-12 h-12 mr-2 z-10"
+          />
+          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
+            {t("plants")}
+          </h2>
+        </div>
+        <AddPlantForm onClose={closeForm} isOpen={isFormOpen} />
+        <PlantsMapModal
+          isOpen={isMapOpen}
+          onClose={closeMap}
+          plants={sortedPlants}
         />
-        <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
-          {t("plants")}
-        </h2>
-      </div>
-      <AddPlantForm onClose={closeForm} isOpen={isFormOpen} />
-      <PlantsMapModal
-        isOpen={isMapOpen}
-        onClose={closeMap}
-        plants={sortedPlants}
-      />
-      <FilterInput onFilterChange={filterItems} />
-      <div className="flex flex-col md:flex-row md:justify-between z-30">
-        <div className="flex gap-4 justify-start mb-6 md:mb-0">
-          <SortMenu onSortChange={sortItems} />
-          <button
-            onClick={openMap}
-            className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex-shrink-0 button-shadow"
-          >
-            <FaMapMarkedAlt className="text-2xl" />
-          </button>
-        </div>
-        <PlantStatuses />
-      </div>
-      {paginatedPlants.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10">
-            {paginatedPlants.map((plant) => (
-              <PlantCard key={plant.id} plant={plant} />
-            ))}
+        <FilterInput onFilterChange={filterItems} />
+        <div className="flex flex-col md:flex-row md:justify-between z-30">
+          <div className="flex gap-4 justify-start mb-6 md:mb-0">
+            <SortMenu onSortChange={sortItems} />
+            <button
+              onClick={openMap}
+              className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex-shrink-0 button-shadow"
+            >
+              <FaMapMarkedAlt className="text-2xl" />
+            </button>
           </div>
-
-          {sortedPlants.length > plantsPerPage && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          )}
-        </>
-      ) : (
-        <div className="h-auto w-full flex flex-col justify-center items-center">
-          <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
-          <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
-            {t("noPlantsFound")}
-          </p>
+          <PlantStatuses />
         </div>
-      )}
-      <button
-        onClick={handleAddPlantClick}
-        className="fixed bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"
-      >
-        <PlusIcon className="w-6 h-6" />
-      </button>
-    </div>
+        {paginatedPlants.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10">
+              {paginatedPlants.map((plant) => (
+                <PlantCard key={plant.id} plant={plant} />
+              ))}
+            </div>
+
+            {sortedPlants.length > plantsPerPage && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
+        ) : (
+          <div className="h-auto w-full flex flex-col justify-center items-center">
+            <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+            <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
+              {t("noPlantsFound")}
+            </p>
+          </div>
+        )}
+        <button
+          onClick={handleAddPlantClick}
+          className="fixed bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"
+        >
+          <PlusIcon className="w-6 h-6" />
+        </button>
+      </div>
+    </>
   );
 };
 

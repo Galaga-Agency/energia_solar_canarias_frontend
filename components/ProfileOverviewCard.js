@@ -44,7 +44,6 @@ const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
   };
 
   const onSubmit = (data) => {
-    console.log("updating user with data: ", data);
     dispatch(updateUserProfile({ ...data, imagen: profilePic }));
     setIsFlipped(false);
   };

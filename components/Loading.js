@@ -1,7 +1,10 @@
-import useLocalStorageState from "use-local-storage-state";
+"use client";
+
+import { useSelector } from "react-redux";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const Loading = () => {
-  const [theme] = useLocalStorageState("theme", { defaultValue: "light" });
+  const theme = useSelector(selectTheme);
 
   return (
     <div

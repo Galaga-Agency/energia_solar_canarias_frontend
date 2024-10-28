@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectPlants } from "@/store/slices/plantsSlice";
+import { selectTheme } from "@/store/slices/themeSlice";
 import { useTranslation } from "next-i18next";
 import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,14 +32,12 @@ import ImageCarousel from "@/components/ImageCarousel";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import useDeviceType from "@/hooks/useDeviceType";
 import PageTransition from "@/components/PageTransition";
-import useLocalStorageState from "use-local-storage-state";
 import Loading from "@/components/Loading";
 import "react-loading-skeleton/dist/skeleton.css";
 import CustomSkeleton from "@/components/Skeleton";
 import { motion } from "framer-motion";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
-import TransitionEffect from "@/components/TransitionEffect";
 
 ChartJS.register(
   CategoryScale,
@@ -52,14 +51,13 @@ ChartJS.register(
 
 const PlantDetailsPage = ({ params }) => {
   const { userId, plantId } = params;
-  // const plants = useSelector(selectPlants);
   const [plants, setPlants] = useState([]);
   const [plant, setPlant] = useState(null);
   const { t } = useTranslation();
   const [weatherData, setWeatherData] = useState(null);
   const apiKey = process.env.NEXT_PUBLIC_WEATHERAPI_API_KEY;
   const { isMobile, isDesktop } = useDeviceType();
-  const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
+  const theme = useSelector(selectTheme);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -160,11 +158,7 @@ const PlantDetailsPage = ({ params }) => {
     return (
       <PageTransition>
         <div
-          className={`min-h-screen w-auto flex flex-col ${
-            theme === "dark"
-              ? "bg-gray-900"
-              : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
-          } relative overflow-y-auto p-6`}
+          className={`min-h-screen w-auto flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto p-6`}
         >
           <div className="flex justify-between items-center mb-6 gap-6">
             <button onClick={() => window.history.back()}>
@@ -290,8 +284,8 @@ const PlantDetailsPage = ({ params }) => {
           <div
             className={`min-h-screen w-auto flex flex-col ${
               theme === "dark"
-                ? "bg-gray-900"
-                : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
+                ? "dark:bg-gray-900"
+                : "light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray"
             } relative overflow-y-auto p-6`}
           >
             <div className="flex justify-between items-center mb-6 gap-6">

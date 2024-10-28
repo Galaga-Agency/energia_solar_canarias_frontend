@@ -109,7 +109,6 @@ export const validateTokenRequestAPI = async (id, token) => {
 };
 
 export const updateUserProfileAPI = async (userData) => {
-  console.log("Updating user profile with data:", userData);
   const response = await fetch(`${API_BASE_URL}/update-profile`, {
     method: "POST",
     headers: {

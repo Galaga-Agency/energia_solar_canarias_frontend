@@ -62,25 +62,32 @@ const AuthenticationForm = () => {
 
   const handleTokenSubmit = async () => {
     if (!tokenInput.trim() || !userToValidate) return;
+
+    setIsSubmitting(true);
     try {
       const response = await dispatch(
         validateToken({ id: userToValidate, token: tokenInput })
       ).unwrap();
+
       if (response.status === "success") {
-        dispatch(setUser(response.data));
         Cookies.set("user", JSON.stringify(response.data), { expires: 7 });
-        router.push(`/dashboard/${userToValidate}/plants`);
+
+        dispatch(setUser(response.data));
+        window.location.href = `/dashboard/${userToValidate}/plants`;
+        setTokenInput("");
       } else {
         setSubmissionResult({
           status: "loginError",
-          message: t("invalidUser"),
+          message: t("invalidToken"),
         });
       }
     } catch (error) {
       setSubmissionResult({
         status: "loginError",
-        message: t("invalidUser"),
+        message: t("invalidToken"),
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

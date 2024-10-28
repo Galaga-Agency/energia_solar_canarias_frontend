@@ -27,21 +27,13 @@ const DashboardPage = ({ params }) => {
   const loading = useSelector(selectLoading);
   const plants = useSelector(selectPlants);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [loadingPlants, setLoadingPlants] = useState(true);
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
 
   useEffect(() => {
     const initializeDashboard = async () => {
-      if (user && user.id === userId) {
-        setLoadingPlants(true);
-        try {
-          await dispatch(fetchPlants(userId));
-        } catch (error) {
-          console.error("Failed to fetch plants:", error);
-        } finally {
-          setLoadingPlants(false);
-          setIsInitialLoad(false);
-        }
+      if (user?.id) {
+        await dispatch(fetchPlants(userId));
+        setIsInitialLoad(false);
       } else {
         router.push("/");
       }
@@ -52,7 +44,7 @@ const DashboardPage = ({ params }) => {
     }
   }, [user, userId, dispatch, router, isInitialLoad]);
 
-  if (loadingPlants || (isInitialLoad && plants.length === 0)) {
+  if (isInitialLoad && (loading || plants.length === 0)) {
     return <Loading />;
   }
 
@@ -80,8 +72,12 @@ const DashboardPage = ({ params }) => {
       <TransitionEffect />
       <div className="flex-grow">
         <div className="absolute top-4 right-4 z-50 flex flex-col items-end gap-2">
-          <ThemeToggle />
-          <LanguageSelector />
+          <div className="flex flex-col items-end">
+            <ThemeToggle />
+          </div>
+          <div className="flex flex-col items-end">
+            <LanguageSelector />
+          </div>
         </div>
         {renderTabContent()}
       </div>

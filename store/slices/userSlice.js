@@ -17,6 +17,7 @@ export const validateToken = createAsyncThunk(
   "user/validateToken",
   async ({ id, token }, { rejectWithValue }) => {
     try {
+      console.log("token: ", token);
       const response = await validateTokenRequestAPI(id, token);
       return response;
     } catch (error) {

@@ -4,36 +4,41 @@ import InstallationGuide from "@/components/InstallationGuide";
 import LanguageSelector from "@/components/LanguageSelector";
 import LogoAnimation from "@/components/LogoAnimation";
 import ThemeToggle from "@/components/ThemeToggle";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/store/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser, selectIsLoggedIn } from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [hasNavigated, setHasNavigated] = useState(false);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const redirectAttempted = useRef(false);
 
   useEffect(() => {
+    if (redirectAttempted.current) {
+      return;
+    }
+
     const userCookie = Cookies.get("user");
-    if (userCookie && !hasNavigated) {
+    if (userCookie && !isLoggedIn) {
       try {
         const user = JSON.parse(userCookie);
         if (user && user.id && user.clase === "cliente") {
           dispatch(setUser(user));
-          setHasNavigated(true); // Prevent further navigation
+          redirectAttempted.current = true;
           router.push(`/dashboard/${user.id}/plants`);
         } else {
           console.warn("User cookie data is invalid:", user);
+          Cookies.remove("user");
         }
       } catch (error) {
         console.error("Error parsing user cookie:", error);
+        Cookies.remove("user");
       }
-    } else {
-      console.log("No user cookie found.");
     }
-  }, [dispatch, router, hasNavigated]);
+  }, [dispatch, router, isLoggedIn]);
 
   return (
     <div className="h-screen w-screen bg-white dark:bg-custom-dark-blue overflow-hidden relative">

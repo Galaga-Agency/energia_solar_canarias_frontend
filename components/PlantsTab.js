@@ -18,6 +18,8 @@ import PlantStatuses from "./PlantStatuses";
 import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Texture from "./Texture";
+import { useSelector } from "react-redux";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
@@ -28,6 +30,7 @@ const PlantsTab = () => {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const plantsPerPage = 6;
+  const theme = useSelector(selectTheme);
 
   const { filteredItems: filteredPlants, filterItems } = useFilter(
     plants,
@@ -81,7 +84,7 @@ const PlantsTab = () => {
   );
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading theme={theme} />;
   }
 
   return (

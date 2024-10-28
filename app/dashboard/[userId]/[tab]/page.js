@@ -45,7 +45,7 @@ const DashboardPage = ({ params }) => {
   }, [user, userId, dispatch, router, isInitialLoad]);
 
   if (isInitialLoad && (loading || plants.length === 0)) {
-    return <Loading />;
+    return <Loading theme={theme} />;
   }
 
   const renderTabContent = () => {

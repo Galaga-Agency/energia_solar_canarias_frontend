@@ -475,7 +475,7 @@ const PlantDetailsPage = ({ params }) => {
       ) : (
         <div className="flex flex-col justify-center items-center h-screen text-center p-8">
           {isLoading ? (
-            <Loading />
+            <Loading theme={theme} />
           ) : (
             <>
               <motion.div

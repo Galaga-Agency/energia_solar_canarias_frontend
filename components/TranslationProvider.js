@@ -6,10 +6,13 @@ import { initReactI18next } from "react-i18next";
 import enTranslation from "@/locales/en.json";
 import esTranslation from "@/locales/es.json";
 import Loading from "./Loading";
+import { useSelector } from "react-redux";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const TranslationProvider = ({ children }) => {
   const [isI18nInitialized, setIsI18nInitialized] = useState(false);
   const [minimumLoadingDone, setMinimumLoadingDone] = useState(false);
+  const theme = useSelector(selectTheme);
 
   useEffect(() => {
     i18n
@@ -39,7 +42,7 @@ const TranslationProvider = ({ children }) => {
   if (!isI18nInitialized || !minimumLoadingDone) {
     return (
       <div className="w-screen h-screen bg-custom-dark-blue flex items-center justify-center">
-        <Loading />
+        <Loading theme={theme} />
       </div>
     );
   }

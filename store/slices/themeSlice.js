@@ -1,14 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const getInitialTheme = () => {
+  if (typeof window !== "undefined") {
+    const storedTheme = localStorage.getItem("theme");
+    return storedTheme ? storedTheme : "dark"; // Default to 'dark'
+  }
+  return "dark"; // Fallback for SSR
+};
+
+const initialState = { mode: getInitialTheme() };
+
 const themeSlice = createSlice({
   name: "theme",
-  initialState: { mode: "dark" },
+  initialState,
   reducers: {
     toggleTheme(state) {
       state.mode = state.mode === "dark" ? "light" : "dark";
+      if (typeof window !== "undefined") {
+        localStorage.setItem("theme", state.mode);
+      }
     },
     setTheme(state, action) {
       state.mode = action.payload;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("theme", action.payload);
+      }
     },
   },
 });

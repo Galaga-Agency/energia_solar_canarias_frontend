@@ -5,7 +5,7 @@ import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
-import useGoogleMapsLoader from "../hooks/useGoogleMapsLoader"; // Adjust the import path accordingly
+import useGoogleMapsLoader from "../hooks/useGoogleMapsLoader";
 
 const mapContainerStyle = {
   height: "400px",

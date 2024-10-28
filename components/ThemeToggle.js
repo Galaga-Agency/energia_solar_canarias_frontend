@@ -1,14 +1,32 @@
 import { useEffect } from "react";
-import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleTheme, selectTheme } from "@/store/slices/themeSlice";
+import { toggleTheme, setTheme, selectTheme } from "@/store/slices/themeSlice";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 const ThemeToggle = () => {
   const dispatch = useDispatch();
   const theme = useSelector(selectTheme);
 
   useEffect(() => {
+    // Check if a theme is already stored in localStorage
+    const storedTheme = localStorage.getItem("theme");
+
+    if (storedTheme) {
+      // If a stored theme exists, set it in Redux
+      dispatch(setTheme(storedTheme));
+      console.log("Found theme in localStorage: ", storedTheme);
+    } else {
+      // If no stored theme, default to dark mode and store it
+      const defaultTheme = "dark";
+      localStorage.setItem("theme", defaultTheme);
+      dispatch(setTheme(defaultTheme));
+      console.log("No theme found, setting default theme: ", defaultTheme);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   const handleToggleTheme = () => {

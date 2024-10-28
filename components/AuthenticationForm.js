@@ -74,18 +74,19 @@ const AuthenticationForm = () => {
 
         dispatch(setUser(response.data));
         window.location.href = `/dashboard/${userToValidate}/plants`;
-        setTokenInput("");
       } else {
         setSubmissionResult({
           status: "loginError",
           message: t("invalidToken"),
         });
+        setTokenInput("");
       }
     } catch (error) {
       setSubmissionResult({
         status: "loginError",
         message: t("invalidToken"),
       });
+      setTokenInput("");
     } finally {
       setIsSubmitting(false);
     }

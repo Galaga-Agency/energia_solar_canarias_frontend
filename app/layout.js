@@ -22,9 +22,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <body>
-        <TranslationProvider>
-          <StoreProvider>{children}</StoreProvider>
-        </TranslationProvider>
+        <StoreProvider>
+          <TranslationProvider>{children}</TranslationProvider>
+        </StoreProvider>
       </body>
     </html>
   );

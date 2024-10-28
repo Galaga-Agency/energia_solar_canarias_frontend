@@ -3,6 +3,8 @@ import { BsLightningFill, BsCashCoin } from "react-icons/bs";
 import { FaLocationDot } from "react-icons/fa6";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/store/slices/userSlice";
 
 const statusColors = {
   working: "bg-green-500",
@@ -11,9 +13,10 @@ const statusColors = {
   disconnected: "bg-gray-500",
 };
 
-const PlantCard = ({ plant, userId, tab }) => {
+const PlantCard = ({ plant }) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const userId = useSelector(selectUser).id;
 
   const handleCardClick = () => {
     router.push(`/dashboard/${userId}/plants/${plant.id}`);

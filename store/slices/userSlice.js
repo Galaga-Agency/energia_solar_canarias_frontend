@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginRequestAPI, validateTokenRequestAPI } from "@/services/api";
+import {
+  loginRequestAPI,
+  validateTokenRequestAPI,
+  updateUserProfileAPI,
+} from "@/services/api";
 
 export const authenticateUser = createAsyncThunk(
   "user/authenticateUser",
@@ -17,7 +21,6 @@ export const validateToken = createAsyncThunk(
   "user/validateToken",
   async ({ id, token }, { rejectWithValue }) => {
     try {
-      console.log("token: ", token);
       const response = await validateTokenRequestAPI(id, token);
       return response;
     } catch (error) {
@@ -29,6 +32,19 @@ export const validateToken = createAsyncThunk(
 export const logoutUser = createAsyncThunk("user/logout", () => {
   return;
 });
+
+export const updateUserProfile = createAsyncThunk(
+  "user/updateUserProfile",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await updateUserProfileAPI(userData);
+      console.log("response from redux: ", response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const initialState = {
   user: null,
@@ -68,9 +84,11 @@ const userSlice = createSlice({
       .addCase(validateToken.rejected, (state, action) => {
         state.error = action.payload;
       })
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.isLoggedIn = false;
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.user = action.payload.data;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });

@@ -242,5 +242,18 @@
   "temperatureUnit": "Unidad de Temperatura",
   "celsius": "Celsius",
   "fahrenheit": "Fahrenheit",
-  "settings": "Settings"
+  "settings": "Settings",
+  "viewYourNotificationsHere": "View your Notifications here.",
+  "markAllAsRead": "Archive all",
+  "goToNotificationsSettings": "Go to Notifications Settings",
+  "activeNotifications": "Active Notifications",
+  "youAreUpToDate": "You are up to date.",
+  "archivedNotifications": "Archived Notifications",
+  "noArchivedNotifications": "No archived notifications.",
+  "undoArchive": "Undo Archive",
+  "areYouSureUndoArchive": "Are you sure you want to undo the archive of this notification?",
+  "deleteNotification": "Delete Notification",
+  "areYouSureDeleteNotification": "Are you sure you want to delete this notification?",
+  "notificationDeleted": "Notification deleted successfully.",
+  "errorDeletingNotification": "There was an error deleting the notification. Please try again later."
 }

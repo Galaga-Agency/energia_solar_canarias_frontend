@@ -108,6 +108,51 @@ export const validateTokenRequestAPI = async (id, token) => {
   });
 };
 
+export const updateUserProfileAPI = async (userData) => {
+  console.log("Updating user profile with data:", userData);
+  const response = await fetch(`${API_BASE_URL}/update-profile`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      usuario: USUARIO,
+      apiKey: API_KEY,
+    },
+    body: JSON.stringify(userData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Profile update failed");
+  }
+
+  return await response.json();
+};
+
+export const deleteNotificationAPI = async (notificationId) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/notifications/${notificationId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete notification");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Delete notification error:", error);
+    throw error;
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EVRYTHING BELOW THIS SHOULD BE REMOVED ONCE THE ENTIRE BACKEND IS FINISHED
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

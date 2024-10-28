@@ -95,10 +95,7 @@ const MetricsConfigCard = () => {
         </div>
       </div>
 
-      <div className="flex justify-between mt-4">
-        <SecondaryButton onClick={() => alert(t("changesCancelled"))}>
-          {t("cancel")}
-        </SecondaryButton>
+      <div className="mt-4">
         <PrimaryButton onClick={handleSaveChanges}>
           {t("saveChanges")}
         </PrimaryButton>

@@ -12,21 +12,18 @@ import PrimaryButton from "./PrimaryButton";
 import SecondaryButton from "./SecondaryButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { updateUserProfile } from "@/store/slices/userSlice";
 
-const ProfileOverviewCard = ({
-  user,
-  onUpdateAdmin,
-  profilePic,
-  setProfilePic,
-}) => {
+const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [isFlipped, setIsFlipped] = useState(false);
   const { register, handleSubmit } = useForm();
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
 
   const fileInputRef = useRef(null);
 
-  // Handle profile picture change
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -47,7 +44,8 @@ const ProfileOverviewCard = ({
   };
 
   const onSubmit = (data) => {
-    onUpdateProfile(data);
+    console.log("updating user with data: ", data);
+    dispatch(updateUserProfile({ ...data, imagen: profilePic }));
     setIsFlipped(false);
   };
 
@@ -91,23 +89,22 @@ const ProfileOverviewCard = ({
           <div className="space-y-4 text-gray-700 dark:text-gray-300 mb-2">
             {/* Profile Info */}
             {[
-              { label: t("name"), value: user?.nombre || "N/A" },
-              { label: t("surname"), value: user?.apellido || "N/A" },
-              { label: t("email"), value: user?.email || "N/A" },
-              { label: t("mobile"), value: user?.movil || "N/A" },
-              { label: t("company"), value: user?.company || "N/A" },
-              { label: t("userAdress"), value: user?.address || "N/A" },
-              { label: t("city"), value: user?.city || "N/A" },
-              { label: t("postcode"), value: user?.postcode || "N/A" },
-              { label: t("regionState"), value: user?.region || "N/A" },
-              { label: t("country"), value: user?.country || "N/A" },
-              { label: t("cifNif"), value: user?.cifNif || "N/A" },
+              { label: t("name"), value: user?.nombre || "" },
+              { label: t("surname"), value: user?.apellido || "" },
+              { label: t("email"), value: user?.email || "" },
+              { label: t("mobile"), value: user?.movil || "" },
+              { label: t("company"), value: user?.company || "" },
+              { label: t("userAdress"), value: user?.address || "" },
+              { label: t("city"), value: user?.city || "" },
+              { label: t("postcode"), value: user?.postcode || "" },
+              { label: t("regionState"), value: user?.region || "" },
+              { label: t("country"), value: user?.country || "" },
+              { label: t("cifNif"), value: user?.cifNif || "" },
               {
                 label: t("userStatus"),
-                value:
-                  user?.clase.charAt(0).toUpperCase() ||
-                  "N/A" + user?.clase.slice(1) ||
-                  "N/A",
+                value: user?.clase
+                  ? user.clase.charAt(0).toUpperCase() + user.clase.slice(1)
+                  : "",
               },
             ].map((field, index) => (
               <p key={index} className="flex justify-between gap-2">
@@ -115,7 +112,7 @@ const ProfileOverviewCard = ({
                   {field.label}:
                 </span>
                 <span className="text-custom-dark-blue dark:text-custom-yellow text-right">
-                  {field.value || "N/A"}
+                  {field.value || ""}
                 </span>
               </p>
             ))}

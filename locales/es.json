@@ -242,7 +242,7 @@
   "temperatureUnit": "Temperature Unit",
   "celsius": "Celsius",
   "fahrenheit": "Fahrenheit",
-  "settings": "Configuración",
+  "settings": "Ajustes",
   "viewYourNotificationsHere": "Vea sus notificaciones aquí.",
   "markAllAsRead": "Archivar todo",
   "goToNotificationsSettings": "Ir a la configuración de notificaciones",
@@ -255,5 +255,14 @@
   "deleteNotification": "Eliminar Notificación",
   "areYouSureDeleteNotification": "¿Estás seguro de que deseas eliminar esta notificación?",
   "notificationDeleted": "Notificación eliminada con éxito.",
-  "errorDeletingNotification": "Hubo un error al eliminar la notificación. Por favor, intenta nuevamente más tarde."
+  "errorDeletingNotification": "Hubo un error al eliminar la notificación. Por favor, intenta nuevamente más tarde.",
+  "clients": "Clientes",
+  "allPlants": "Plantas",
+  "accessDenied": "Acceso Denegado",
+  "unauthorizedMessage": "No tienes permiso para ver esta página.",
+  "statusWorking": "Funcionando",
+  "statusError": "Error",
+  "statusWaiting": "Esperando",
+  "statusDisconnected": "Desconectado",
+  "state": "Estado"
 }

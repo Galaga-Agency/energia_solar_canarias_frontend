@@ -50,6 +50,7 @@ const initialState = {
   loading: false,
   error: null,
   isLoggedIn: false,
+  isAdmin: false,
 };
 
 const userSlice = createSlice({
@@ -59,6 +60,8 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
       state.isLoggedIn = true;
+      // Check if the user class is "admin" and set isAdmin accordingly
+      state.isAdmin = action.payload.clase === "admin";
     },
   },
   extraReducers: (builder) => {
@@ -70,6 +73,7 @@ const userSlice = createSlice({
       .addCase(authenticateUser.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isLoggedIn = true;
+        state.isAdmin = action.payload.clase === "admin";
         state.loading = false;
       })
       .addCase(authenticateUser.rejected, (state, action) => {
@@ -79,6 +83,7 @@ const userSlice = createSlice({
       .addCase(validateToken.fulfilled, (state, action) => {
         state.user = action.payload.data;
         state.isLoggedIn = true;
+        state.isAdmin = action.payload.data.clase === "admin";
       })
       .addCase(validateToken.rejected, (state, action) => {
         state.error = action.payload;
@@ -95,6 +100,7 @@ const userSlice = createSlice({
 export const { setUser } = userSlice.actions;
 export const selectUser = (state) => state.user.user;
 export const selectIsLoggedIn = (state) => state.user.isLoggedIn;
+export const selectIsAdmin = (state) => state.user.isAdmin;
 export const selectLoading = (state) => state.user.loading;
 export const selectError = (state) => state.user.error;
 

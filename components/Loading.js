@@ -17,7 +17,7 @@ const Loading = () => {
       <div className="relative w-32 h-32">
         <div className="absolute inset-0 rounded-full border-4 border-custom-dark-gray dark:border-custom-light-gray animate-spin-slow border-t-custom-yellow"></div>
         <div
-          className={`absolute inset-4 rounded-full border-4 border-custom-dark-gray dark:border-custom-light-gray border-t-transparent animate-spin-slow`}
+          className={`absolute inset-4 rounded-full border-4 border-white dark:border-custom-light-gray border-t-transparent animate-spin-slow`}
         ></div>
         <div
           className={`absolute inset-8 bg-custom-yellow rounded-full shadow-white-shadow animate-pulse`}

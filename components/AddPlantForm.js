@@ -9,6 +9,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useTranslation } from "next-i18next";
 import PrimaryButton from "./PrimaryButton";
 import SecondaryButton from "./SecondaryButton";
+import Texture from "./Texture";
 
 const AddPlantForm = ({ onClose, isOpen }) => {
   const { t } = useTranslation();
@@ -83,6 +84,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="bg-custom-light-gray dark:bg-custom-dark-blue  text-custom-dark-blue dark:text-custom-light-gray rounded-lg shadow-dark-shadow w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto"
           >
+            <Texture />
             <div className="bg-custom-yellow dark:bg-custom-yellow text-custom-dark-blue dark:text-custom-dark-blue p-4 flex items-center shadow-dark-shadow">
               <FiPlus className="text-2xl mr-2" />
               <h2 className="text-lg font-bold">{t("addPlant")}</h2>

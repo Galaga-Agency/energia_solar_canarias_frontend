@@ -35,7 +35,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
-    <div className="flex justify-center items-center space-x-2 mt-6 mb-20 z-30">
+    <div className="flex justify-center items-center space-x-2 mb-20 2xl:mb-0 z-30">
       <button
         className={`p-2 rounded-full border transition-all duration-300 z-30 ${
           currentPage === 1

@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,7 +8,7 @@ import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
 import { FaUserCog } from "react-icons/fa";
 
-const BottomNavbar = ({ userId }) => {
+const BottomNavbar = ({ userId, userClass }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const currentPath = usePathname();
@@ -14,13 +16,19 @@ const BottomNavbar = ({ userId }) => {
   const icons = [
     {
       icon: <PiSolarPanelFill className="text-2xl" />,
-      label: t("plants"),
-      path: "/dashboard/[userId]/plants",
+      label: userClass === "admin" ? t("allPlants") : t("plants"),
+      path:
+        userClass === "admin"
+          ? "/dashboard/[userId]/all-plants"
+          : "/dashboard/[userId]/plants",
     },
     {
       icon: <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />,
-      label: t("notifications"),
-      path: "/dashboard/[userId]/notifications",
+      label: userClass === "admin" ? t("clients") : t("notifications"),
+      path:
+        userClass === "admin"
+          ? "/dashboard/[userId]/clients"
+          : "/dashboard/[userId]/notifications",
     },
     {
       icon: <FaUserCog className="text-2xl" />,
@@ -30,8 +38,7 @@ const BottomNavbar = ({ userId }) => {
   ];
 
   const handleNavigation = (path) => {
-    const formattedPath = path.replace("[userId]", userId);
-    router.push(formattedPath);
+    router.push(path.replace("[userId]", userId));
   };
 
   return (

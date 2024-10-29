@@ -1,10 +1,12 @@
 import React from "react";
 import useDeviceType from "@/hooks/useDeviceType";
 import useLocalStorageState from "use-local-storage-state";
+import { useSelector } from "react-redux";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const Texture = () => {
   const { isMobile, isTablet, isDesktop } = useDeviceType();
-  const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
+  const theme = useSelector(selectTheme);
 
   // Set zoom levels based on device type
   const getScale = () => {

@@ -7,10 +7,11 @@ import Loading from "@/components/Loading";
 import PlantsTab from "@/components/PlantsTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import SettingsTab from "@/components/SettingsTab";
+import ClientsTab from "@/components/ClientsTab"; // Only for Admin
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
-import { selectUser } from "@/store/slices/userSlice";
+import { selectUser, selectIsAdmin } from "@/store/slices/userSlice"; // Added selectIsAdmin
 import {
   fetchPlants,
   selectLoading,
@@ -21,6 +22,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 const DashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
+  const isAdmin = useSelector(selectIsAdmin); // Get admin status
   const dispatch = useDispatch();
   const router = useRouter();
   const { userId, tab } = params;
@@ -53,7 +55,9 @@ const DashboardPage = ({ params }) => {
       case "plants":
         return <PlantsTab />;
       case "notifications":
-        return <NotificationsTab />;
+        return !isAdmin ? <NotificationsTab /> : null;
+      case "clients":
+        return isAdmin ? <ClientsTab /> : null;
       case "settings":
         return <SettingsTab />;
       default:
@@ -63,8 +67,7 @@ const DashboardPage = ({ params }) => {
 
   return (
     <div
-      className={`min-h-screen w-auto flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900
-      relative overflow-y-auto p-8`}
+      className={`min-h-screen w-auto flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto p-8`}
     >
       <TransitionEffect />
       <div className="flex-grow">
@@ -78,7 +81,7 @@ const DashboardPage = ({ params }) => {
         </div>
         {renderTabContent()}
       </div>
-      <BottomNavbar userId={userId} />
+      <BottomNavbar userId={userId} userClass={user.clase} />
     </div>
   );
 };

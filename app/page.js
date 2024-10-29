@@ -25,7 +25,7 @@ export default function Home() {
     if (userCookie && !isLoggedIn) {
       try {
         const user = JSON.parse(userCookie);
-        if (user && user.id && user.clase === "cliente") {
+        if (user && user.id) {
           dispatch(setUser(user));
           redirectAttempted.current = true;
           router.push(`/dashboard/${user.id}/plants`);
@@ -41,7 +41,7 @@ export default function Home() {
   }, [dispatch, router, isLoggedIn]);
 
   return (
-    <div className="h-screen w-screen bg-white dark:bg-custom-dark-blue overflow-hidden relative">
+    <div className="h-screen w-screen overflow-hidden relative">
       <div className="fixed top-4 right-4 z-50 hidden md:block">
         <InstallationGuide />
       </div>

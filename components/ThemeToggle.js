@@ -12,15 +12,12 @@ const ThemeToggle = () => {
     const storedTheme = localStorage.getItem("theme");
 
     if (storedTheme) {
-      // If a stored theme exists, set it in Redux
       dispatch(setTheme(storedTheme));
-      console.log("Found theme in localStorage: ", storedTheme);
     } else {
       // If no stored theme, default to dark mode and store it
       const defaultTheme = "dark";
       localStorage.setItem("theme", defaultTheme);
       dispatch(setTheme(defaultTheme));
-      console.log("No theme found, setting default theme: ", defaultTheme);
     }
   }, [dispatch]);
 

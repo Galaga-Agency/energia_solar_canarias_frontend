@@ -38,6 +38,7 @@ import CustomSkeleton from "@/components/Skeleton";
 import { motion } from "framer-motion";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
+import Texture from "@/components/Texture";
 
 ChartJS.register(
   CategoryScale,
@@ -160,6 +161,7 @@ const PlantDetailsPage = ({ params }) => {
         <div
           className={`min-h-screen w-auto flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto p-6`}
         >
+          <Texture />
           <div className="flex justify-between items-center mb-6 gap-6">
             <button onClick={() => window.history.back()}>
               <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />
@@ -288,6 +290,7 @@ const PlantDetailsPage = ({ params }) => {
                 : "light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray"
             } relative overflow-y-auto p-6`}
           >
+            <Texture />
             <div className="flex justify-between items-center mb-6 gap-6">
               <button onClick={() => window.history.back()}>
                 <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />

@@ -1,5 +1,3 @@
-import axios from "axios";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const USUARIO = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
@@ -152,108 +150,36 @@ export const deleteNotificationAPI = async (notificationId) => {
   }
 };
 
+export const sendPasswordResetEmail = async (email) => {};
+
+export const fetchClientsAPI = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch clients");
+    }
+
+    const data = await response.json();
+    console.log("response: ", data.data);
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+    throw error;
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EVRYTHING BELOW THIS SHOULD BE REMOVED ONCE THE ENTIRE BACKEND IS FINISHED
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Function to fetch user data from the API (added for testing purposes)
-export const fetchUserData = async (usuario, apiKey) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/usuarios`, {
-      headers: {
-        usuario,
-        apiKey,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    throw error;
-  }
-};
-
-// Existing API functions (kept intact)
-
-// Mock login API function
-export const loginUserAPI = async (email, password) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Simulate receiving a token from the backend
-      const token = "mockToken123";
-      const user = { id: "123", name: "Thomas Augot", email };
-
-      // Save token and user to local storage
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      resolve({ user });
-    }, 1000);
-  });
-
-  // Uncomment when the actual backend is set up
-  /*
-  const response = await axios.post(`${API_BASE_URL}/login`, {
-    email,
-    password,
-  });
-  const { token, user } = response.data;
-  localStorage.setItem("authToken", token);
-  localStorage.setItem("user", JSON.stringify(user));
-  return response.data;
-  */
-};
-
-// Mock register API function
-export const registerUserAPI = async (email, password, username) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Simulate receiving a token from the backend
-      const token = "mockToken124";
-      const user = { id: "124", name: username, email };
-
-      // Save token and user to local storage
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      resolve({ user });
-    }, 1000);
-  });
-
-  // Uncomment when the actual backend is set up
-  /*
-  const response = await axios.post(`${API_BASE_URL}/register`, {
-    email,
-    password,
-    username,
-  });
-  const { token, user } = response.data;
-  localStorage.setItem("authToken", token);
-  localStorage.setItem("user", JSON.stringify(user));
-  return response.data;
-  */
-};
-
-export const sendPasswordResetEmail = async (email) => {};
-
-export const fetchUserMock = async (email, password) => {
-  try {
-    const response = await fetch("/user.json");
-    if (!response.ok) {
-      throw new Error(`Error fetching user: ${response.statusText}`);
-    }
-    const data = await response.json();
-    const user = data.users.find(
-      (user) => user.email === email && user.password === password
-    );
-
-    if (user) {
-      return user;
-    } else {
-      throw new Error("Invalid email or password");
-    }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    throw error;
-  }
-};
 
 export const fetchPlantsMock = async (userId) => {
   try {

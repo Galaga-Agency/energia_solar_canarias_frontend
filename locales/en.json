@@ -107,6 +107,7 @@
     "waiting": "Waiting",
     "disconnected": "Disconnected"
   },
+  "state": "Status",
   "statusDescriptions": {
     "working": "All inverters in the plant are operating normally.",
     "waiting": "No inverter alarms or offline status, but at least one inverter is in a waiting state.",
@@ -255,5 +256,13 @@
   "deleteNotification": "Delete Notification",
   "areYouSureDeleteNotification": "Are you sure you want to delete this notification?",
   "notificationDeleted": "Notification deleted successfully.",
-  "errorDeletingNotification": "There was an error deleting the notification. Please try again later."
+  "errorDeletingNotification": "There was an error deleting the notification. Please try again later.",
+  "clients": "Clients",
+  "allPlants": "Plants",
+  "accessDenied": "Access Denied",
+  "unauthorizedMessage": "You do not have permission to view this page.",
+  "working": "Working",
+  "error": "Error",
+  "waiting": "Waiting",
+  "disconnected": "Disconnected"
 }

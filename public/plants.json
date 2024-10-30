@@ -1,493 +1,881 @@
 {
   "plants": [
     {
-      "id": 1,
-      "userId": "123",
-      "name": "Fernando Plant",
-      "location": "GC-324, 77, 35309 Sta Brígida, Las Palmas, España",
-      "createdAt": "2023-01-18",
-      "capacityKW": 5.4,
-      "totalGeneratedMWh": 1.48,
-      "monthlyGenerationKWh": 257.3,
-      "dailyGenerationKWh": 6.0,
-      "totalIncomeEUR": 280.44,
-      "currentPowerOutputKW": 0.678,
-      "inHouseUsageKWh": 6.98,
-      "feedInKWh": 0.22,
-      "loadConsumptionKWh": 10.31,
-      "batterySOC": 18,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.18,
-        "plantedTrees": 81,
-        "coalSavingsTons": 0.6
-      },
+      "id": 1851069,
+      "name": "Sunshine Meadows Plant",
+      "accountId": 123456,
       "status": "working",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0 },
-        { "time": "03:00", "powerKW": 0 },
-        { "time": "04:00", "powerKW": 0 },
-        { "time": "05:00", "powerKW": 0 },
-        { "time": "06:00", "powerKW": 0.1 },
-        { "time": "07:00", "powerKW": 0.2 },
-        { "time": "08:00", "powerKW": 0.3 },
-        { "time": "09:00", "powerKW": 0.5 },
-        { "time": "10:00", "powerKW": 1.0 },
-        { "time": "11:00", "powerKW": 1.5 },
-        { "time": "12:00", "powerKW": 2.0 },
-        { "time": "13:00", "powerKW": 1.8 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "peakPower": 10000,
+      "currency": "EUR",
+      "installationDate": "2022-01-01 00:00:00",
+      "ptoDate": "2022-01-02",
+      "notes": "This is a test solar plant.",
+      "type": "Optimizers & Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "Las Palmas",
+        "address": "123 Solar St",
+        "zip": "35000",
+        "timeZone": "GMT+1"
+      },
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Sunshine Meadows Plant"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 674.93,
+          "so2": 874.66,
+          "nox": 278.93
+        },
+        "treesPlanted": 2.26,
+        "lightBulbs": 5217.46
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Active",
+          "currentPower": 3435.77
+        },
+        "LOAD": {
+          "status": "Active",
+          "currentPower": 3435.77
+        },
+        "PV": {
+          "status": "Active",
+          "currentPower": 5000
+        },
+        "STORAGE": {
+          "status": "Idle",
+          "currentPower": 0,
+          "chargeLevel": 75,
+          "critical": false,
+          "timeLeft": "2 hours"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 1",
+            "count": 427,
+            "telemetries": [
+              {
+                "date": "2024-10-30 12:00:00",
+                "ambientTemperature": 22.5,
+                "moduleTemperature": 45.3,
+                "windSpeed": 5.6
+              },
+              {
+                "date": "2024-10-30 12:15:00",
+                "ambientTemperature": 22.4,
+                "moduleTemperature": 45.1,
+                "windSpeed": 5.5
+              }
+            ]
+          },
+          {
+            "connectedTo": "Gateway 2",
+            "count": 0,
+            "telemetries": []
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 1,
+        "batteries": [
+          {
+            "serialNumber": "BFA123",
+            "nameplate": 10000,
+            "modelNumber": "LGXXXXX-XXX",
+            "telemetryCount": 9,
+            "telemetries": [
+              {
+                "timeStamp": "2024-10-30 12:00:00",
+                "power": 0,
+                "batteryState": 3,
+                "lifeTimeEnergyCharged": 5000,
+                "lifeTimeEnergyDischarged": 3000,
+                "fullPackEnergyAvailable": 9000,
+                "internalTemp": 35,
+                "ACGridCharging": 200,
+                "stateOfCharge": 75
+              }
+            ]
+          }
+        ]
       }
     },
     {
-      "id": 2,
-      "userId": "123",
-      "name": "Canarias South Plant",
-      "location": "Santa Cruz, Tenerife, España",
-      "createdAt": "2022-05-15",
-      "capacityKW": 7.0,
-      "totalGeneratedMWh": 2.25,
-      "monthlyGenerationKWh": 300.0,
-      "dailyGenerationKWh": 8.0,
-      "totalIncomeEUR": 350.0,
-      "currentPowerOutputKW": 1.2,
-      "inHouseUsageKWh": 7.5,
-      "feedInKWh": 0.5,
-      "loadConsumptionKWh": 11.0,
-      "batterySOC": 25,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.5,
-        "plantedTrees": 100,
-        "coalSavingsTons": 0.7
-      },
+      "id": 1851070,
+      "name": "Solar Oasis",
+      "accountId": 123457,
       "status": "working",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0 },
-        { "time": "03:00", "powerKW": 0 },
-        { "time": "04:00", "powerKW": 0 },
-        { "time": "05:00", "powerKW": 0.2 },
-        { "time": "06:00", "powerKW": 0.4 },
-        { "time": "07:00", "powerKW": 0.6 },
-        { "time": "08:00", "powerKW": 1.0 },
-        { "time": "09:00", "powerKW": 1.5 },
-        { "time": "10:00", "powerKW": 2.0 },
-        { "time": "11:00", "powerKW": 2.5 },
-        { "time": "12:00", "powerKW": 2.8 },
-        { "time": "13:00", "powerKW": 2.6 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "peakPower": 12000,
+      "currency": "EUR",
+      "installationDate": "2022-02-15 00:00:00",
+      "ptoDate": "2022-02-16",
+      "notes": "A vibrant solar power plant in the desert.",
+      "type": "String Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "Tenerife",
+        "address": "456 Solar Ave",
+        "zip": "38000",
+        "timeZone": "GMT+1"
+      },
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Solar Oasis"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 900.0,
+          "so2": 200.0,
+          "nox": 100.0
+        },
+        "treesPlanted": 3.0,
+        "lightBulbs": 8000
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Active",
+          "currentPower": 4000.0
+        },
+        "LOAD": {
+          "status": "Active",
+          "currentPower": 3000.0
+        },
+        "PV": {
+          "status": "Active",
+          "currentPower": 6000.0
+        },
+        "STORAGE": {
+          "status": "Idle",
+          "currentPower": 0,
+          "chargeLevel": 80,
+          "critical": false,
+          "timeLeft": "1 hour"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 3",
+            "count": 350,
+            "telemetries": [
+              {
+                "date": "2024-10-30 12:00:00",
+                "ambientTemperature": 23.0,
+                "moduleTemperature": 46.5,
+                "windSpeed": 4.2
+              },
+              {
+                "date": "2024-10-30 12:15:00",
+                "ambientTemperature": 23.2,
+                "moduleTemperature": 46.8,
+                "windSpeed": 4.0
+              }
+            ]
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 2,
+        "batteries": [
+          {
+            "serialNumber": "BFA456",
+            "nameplate": 12000,
+            "modelNumber": "LGXXXXX-YYY",
+            "telemetryCount": 8,
+            "telemetries": [
+              {
+                "timeStamp": "2024-10-30 12:00:00",
+                "power": 0,
+                "batteryState": 3,
+                "lifeTimeEnergyCharged": 7000,
+                "lifeTimeEnergyDischarged": 4500,
+                "fullPackEnergyAvailable": 11000,
+                "internalTemp": 36,
+                "ACGridCharging": 300,
+                "stateOfCharge": 80
+              }
+            ]
+          }
+        ]
       }
     },
     {
-      "id": 3,
-      "userId": "123",
-      "name": "Las Palmas Wind & Solar",
-      "location": "Las Palmas, Gran Canaria, España",
-      "createdAt": "2021-11-10",
-      "capacityKW": 4.5,
-      "totalGeneratedMWh": 1.2,
-      "monthlyGenerationKWh": 200.0,
-      "dailyGenerationKWh": 5.0,
-      "totalIncomeEUR": 200.0,
-      "currentPowerOutputKW": 0.8,
-      "inHouseUsageKWh": 6.0,
-      "feedInKWh": 0.4,
-      "loadConsumptionKWh": 9.0,
-      "batterySOC": 30,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.0,
-        "plantedTrees": 70,
-        "coalSavingsTons": 0.5
-      },
+      "id": 1851071,
+      "name": "Green Valley Solar Farm",
+      "accountId": 123458,
       "status": "waiting",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0 },
-        { "time": "03:00", "powerKW": 0 },
-        { "time": "04:00", "powerKW": 0.1 },
-        { "time": "05:00", "powerKW": 0.2 },
-        { "time": "06:00", "powerKW": 0.3 },
-        { "time": "07:00", "powerKW": 0.5 },
-        { "time": "08:00", "powerKW": 0.8 },
-        { "time": "09:00", "powerKW": 1.0 },
-        { "time": "10:00", "powerKW": 1.2 },
-        { "time": "11:00", "powerKW": 1.5 },
-        { "time": "12:00", "powerKW": 1.8 },
-        { "time": "13:00", "powerKW": 1.6 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "peakPower": 15000,
+      "currency": "EUR",
+      "installationDate": "2021-03-01 00:00:00",
+      "ptoDate": "2021-03-02",
+      "notes": "A large solar farm in a green valley.",
+      "type": "Hybrid Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "Gran Canaria",
+        "address": "789 Solar Way",
+        "zip": "35001",
+        "timeZone": "GMT+1"
+      },
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Green Valley Solar Farm"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 1200.0,
+          "so2": 300.0,
+          "nox": 150.0
+        },
+        "treesPlanted": 5.0,
+        "lightBulbs": 10000
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Active",
+          "currentPower": 5000.0
+        },
+        "LOAD": {
+          "status": "Active",
+          "currentPower": 4000.0
+        },
+        "PV": {
+          "status": "Active",
+          "currentPower": 8000.0
+        },
+        "STORAGE": {
+          "status": "Active",
+          "currentPower": 2000.0,
+          "chargeLevel": 90,
+          "critical": false,
+          "timeLeft": "3 hours"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 2",
+            "count": 300,
+            "telemetries": [
+              {
+                "date": "2024-10-30 12:00:00",
+                "ambientTemperature": 21.0,
+                "moduleTemperature": 44.0,
+                "windSpeed": 3.5
+              },
+              {
+                "date": "2024-10-30 12:15:00",
+                "ambientTemperature": 21.1,
+                "moduleTemperature": 44.2,
+                "windSpeed": 3.6
+              }
+            ]
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 1,
+        "batteries": [
+          {
+            "serialNumber": "BFA789",
+            "nameplate": 15000,
+            "modelNumber": "LGXXXXX-ZZZ",
+            "telemetryCount": 7,
+            "telemetries": [
+              {
+                "timeStamp": "2024-10-30 12:00:00",
+                "power": 0,
+                "batteryState": 3,
+                "lifeTimeEnergyCharged": 8000,
+                "lifeTimeEnergyDischarged": 5000,
+                "fullPackEnergyAvailable": 13000,
+                "internalTemp": 37,
+                "ACGridCharging": 350,
+                "stateOfCharge": 90
+              }
+            ]
+          }
+        ]
       }
     },
     {
-      "id": 4,
-      "userId": "123",
-      "name": "Tenerife Solar Park",
-      "location": "San Cristóbal de La Laguna, Tenerife, España",
-      "createdAt": "2020-07-21",
-      "capacityKW": 6.0,
-      "totalGeneratedMWh": 3.0,
-      "monthlyGenerationKWh": 400.0,
-      "dailyGenerationKWh": 9.0,
-      "totalIncomeEUR": 400.0,
-      "currentPowerOutputKW": 1.5,
-      "inHouseUsageKWh": 8.0,
-      "feedInKWh": 0.7,
-      "loadConsumptionKWh": 12.0,
-      "batterySOC": 20,
-      "environmentalImpact": {
-        "co2ReductionTons": 2.0,
-        "plantedTrees": 150,
-        "coalSavingsTons": 1.0
-      },
+      "id": 1851072,
+      "name": "Coastal Solar Station",
+      "accountId": 123459,
       "status": "error",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0 },
-        { "time": "03:00", "powerKW": 0 },
-        { "time": "04:00", "powerKW": 0.3 },
-        { "time": "05:00", "powerKW": 0.5 },
-        { "time": "06:00", "powerKW": 0.8 },
-        { "time": "07:00", "powerKW": 1.0 },
-        { "time": "08:00", "powerKW": 1.3 },
-        { "time": "09:00", "powerKW": 2.0 },
-        { "time": "10:00", "powerKW": 2.3 },
-        { "time": "11:00", "powerKW": 2.5 },
-        { "time": "12:00", "powerKW": 2.8 },
-        { "time": "13:00", "powerKW": 2.7 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "peakPower": 8000,
+      "currency": "EUR",
+      "installationDate": "2020-08-15 00:00:00",
+      "ptoDate": "2020-08-16",
+      "notes": "A solar station located near the coast.",
+      "type": "Hybrid Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "Lanzarote",
+        "address": "234 Beach Rd",
+        "zip": "35500",
+        "timeZone": "GMT+1"
+      },
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Coastal Solar Station"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 500.0,
+          "so2": 150.0,
+          "nox": 75.0
+        },
+        "treesPlanted": 2.0,
+        "lightBulbs": 6000
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "LOAD": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "PV": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "STORAGE": {
+          "status": "Inactive",
+          "currentPower": 0,
+          "chargeLevel": 0,
+          "critical": false,
+          "timeLeft": "N/A"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 5",
+            "count": 0,
+            "telemetries": []
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 0,
+        "batteries": []
       }
     },
     {
-      "id": 5,
-      "userId": "123",
-      "name": "La Gomera Solar Hub",
-      "location": "Calle el Tanque, 17, 38800 San Sebastián de La Gomera, España",
-      "createdAt": "2021-03-10",
-      "capacityKW": 6.5,
-      "totalGeneratedMWh": 2.0,
-      "monthlyGenerationKWh": 320.0,
-      "dailyGenerationKWh": 7.5,
-      "totalIncomeEUR": 310.0,
-      "currentPowerOutputKW": 1.0,
-      "inHouseUsageKWh": 6.8,
-      "feedInKWh": 0.3,
-      "loadConsumptionKWh": 9.5,
-      "batterySOC": 22,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.3,
-        "plantedTrees": 95,
-        "coalSavingsTons": 0.65
-      },
-      "status": "waiting",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0 },
-        { "time": "03:00", "powerKW": 0 },
-        { "time": "04:00", "powerKW": 0.15 },
-        { "time": "05:00", "powerKW": 0.35 },
-        { "time": "06:00", "powerKW": 0.5 },
-        { "time": "07:00", "powerKW": 0.75 },
-        { "time": "08:00", "powerKW": 1.1 },
-        { "time": "09:00", "powerKW": 1.6 },
-        { "time": "10:00", "powerKW": 2.0 },
-        { "time": "11:00", "powerKW": 2.4 },
-        { "time": "12:00", "powerKW": 2.6 },
-        { "time": "13:00", "powerKW": 2.5 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
-      }
-    },
-    {
-      "id": 6,
-      "userId": "123",
-      "name": "El Hierro Renewable Plant",
-      "location": "Calle Doctor Quintero, 1, 38900 Valverde, El Hierro, España",
-      "createdAt": "2019-09-05",
-      "capacityKW": 5.8,
-      "totalGeneratedMWh": 2.7,
-      "monthlyGenerationKWh": 290.0,
-      "dailyGenerationKWh": 7.0,
-      "totalIncomeEUR": 300.0,
-      "currentPowerOutputKW": 1.3,
-      "inHouseUsageKWh": 7.2,
-      "feedInKWh": 0.25,
-      "loadConsumptionKWh": 9.8,
-      "batterySOC": 19,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.4,
-        "plantedTrees": 110,
-        "coalSavingsTons": 0.7
-      },
+      "id": 1851073,
+      "name": "Desert Sun Power Station",
+      "accountId": 123460,
       "status": "working",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0 },
-        { "time": "03:00", "powerKW": 0.2 },
-        { "time": "04:00", "powerKW": 0.4 },
-        { "time": "05:00", "powerKW": 0.6 },
-        { "time": "06:00", "powerKW": 0.9 },
-        { "time": "07:00", "powerKW": 1.1 },
-        { "time": "08:00", "powerKW": 1.5 },
-        { "time": "09:00", "powerKW": 2.0 },
-        { "time": "10:00", "powerKW": 2.3 },
-        { "time": "11:00", "powerKW": 2.6 },
-        { "time": "12:00", "powerKW": 2.7 },
-        { "time": "13:00", "powerKW": 2.5 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "peakPower": 9500,
+      "currency": "EUR",
+      "installationDate": "2021-05-12 00:00:00",
+      "ptoDate": "2021-05-13",
+      "notes": "A power station located in the desert.",
+      "type": "Optimizers & Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "Fuerteventura",
+        "address": "567 Desert Rd",
+        "zip": "35600",
+        "timeZone": "GMT+1"
+      },
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Desert Sun Power Station"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 800.0,
+          "so2": 200.0,
+          "nox": 100.0
+        },
+        "treesPlanted": 4.0,
+        "lightBulbs": 7000
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Active",
+          "currentPower": 5000.0
+        },
+        "LOAD": {
+          "status": "Active",
+          "currentPower": 3000.0
+        },
+        "PV": {
+          "status": "Active",
+          "currentPower": 6000.0
+        },
+        "STORAGE": {
+          "status": "Idle",
+          "currentPower": 0,
+          "chargeLevel": 85,
+          "critical": false,
+          "timeLeft": "2 hours"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 6",
+            "count": 400,
+            "telemetries": [
+              {
+                "date": "2024-10-30 12:00:00",
+                "ambientTemperature": 25.0,
+                "moduleTemperature": 48.0,
+                "windSpeed": 7.0
+              },
+              {
+                "date": "2024-10-30 12:15:00",
+                "ambientTemperature": 24.8,
+                "moduleTemperature": 47.5,
+                "windSpeed": 6.8
+              }
+            ]
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 2,
+        "batteries": [
+          {
+            "serialNumber": "BFA012",
+            "nameplate": 15000,
+            "modelNumber": "LGXXXXX-ABC",
+            "telemetryCount": 5,
+            "telemetries": [
+              {
+                "timeStamp": "2024-10-30 12:00:00",
+                "power": 0,
+                "batteryState": 3,
+                "lifeTimeEnergyCharged": 7000,
+                "lifeTimeEnergyDischarged": 4000,
+                "fullPackEnergyAvailable": 12000,
+                "internalTemp": 36,
+                "ACGridCharging": 300,
+                "stateOfCharge": 85
+              }
+            ]
+          }
+        ]
       }
     },
     {
-      "id": 7,
-      "userId": "123",
-      "name": "Fuerteventura Wind & Solar Plant",
-      "location": "FV-1, 35600 Puerto del Rosario, Fuerteventura, España",
-      "createdAt": "2020-12-12",
-      "capacityKW": 4.9,
-      "totalGeneratedMWh": 1.9,
-      "monthlyGenerationKWh": 270.0,
-      "dailyGenerationKWh": 6.2,
-      "totalIncomeEUR": 275.0,
-      "currentPowerOutputKW": 0.9,
-      "inHouseUsageKWh": 6.5,
-      "feedInKWh": 0.4,
-      "loadConsumptionKWh": 10.0,
-      "batterySOC": 24,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.25,
-        "plantedTrees": 85,
-        "coalSavingsTons": 0.65
-      },
+      "id": 1851074,
+      "name": "Island Energy Solutions",
+      "accountId": 123461,
       "status": "disconnected",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0.1 },
-        { "time": "03:00", "powerKW": 0.2 },
-        { "time": "04:00", "powerKW": 0.35 },
-        { "time": "05:00", "powerKW": 0.5 },
-        { "time": "06:00", "powerKW": 0.7 },
-        { "time": "07:00", "powerKW": 1.0 },
-        { "time": "08:00", "powerKW": 1.4 },
-        { "time": "09:00", "powerKW": 1.8 },
-        { "time": "10:00", "powerKW": 2.0 },
-        { "time": "11:00", "powerKW": 2.3 },
-        { "time": "12:00", "powerKW": 2.4 },
-        { "time": "13:00", "powerKW": 2.2 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "peakPower": 11000,
+      "currency": "EUR",
+      "installationDate": "2019-11-20 00:00:00",
+      "ptoDate": "2019-11-21",
+      "notes": "Energy solutions tailored for island environments.",
+      "type": "Hybrid Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "La Palma",
+        "address": "890 Island Rd",
+        "zip": "38700",
+        "timeZone": "GMT+1"
+      },
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Island Energy Solutions"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 700.0,
+          "so2": 180.0,
+          "nox": 90.0
+        },
+        "treesPlanted": 3.5,
+        "lightBulbs": 6500
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "LOAD": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "PV": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "STORAGE": {
+          "status": "Inactive",
+          "currentPower": 0,
+          "chargeLevel": 0,
+          "critical": false,
+          "timeLeft": "N/A"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 7",
+            "count": 0,
+            "telemetries": []
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 0,
+        "batteries": []
       }
     },
     {
-      "id": 8,
-      "userId": "123",
-      "name": "La Palma Eco Power Station",
-      "location": "Calle La Encarnación, 12, 38700 Santa Cruz de La Palma, España",
-      "createdAt": "2018-06-01",
-      "capacityKW": 6.8,
-      "totalGeneratedMWh": 3.1,
-      "monthlyGenerationKWh": 350.0,
-      "dailyGenerationKWh": 8.5,
-      "totalIncomeEUR": 380.0,
-      "currentPowerOutputKW": 1.4,
-      "inHouseUsageKWh": 7.0,
-      "feedInKWh": 0.5,
-      "loadConsumptionKWh": 11.5,
-      "batterySOC": 21,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.9,
-        "plantedTrees": 130,
-        "coalSavingsTons": 0.85
-      },
+      "id": 1851075,
+      "name": "Renewable Energy Hub",
+      "accountId": 123462,
       "status": "working",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0.2 },
-        { "time": "03:00", "powerKW": 0.4 },
-        { "time": "04:00", "powerKW": 0.6 },
-        { "time": "05:00", "powerKW": 0.8 },
-        { "time": "06:00", "powerKW": 1.2 },
-        { "time": "07:00", "powerKW": 1.5 },
-        { "time": "08:00", "powerKW": 1.8 },
-        { "time": "09:00", "powerKW": 2.3 },
-        { "time": "10:00", "powerKW": 2.6 },
-        { "time": "11:00", "powerKW": 2.8 },
-        { "time": "12:00", "powerKW": 3.0 },
-        { "time": "13:00", "powerKW": 2.9 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "peakPower": 13000,
+      "currency": "EUR",
+      "installationDate": "2023-02-05 00:00:00",
+      "ptoDate": "2023-02-06",
+      "notes": "A hub for renewable energy projects.",
+      "type": "String Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "El Hierro",
+        "address": "321 Greenway",
+        "zip": "38900",
+        "timeZone": "GMT+1"
+      },
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Renewable Energy Hub"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 900.0,
+          "so2": 250.0,
+          "nox": 120.0
+        },
+        "treesPlanted": 4.0,
+        "lightBulbs": 8000
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Active",
+          "currentPower": 6000.0
+        },
+        "LOAD": {
+          "status": "Active",
+          "currentPower": 3500.0
+        },
+        "PV": {
+          "status": "Active",
+          "currentPower": 7500.0
+        },
+        "STORAGE": {
+          "status": "Active",
+          "currentPower": 1000.0,
+          "chargeLevel": 90,
+          "critical": false,
+          "timeLeft": "2 hours"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 8",
+            "count": 500,
+            "telemetries": [
+              {
+                "date": "2024-10-30 12:00:00",
+                "ambientTemperature": 24.0,
+                "moduleTemperature": 49.0,
+                "windSpeed": 5.5
+              },
+              {
+                "date": "2024-10-30 12:15:00",
+                "ambientTemperature": 24.1,
+                "moduleTemperature": 49.2,
+                "windSpeed": 5.4
+              }
+            ]
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 2,
+        "batteries": [
+          {
+            "serialNumber": "BFA999",
+            "nameplate": 13000,
+            "modelNumber": "LGXXXXX-DEF",
+            "telemetryCount": 6,
+            "telemetries": [
+              {
+                "timeStamp": "2024-10-30 12:00:00",
+                "power": 0,
+                "batteryState": 3,
+                "lifeTimeEnergyCharged": 9000,
+                "lifeTimeEnergyDischarged": 6000,
+                "fullPackEnergyAvailable": 12000,
+                "internalTemp": 40,
+                "ACGridCharging": 400,
+                "stateOfCharge": 90
+              }
+            ]
+          }
+        ]
       }
     },
     {
-      "id": 9,
-      "userId": "124",
-      "name": "La Palma Eco Power Station",
-      "location": "Calle La Encarnación, 12, 38700 Santa Cruz de La Palma, España",
-      "createdAt": "2018-06-01",
-      "capacityKW": 6.8,
-      "totalGeneratedMWh": 3.1,
-      "monthlyGenerationKWh": 350.0,
-      "dailyGenerationKWh": 8.5,
-      "totalIncomeEUR": 380.0,
-      "currentPowerOutputKW": 1.4,
-      "inHouseUsageKWh": 7.0,
-      "feedInKWh": 0.5,
-      "loadConsumptionKWh": 11.5,
-      "batterySOC": 21,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.9,
-        "plantedTrees": 130,
-        "coalSavingsTons": 0.85
+      "id": 1851076,
+      "name": "Solar Future",
+      "accountId": 123463,
+      "status": "error",
+      "peakPower": 8000,
+      "currency": "EUR",
+      "installationDate": "2020-01-01 00:00:00",
+      "ptoDate": "2020-01-02",
+      "notes": "A solar project aiming for a sustainable future.",
+      "type": "Optimizers & Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "Lanzarote",
+        "address": "432 Future Rd",
+        "zip": "35500",
+        "timeZone": "GMT+1"
       },
-      "status": "waiting",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0.2 },
-        { "time": "03:00", "powerKW": 0.4 },
-        { "time": "04:00", "powerKW": 0.6 },
-        { "time": "05:00", "powerKW": 0.8 },
-        { "time": "06:00", "powerKW": 1.2 },
-        { "time": "07:00", "powerKW": 1.5 },
-        { "time": "08:00", "powerKW": 1.8 },
-        { "time": "09:00", "powerKW": 2.3 },
-        { "time": "10:00", "powerKW": 2.6 },
-        { "time": "11:00", "powerKW": 2.8 },
-        { "time": "12:00", "powerKW": 3.0 },
-        { "time": "13:00", "powerKW": 2.9 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Solar Future"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 600.0,
+          "so2": 120.0,
+          "nox": 60.0
+        },
+        "treesPlanted": 3.0,
+        "lightBulbs": 5000
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "LOAD": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "PV": {
+          "status": "Inactive",
+          "currentPower": 0
+        },
+        "STORAGE": {
+          "status": "Inactive",
+          "currentPower": 0,
+          "chargeLevel": 0,
+          "critical": false,
+          "timeLeft": "N/A"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 9",
+            "count": 0,
+            "telemetries": []
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 0,
+        "batteries": []
       }
     },
     {
-      "id": 10,
-      "userId": "124",
-      "name": "Fuerteventura Wind & Solar Plant",
-      "location": "FV-1, 35600 Puerto del Rosario, Fuerteventura, España",
-      "createdAt": "2020-12-12",
-      "capacityKW": 4.9,
-      "totalGeneratedMWh": 1.9,
-      "monthlyGenerationKWh": 270.0,
-      "dailyGenerationKWh": 6.2,
-      "totalIncomeEUR": 275.0,
-      "currentPowerOutputKW": 0.9,
-      "inHouseUsageKWh": 6.5,
-      "feedInKWh": 0.4,
-      "loadConsumptionKWh": 10.0,
-      "batterySOC": 24,
-      "environmentalImpact": {
-        "co2ReductionTons": 1.25,
-        "plantedTrees": 85,
-        "coalSavingsTons": 0.65
+      "id": 1851077,
+      "name": "Island Solar Vision",
+      "accountId": 123464,
+      "status": "disconnected",
+      "peakPower": 9500,
+      "currency": "EUR",
+      "installationDate": "2021-07-15 00:00:00",
+      "ptoDate": "2021-07-16",
+      "notes": "A vision for renewable energy on the islands.",
+      "type": "Hybrid Inverters",
+      "location": {
+        "country": "Spain",
+        "state": "Canary Islands",
+        "city": "Fuerteventura",
+        "address": "987 Vision Rd",
+        "zip": "35600",
+        "timeZone": "GMT+1"
       },
-      "status": "working",
-      "images": [
-        "/assets/img/placeholder-solar-panel-1.jpg",
-        "/assets/img/placeholder-solar-panel-2.jpg"
-      ],
-      "timeSeriesPowerData": [
-        { "time": "00:00", "powerKW": 0 },
-        { "time": "01:00", "powerKW": 0 },
-        { "time": "02:00", "powerKW": 0.1 },
-        { "time": "03:00", "powerKW": 0.2 },
-        { "time": "04:00", "powerKW": 0.35 },
-        { "time": "05:00", "powerKW": 0.5 },
-        { "time": "06:00", "powerKW": 0.7 },
-        { "time": "07:00", "powerKW": 1.0 },
-        { "time": "08:00", "powerKW": 1.4 },
-        { "time": "09:00", "powerKW": 1.8 },
-        { "time": "10:00", "powerKW": 2.0 },
-        { "time": "11:00", "powerKW": 2.3 },
-        { "time": "12:00", "powerKW": 2.4 },
-        { "time": "13:00", "powerKW": 2.2 }
-      ],
-      "sensors": {
-        "temperature": 22,
-        "humidity": 50,
-        "batteryStatus": "Good",
-        "lastUpdate": "2023-01-18T12:00:00Z"
+      "image": {
+        "uri": "/assets/img/placeholder-solar-panel-1.jpg",
+        "description": "Main site image for Island Solar Vision"
+      },
+      "environmentalBenefits": {
+        "gasEmissionSaved": {
+          "units": "Kg",
+          "co2": 750.0,
+          "so2": 170.0,
+          "nox": 80.0
+        },
+        "treesPlanted": 4.0,
+        "lightBulbs": 9000
+      },
+      "powerFlow": {
+        "unit": "W",
+        "connections": [
+          {
+            "from": "GRID",
+            "to": "LOAD"
+          }
+        ],
+        "GRID": {
+          "status": "Active",
+          "currentPower": 5000.0
+        },
+        "LOAD": {
+          "status": "Active",
+          "currentPower": 3500.0
+        },
+        "PV": {
+          "status": "Active",
+          "currentPower": 6000.0
+        },
+        "STORAGE": {
+          "status": "Active",
+          "currentPower": 1000.0,
+          "chargeLevel": 80,
+          "critical": false,
+          "timeLeft": "1 hour"
+        }
+      },
+      "sensorData": {
+        "data": [
+          {
+            "connectedTo": "Gateway 10",
+            "count": 200,
+            "telemetries": [
+              {
+                "date": "2024-10-30 12:00:00",
+                "ambientTemperature": 23.5,
+                "moduleTemperature": 47.0,
+                "windSpeed": 4.0
+              },
+              {
+                "date": "2024-10-30 12:15:00",
+                "ambientTemperature": 23.8,
+                "moduleTemperature": 47.5,
+                "windSpeed": 4.2
+              }
+            ]
+          }
+        ]
+      },
+      "storageData": {
+        "batteryCount": 1,
+        "batteries": [
+          {
+            "serialNumber": "BFA888",
+            "nameplate": 10000,
+            "modelNumber": "LGXXXXX-GHI",
+            "telemetryCount": 3,
+            "telemetries": [
+              {
+                "timeStamp": "2024-10-30 12:00:00",
+                "power": 0,
+                "batteryState": 3,
+                "lifeTimeEnergyCharged": 6000,
+                "lifeTimeEnergyDischarged": 4000,
+                "fullPackEnergyAvailable": 10000,
+                "internalTemp": 38,
+                "ACGridCharging": 250,
+                "stateOfCharge": 80
+              }
+            ]
+          }
+        ]
       }
     }
   ]

@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
-import { BsLightningFill, BsCashCoin } from "react-icons/bs";
-import { FaLocationDot } from "react-icons/fa6";
+import { BsLightningCharge } from "react-icons/bs";
+import { FaMapMarkerAlt, FaBolt, FaCalendarAlt } from "react-icons/fa";
+import { GiTreeBranch } from "react-icons/gi";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
 import { useSelector } from "react-redux";
@@ -40,27 +41,29 @@ const PlantCard = ({ plant }) => {
       </h3>
       <div className="space-y-2">
         <p className="flex items-center text-lg text-gray-700 dark:text-custom-light-gray truncate max-w-full">
-          <FaLocationDot className="inline mr-2 text-custom-yellow" />
+          <FaMapMarkerAlt className="inline mr-2 text-custom-yellow" />
           <span className="font-secondary truncate block w-full max-w-full">
-            {t("location")}: {plant.location || "N/A"}
+            {plant.location.address}, {plant.location.city},{" "}
+            {plant.location.country}
           </span>
         </p>
         <p className="text-lg text-gray-700 dark:text-custom-light-gray">
-          <BsLightningFill className="inline mr-2 text-custom-yellow" />
+          <BsLightningCharge className="inline mr-2 text-custom-yellow" />
           <span className="font-secondary">
-            {t("powerOutput")}: {plant.currentPowerOutputKW || "N/A"} kW
+            {t("currentPowerOutput")}: {plant.powerFlow.PV.currentPower} kW
           </span>
         </p>
         <p className="text-lg text-gray-700 dark:text-custom-light-gray">
-          <BsLightningFill className="inline mr-2 text-custom-yellow" />
+          <FaBolt className="inline mr-2 text-custom-yellow" />
           <span className="font-secondary">
-            {t("todaysGeneration")}: {plant.dailyGenerationKWh || "N/A"} kWh
+            {t("peakPower")}: {plant.peakPower} W
           </span>
         </p>
         <p className="text-lg text-gray-700 dark:text-custom-light-gray">
-          <BsCashCoin className="inline mr-2 text-custom-yellow" />
+          <GiTreeBranch className="inline mr-2 text-custom-yellow" />
           <span className="font-secondary">
-            {t("totalIncome")}: {plant.totalIncomeEUR || "N/A"} EUR
+            {t("co2Saved")}: {plant.environmentalBenefits.gasEmissionSaved.co2}{" "}
+            Kg
           </span>
         </p>
       </div>

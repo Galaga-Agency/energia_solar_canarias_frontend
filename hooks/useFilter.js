@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useFilter = (items, filterKey) => {
+const useFilter = (items) => {
   const [filteredItems, setFilteredItems] = useState(items);
 
   useEffect(() => {
@@ -10,12 +10,27 @@ const useFilter = (items, filterKey) => {
   const filterItems = (searchTerm) => {
     if (!searchTerm) {
       setFilteredItems(items);
-    } else {
-      const filtered = items.filter((item) =>
-        item[filterKey].toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredItems(filtered);
+      return;
     }
+
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    const filtered = items.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        (item.location?.address &&
+          item.location.address.toLowerCase().includes(lowerCaseSearchTerm)) ||
+        (item.location?.city &&
+          item.location.city.toLowerCase().includes(lowerCaseSearchTerm)) ||
+        (item.location?.state &&
+          item.location.state.toLowerCase().includes(lowerCaseSearchTerm)) ||
+        (item.location?.country &&
+          item.location.country.toLowerCase().includes(lowerCaseSearchTerm)) ||
+        (item.status && item.status.toLowerCase().includes(lowerCaseSearchTerm))
+      );
+    });
+
+    setFilteredItems(filtered);
   };
 
   return { filteredItems, filterItems };

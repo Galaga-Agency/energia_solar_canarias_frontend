@@ -264,5 +264,7 @@
   "working": "Working",
   "error": "Error",
   "waiting": "Waiting",
-  "disconnected": "Disconnected"
+  "disconnected": "Disconnected",
+  "peakPower": "Peak Power",
+  "co2Saved": "CO2 Saved"
 }

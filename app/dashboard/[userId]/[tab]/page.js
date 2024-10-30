@@ -7,11 +7,11 @@ import Loading from "@/components/Loading";
 import PlantsTab from "@/components/PlantsTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import SettingsTab from "@/components/SettingsTab";
-import ClientsTab from "@/components/ClientsTab"; // Only for Admin
+import ClientsTab from "@/components/ClientsTab";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
-import { selectUser, selectIsAdmin } from "@/store/slices/userSlice"; // Added selectIsAdmin
+import { selectUser, selectIsAdmin } from "@/store/slices/userSlice";
 import {
   fetchPlants,
   selectLoading,
@@ -22,7 +22,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 const DashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
-  const isAdmin = useSelector(selectIsAdmin); // Get admin status
+  const isAdmin = useSelector(selectIsAdmin);
   const dispatch = useDispatch();
   const router = useRouter();
   const { userId, tab } = params;

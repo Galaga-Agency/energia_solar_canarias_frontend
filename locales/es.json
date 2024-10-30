@@ -264,5 +264,7 @@
   "statusError": "Error",
   "statusWaiting": "Esperando",
   "statusDisconnected": "Desconectado",
-  "state": "Estado"
+  "state": "Estado",
+  "peakPower": "Potencia Máxima",
+  "co2Saved": "CO2 Ahorrado"
 }

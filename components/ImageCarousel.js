@@ -1,29 +1,19 @@
-import Image from "next/image";
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Thumbs } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { useSkeletonLoader } from "@/hooks/useSkeletonLoader";
-import CustomSkeleton from "@/components/Skeleton";
-import useLocalStorageState from "use-local-storage-state";
+import ImageCarouselSkeleton from "@/components/LoadingSkeletons/ImageCarouselSkeleton";
+import Image from "next/image";
+import { useSelector } from "react-redux";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const ImageCarousel = ({ images }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
-
-  const carouselSkeleton = useSkeletonLoader(
-    !isMounted,
-    <div className="w-full h-auto ">
-      <CustomSkeleton
-        width="100%"
-        height="100%"
-        borderRadius="0.5rem"
-        theme={theme}
-      />
-    </div>
-  );
+  const theme = useSelector(selectTheme);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -34,15 +24,15 @@ const ImageCarousel = ({ images }) => {
   }, []);
 
   return (
-    <div className="w-full h-full min-h-[400px] mb-6 md:mb-0 flex">
+    <>
       {!isMounted ? (
-        carouselSkeleton
+        <ImageCarouselSkeleton theme={theme} />
       ) : (
         <Swiper
           modules={[Autoplay, Thumbs]}
           autoplay={{ delay: 3000 }}
           thumbs={{ swiper: thumbsSwiper }}
-          className="rounded-lg h-full w-full"
+          className="rounded-lg h-full w-full shadow-lg min-h-[400px]"
         >
           {images.map((image, index) => (
             <SwiperSlide key={index}>
@@ -60,7 +50,7 @@ const ImageCarousel = ({ images }) => {
           ))}
         </Swiper>
       )}
-    </div>
+    </>
   );
 };
 

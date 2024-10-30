@@ -3,35 +3,44 @@
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faCog, faEnvelope, faUser } from "@fortawesome/free-solid-svg-icons";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
 import { FaUserCog } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { selectIsAdmin } from "@/store/slices/userSlice";
 
-const BottomNavbar = ({ userId, userClass }) => {
+const BottomNavbar = ({ userId }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const currentPath = usePathname();
+  const isAdmin = useSelector(selectIsAdmin);
 
   const icons = [
     {
       icon: <PiSolarPanelFill className="text-2xl" />,
-      label: userClass === "admin" ? t("allPlants") : t("plants"),
-      path:
-        userClass === "admin"
-          ? "/dashboard/[userId]/all-plants"
-          : "/dashboard/[userId]/plants",
+      label: isAdmin ? t("allPlants") : t("plants"),
+      path: isAdmin
+        ? "/dashboard/[userId]/all-plants"
+        : "/dashboard/[userId]/plants",
     },
     {
-      icon: <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />,
-      label: userClass === "admin" ? t("clients") : t("notifications"),
-      path:
-        userClass === "admin"
-          ? "/dashboard/[userId]/clients"
-          : "/dashboard/[userId]/notifications",
+      icon: isAdmin ? (
+        <FontAwesomeIcon icon={faUser} className="text-2xl" />
+      ) : (
+        <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
+      ),
+      label: isAdmin ? t("clients") : t("notifications"),
+      path: isAdmin
+        ? "/dashboard/[userId]/clients"
+        : "/dashboard/[userId]/notifications",
     },
     {
-      icon: <FaUserCog className="text-2xl" />,
+      icon: isAdmin ? (
+        <FontAwesomeIcon icon={faCog} className="text-2xl" />
+      ) : (
+        <FaUserCog className="text-2xl" />
+      ),
       label: t("settings"),
       path: "/dashboard/[userId]/settings",
     },

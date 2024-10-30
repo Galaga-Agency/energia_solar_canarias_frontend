@@ -31,6 +31,8 @@ const DashboardPage = ({ params }) => {
   const theme = useSelector(selectTheme);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  console.log("user: ", user);
+
   useEffect(() => {
     const initializeDashboard = async () => {
       if (user?.id) {

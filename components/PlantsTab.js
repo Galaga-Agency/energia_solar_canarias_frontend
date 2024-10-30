@@ -32,7 +32,7 @@ const PlantsTab = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const plantsPerPage = isAdmin ? 6 : 7;
+  const plantsPerPage = !isAdmin ? 6 : 7;
 
   // Use custom filter hook
   const { filteredItems, filterItems } = useFilter(plants);
@@ -118,7 +118,7 @@ const PlantsTab = () => {
 
         {/* Render Plants */}
         {paginatedPlants.length > 0 ? (
-          !user.clase === "admin" ? (
+          user.clase === "admin" ? (
             <div className="my-12">
               <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
                 <thead className="rounded-md">

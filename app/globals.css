@@ -35,8 +35,9 @@ body {
   font-style: normal;
 }
 
-h2 {
-  @apply font-primary;
+h2,
+th {
+  @apply font-primary font-thin;
   text-transform: uppercase;
 }
 

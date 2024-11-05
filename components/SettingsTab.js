@@ -96,7 +96,7 @@ const SettingsTab = () => {
   return (
     <>
       <Texture />
-      <div className={`relative h-auto `}>
+      <div className={`relative h-auto p-8`}>
         {/* Profile Header */}
         <div className="relative z-10 flex items-start md:items-end mb-10">
           <Image

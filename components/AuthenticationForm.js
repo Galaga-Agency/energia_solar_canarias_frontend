@@ -61,23 +61,39 @@ const AuthenticationForm = () => {
   };
 
   const handleTokenSubmit = async () => {
+    console.log("handleTokenSubmit called"); // This should always log if the function is triggered
+
     if (!tokenInput.trim() || !userToValidate) return;
 
     setIsSubmitting(true);
     try {
+      console.log("Submitting token validation with:", {
+        id: userToValidate,
+        token: tokenInput,
+      });
+
       const response = await dispatch(
         validateToken({ id: userToValidate, token: tokenInput })
-      ).unwrap();
+      );
 
-      if (response.status === "success") {
-        Cookies.set("user", JSON.stringify(response.data), { expires: 7 });
+      console.log(
+        "Full response from form: ",
+        JSON.stringify(response, null, 2)
+      );
 
-        dispatch(setUser(response.data));
+      if (
+        response.meta.requestStatus === "fulfilled" &&
+        response.payload.status === true
+      ) {
+        Cookies.set("user", JSON.stringify(response.payload.data), {
+          expires: 180,
+        });
+        dispatch(setUser(response.payload.data));
         window.location.href = `/dashboard/${userToValidate}/plants`;
       } else {
         setSubmissionResult({
           status: "loginError",
-          message: t("invalidToken"),
+          message: response.message || t("invalidToken"),
         });
         setTokenInput("");
       }

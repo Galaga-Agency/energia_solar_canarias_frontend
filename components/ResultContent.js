@@ -12,6 +12,8 @@ const ResultContent = ({
 }) => {
   const { t } = useTranslation();
 
+  console.log("submission result: ", submissionResult);
+
   if (isSubmitting) {
     return (
       <div className="text-center">

@@ -20,9 +20,7 @@ const BottomNavbar = ({ userId }) => {
     {
       icon: <PiSolarPanelFill className="text-2xl" />,
       label: isAdmin ? t("allPlants") : t("plants"),
-      path: isAdmin
-        ? "/dashboard/[userId]/all-plants"
-        : "/dashboard/[userId]/plants",
+      path: "/dashboard/[userId]/plants",
     },
     {
       icon: isAdmin ? (
@@ -30,9 +28,9 @@ const BottomNavbar = ({ userId }) => {
       ) : (
         <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
       ),
-      label: isAdmin ? t("clients") : t("notifications"),
+      label: isAdmin ? t("users") : t("notifications"),
       path: isAdmin
-        ? "/dashboard/[userId]/clients"
+        ? "/dashboard/[userId]/users"
         : "/dashboard/[userId]/notifications",
     },
     {

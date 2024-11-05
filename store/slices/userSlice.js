@@ -9,8 +9,7 @@ export const authenticateUser = createAsyncThunk(
   "user/authenticateUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await loginRequestAPI(userData);
-      return response;
+      return await loginRequestAPI(userData);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -21,24 +20,18 @@ export const validateToken = createAsyncThunk(
   "user/validateToken",
   async ({ id, token }, { rejectWithValue }) => {
     try {
-      const response = await validateTokenRequestAPI(id, token);
-      return response;
+      return await validateTokenRequestAPI(id, token);
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-export const logoutUser = createAsyncThunk("user/logout", () => {
-  return;
-});
-
 export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await updateUserProfileAPI(userData);
-      return response;
+      return await updateUserProfileAPI(userData);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -60,8 +53,12 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
       state.isLoggedIn = true;
-      // Check if the user class is "admin" and set isAdmin accordingly
       state.isAdmin = action.payload.clase === "admin";
+    },
+    logoutUser: (state) => {
+      state.user = null;
+      state.isLoggedIn = false;
+      state.isAdmin = false;
     },
   },
   extraReducers: (builder) => {
@@ -81,9 +78,13 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(validateToken.fulfilled, (state, action) => {
-        state.user = action.payload.data;
-        state.isLoggedIn = true;
-        state.isAdmin = action.payload.data.clase === "admin";
+        if (action.payload.status === true) {
+          state.user = action.payload.data;
+          state.isLoggedIn = true;
+          state.isAdmin = action.payload.data.clase === "admin";
+        } else {
+          state.error = action.payload.message;
+        }
       })
       .addCase(validateToken.rejected, (state, action) => {
         state.error = action.payload;
@@ -97,7 +98,8 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, logoutUser } = userSlice.actions;
+
 export const selectUser = (state) => state.user.user;
 export const selectIsLoggedIn = (state) => state.user.isLoggedIn;
 export const selectIsAdmin = (state) => state.user.isAdmin;

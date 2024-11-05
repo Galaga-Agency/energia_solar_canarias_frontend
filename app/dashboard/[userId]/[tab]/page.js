@@ -7,7 +7,7 @@ import Loading from "@/components/Loading";
 import PlantsTab from "@/components/PlantsTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import SettingsTab from "@/components/SettingsTab";
-import ClientsTab from "@/components/ClientsTab";
+import UsersTab from "@/components/UsersTab";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -58,8 +58,8 @@ const DashboardPage = ({ params }) => {
         return <PlantsTab />;
       case "notifications":
         return !isAdmin ? <NotificationsTab /> : null;
-      case "clients":
-        return isAdmin ? <ClientsTab /> : null;
+      case "users":
+        return isAdmin ? <UsersTab /> : null;
       case "settings":
         return <SettingsTab />;
       default:
@@ -69,7 +69,7 @@ const DashboardPage = ({ params }) => {
 
   return (
     <div
-      className={`min-h-screen w-auto flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto p-8`}
+      className={`min-h-screen w-auto flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto`}
     >
       <TransitionEffect />
       <div className="flex-grow">

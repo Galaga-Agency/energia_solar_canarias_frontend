@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useFilter = (items) => {
+const usePlantFilter = (items) => {
   const [filteredItems, setFilteredItems] = useState(items);
 
   useEffect(() => {
@@ -36,4 +36,4 @@ const useFilter = (items) => {
   return { filteredItems, filterItems };
 };
 
-export default useFilter;
+export default usePlantFilter;

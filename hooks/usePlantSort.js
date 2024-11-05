@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useSort = (items) => {
+const usePlantSort = (items) => {
   const [sortedItems, setSortedItems] = useState(items);
 
   useEffect(() => {
@@ -28,4 +28,4 @@ const useSort = (items) => {
   return { sortedItems, sortItems };
 };
 
-export default useSort;
+export default usePlantSort;

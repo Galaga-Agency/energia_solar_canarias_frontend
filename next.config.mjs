@@ -113,6 +113,11 @@ const nextConfig = {
         hostname: "app-energiasolarcanarias-backend.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cuv.upc.edu",
+        pathname: "/**",
+      },
     ],
   },
 };

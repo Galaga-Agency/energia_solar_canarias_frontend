@@ -114,7 +114,8 @@
     "disconnected": "No inverter alarms, but at least one inverter is offline or there are no inverters in the plant.",
     "error": "At least one inverter in the plant is issuing an alarm."
   },
-  "filterPlaceholder": "Filter plants by name...",
+  "plantsfilterPlaceholder": "Filter by name, address...",
+  "userfilterPlaceholder": "Filter by name, email...",
   "enterToken": "Enter Token",
   "tokenPlaceholder": "Enter your token",
   "validateToken": "Validate Token",
@@ -156,7 +157,7 @@
   "userAdress": "Address",
   "noDataFound": "No Data Found",
   "tryAgainLater": "Please try again later or check your connection.",
-  "welcome": "Hi",
+  "welcome": "Hello",
   "repeatPassword": "Repeat Password",
   "passwordsDoNotMatch": "The passwords do not match.",
   "passwordChangeFailed": "Password change failed. Please try again.",
@@ -266,5 +267,13 @@
   "waiting": "Waiting",
   "disconnected": "Disconnected",
   "peakPower": "Peak Power",
-  "co2Saved": "CO2 Saved"
+  "co2Saved": "CO2 Saved",
+  "users": "Users",
+  "usersList": "Users List",
+  "userName": "Name",
+  "userEmail": "Email",
+  "noUsersFound": "No users found.",
+  "errorFetchingUsers": "Error fetching users: {error}",
+  "invalidToken": "Invalid token.",
+  "sortByRegistrationDate": "Sort by Registration Date"
 }

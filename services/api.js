@@ -4,7 +4,7 @@ const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const loginRequestAPI = async (userData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
+    const response = await fetch(`${API_BASE_URL}/esc-backend/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,81 +29,41 @@ export const loginRequestAPI = async (userData) => {
 export const validateTokenRequestAPI = async (id, token) => {
   const requestBody = JSON.stringify({ id, token });
 
-  return new Promise((resolve, reject) => {
-    fetch(`${API_BASE_URL}/token`, {
+  try {
+    const response = await fetch(`${API_BASE_URL}/token`, {
       method: "POST",
       body: requestBody,
       headers: {
         "Content-Type": "application/json",
-        usuario: USUARIO,
-        apiKey: API_KEY,
       },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response
-            .clone()
-            .json()
-            .then((errorData) => {
-              const errorResponse = {
-                status: "error",
-                code: response.status,
-                message: errorData.message || "Unknown error",
-                errors: errorData,
-              };
-              resolve(errorResponse);
-            })
-            .catch(() => {
-              return response.text().then((errorText) => {
-                const errorResponse = {
-                  status: "error",
-                  code: response.status,
-                  message: errorText || "Unknown error",
-                  errors: errorText,
-                };
-                resolve(errorResponse);
-              });
-            });
-        }
+    });
 
-        return response
-          .clone()
-          .json()
-          .then((data) => {
-            resolve(data);
-          })
-          .catch(() => {
-            return response.text().then((errorText) => {
-              const errorResponse = {
-                status: "error",
-                code: response.status,
-                message: errorText || "Unknown error",
-                errors: errorText,
-              };
-              resolve(errorResponse);
-            });
-          });
-      })
-      .catch((error) => {
-        if (error.message === "Failed to fetch") {
-          const errorResponse = {
-            status: "error",
-            code: 0,
-            message: "Network error: Unable to connect to the server.",
-            errors: error,
-          };
-          resolve(errorResponse);
-        } else {
-          const errorResponse = {
-            status: "error",
-            code: 0,
-            message: error.message || "Unknown error",
-            errors: error,
-          };
-          resolve(errorResponse);
-        }
-      });
-  });
+    if (!response.ok) {
+      const errorData = await response
+        .clone()
+        .json()
+        .catch(() => {
+          return { message: "Unknown error" };
+        });
+
+      return {
+        status: "error",
+        code: response.status,
+        message: errorData.message || "Unknown error",
+        errors: errorData,
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return {
+      status: "error",
+      code: 0,
+      message: error.message || "Unknown error",
+      errors: error,
+    };
+  }
 };
 
 export const updateUserProfileAPI = async (userData) => {
@@ -152,7 +112,7 @@ export const deleteNotificationAPI = async (notificationId) => {
 
 export const sendPasswordResetEmail = async (email) => {};
 
-export const fetchClientsAPI = async () => {
+export const fetchUsersAPI = async (userToken) => {
   try {
     const response = await fetch(`${API_BASE_URL}/usuarios`, {
       method: "GET",
@@ -160,6 +120,7 @@ export const fetchClientsAPI = async () => {
         "Content-Type": "application/json",
         usuario: USUARIO,
         apiKey: API_KEY,
+        Authorization: `Bearer ${userToken}`,
       },
     });
 

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { BsSortAlphaDown, BsCalendar, BsLightningFill } from "react-icons/bs";
 
-const SortMenu = ({ onSortChange }) => {
+const SortPlantsMenu = ({ onSortChange }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("alphabetical");
@@ -28,6 +28,7 @@ const SortMenu = ({ onSortChange }) => {
 
   // Initial sort on mount
   useEffect(() => {
+    console.log("onSortChange function:", onSortChange);
     onSortChange(selectedOption);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -53,10 +54,7 @@ const SortMenu = ({ onSortChange }) => {
     options.find((opt) => opt.value === selectedOption) || options[0];
 
   return (
-    <div
-      className="relative w-full md:w-auto md:min-w-[16rem] z-30"
-      ref={dropdownRef}
-    >
+    <div className="relative w-fit  z-30" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -114,4 +112,4 @@ const SortMenu = ({ onSortChange }) => {
   );
 };
 
-export default SortMenu;
+export default SortPlantsMenu;

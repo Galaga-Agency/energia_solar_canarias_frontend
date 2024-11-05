@@ -23,6 +23,7 @@ import {
 import WeatherWidgetSkeleton from "@/components/LoadingSkeletons/WeatherWidgetSkeleton";
 import ImageCarouselSkeleton from "@/components/LoadingSkeletons/ImageCarouselSkeleton";
 import useDeviceType from "@/hooks/useDeviceType";
+import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 
 const PlantDetailsPage = ({ params }) => {
   const { userId, plantId } = params;
@@ -185,7 +186,8 @@ const PlantDetailsPage = ({ params }) => {
             <p>No images available</p>
           )}
         </div>
-        <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
+        <EnergyFlowDisplay plantId={plant.id} />
+        <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
           <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
             {t("plantDetails")}
           </h2>
@@ -242,7 +244,7 @@ const PlantDetailsPage = ({ params }) => {
           </div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
+          <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm flex flex-col justify-between">
             <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
               {t("environmentalImpact")}
             </h2>
@@ -272,7 +274,7 @@ const PlantDetailsPage = ({ params }) => {
               </span>
             </div>
           </div>
-          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 transition-all duration-300 flex flex-col justify-between">
+          <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm flex flex-col justify-between">
             <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
               {t("energyStatistics")}
             </h2>
@@ -302,7 +304,7 @@ const PlantDetailsPage = ({ params }) => {
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mt-6 transition-all duration-300">
+        <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm mt-6">
           <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
             {t("powerTimeSeries")}
           </h2>

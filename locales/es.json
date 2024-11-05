@@ -113,7 +113,8 @@
     "disconnected": "No hay alarmas de inversores en la planta, pero al menos un inversor está fuera de línea o no hay ningún inversor en la planta.",
     "error": "Al menos un inversor de la planta emite una alarma."
   },
-  "filterPlaceholder": "Filtrar plantas por nombre...",
+  "plantsfilterPlaceholder": "Filtrar por nombre, dirección...",
+  "userfilterPlaceholder": "Filtrar por nombre, email...",
   "enterToken": "Introduce el Token",
   "tokenPlaceholder": "Introduce tu token",
   "validateToken": "Validar Token",
@@ -266,5 +267,13 @@
   "statusDisconnected": "Desconectado",
   "state": "Estado",
   "peakPower": "Potencia Máxima",
-  "co2Saved": "CO2 Ahorrado"
+  "co2Saved": "CO2 Ahorrado",
+  "users": "Usarios",
+  "invalidToken": "Token Invalido",
+  "usersList": "Lista de Usuarios",
+  "userName": "Nombre",
+  "userEmail": "Correo Electrónico",
+  "noUsersFound": "No se encontraron usuarios.",
+  "errorFetchingUsers": "Error al obtener usuarios: {error}",
+  "sortByRegistrationDate": "Ordenar por Fecha de Registro"
 }

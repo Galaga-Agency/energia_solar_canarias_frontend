@@ -19,7 +19,7 @@ const WeatherWidget = ({ weatherData, batterySOC, theme }) => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 transition-all duration-300 w-full h-full min-h-[400px] flex flex-col">
+    <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm min-h-[400px] flex flex-col">
       <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
         {t("weatherForecast")}
       </h2>
@@ -78,7 +78,7 @@ const WeatherWidget = ({ weatherData, batterySOC, theme }) => {
         {weatherData?.forecast.forecastday.map((day) => (
           <div
             key={day.date}
-            className="p-2 bg-gray-200 dark:bg-custom-dark-blue rounded-lg text-center"
+            className="p-2 bg-white dark:bg-custom-dark-blue rounded-lg text-center"
           >
             <p className="font-semibold dark:text-custom-light-gray">
               {day.date}

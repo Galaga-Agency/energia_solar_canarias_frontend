@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from "react";
 import AddPlantForm from "./AddPlantForm";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import FilterInput from "@/components/FilterInput";
-import SortMenu from "@/components/SortMenu";
+import FilterPlantsInput from "@/components/FilterPlantsInput";
+import SortMenu from "@/components/SortPlantsMenu";
 import Pagination from "@/components/Pagination";
-import useSort from "@/hooks/useSort";
+import usePlantSort from "@/hooks/usePlantSort";
 import PlantCard from "@/components/PlantCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { FaMapMarkedAlt } from "react-icons/fa";
@@ -22,7 +22,7 @@ import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import { PiSolarPanelFill } from "react-icons/pi";
 import PlantStatuses from "./PlantStatuses";
 import useDeviceType from "@/hooks/useDeviceType";
-import useFilter from "@/hooks/useFilter"; // Import your custom filter hook
+import usePlantFilter from "@/hooks/usePlantFilter";
 
 const PlantsTab = () => {
   const { t } = useTranslation();
@@ -33,10 +33,8 @@ const PlantsTab = () => {
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const plantsPerPage = !isAdmin ? 6 : 7;
-
-  // Use custom filter hook
-  const { filteredItems, filterItems } = useFilter(plants);
-  const { sortedItems: sortedPlants, sortItems } = useSort(filteredItems);
+  const { filteredItems, filterItems } = usePlantFilter(plants);
+  const { sortedItems: sortedPlants, sortItems } = usePlantSort(filteredItems);
 
   const theme = useSelector(selectTheme);
   const user = useSelector(selectUser);
@@ -73,7 +71,7 @@ const PlantsTab = () => {
   return (
     <>
       <Texture />
-      <div className="relative h-auto z-10">
+      <div className="relative h-auto z-10 p-8">
         <div className="flex items-center mb-10 md:mb-2 z-10">
           <Image
             src={companyIcon}
@@ -99,7 +97,7 @@ const PlantsTab = () => {
         />
 
         {/* Filter and Sort */}
-        <FilterInput onFilterChange={filterItems} />
+        <FilterPlantsInput onFilterChange={filterItems} />
         <div className="flex flex-col md:flex-row md:justify-between z-30">
           <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
             <div className="flex-grow">
@@ -123,15 +121,15 @@ const PlantsTab = () => {
               <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
                 <thead className="rounded-md">
                   <tr className="bg-gray-100 dark:bg-gray-700 flex">
-                    <th className="flex w-[75%] md:w-[40%] py-3 md:px-6 border-b border-gray-300 justify-center items-center text-custom-dark-blue dark:text-custom-yellow font-semibold">
+                    <th className="flex w-[75%] md:w-[40%] py-3 md:px-6 border-b border-gray-300 justify-center items-center text-custom-dark-blue dark:text-custom-yellow">
                       {t("plantName")}
                     </th>
                     {!isMobile && (
-                      <th className="flex md:w-[40%] py-3 px-6 border-b border-gray-300 justify-center items-center text-custom-dark-blue dark:text-custom-yellow font-semibold">
+                      <th className="flex md:w-[40%] py-3 border-b border-gray-300 justify-center xl:justify-left items-left text-custom-dark-blue dark:text-custom-yellow">
                         {t("location")}
                       </th>
                     )}
-                    <th className="flex w-[25%] md:w-[20%] py-3 md:px-6 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow font-semibold justify-center items-center">
+                    <th className="flex w-[25%] md:w-[20%] py-3 md:px-6 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">
                       {t("state")}
                     </th>
                   </tr>

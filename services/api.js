@@ -130,7 +130,6 @@ export const fetchUsersAPI = async (userToken) => {
     }
 
     const data = await response.json();
-    console.log("response: ", data.data);
     return data.data;
   } catch (error) {
     console.error("Error fetching clients:", error);

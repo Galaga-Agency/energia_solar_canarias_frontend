@@ -157,7 +157,7 @@ const PlantsTab = () => {
               </div>
               <>
                 {sortedPlants.length > plantsPerPage && (
-                  <div className="flex justify-center w-full">
+                  <div className="flex justify-center w-full pb-16">
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}

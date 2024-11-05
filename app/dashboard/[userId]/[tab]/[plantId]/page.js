@@ -41,7 +41,6 @@ const PlantDetailsPage = ({ params }) => {
       try {
         const response = await fetch("/plants.json");
         const data = await response.json();
-        console.log("Fetched plants data:", data.plants);
         setPlants(data.plants);
       } catch (error) {
         console.error("Error fetching the plants data:", error);

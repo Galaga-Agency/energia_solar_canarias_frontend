@@ -13,7 +13,7 @@ import Texture from "./Texture";
 import SortUserMenu from "@/components/SortUserMenu";
 import UserFilterInput from "@/components/UserFilterInput";
 import useUserFilter from "@/hooks/useUserFilter";
-import useDeviceType, { isMobile } from "@/hooks/useDeviceType";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const UsersTab = () => {
   const { t } = useTranslation();

@@ -61,24 +61,11 @@ const AuthenticationForm = () => {
   };
 
   const handleTokenSubmit = async () => {
-    console.log("handleTokenSubmit called"); // This should always log if the function is triggered
-
     if (!tokenInput.trim() || !userToValidate) return;
-
     setIsSubmitting(true);
     try {
-      console.log("Submitting token validation with:", {
-        id: userToValidate,
-        token: tokenInput,
-      });
-
       const response = await dispatch(
         validateToken({ id: userToValidate, token: tokenInput })
-      );
-
-      console.log(
-        "Full response from form: ",
-        JSON.stringify(response, null, 2)
       );
 
       if (

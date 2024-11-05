@@ -86,7 +86,7 @@ const NotificationsTab = () => {
   return (
     <>
       <Texture />
-      <div className="flex flex-col">
+      <div className="flex flex-col p-8">
         <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue">
           {t("notifications")}
         </h2>

@@ -31,8 +31,6 @@ const DashboardPage = ({ params }) => {
   const theme = useSelector(selectTheme);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  console.log("user: ", user);
-
   useEffect(() => {
     const initializeDashboard = async () => {
       if (user?.id) {
@@ -83,7 +81,7 @@ const DashboardPage = ({ params }) => {
         </div>
         {renderTabContent()}
       </div>
-      <BottomNavbar userId={userId} userClass={user.clase} />
+      <BottomNavbar userId={user && userId} userClass={user && user.clase} />
     </div>
   );
 };

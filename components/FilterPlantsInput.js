@@ -10,7 +10,7 @@ const FilterInput = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="flex justify-center my-8 z-10">
+    <div className="flex justify-center my-8 lg:my-0 lg:mb-8 z-10">
       <input
         type="text"
         placeholder={t("plantsfilterPlaceholder")}

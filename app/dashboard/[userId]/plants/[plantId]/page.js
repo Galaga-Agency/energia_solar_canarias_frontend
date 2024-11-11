@@ -54,14 +54,10 @@ const PlantDetailsPage = ({ params }) => {
     fetchPlantsData();
   }, []);
 
-  console.log("params:", params);
-
   useEffect(() => {
     if (plants.length > 0) {
       const selectedPlant = plants.find((p) => p.id === parseInt(plantId, 10));
-      console.log("selectedPlant:", selectedPlant);
       setPlant(selectedPlant);
-      console.log("plant:", plant);
     }
   }, [plants, plantId]);
 
@@ -155,7 +151,7 @@ const PlantDetailsPage = ({ params }) => {
         }`}
       >
         <Texture />
-        <div className="flex justify-between items-center mb-6 gap-6">
+        <div className="flex justify-between items-start mb-6 gap-6">
           <button onClick={() => window.history.back()}>
             <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />
           </button>

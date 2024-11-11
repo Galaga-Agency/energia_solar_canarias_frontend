@@ -3,6 +3,7 @@ import userReducer from "@/store/slices/userSlice";
 import plantsReducer from "@/store/slices/plantsSlice";
 import notificationsReducer from "./slices/notificationsSlice";
 import themeReducer from "./slices/themeSlice";
+import usersListReducer from "./slices/usersListSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     plants: plantsReducer,
     notifications: notificationsReducer,
     theme: themeReducer,
+    usersList: usersListReducer,
   },
 });
 

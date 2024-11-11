@@ -137,6 +137,80 @@ export const fetchUsersAPI = async (userToken) => {
   }
 };
 
+export const deactivateUserAPI = async (userId) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/usuarios/${userId}/deactivate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to deactivate user");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deactivating user:", error);
+    throw error;
+  }
+};
+
+export const fetchUserByIdAPI = async ({ userId, token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch user details");
+    }
+
+    const data = await response.json();
+    console.log("Fetched user data:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    throw error;
+  }
+};
+
+export const deleteUserAPI = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to delete user");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw error;
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EVRYTHING BELOW THIS SHOULD BE REMOVED ONCE THE ENTIRE BACKEND IS FINISHED
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -112,13 +112,13 @@ const SettingsTab = () => {
           <Image
             src={companyIcon}
             alt="Company Icon"
-            className="w-16 h-16 drop-shadow-md"
+            className="w-12 h-12 mr-2 z-10"
           />
           <div className="flex flex-wrap">
-            <h2 className="text-5xl font-extrabold text-custom-dark-blue dark:text-custom-yellow ml-4 leading-tight">
+            <h2 className="text-4xl font-extrabold text-custom-dark-blue dark:text-custom-yellow ml-4 leading-tight">
               {`${t("welcome")},`}
             </h2>
-            <span className="font-secondary ml-4 md:ml-2 -mt-[2px] text-5xl font-thin text-custom-dark-blue dark:text-custom-yellow">
+            <span className="font-secondary ml-4 md:ml-2 -mt-[2px] text-4xl font-thin text-custom-dark-blue dark:text-custom-yellow">
               {user?.nombre}
             </span>
           </div>

@@ -277,5 +277,14 @@
   "errorFetchingUsers": "Error al obtener usuarios: {error}",
   "sortByRegistrationDate": "Ordenar por Fecha de Registro",
   "noPlantData": "Planta no encontrada",
-  "plantNotFound": "Por favór intentalo más tarde"
+  "plantNotFound": "Por favór intentalo más tarde",
+  "cliente": "Cliente",
+  "assignPlant": "Asignar Planta",
+  "deactivateUser": "Desactivar Usuario",
+  "deleteUser": "Eliminar Usuario",
+  "areYouSureDeleteUser": "¿Está seguro de que desea eliminar a este usuario?",
+  "close": "Cerrar",
+  "userDetails": "Administrar Usuario",
+  "noUserData": "Datos del usuario no encontrados",
+  "reloadPageMessage": "Refresca la página o intentalo de nuevo más tarde"
 }

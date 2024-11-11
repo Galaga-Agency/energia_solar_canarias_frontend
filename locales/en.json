@@ -277,5 +277,14 @@
   "invalidToken": "Invalid token.",
   "sortByRegistrationDate": "Sort by Registration Date",
   "noPlantData": "Plant not found",
-  "plantNotFound": "An error occured, refresh the page or try again later"
+  "plantNotFound": "An error occured, refresh the page or try again later",
+  "cliente": "Client",
+  "assignPlant": "Assign Plant",
+  "deactivateUser": "Deactivate User",
+  "deleteUser": "Delete User",
+  "areYouSureDeleteUser": "Are you sure you want to delete this user?",
+  "close": "Close",
+  "userDetails": "User Management",
+  "noUserData": "User data not found",
+  "reloadPageMessage": "Refresh the page or try again later"
 }

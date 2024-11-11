@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchUsersAPI } from "@/services/api";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import Pagination from "@/components/Pagination";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/store/slices/userSlice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
 import Texture from "@/components/Texture";
@@ -17,35 +15,36 @@ import useDeviceType from "@/hooks/useDeviceType";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import UserListSkeleton from "@/components/LoadingSkeletons/UserListSkeleton";
+import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSelector from "@/components/LanguageSelector";
+import {
+  fetchUsers,
+  selectUsers,
+  selectUsersLoading,
+  selectUsersError,
+} from "@/store/slices/usersListSlice";
+import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const UsersTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const dispatch = useDispatch();
   const theme = useSelector(selectTheme);
-  const user = useSelector(selectUser);
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const currentUser = useSelector(selectUser);
+  const users = useSelector(selectUsers);
+  const isLoading = useSelector(selectUsersLoading);
+  const error = useSelector(selectUsersError);
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = users.length;
+  const usersPerPage = users?.length;
   const { isMobile } = useDeviceType();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const userToken = user?.tokenIdentificador;
-      try {
-        const usersData = await fetchUsersAPI(userToken);
-        setUsers(usersData);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, [user]);
+    if (currentUser) {
+      console.log();
+      dispatch(fetchUsers(currentUser.tokenIdentificador));
+    }
+  }, [dispatch, currentUser]);
 
   const { filteredUsers, filterUsers } = useUserFilter(users);
 
@@ -68,21 +67,21 @@ const UsersTab = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex justify-center items-center">
+      <div className="min-h-screen flex justify-center items-center text-custom-dark-blue dark:text-custom-yellow">
         <p>Error fetching users: {error}</p>
       </div>
     );
   }
 
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const totalPages = Math.ceil(filteredUsers?.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
-  const paginatedUsers = filteredUsers.slice(
+  const paginatedUsers = filteredUsers?.slice(
     startIndex,
     startIndex + usersPerPage
   );
 
   const handleUserClick = (selectedUserId) => {
-    router.push(`/dashboard/${user.id}/users/${selectedUserId}`);
+    router.push(`/dashboard/${currentUser.id}/users/${selectedUserId}`);
   };
 
   return (
@@ -90,6 +89,11 @@ const UsersTab = () => {
       <TransitionEffect />
       <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto p-8">
         <Texture />
+
+        <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+          <ThemeToggle />
+          <LanguageSelector />
+        </div>
         <div className="flex items-center mb-10 md:mb-2 z-10">
           <Image
             src={companyIcon}
@@ -106,7 +110,7 @@ const UsersTab = () => {
 
         {isLoading ? (
           <UserListSkeleton theme={theme} rows={usersPerPage} />
-        ) : paginatedUsers.length > 0 ? (
+        ) : paginatedUsers?.length > 0 ? (
           <div className="my-12 overflow-hidden">
             <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
               <thead>
@@ -148,10 +152,15 @@ const UsersTab = () => {
             )}
           </div>
         ) : (
-          <p className="text-lg">{t("noUsersFound")}</p>
+          <p className="text-lg text-custom-dark-blue dark:text-custom-yellow">
+            {t("noUsersFound")}
+          </p>
         )}
       </div>
-      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
+      <BottomNavbar
+        userId={currentUser && currentUser.id}
+        userClass={currentUser && currentUser.clase}
+      />
     </>
   );
 };

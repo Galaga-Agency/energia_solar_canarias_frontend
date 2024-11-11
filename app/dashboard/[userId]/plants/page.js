@@ -68,12 +68,10 @@ const DashboardPage = ({ params }) => {
     }
   }, [user, router, dispatch]);
 
-  console.log("user returned: ", user);
-
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto">
       <TransitionEffect />
-      <div className="absolute top-4 right-4 z-50 flex flex-col items-end gap-2">
+      <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
         <ThemeToggle />
         <LanguageSelector />
       </div>

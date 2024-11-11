@@ -288,7 +288,7 @@ const AuthenticationForm = () => {
           style={{
             transformStyle: "preserve-3d",
             transform: getRotation(),
-            transition: "transform 1.2s ease-in-out",
+            transition: "transform 0.8s ease-in-out",
           }}
         >
           <FormFace isActive={currentFace === "login"} rotation={0}>

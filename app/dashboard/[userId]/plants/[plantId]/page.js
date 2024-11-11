@@ -67,7 +67,9 @@ const PlantDetailsPage = ({ params }) => {
         const cityName = plant.location.city;
         try {
           const response = await axios.get(
-            `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=3&aqi=no&alerts=no`
+            `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=${
+              isDesktop ? 3 : 2
+            }&aqi=no&alerts=no`
           );
           setWeatherData(response.data);
         } catch (error) {
@@ -237,7 +239,7 @@ const PlantDetailsPage = ({ params }) => {
           </div>
         </div>
         {!isDesktop && (
-          <div className="bg-white dark:bg-custom-dark-blue shadow-lg rounded-lg p-6 mb-6 transition-all duration-300 flex flex-col justify-between">
+          <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm flex flex-col justify-start">
             <h2 className="text-xl font-primary mb-4 text-custom-dark-blue dark:text-custom-yellow">
               {t("batteryStatus")}
             </h2>

@@ -48,7 +48,7 @@ const SortUserMenu = ({ onSortChange }) => {
     options.find((opt) => opt.value === selectedOption) || options[0];
 
   return (
-    <div className="relative w-fit z-30" ref={dropdownRef}>
+    <div className="relative w-fit z-0" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}

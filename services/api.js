@@ -147,8 +147,9 @@ export const fetchPlantsMock = async (userId) => {
     if (!response.ok) {
       throw new Error(`Error fetching plants: ${response.statusText}`);
     }
-    const data = await response.json();
-    const plants = data.plants.filter((plant) => plant.userId === userId);
+    const plants = await response.json();
+
+    console.log("plants returned: ", plants);
 
     return plants;
   } catch (error) {

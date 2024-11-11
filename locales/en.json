@@ -275,5 +275,7 @@
   "noUsersFound": "No users found.",
   "errorFetchingUsers": "Error fetching users: {error}",
   "invalidToken": "Invalid token.",
-  "sortByRegistrationDate": "Sort by Registration Date"
+  "sortByRegistrationDate": "Sort by Registration Date",
+  "noPlantData": "Plant not found",
+  "plantNotFound": "An error occured, refresh the page or try again later"
 }

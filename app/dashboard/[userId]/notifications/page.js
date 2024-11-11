@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
-import NotificationCard from "./NotificationCard";
+import NotificationCard from "@/components/NotificationCard";
 import { selectUser } from "@/store/slices/userSlice";
 import {
   markAllAsRead,
@@ -14,12 +14,16 @@ import {
   deleteNotification,
 } from "@/store/slices/notificationsSlice";
 import { useTranslation } from "next-i18next";
-import Texture from "./Texture";
-import ConfirmationModal from "./ConfirmationModal";
+import Texture from "@/components/Texture";
+import ConfirmationModal from "@/components/ConfirmationModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
-import PrimaryButton from "./PrimaryButton";
+import PrimaryButton from "@/components/PrimaryButton";
 import { useRouter } from "next/navigation";
+import BottomNavbar from "@/components/BottomNavbar";
+import TransitionEffect from "@/components/TransitionEffect";
+import LanguageSelector from "@/components/LanguageSelector";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const NotificationsTab = () => {
   const dispatch = useDispatch();
@@ -45,6 +49,7 @@ const NotificationsTab = () => {
   }, []);
 
   const handleMarkAsRead = (notificationId, plantId) => {
+    console.log("Redirecting to plantId:", plantId);
     router.push(`/dashboard/${userId}/plants/${plantId}`);
     dispatch(markNotificationAsRead(notificationId));
   };
@@ -84,9 +89,14 @@ const NotificationsTab = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto">
+      <TransitionEffect />
+      <div className="absolute top-4 right-4 z-50 flex flex-col items-end gap-2">
+        <ThemeToggle />
+        <LanguageSelector />
+      </div>
       <Texture />
-      <div className="flex flex-col p-8">
+      <div className="relative h-auto z-10 p-8">
         <h2 className="text-4xl dark:text-custom-yellow text-custom-dark-blue">
           {t("notifications")}
         </h2>
@@ -97,7 +107,10 @@ const NotificationsTab = () => {
             </span>
           </Link>
           <div className="pt-6 md:mr-auto">
-            <PrimaryButton onClick={handleMarkAllAsRead}>
+            <PrimaryButton
+              onClick={handleMarkAllAsRead}
+              disabled={activeNotifications.length === 0}
+            >
               {t("markAllAsRead")}
             </PrimaryButton>
           </div>
@@ -218,7 +231,9 @@ const NotificationsTab = () => {
           message={t("areYouSureDeleteNotification")}
         />
       </div>
-    </>
+
+      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
+    </div>
   );
 };
 

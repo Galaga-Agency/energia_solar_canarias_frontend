@@ -1,33 +1,39 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { fetchUsersAPI } from "@/services/api";
-import Loading from "@/components/Loading";
 import { useTranslation } from "next-i18next";
 import Pagination from "@/components/Pagination";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/store/slices/userSlice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
-import Texture from "./Texture";
+import Texture from "@/components/Texture";
 import SortUserMenu from "@/components/SortUserMenu";
 import UserFilterInput from "@/components/UserFilterInput";
 import useUserFilter from "@/hooks/useUserFilter";
 import useDeviceType from "@/hooks/useDeviceType";
+import BottomNavbar from "@/components/BottomNavbar";
+import TransitionEffect from "@/components/TransitionEffect";
+import UserListSkeleton from "@/components/LoadingSkeletons/UserListSkeleton";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const UsersTab = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const theme = useSelector(selectTheme);
   const user = useSelector(selectUser);
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 10;
+  const usersPerPage = users.length;
   const { isMobile } = useDeviceType();
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const userToken = user.tokenIdentificador;
+      const userToken = user?.tokenIdentificador;
       try {
         const usersData = await fetchUsersAPI(userToken);
         setUsers(usersData);
@@ -60,10 +66,6 @@ const UsersTab = () => {
     return sorted;
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   if (error) {
     return (
       <div className="min-h-screen flex justify-center items-center">
@@ -79,10 +81,15 @@ const UsersTab = () => {
     startIndex + usersPerPage
   );
 
+  const handleUserClick = (selectedUserId) => {
+    router.push(`/dashboard/${user.id}/users/${selectedUserId}`);
+  };
+
   return (
     <>
-      <Texture />
-      <div className="relative h-auto p-8">
+      <TransitionEffect />
+      <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto p-8">
+        <Texture />
         <div className="flex items-center mb-10 md:mb-2 z-10">
           <Image
             src={companyIcon}
@@ -97,7 +104,9 @@ const UsersTab = () => {
         <UserFilterInput onFilterChange={filterUsers} />
         <SortUserMenu onSortChange={sortUsers} />
 
-        {paginatedUsers.length > 0 ? (
+        {isLoading ? (
+          <UserListSkeleton theme={theme} rows={usersPerPage} />
+        ) : paginatedUsers.length > 0 ? (
           <div className="my-12 overflow-hidden">
             <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
               <thead>
@@ -111,18 +120,19 @@ const UsersTab = () => {
                 </tr>
               </thead>
               <tbody>
-                {paginatedUsers.map((user) => (
+                {paginatedUsers.map((userItem) => (
                   <tr
-                    key={user.id}
-                    className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300"
+                    key={userItem.usuario_id}
+                    className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300 cursor-pointer"
+                    onClick={() => handleUserClick(userItem.usuario_id)}
                   >
                     <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow border-b border-gray-300">
-                      {user.nombre}
+                      {userItem.nombre}
                     </td>
                     <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow border-b border-gray-300 overflow-hidden whitespace-nowrap text-ellipsis">
-                      {isMobile && user.email.length > 15
-                        ? `${user.email.substring(0, 15)}...`
-                        : user.email}
+                      {isMobile && userItem.email.length > 15
+                        ? `${userItem.email.substring(0, 15)}...`
+                        : userItem.email}
                     </td>
                   </tr>
                 ))}
@@ -141,6 +151,7 @@ const UsersTab = () => {
           <p className="text-lg">{t("noUsersFound")}</p>
         )}
       </div>
+      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
     </>
   );
 };

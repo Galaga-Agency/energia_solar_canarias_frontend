@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 
 const usePlantSort = (items) => {
-  const [sortedItems, setSortedItems] = useState(items);
+  // Ensure items is always an array, even if it's passed in as an object or undefined.
+  const validItems = Array.isArray(items) ? items : items?.plants || [];
+
+  const [sortedItems, setSortedItems] = useState(validItems);
 
   useEffect(() => {
-    setSortedItems(items);
+    setSortedItems(validItems);
   }, [items]);
 
   const sortItems = (criteria) => {
-    let sorted = [...items];
+    let sorted = [...validItems];
     switch (criteria) {
       case "alphabetical":
         sorted.sort((a, b) => a.name.localeCompare(b.name));
@@ -20,7 +23,7 @@ const usePlantSort = (items) => {
         sorted.sort((a, b) => b.currentPowerOutputKW - a.currentPowerOutputKW);
         break;
       default:
-        sorted = items;
+        sorted = validItems;
     }
     setSortedItems(sorted);
   };

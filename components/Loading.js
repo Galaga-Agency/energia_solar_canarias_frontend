@@ -10,7 +10,7 @@ const Loading = () => {
         ${
           theme === "dark"
             ? "bg-custom-dark-blue"
-            : "bg-gradient-to-b from-gray-200 to-custom-dark-gray bg-opacity-50"
+            : "bg-gradient-to-b from-gray-200 to-custom-dark-gray bg-opacity-50 z-50"
         }
       `}
     >

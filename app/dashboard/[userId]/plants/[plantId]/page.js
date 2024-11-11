@@ -26,7 +26,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 
 const PlantDetailsPage = ({ params }) => {
-  const { userId, plantId } = params;
+  const { plantId, userId } = params;
   const [plants, setPlants] = useState([]);
   const [plant, setPlant] = useState(null);
   const { t } = useTranslation();
@@ -35,6 +35,8 @@ const PlantDetailsPage = ({ params }) => {
   const theme = useSelector(selectTheme);
   const [isLoading, setIsLoading] = useState(true);
   const { isMobile, isDesktop } = useDeviceType();
+
+  console.log("plant detals params: ", params);
 
   useEffect(() => {
     const fetchPlantsData = async () => {
@@ -52,10 +54,14 @@ const PlantDetailsPage = ({ params }) => {
     fetchPlantsData();
   }, []);
 
+  console.log("params:", params);
+
   useEffect(() => {
     if (plants.length > 0) {
-      const selectedPlant = plants.find((p) => p.id === parseInt(plantId));
+      const selectedPlant = plants.find((p) => p.id === parseInt(plantId, 10));
+      console.log("selectedPlant:", selectedPlant);
       setPlant(selectedPlant);
+      console.log("plant:", plant);
     }
   }, [plants, plantId]);
 

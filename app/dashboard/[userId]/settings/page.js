@@ -4,21 +4,25 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser, logoutUser } from "@/store/slices/userSlice";
 import { useTranslation } from "next-i18next";
-import ProfileOverviewCard from "./ProfileOverviewCard";
-import PasswordChangeCard from "./PasswordChangeCard";
-import ApiKeyRequestCard from "./ApiKeyRequestCard";
-import MetricsConfigCard from "./MetricsConfigCard";
-import CompanyDocumentsCard from "./CompanyDocumentsCard";
-import NotificationsCard from "./NotificationsCard";
+import ProfileOverviewCard from "@/components/ProfileOverviewCard";
+import PasswordChangeCard from "@/components/PasswordChangeCard";
+import ApiKeyRequestCard from "@/components/ApiKeyRequestCard";
+import MetricsConfigCard from "@/components/MetricsConfigCard";
+import CompanyDocumentsCard from "@/components/CompanyDocumentsCard";
+import NotificationsCard from "@/components/NotificationsCard";
 import axios from "axios";
 import Cookies from "js-cookie";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
 import useLocalStorageState from "use-local-storage-state";
 import { useRouter, usePathname } from "next/navigation";
-import Texture from "./Texture";
-import ConfirmationModal from "./ConfirmationModal";
+import Texture from "@/components/Texture";
+import ConfirmationModal from "@/components/ConfirmationModal";
 import useDeviceType from "@/hooks/useDeviceType";
+import BottomNavbar from "@/components/BottomNavbar";
+import TransitionEffect from "@/components/TransitionEffect";
+import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSelector from "@/components/LanguageSelector";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();
@@ -94,9 +98,15 @@ const SettingsTab = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto">
+      <TransitionEffect />
+      <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+        <ThemeToggle />
+        <LanguageSelector />
+      </div>
+
       <Texture />
-      <div className={`relative h-auto p-8`}>
+      <div className="relative h-auto z-10 p-8">
         {/* Profile Header */}
         <div className="relative z-10 flex items-start md:items-end mb-10">
           <Image
@@ -109,11 +119,10 @@ const SettingsTab = () => {
               {`${t("welcome")},`}
             </h2>
             <span className="font-secondary ml-4 md:ml-2 -mt-[2px] text-5xl font-thin text-custom-dark-blue dark:text-custom-yellow">
-              {user?.nombre || t("profile")}
+              {user?.nombre}
             </span>
           </div>
         </div>
-
         {/* Profile Content */}
         <div className="w-full space-y-6 transition-all duration-500 grid grid-cols-1 md:grid-cols-2 md:gap-6">
           <div className="flex flex-col gap-6">
@@ -143,9 +152,7 @@ const SettingsTab = () => {
             {!isTablet && <CompanyDocumentsCard />}
           </div>
         </div>
-
         {isTablet && <CompanyDocumentsCard />}
-
         {/* Logout and Delete Account Buttons */}
         <div className="pt-6 flex flex-col gap-4 justify-between mb-16">
           <button
@@ -174,7 +181,9 @@ const SettingsTab = () => {
           message={t("areYouSureDeleteAccount")}
         />
       </div>
-    </>
+
+      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
+    </div>
   );
 };
 

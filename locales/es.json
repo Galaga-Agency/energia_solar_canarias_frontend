@@ -275,5 +275,7 @@
   "userEmail": "Correo Electrónico",
   "noUsersFound": "No se encontraron usuarios.",
   "errorFetchingUsers": "Error al obtener usuarios: {error}",
-  "sortByRegistrationDate": "Ordenar por Fecha de Registro"
+  "sortByRegistrationDate": "Ordenar por Fecha de Registro",
+  "noPlantData": "Planta no encontrada",
+  "plantNotFound": "Por favór intentalo más tarde"
 }

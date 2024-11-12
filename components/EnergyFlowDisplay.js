@@ -4,9 +4,9 @@ import { fetchPlantsMock } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 import Loading from "./Loading";
-import houseIllustration from "@/public/assets/img/house-illustration.PNG";
-import solarPanelIllustration from "@/public/assets/img/solar-panel-illustration.PNG";
-import gridIllustration from "@/public/assets/img/grid.PNG";
+import houseIllustration from "/assets/img/house-illustration.png";
+import solarPanelIllustration from "/assets/img/solar-panel-illustration.png";
+import gridIllustration from "/assets/img/grid.png";
 import useDeviceType from "@/hooks/useDeviceType";
 
 const EnergyFlowDisplay = ({ plantId }) => {

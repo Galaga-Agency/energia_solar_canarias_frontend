@@ -254,10 +254,10 @@ const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
               placeholder={t("cifNif")}
             />
             <div className="flex mt-6 pt-4 justify-center">
-              <PrimaryButton type="submit">{t("save")}</PrimaryButton>
               <SecondaryButton type="SecondaryB" onClick={handleCancelEdit}>
                 {t("cancel")}
               </SecondaryButton>
+              <PrimaryButton type="submit">{t("save")}</PrimaryButton>
             </div>
           </form>
         </div>

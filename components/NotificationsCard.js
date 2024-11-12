@@ -4,7 +4,7 @@ import { useTranslation } from "next-i18next";
 import useLocalStorageState from "use-local-storage-state";
 import SecondaryButton from "./SecondaryButton";
 import PrimaryButton from "./PrimaryButton";
-import { useEffect, useRef } from "react";
+import CustomCheckbox from "./CustomCheckbox";
 
 const NotificationsCard = () => {
   const { t } = useTranslation();
@@ -73,36 +73,36 @@ const NotificationsCard = () => {
 
       <div className="flex flex-col lg:flex-row justify-between gap-4 2xl:gap-24 2xl:justify-start items-start mt-4">
         <div className="flex flex-col">
-          <label className="flex items-center text-gray-700 dark:text-gray-300">
-            <input
-              type="checkbox"
-              checked={notificationsEnabled}
-              onChange={handleAllNotificationsChange}
-              className="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
-            />
-            <span className="ml-2 flex-1">{t("enableAllNotifications")}</span>
-          </label>
+          {/* Enable All Notifications */}
+          <CustomCheckbox
+            id="enable-all"
+            label={t("enableAllNotifications")}
+            checked={notificationsEnabled}
+            onChange={handleAllNotificationsChange}
+            className="text-gray-700 dark:text-gray-300"
+          />
 
+          {/* Individual Notifications */}
           <div className="flex flex-col mt-2 space-y-2">
             {Object.keys(notificationStates).map((notification, index) => (
-              <label
+              <CustomCheckbox
                 key={index}
-                className="flex items-center text-custom-dark-blue dark:text-custom-light-gray"
-              >
-                <input
-                  type="checkbox"
-                  name={notification}
-                  checked={notificationStates[notification]}
-                  onChange={handleIndividualNotificationChange}
-                  className="h-5 w-5 text-custom-light-gray border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
-                />
-                <span className="ml-2 flex-1">{t(notification)}</span>
-              </label>
+                id={notification}
+                label={t(notification)}
+                checked={notificationStates[notification]}
+                onChange={(e) =>
+                  handleIndividualNotificationChange({
+                    target: { name: notification, checked: e.target.checked },
+                  })
+                }
+                className="text-custom-dark-blue dark:text-custom-light-gray"
+              />
             ))}
           </div>
         </div>
 
         <div className="flex flex-col">
+          {/* Notification Frequency Selection */}
           <div className="mt-4">
             <h3 className="font-semibold text-custom-dark-blue dark:text-custom-light-gray">
               {t("notificationFrequency")}
@@ -118,17 +118,15 @@ const NotificationsCard = () => {
             </select>
           </div>
 
-          {/* Email Notifications */}
+          {/* Email Alerts */}
           <div className="mt-8">
-            <label className="flex items-center text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={emailAlerts}
-                onChange={(e) => setEmailAlerts(e.target.checked)}
-                className="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
-              />
-              <span className="ml-2">{t("receiveEmailAlerts")}</span>
-            </label>
+            <CustomCheckbox
+              id="email-alerts"
+              label={t("receiveEmailAlerts")}
+              checked={emailAlerts}
+              onChange={(e) => setEmailAlerts(e.target.checked)}
+              className="text-gray-700 dark:text-gray-300"
+            />
             {emailAlerts && (
               <input
                 type="email"
@@ -140,17 +138,15 @@ const NotificationsCard = () => {
             )}
           </div>
 
-          {/* SMS Notifications */}
+          {/* SMS Alerts */}
           <div className="mt-2">
-            <label className="flex items-center text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={smsAlerts}
-                onChange={(e) => setSmsAlerts(e.target.checked)}
-                className="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
-              />
-              <span className="ml-2">{t("receiveSmsAlerts")}</span>
-            </label>
+            <CustomCheckbox
+              id="sms-alerts"
+              label={t("receiveSmsAlerts")}
+              checked={smsAlerts}
+              onChange={(e) => setSmsAlerts(e.target.checked)}
+              className="text-gray-700 dark:text-gray-300"
+            />
             {smsAlerts && (
               <input
                 type="tel"
@@ -163,6 +159,8 @@ const NotificationsCard = () => {
           </div>
         </div>
       </div>
+
+      {/* Action Buttons */}
       <div className="flex justify-between mt-6">
         <SecondaryButton onClick={handleCancelChanges}>
           {t("cancel")}

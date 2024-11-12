@@ -286,5 +286,8 @@
   "close": "Close",
   "userDetails": "User Management",
   "noUserData": "User data not found",
-  "reloadPageMessage": "Refresh the page or try again later"
+  "reloadPageMessage": "Refresh the page or try again later",
+  "notifyInverterIssues": "Notify about inverter issues",
+  "notifyBatteryIssues": "Notify about battery issues",
+  "notifyEnvironmentalAlerts": "Notify about environmental alerts"
 }

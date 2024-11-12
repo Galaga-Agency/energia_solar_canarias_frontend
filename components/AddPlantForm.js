@@ -282,10 +282,10 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                 )}
               </div>
               <div className="flex gap-4">
-                <PrimaryButton type="submit">{t("submit")}</PrimaryButton>
                 <SecondaryButton type="button" onClick={onClose}>
                   {t("cancel")}
                 </SecondaryButton>
+                <PrimaryButton type="submit">{t("submit")}</PrimaryButton>
               </div>
             </form>
           </motion.div>

@@ -3,6 +3,7 @@ import { useTranslation } from "next-i18next";
 import PrimaryButton from "./PrimaryButton";
 import SecondaryButton from "./SecondaryButton";
 import useLocalStorageState from "use-local-storage-state";
+import CustomRadio from "./CustomRadio";
 
 const MetricsConfigCard = () => {
   const { t } = useTranslation();
@@ -25,41 +26,46 @@ const MetricsConfigCard = () => {
 
   return (
     <div className="w-full h-full bg-white/50 dark:bg-gray-800/60 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-sm backdrop-filter">
-      <h2 className="text-xl mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
+      <h2 className="text-xl font-semibold mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
         {t("metricsConfiguration")}
       </h2>
 
-      <div className="mt-4">
-        <label className="flex items-center text-gray-700 dark:text-gray-300">
-          <input
-            type="radio"
-            value="metric"
+      {/* Metric System Selection */}
+      <div className="mt-4 space-y-3">
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {t("measurementSystem")}
+        </h3>
+        <div className="space-y-2">
+          <CustomRadio
             checked={metricSystem === "metric"}
             onChange={() => setMetricSystem("metric")}
-            className="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
+            label={t("metricSystem")}
+            value="metric"
+            name="metricSystem"
+            className="text-gray-700 dark:text-gray-300"
           />
-          <span className="ml-2 flex-1">{t("metricSystem")}</span>
-        </label>
-        <label className="flex items-center text-gray-700 dark:text-gray-300">
-          <input
-            type="radio"
-            value="imperial"
+          <CustomRadio
             checked={metricSystem === "imperial"}
             onChange={() => setMetricSystem("imperial")}
-            className="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
+            label={t("imperialSystem")}
+            value="imperial"
+            name="metricSystem"
+            className="text-gray-700 dark:text-gray-300"
           />
-          <span className="ml-2 flex-1">{t("imperialSystem")}</span>
-        </label>
+        </div>
       </div>
 
-      <div className="mt-4">
-        <label className="block text-gray-700 dark:text-gray-300">
+      {/* Date Format Selection */}
+      <div className="mt-6">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t("dateFormat")}
         </label>
         <select
           value={dateFormat}
           onChange={(e) => setDateFormat(e.target.value)}
-          className="mt-2 border rounded p-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+          className="mt-2 w-full border rounded-md p-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200
+            focus:ring-2 focus:ring-custom-yellow focus:border-custom-yellow
+            dark:focus:ring-custom-yellow dark:focus:border-custom-yellow"
         >
           <option value="dd-mm-yyyy">{t("dd-mm-yyyy")}</option>
           <option value="mm-dd-yyyy">{t("mm-dd-yyyy")}</option>
@@ -67,35 +73,33 @@ const MetricsConfigCard = () => {
         </select>
       </div>
 
-      <div className="mt-4">
-        <label className="block mb-2 text-gray-700 dark:text-gray-300">
+      {/* Temperature Unit Selection */}
+      <div className="mt-6">
+        <h3 className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
           {t("temperatureUnit")}
-        </label>
-        <div className="flex items-center">
-          <label className="flex items-center mr-4 text-gray-700 dark:text-gray-300">
-            <input
-              type="radio"
-              value="celsius"
-              checked={temperatureUnit === "celsius"}
-              onChange={() => setTemperatureUnit("celsius")}
-              className="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
-            />
-            <span className="ml-2">{t("celsius")}</span>
-          </label>
-          <label className="flex items-center text-gray-700 dark:text-gray-300">
-            <input
-              type="radio"
-              value="fahrenheit"
-              checked={temperatureUnit === "fahrenheit"}
-              onChange={() => setTemperatureUnit("fahrenheit")}
-              className="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow dark:focus:ring-custom-yellow"
-            />
-            <span className="ml-2">{t("fahrenheit")}</span>
-          </label>
+        </h3>
+        <div className="space-x-6 flex items-center">
+          <CustomRadio
+            checked={temperatureUnit === "celsius"}
+            onChange={() => setTemperatureUnit("celsius")}
+            label={t("celsius")}
+            value="celsius"
+            name="temperatureUnit"
+            className="text-gray-700 dark:text-gray-300"
+          />
+          <CustomRadio
+            checked={temperatureUnit === "fahrenheit"}
+            onChange={() => setTemperatureUnit("fahrenheit")}
+            label={t("fahrenheit")}
+            value="fahrenheit"
+            name="temperatureUnit"
+            className="text-gray-700 dark:text-gray-300"
+          />
         </div>
       </div>
 
-      <div className="mt-4">
+      {/* Save Button */}
+      <div className="mt-8">
         <PrimaryButton onClick={handleSaveChanges}>
           {t("saveChanges")}
         </PrimaryButton>

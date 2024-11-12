@@ -286,5 +286,8 @@
   "close": "Cerrar",
   "userDetails": "Administrar Usuario",
   "noUserData": "Datos del usuario no encontrados",
-  "reloadPageMessage": "Refresca la página o intentalo de nuevo más tarde"
+  "reloadPageMessage": "Refresca la página o intentalo de nuevo más tarde",
+  "notifyInverterIssues": "Problemas con el inversor",
+  "notifyBatteryIssues": "Problemas con la batería",
+  "notifyEnvironmentalAlerts": "Alertas ambientales"
 }

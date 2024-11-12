@@ -6,6 +6,8 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
 import useGoogleMapsLoader from "../hooks/useGoogleMapsLoader";
+import PrimaryButton from "./PrimaryButton";
+import SecondaryButton from "./SecondaryButton";
 
 const mapContainerStyle = {
   height: "400px",
@@ -136,19 +138,16 @@ const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
                 <Marker position={selectedLocation} />
               </GoogleMap>
             </div>
-            <div className="p-4 flex justify-end">
-              <button
+            <div className="p-8 flex mx-auto">
+              <SecondaryButton onClick={onClose}>{t("cancel")}</SecondaryButton>
+              <PrimaryButton
                 onClick={() => {
                   onLocationSelect(selectedLocation, address);
                   onClose();
                 }}
-                className="bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded"
               >
                 {t("submit")}
-              </button>
-              <button onClick={onClose} className="ml-4 text-red-500">
-                {t("cancel")}
-              </button>
+              </PrimaryButton>
             </div>
           </motion.div>
         </motion.div>

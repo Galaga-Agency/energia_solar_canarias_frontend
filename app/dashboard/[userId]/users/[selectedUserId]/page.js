@@ -37,7 +37,9 @@ const SelectedUser = () => {
   const error = useSelector(selectUsersError);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssignPlantModalOpen, setIsAssignPlantModalOpen] = useState(false);
+  const [isRoleChangeModalOpen, setIsRoleChangeModalOpen] = useState(false);
   const [selectedClase, setSelectedClase] = useState("");
+  const [pendingClase, setPendingClase] = useState("");
   const plants = useSelector(selectPlants);
   const theme = useSelector(selectTheme);
   const user = useSelector((state) => selectUserById(state, selectedUserId));
@@ -45,7 +47,6 @@ const SelectedUser = () => {
 
   useEffect(() => {
     if (!user) {
-      console.log("selectedUserId:", selectedUserId);
       dispatch(
         fetchUserById({
           userId: selectedUserId,
@@ -61,12 +62,16 @@ const SelectedUser = () => {
     }
   }, [user]);
 
-  console.log("user passed in details:", user);
-
   const handleClaseChange = (e) => {
     const newClase = e.target.value;
-    setSelectedClase(newClase);
-    dispatch(updateUserClase({ userId: selectedUserId, clase: newClase }));
+    setPendingClase(newClase);
+    setIsRoleChangeModalOpen(true); // Show confirmation modal
+  };
+
+  const confirmRoleChange = () => {
+    setSelectedClase(pendingClase);
+    dispatch(updateUserClase({ userId: selectedUserId, clase: pendingClase }));
+    setIsRoleChangeModalOpen(false);
   };
 
   const handleDeactivateUser = () => dispatch(deactivateUser(selectedUserId));
@@ -136,7 +141,7 @@ const SelectedUser = () => {
               alt="User Profile"
               width={150}
               height={150}
-              className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow"
+              className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow shadow-lg"
             />
             <div className="space-y-2 text-gray-700 dark:text-gray-300">
               {[
@@ -197,6 +202,16 @@ const SelectedUser = () => {
             onConfirm={handleDeleteUser}
             title={t("confirmDeletion")}
             message={t("areYouSureDeleteUser")}
+          />
+
+          <ConfirmationModal
+            isOpen={isRoleChangeModalOpen}
+            onClose={() => setIsRoleChangeModalOpen(false)}
+            onConfirm={confirmRoleChange}
+            title={t("confirmRoleChange")}
+            message={`${t("areYouSureChangeRole")} ${
+              pendingClase === "admin" ? t("admin") : t("client")
+            }?`}
           />
 
           <AssignPlantUser

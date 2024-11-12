@@ -289,5 +289,16 @@
   "reloadPageMessage": "Refresca la página o intentalo de nuevo más tarde",
   "notifyInverterIssues": "Problemas con el inversor",
   "notifyBatteryIssues": "Problemas con la batería",
-  "notifyEnvironmentalAlerts": "Alertas ambientales"
+  "notifyEnvironmentalAlerts": "Alertas ambientales",
+  "measurementSystem": "Sistema de Medición",
+  "confirmRoleChange": "Confirmar cambio de rol",
+  "areYouSureChangeRole": "¿Está seguro de que desea cambiar el rol a",
+  "client": "Cliente",
+  "errorLoadingData": "Error al cargar datos",
+  "errorMessage": "Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo más tarde.",
+  "refresh": "Actualizar",
+  "sortByCapacity": "Ordenar por Capacidad",
+  "sortByStatus": "Ordenar por Estado",
+  "sortAscending": "Ascendente",
+  "sortDescending": "Descendente"
 }

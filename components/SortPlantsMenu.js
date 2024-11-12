@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { BsSortAlphaDown, BsCalendar, BsLightningFill } from "react-icons/bs";
+import { GiElectric, GiPowerButton } from "react-icons/gi";
+import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 
 const SortPlantsMenu = ({ onSortChange }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("alphabetical");
+  const [sortOrder, setSortOrder] = useState("asc");
   const dropdownRef = useRef(null);
 
   const options = [
@@ -24,28 +27,30 @@ const SortPlantsMenu = ({ onSortChange }) => {
       icon: <BsLightningFill />,
       label: t("sortByPowerOutput"),
     },
+    { value: "capacity", icon: <GiElectric />, label: t("sortByCapacity") },
+    { value: "status", icon: <GiPowerButton />, label: t("sortByStatus") },
   ];
 
-  useEffect(() => {
-    onSortChange(selectedOption);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Only call `onSortChange` inside `handleSelect`
+  const handleSelect = (value) => {
+    const newOrder =
+      selectedOption === value && sortOrder === "asc" ? "desc" : "asc";
+    setSelectedOption(value);
+    setSortOrder(newOrder);
+    onSortChange(value, newOrder); // Trigger sort change immediately
+    setIsOpen(false);
+  };
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleSelect = (value) => {
-    setSelectedOption(value);
-    onSortChange(value);
-    setIsOpen(false);
-  };
 
   const selectedOptionData =
     options.find((opt) => opt.value === selectedOption) || options[0];
@@ -98,9 +103,18 @@ const SortPlantsMenu = ({ onSortChange }) => {
               <span className="flex-shrink-0 dark:text-custom-yellow">
                 {option.icon}
               </span>
-              <span className="whitespace-nowrap dark:text-custom-yellow">
+              <span className="whitespace-nowrap dark:text-custom-yellow flex-1">
                 {option.label}
               </span>
+              {selectedOption === option.value && (
+                <span className="ml-auto flex items-center justify-center dark:text-custom-yellow">
+                  {sortOrder === "asc" ? (
+                    <TiArrowSortedUp className="text-xl" />
+                  ) : (
+                    <TiArrowSortedDown className="text-xl" />
+                  )}
+                </span>
+              )}
             </button>
           ))}
         </div>

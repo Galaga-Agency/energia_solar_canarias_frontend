@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import PrimaryButton from "./PrimaryButton";
 import { useTranslation } from "next-i18next";
+import Loading from "./Loading";
 
 const ResultContent = ({
   isSubmitting,
@@ -11,14 +12,24 @@ const ResultContent = ({
   setCurrentFace,
 }) => {
   const { t } = useTranslation();
+  const [isVisible, setIsVisible] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false); // New state to keep form hidden after submit
 
-  if (isSubmitting) {
-    return (
-      <div className="flex flex-col items-center text-center">
-        <span className="loading loading-spinner"></span>
-        <p className="mt-2">{t("loading")}</p>
-      </div>
-    );
+  const handleSubmit = () => {
+    setIsVisible(false); // Trigger fade-out effect
+    setIsLoading(true); // Show loading spinner
+
+    // Delay handleTokenSubmit for 600ms to allow fade-out
+    setTimeout(() => {
+      handleTokenSubmit();
+      setIsLoading(false); // Hide loading spinner
+      setIsSubmitted(true); // Keep form hidden
+    }, 600);
+  };
+
+  if (isSubmitting || isLoading || isSubmitted) {
+    return <Loading />;
   }
 
   const renderSuccessContent = () => (
@@ -36,9 +47,7 @@ const ResultContent = ({
         placeholder={t("codePlaceholder")}
         className="w-full px-4 py-2 border rounded-md dark:text-black"
       />
-      <PrimaryButton onClick={handleTokenSubmit}>
-        {t("validateCode")}
-      </PrimaryButton>
+      <PrimaryButton onClick={handleSubmit}>{t("validateCode")}</PrimaryButton>
     </div>
   );
 
@@ -55,10 +64,14 @@ const ResultContent = ({
   );
 
   return (
-    <>
+    <div
+      className={`transition-opacity duration-300 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       {submissionResult?.status === "loginSuccess" && renderSuccessContent()}
       {submissionResult?.status === "loginError" && renderErrorContent()}
-    </>
+    </div>
   );
 };
 

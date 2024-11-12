@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { fetchPlantsMock } from "@/services/api";
+import { fetchPlantsAPI } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 import Loading from "./Loading";
@@ -18,7 +18,7 @@ const EnergyFlowDisplay = ({ plantId }) => {
   useEffect(() => {
     const fetchPlantData = async () => {
       try {
-        const plants = await fetchPlantsMock();
+        const plants = await fetchPlantsAPI();
         const selectedPlant = plants.find((p) => p.id === parseInt(plantId));
         setPlant(selectedPlant);
       } catch (error) {
@@ -30,10 +30,6 @@ const EnergyFlowDisplay = ({ plantId }) => {
 
     fetchPlantData();
   }, [plantId]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   const energyConsumed = plant?.powerFlow.LOAD.currentPower;
   const energyProduced = plant?.powerFlow.PV.currentPower;

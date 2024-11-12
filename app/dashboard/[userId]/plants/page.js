@@ -31,7 +31,7 @@ import usePlantFilter from "@/hooks/usePlantFilter";
 import usePlantSort from "@/hooks/usePlantSort";
 import useDeviceType from "@/hooks/useDeviceType";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
-import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton"; // Import skeleton component
+import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "react-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
@@ -64,7 +64,9 @@ const DashboardPage = ({ params }) => {
       router.push("/");
     } else {
       setIsInitialLoad(false);
-      dispatch(fetchPlants(user.id));
+      dispatch(
+        fetchPlants({ userId: user.id, token: user.tokenIdentificador })
+      );
     }
   }, [user, router, dispatch]);
 

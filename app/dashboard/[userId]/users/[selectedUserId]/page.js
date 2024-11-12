@@ -46,7 +46,7 @@ const SelectedUser = () => {
   const loggedinUser = useSelector(selectUser);
 
   useEffect(() => {
-    if (!user) {
+    if (!user && loggedinUser) {
       dispatch(
         fetchUserById({
           userId: selectedUserId,
@@ -54,7 +54,7 @@ const SelectedUser = () => {
         })
       );
     }
-  }, [dispatch, selectedUserId, user]);
+  }, [dispatch, selectedUserId, user, loggedinUser]);
 
   useEffect(() => {
     if (user) {

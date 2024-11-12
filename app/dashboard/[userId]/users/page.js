@@ -4,19 +4,21 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
-import Pagination from "@/components/Pagination";
-import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
+import { FaPencilAlt, FaTrash } from "react-icons/fa"; // Quick action icons
+
+// Components
+import Pagination from "@/components/Pagination";
 import Texture from "@/components/Texture";
 import SortUserMenu from "@/components/SortUserMenu";
 import UserFilterInput from "@/components/UserFilterInput";
-import useUserFilter from "@/hooks/useUserFilter";
-import useDeviceType from "@/hooks/useDeviceType";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import UserListSkeleton from "@/components/LoadingSkeletons/UserListSkeleton";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
+import useUserFilter from "@/hooks/useUserFilter";
+import useDeviceType from "@/hooks/useDeviceType";
 import {
   fetchUsers,
   selectUsers,
@@ -25,6 +27,7 @@ import {
 } from "@/store/slices/usersListSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
+import companyIcon from "@/public/assets/icons/icon-512x512.png";
 
 const UsersTab = () => {
   const { t } = useTranslation();
@@ -37,11 +40,10 @@ const UsersTab = () => {
   const error = useSelector(selectUsersError);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = users?.length;
-  const { isMobile } = useDeviceType();
+  const { isMobile, isDesktop } = useDeviceType();
 
   useEffect(() => {
     if (currentUser) {
-      console.log();
       dispatch(fetchUsers(currentUser.tokenIdentificador));
     }
   }, [dispatch, currentUser]);
@@ -52,7 +54,7 @@ const UsersTab = () => {
     let sorted = [...filteredUsers];
     switch (criteria) {
       case "alphabetical":
-        sorted.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        sorted.sort((a, b) => a.usuario_nombre.localeCompare(b.usuario_nombre));
         break;
       case "registrationDate":
         sorted.sort(
@@ -65,14 +67,6 @@ const UsersTab = () => {
     return sorted;
   };
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex justify-center items-center text-custom-dark-blue dark:text-custom-yellow">
-        <p>Error fetching users: {error}</p>
-      </div>
-    );
-  }
-
   const totalPages = Math.ceil(filteredUsers?.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
   const paginatedUsers = filteredUsers?.slice(
@@ -82,6 +76,14 @@ const UsersTab = () => {
 
   const handleUserClick = (selectedUserId) => {
     router.push(`/dashboard/${currentUser.id}/users/${selectedUserId}`);
+  };
+
+  const toPascalCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   return (
@@ -94,6 +96,7 @@ const UsersTab = () => {
           <ThemeToggle />
           <LanguageSelector />
         </div>
+
         <div className="flex items-center mb-10 md:mb-2 z-10">
           <Image
             src={companyIcon}
@@ -115,12 +118,23 @@ const UsersTab = () => {
             <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300">
-                  <th className="py-3 px-4 text-left text-custom-dark-blue dark:text-custom-yellow">
+                  <th className="py-3 px-4 lg:pl-12 lg:pr-4 text-left text-custom-dark-blue dark:text-custom-yellow">
                     {t("userName")}
                   </th>
+                  {isDesktop && <th></th>}
                   <th className="py-3 px-4 text-left text-custom-dark-blue dark:text-custom-yellow">
                     {t("userEmail")}
                   </th>
+                  {!isMobile && (
+                    <>
+                      <th className="py-3 px-4 text-left text-custom-dark-blue dark:text-custom-yellow">
+                        {t("lastLogin")}
+                      </th>
+                      <th className="py-3 px-4 text-center text-custom-dark-blue dark:text-custom-yellow">
+                        {t("actions")}
+                      </th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -130,14 +144,45 @@ const UsersTab = () => {
                     className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300 cursor-pointer"
                     onClick={() => handleUserClick(userItem.usuario_id)}
                   >
-                    <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow border-b border-gray-300">
-                      {userItem.nombre}
+                    <td className="py-3 px-4 lg:pl-12 lg:pr-2 text-lg text-custom-dark-blue dark:text-custom-yellow flex items-center gap-4">
+                      <Image
+                        src={userItem.imagen || "/assets/default-profile.png"}
+                        alt={`${userItem.usuario_nombre}'s profile`}
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                      {toPascalCase(userItem.usuario_nombre)}{" "}
+                      {toPascalCase(userItem.apellido)}
                     </td>
-                    <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow border-b border-gray-300 overflow-hidden whitespace-nowrap text-ellipsis">
+                    {isDesktop && (
+                      <td className="text-left">
+                        {userItem.clase === "admin" ? (
+                          <span className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-light-gray dark:text-custom-dark-blue px-2 py-1 rounded-3xl text-sm font-bold">
+                            admin
+                          </span>
+                        ) : null}
+                      </td>
+                    )}
+                    <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow overflow-hidden whitespace-nowrap text-ellipsis">
                       {isMobile && userItem.email.length > 15
                         ? `${userItem.email.substring(0, 15)}...`
                         : userItem.email}
                     </td>
+                    {!isMobile && (
+                      <>
+                        <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow">
+                          {isNaN(new Date(userItem.lastLogin))
+                            ? "/"
+                            : new Date(userItem.lastLogin).toLocaleDateString()}
+                        </td>
+
+                        <td className="py-3 px-4 text-center text-xl text-custom-dark-blue dark:text-custom-yellow flex gap-2 justify-center">
+                          <FaPencilAlt className="cursor-pointer hover:text-blue-500" />
+                          <FaTrash className="cursor-pointer hover:text-red-500" />
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>

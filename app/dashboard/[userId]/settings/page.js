@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser, logoutUser } from "@/store/slices/userSlice";
+import {
+  selectUser,
+  logoutUser,
+  selectLoading,
+} from "@/store/slices/userSlice";
 import { useTranslation } from "next-i18next";
 import ProfileOverviewCard from "@/components/ProfileOverviewCard";
 import PasswordChangeCard from "@/components/PasswordChangeCard";
@@ -23,6 +27,7 @@ import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
+import Loading from "@/components/Loading";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();
@@ -39,6 +44,7 @@ const SettingsTab = () => {
   const notificationsRef = useRef(null);
   const pathname = usePathname();
   const [shouldFlashAndScroll, setShouldFlashAndScroll] = useState(false);
+  const isLoading = useSelector(selectLoading);
 
   const handleDeleteAccount = async () => {
     try {

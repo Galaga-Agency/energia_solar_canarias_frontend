@@ -3,6 +3,7 @@ import "./globals.css";
 import TranslationProvider from "@/components/TranslationProvider";
 import StoreProvider from "@/components/StoreProvider";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
+import ThemeWrapper from "@/components/ThemeWrapper";
 
 export const metadata = {
   title:
@@ -23,7 +24,9 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body>
         <StoreProvider>
-          <TranslationProvider>{children}</TranslationProvider>
+          <ThemeWrapper>
+            <TranslationProvider>{children}</TranslationProvider>
+          </ThemeWrapper>
         </StoreProvider>
       </body>
     </html>

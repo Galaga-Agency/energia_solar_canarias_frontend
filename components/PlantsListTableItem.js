@@ -41,11 +41,7 @@ const PlantsListTableItem = ({ plant }) => {
       {!isMobile && (
         <td className="flex w-[40%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left items-center">
           <FaLocationDot className="inline mr-2 text-custom-yellow w-[15%]" />
-          <p className="w-[85%]">
-            {plant.location.address || "N/A"},&nbsp;
-            {plant.location.city || "N/A"},&nbsp;
-            {plant.location.country || "N/A"}
-          </p>
+          <p className="w-[85%]">{plant.address || "N/A"}</p>
         </td>
       )}
       <td className="flex w-[20%] md:w-[20%] py-4  border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">

@@ -14,9 +14,16 @@ module.exports = {
       },
       animation: {
         "spin-slow": "spin 3s linear infinite",
-        grid: "grid 150s linear infinite",
         "spin-fast": "spin 1s linear infinite",
         flash: "flash 1.5s ease-in-out forwards",
+        orbit: "orbit 2s linear infinite",
+        "orbit-reverse": "orbit 2s linear infinite reverse",
+        "react-orbit": "react-orbit 2.5s linear infinite",
+        "orbit-path-1": "orbit-path-1 2.5s linear infinite",
+        "orbit-path-2": "orbit-path-2 3s linear infinite reverse",
+        "orbit-path-3": "orbit-path-3 4s linear infinite",
+        "orbit-path-4": "orbit-path-4 3.5s linear infinite reverse",
+        grid: "grid 150s linear infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -37,16 +44,7 @@ module.exports = {
         "hover-white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 32px",
         "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },
-      backdropBlur: ["responsive"],
       keyframes: {
-        grid: {
-          "0%": {
-            transform: "translateY(-50%)",
-          },
-          "100%": {
-            transform: "translateY(0)",
-          },
-        },
         spin: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
@@ -58,6 +56,39 @@ module.exports = {
             borderRadius: "20px",
           },
           "100%": { boxShadow: "0 0 0 rgba(255, 255, 255, 0)" },
+        },
+        grid: {
+          "0%": {
+            transform: "translateY(-50%)",
+          },
+          "100%": {
+            transform: "translateY(0)",
+          },
+        },
+        // Expanded orbit paths for larger radius effect
+        "orbit-path-1": {
+          "0%": { transform: "rotate(0deg) translateX(70px) rotate(0deg)" },
+          "100%": {
+            transform: "rotate(360deg) translateX(70px) rotate(-360deg)",
+          },
+        },
+        "orbit-path-2": {
+          "0%": { transform: "rotate(0deg) translateX(60px) rotate(0deg)" },
+          "100%": {
+            transform: "rotate(360deg) translateX(60px) rotate(-360deg)",
+          },
+        },
+        "orbit-path-3": {
+          "0%": { transform: "rotate(0deg) translateX(80px) rotate(0deg)" },
+          "100%": {
+            transform: "rotate(360deg) translateX(80px) rotate(-360deg)",
+          },
+        },
+        "orbit-path-4": {
+          "0%": { transform: "rotate(0deg) translateX(65px) rotate(0deg)" },
+          "100%": {
+            transform: "rotate(360deg) translateX(65px) rotate(-360deg)",
+          },
         },
       },
     },

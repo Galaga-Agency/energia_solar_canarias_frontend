@@ -43,27 +43,23 @@ const PlantCard = ({ plant }) => {
         <p className="flex items-center text-lg text-gray-700 dark:text-custom-light-gray truncate max-w-full">
           <FaMapMarkerAlt className="inline mr-2 text-custom-yellow" />
           <span className="font-secondary truncate block w-full max-w-full">
-            {plant.location.address}, {plant.location.city},{" "}
-            {plant.location.country}
+            {plant.address || "N/A"}
           </span>
         </p>
+
         <p className="text-lg text-gray-700 dark:text-custom-light-gray">
           <BsLightningCharge className="inline mr-2 text-custom-yellow" />
           <span className="font-secondary">
-            {t("currentPowerOutput")}: {plant.powerFlow.PV.currentPower} kW
+            {t("currentPowerOutput")}:{" "}
+            {plant.current_power ? `${plant.current_power} kW` : "N/A"}
           </span>
         </p>
+
         <p className="text-lg text-gray-700 dark:text-custom-light-gray">
           <FaBolt className="inline mr-2 text-custom-yellow" />
           <span className="font-secondary">
-            {t("peakPower")}: {plant.peakPower} W
-          </span>
-        </p>
-        <p className="text-lg text-gray-700 dark:text-custom-light-gray">
-          <GiTreeBranch className="inline mr-2 text-custom-yellow" />
-          <span className="font-secondary">
-            {t("co2Saved")}: {plant.environmentalBenefits.gasEmissionSaved.co2}{" "}
-            Kg
+            {t("peakPower")}:{" "}
+            {plant.highest_impact ? `${plant.highest_impact} W` : "N/A"}
           </span>
         </p>
       </div>

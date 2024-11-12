@@ -289,5 +289,16 @@
   "reloadPageMessage": "Refresh the page or try again later",
   "notifyInverterIssues": "Notify about inverter issues",
   "notifyBatteryIssues": "Notify about battery issues",
-  "notifyEnvironmentalAlerts": "Notify about environmental alerts"
+  "notifyEnvironmentalAlerts": "Notify about environmental alerts",
+  "measurementSystem": "Measurement System",
+  "confirmRoleChange": "Confirm Role Change",
+  "areYouSureChangeRole": "Are you sure you want to change the role to",
+  "client": "Client",
+  "errorLoadingData": "Error loading data",
+  "errorMessage": "An error occurred while loading the data. Please try again later.",
+  "refresh": "Refresh",
+  "sortByCapacity": "Sort by Capacity",
+  "sortByStatus": "Sort by Status",
+  "sortAscending": "Ascending",
+  "sortDescending": "Descending"
 }

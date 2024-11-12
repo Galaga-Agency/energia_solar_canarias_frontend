@@ -211,23 +211,56 @@ export const deleteUserAPI = async (userId) => {
   }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// EVRYTHING BELOW THIS SHOULD BE REMOVED ONCE THE ENTIRE BACKEND IS FINISHED
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const fetchPlantsMock = async (userId) => {
+export const fetchPlantsAPI = async ({ userId, token }) => {
   try {
-    const response = await fetch("/plants.json");
+    const response = await fetch(`${API_BASE_URL}/plants`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     if (!response.ok) {
       throw new Error(`Error fetching plants: ${response.statusText}`);
     }
+
     const plants = await response.json();
 
     console.log("plants returned: ", plants);
 
-    return plants;
+    return plants.data;
   } catch (error) {
     console.error("Error fetching plants data:", error);
+    throw error;
+  }
+};
+
+export const fetchPlantDetailsAPI = async ({ userId, token, plantId }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/plants/${plantId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error fetching plant details: ${response.statusText}`);
+    }
+
+    const plantDetails = await response.json();
+
+    console.log("Plant details returned: ", plantDetails);
+
+    return plantDetails.data;
+  } catch (error) {
+    console.error("Error fetching plant details:", error);
     throw error;
   }
 };

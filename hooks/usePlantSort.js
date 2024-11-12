@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const usePlantSort = (items) => {
-  // Ensure items is always an array, even if it's passed in as an object or undefined.
+  // Ensure items is always an array, even if it's passed as an object or undefined.
   const validItems = Array.isArray(items) ? items : items?.plants || [];
 
   const [sortedItems, setSortedItems] = useState(validItems);
@@ -10,17 +10,29 @@ const usePlantSort = (items) => {
     setSortedItems(validItems);
   }, [items]);
 
-  const sortItems = (criteria) => {
+  const sortItems = (criteria, order = "asc") => {
     let sorted = [...validItems];
+    const sortOrder = order === "asc" ? 1 : -1;
+
     switch (criteria) {
       case "alphabetical":
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        sorted.sort((a, b) => a.name.localeCompare(b.name) * sortOrder);
         break;
-      case "creationDate":
-        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      case "installationDate":
+        sorted.sort(
+          (a, b) =>
+            (new Date(a.installation_date) - new Date(b.installation_date)) *
+            sortOrder
+        );
         break;
       case "powerOutput":
-        sorted.sort((a, b) => b.currentPowerOutputKW - a.currentPowerOutputKW);
+        sorted.sort((a, b) => (a.current_power - b.current_power) * sortOrder);
+        break;
+      case "capacity":
+        sorted.sort((a, b) => (a.capacity - b.capacity) * sortOrder);
+        break;
+      case "status":
+        sorted.sort((a, b) => a.status.localeCompare(b.status) * sortOrder);
         break;
       default:
         sorted = validItems;

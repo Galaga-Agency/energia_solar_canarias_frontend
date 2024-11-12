@@ -162,9 +162,6 @@ const NotificationsCard = () => {
 
       {/* Action Buttons */}
       <div className="flex justify-between mt-6">
-        <SecondaryButton onClick={handleCancelChanges}>
-          {t("cancel")}
-        </SecondaryButton>
         <PrimaryButton onClick={handleSaveChanges}>
           {t("saveChanges")}
         </PrimaryButton>

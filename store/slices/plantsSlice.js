@@ -1,10 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchPlantsAPI } from "@/services/api";
+import {
+  fetchAllPlantsAPI,
+  fetchPlantDetailsAPI,
+  fetchPlantsByProviderAPI,
+} from "@/services/api";
 
 export const fetchPlants = createAsyncThunk(
   "plants/fetchPlants",
   async ({ userId, token }) => {
-    const plantsData = await fetchPlantsAPI({ userId, token });
+    const plantsData = await fetchAllPlantsAPI({ userId, token });
     if (!plantsData || plantsData.length === 0) {
       throw new Error("No plants found for this userId");
     }
@@ -23,15 +27,34 @@ export const fetchPlantDetails = createAsyncThunk(
   }
 );
 
+export const fetchPlantsByProvider = createAsyncThunk(
+  "plants/fetchPlantsByProvider",
+  async ({ userId, token, page, vendor }) => {
+    const plantsData = await fetchPlantsByProviderAPI({
+      userId,
+      token,
+      page,
+      vendor,
+    });
+    if (!plantsData || plantsData.length === 0) {
+      throw new Error("No plants found for this vendor");
+    }
+    return plantsData;
+  }
+);
+
 const plantsSlice = createSlice({
   name: "plants",
   initialState: {
     plants: [],
     plantDetails: null,
+    plantsByProvider: [],
     loading: false,
     loadingDetails: false,
+    loadingByProvider: false,
     error: null,
     detailsError: null,
+    providerError: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -64,6 +87,21 @@ const plantsSlice = createSlice({
         state.loadingDetails = false;
         state.detailsError = action.error.message;
         state.plantDetails = null;
+      })
+
+      // Fetch plants by provider (vendor)
+      .addCase(fetchPlantsByProvider.pending, (state) => {
+        state.loadingByProvider = true;
+        state.providerError = null;
+      })
+      .addCase(fetchPlantsByProvider.fulfilled, (state, action) => {
+        state.loadingByProvider = false;
+        state.plantsByProvider = action.payload;
+      })
+      .addCase(fetchPlantsByProvider.rejected, (state, action) => {
+        state.loadingByProvider = false;
+        state.providerError = action.error.message;
+        state.plantsByProvider = [];
       });
   },
 });
@@ -71,9 +109,13 @@ const plantsSlice = createSlice({
 // Selectors
 export const selectPlants = (state) => state.plants.plants;
 export const selectPlantDetails = (state) => state.plants.plantDetails;
+export const selectPlantsByProvider = (state) => state.plants.plantsByProvider;
 export const selectLoading = (state) => state.plants.loading;
 export const selectLoadingDetails = (state) => state.plants.loadingDetails;
+export const selectLoadingByProvider = (state) =>
+  state.plants.loadingByProvider;
 export const selectError = (state) => state.plants.error;
 export const selectDetailsError = (state) => state.plants.detailsError;
+export const selectProviderError = (state) => state.plants.providerError;
 
 export default plantsSlice.reducer;

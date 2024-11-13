@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 const usePlantSort = (items) => {
-  // Ensure items is always an array, even if it's passed as an object or undefined.
   const validItems = Array.isArray(items) ? items : items?.plants || [];
 
   const [sortedItems, setSortedItems] = useState(validItems);

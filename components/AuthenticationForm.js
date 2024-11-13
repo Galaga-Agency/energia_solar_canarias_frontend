@@ -9,6 +9,7 @@ import {
   validateToken,
   selectLoading,
   setUser,
+  selectIsAdmin,
 } from "@/store/slices/userSlice";
 import useAuth from "@/hooks/useAuth";
 import PrimaryButton from "./PrimaryButton";
@@ -28,6 +29,7 @@ const AuthenticationForm = () => {
   const loading = useSelector(selectLoading);
   const [userToValidate, setUserToValidate] = useState();
   const { t } = useTranslation();
+  const isAdmin = useSelector(selectIsAdmin);
 
   const handleSubmit = async (data, type) => {
     setIsSubmitting(true);
@@ -76,7 +78,8 @@ const AuthenticationForm = () => {
           expires: 180,
         });
         dispatch(setUser(response.payload.data));
-        window.location.href = `/dashboard/${userToValidate}/plants`;
+
+        window.location.href = `/dashboard/${userToValidate}`;
       } else {
         setSubmissionResult({
           status: "loginError",

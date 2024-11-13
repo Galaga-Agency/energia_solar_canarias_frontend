@@ -7,7 +7,7 @@ import Loading from "@/components/Loading";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
-import { selectUser, selectIsAdmin } from "@/store/slices/userSlice";
+import { selectUser } from "@/store/slices/userSlice";
 import {
   fetchPlants,
   selectLoading,
@@ -30,14 +30,12 @@ import PlantStatuses from "@/components/PlantStatuses";
 import usePlantFilter from "@/hooks/usePlantFilter";
 import usePlantSort from "@/hooks/usePlantSort";
 import useDeviceType from "@/hooks/useDeviceType";
-import PlantsListTableItem from "@/components/PlantsListTableItem";
 import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "react-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-const DashboardPage = ({ params }) => {
+const ClientDashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
-  const isAdmin = useSelector(selectIsAdmin);
   const dispatch = useDispatch();
   const router = useRouter();
   const loading = useSelector(selectLoading);
@@ -51,7 +49,7 @@ const DashboardPage = ({ params }) => {
   const { sortedItems: sortedPlants, sortItems } = usePlantSort(filteredItems);
   const { isMobile } = useDeviceType();
   const { t } = useTranslation();
-  const plantsPerPage = !isAdmin ? 6 : 7;
+  const plantsPerPage = 6; // Default number per page for all users
   const totalPages = Math.ceil(sortedPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = sortedPlants.slice(
@@ -104,7 +102,6 @@ const DashboardPage = ({ params }) => {
         />
 
         {/* Filter and Sort */}
-        <FilterPlantsInput onFilterChange={filterItems} />
         <div className="flex flex-col md:flex-row md:justify-between z-30">
           <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
             <div className="flex-grow">
@@ -127,56 +124,11 @@ const DashboardPage = ({ params }) => {
           <>
             {/* Render Plants */}
             {paginatedPlants.length > 0 ? (
-              user.clase === "admin" ? (
-                <div className="my-12">
-                  <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
-                    <thead className="rounded-md">
-                      <tr className="bg-gray-100 dark:bg-gray-700 flex">
-                        <th className="flex w-[75%] md:w-[40%] py-3 md:px-6 border-b border-gray-300 justify-center items-center text-custom-dark-blue dark:text-custom-yellow">
-                          {t("plantName")}
-                        </th>
-                        {!isMobile && (
-                          <th className="flex md:w-[40%] py-3 border-b border-gray-300 justify-center xl:justify-left items-left text-custom-dark-blue dark:text-custom-yellow">
-                            {t("location")}
-                          </th>
-                        )}
-                        <th className="flex w-[25%] md:w-[20%] py-3 md:px-6 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">
-                          {t("state")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedPlants.map((plant) => (
-                        <PlantsListTableItem key={plant.id} plant={plant} />
-                      ))}
-                    </tbody>
-                  </table>
-                  {totalPages > 1 && (
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={setCurrentPage}
-                    />
-                  )}
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
-                    {paginatedPlants.map((plant) => (
-                      <PlantCard key={plant.id} plant={plant} />
-                    ))}
-                  </div>
-                  {sortedPlants.length > plantsPerPage && (
-                    <div className="flex justify-center w-full pb-16">
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                      />
-                    </div>
-                  )}
-                </>
-              )
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
+                {paginatedPlants.map((plant) => (
+                  <PlantCard key={plant.id} plant={plant} />
+                ))}
+              </div>
             ) : (
               <div className="h-auto w-full flex flex-col justify-center items-center">
                 <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
@@ -185,9 +137,19 @@ const DashboardPage = ({ params }) => {
                 </p>
               </div>
             )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </>
         )}
 
+        {/* Floating Add Plant Button */}
         <button
           onClick={() => setIsFormOpen(true)}
           className="fixed bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"
@@ -195,9 +157,10 @@ const DashboardPage = ({ params }) => {
           <PlusIcon className="w-6 h-6" />
         </button>
       </div>
+
       <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
     </div>
   );
 };
 
-export default DashboardPage;
+export default ClientDashboardPage;

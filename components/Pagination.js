@@ -16,16 +16,38 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    const maxPagesToShow = 4;
-    let startPage = Math.max(currentPage - Math.floor(maxPagesToShow / 2), 1);
-    let endPage = startPage + maxPagesToShow - 1;
+    const maxPagesToShow = 3; // Total number of pages to display (including ellipses)
+    const range = 2; // Number of pages before and after the current page to display
 
-    if (endPage > totalPages) {
-      endPage = totalPages;
-      startPage = Math.max(totalPages - maxPagesToShow + 1, 1);
+    // Always show the first page
+    pageNumbers.push(
+      <button
+        key={1}
+        className={`mx-1 px-4 py-2 rounded-full border transition-colors duration-300 z-30 ${
+          currentPage === 1
+            ? "bg-custom-yellow text-black"
+            : "bg-custom-dark-blue text-white hover:bg-custom-yellow hover:text-black"
+        }`}
+        onClick={() => handlePageClick(1)}
+      >
+        1
+      </button>
+    );
+
+    // Add ellipsis if there's a gap between the first page and the current page
+    if (currentPage > range + 2) {
+      pageNumbers.push(
+        <span key="ellipsis-start" className="mx-1 text-white">
+          ...
+        </span>
+      );
     }
 
-    for (let i = startPage; i <= endPage; i++) {
+    // Show pages around the current page
+    const start = Math.max(currentPage - range, 2); // Ensure we don't go below page 2
+    const end = Math.min(currentPage + range, totalPages - 1); // Ensure we don't go beyond the last page
+
+    for (let i = start; i <= end; i++) {
       pageNumbers.push(
         <button
           key={i}
@@ -37,6 +59,32 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           onClick={() => handlePageClick(i)}
         >
           {i}
+        </button>
+      );
+    }
+
+    // Add ellipsis if there's a gap between the last visible page and the last page
+    if (currentPage < totalPages - range - 1) {
+      pageNumbers.push(
+        <span key="ellipsis-end" className="mx-1 text-white">
+          ...
+        </span>
+      );
+    }
+
+    // Always show the last page
+    if (totalPages > 1) {
+      pageNumbers.push(
+        <button
+          key={totalPages}
+          className={`mx-1 px-4 py-2 rounded-full border transition-colors duration-300 z-30 ${
+            currentPage === totalPages
+              ? "bg-custom-yellow text-black"
+              : "bg-custom-dark-blue text-white hover:bg-custom-yellow hover:text-black"
+          }`}
+          onClick={() => handlePageClick(totalPages)}
+        >
+          {totalPages}
         </button>
       );
     }

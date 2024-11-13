@@ -211,7 +211,7 @@ export const deleteUserAPI = async (userId) => {
   }
 };
 
-export const fetchPlantsAPI = async ({ userId, token }) => {
+export const fetchAllPlantsAPI = async ({ userId, token }) => {
   try {
     const response = await fetch(`${API_BASE_URL}/plants`, {
       method: "GET",
@@ -231,6 +231,38 @@ export const fetchPlantsAPI = async ({ userId, token }) => {
 
     console.log("plants returned: ", plants);
 
+    return plants.data;
+  } catch (error) {
+    console.error("Error fetching plants data:", error);
+    throw error;
+  }
+};
+
+export const fetchPlantsByProviderAPI = async ({
+  userId,
+  token,
+  page = 1,
+  vendor,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plants?page=${page}&vendor=${vendor}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error fetching plants: ${response.statusText}`);
+    }
+
+    const plants = await response.json();
     return plants.data;
   } catch (error) {
     console.error("Error fetching plants data:", error);

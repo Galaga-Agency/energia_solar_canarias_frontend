@@ -28,7 +28,7 @@ const PlantsListTableItem = ({ plant }) => {
   return (
     <tr
       onClick={handleRowClick}
-      className="flex-1 flex cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-300 "
+      className="flex-1 flex cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-300"
     >
       <td
         className={`${
@@ -41,7 +41,12 @@ const PlantsListTableItem = ({ plant }) => {
       {!isMobile && (
         <td className="flex w-[40%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left items-center">
           <FaLocationDot className="inline mr-2 text-custom-yellow w-[15%]" />
-          <p className="w-[85%]">{plant.address || "N/A"}</p>
+          <p
+            className="w-[85%] overflow-hidden text-ellipsis whitespace-nowrap"
+            title={plant.address || "N/A"}
+          >
+            {plant.address || "N/A"}
+          </p>
         </td>
       )}
       <td className="flex w-[20%] md:w-[20%] py-4  border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">

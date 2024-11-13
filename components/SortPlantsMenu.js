@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "next-i18next";
 import { BsSortAlphaDown, BsCalendar, BsLightningFill } from "react-icons/bs";
 import { GiElectric, GiPowerButton } from "react-icons/gi";
@@ -18,7 +18,7 @@ const SortPlantsMenu = ({ onSortChange }) => {
       label: t("sortByName"),
     },
     {
-      value: "creationDate",
+      value: "installationDate",
       icon: <BsCalendar />,
       label: t("sortByCreationDate"),
     },
@@ -31,7 +31,6 @@ const SortPlantsMenu = ({ onSortChange }) => {
     { value: "status", icon: <GiPowerButton />, label: t("sortByStatus") },
   ];
 
-  // Only call `onSortChange` inside `handleSelect`
   const handleSelect = (value) => {
     const newOrder =
       selectedOption === value && sortOrder === "asc" ? "desc" : "asc";
@@ -41,7 +40,6 @@ const SortPlantsMenu = ({ onSortChange }) => {
     setIsOpen(false);
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

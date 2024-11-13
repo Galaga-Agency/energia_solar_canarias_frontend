@@ -35,8 +35,6 @@ module.exports = {
         "custom-dark-blue": "rgb(0, 44, 63)",
         "custom-light-gray": "rgb(201, 202, 202)",
         "custom-dark-gray": "rgb(161, 161, 170)",
-        "gradient-purple": "#8A2BE2",
-        "gradient-blue": "#1E90FF",
       },
       boxShadow: {
         "dark-shadow": "rgba(0, 0, 0, 1) 0px 0px 8px",

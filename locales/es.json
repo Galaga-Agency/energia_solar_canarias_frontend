@@ -300,5 +300,14 @@
   "sortByCapacity": "Ordenar por Capacidad",
   "sortByStatus": "Ordenar por Estado",
   "sortAscending": "Ascendente",
-  "sortDescending": "Descendente"
+  "sortDescending": "Descendente",
+  "providers": "Provedores",
+  "showProviders": "Mostrar Provedores",
+  "showAllPlants": "Mostrar Todas las Plantas",
+  "selectProvider": "Elige un Provedor:",
+  "pleaseNote": "Por favor ten en cuenta",
+  "operationMayTake": "La operación puede tardar un poco más dependiendo de la cantidad de plantas que se estén recuperando. Por favor, sea paciente.",
+  "iUnderstand": "¡Entiendo!",
+  "findPlants": "Busca una planta",
+  "selectPlant": "Elige una Planta: "
 }

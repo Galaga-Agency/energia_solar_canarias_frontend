@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
-import { FaPencilAlt, FaTrash } from "react-icons/fa"; // Quick action icons
-
-// Components
+import { IoTrashOutline } from "react-icons/io5";
+import { AiOutlineEdit } from "react-icons/ai";
 import Pagination from "@/components/Pagination";
 import Texture from "@/components/Texture";
 import SortUserMenu from "@/components/SortUserMenu";
@@ -122,19 +121,17 @@ const UsersTab = () => {
                     {t("userName")}
                   </th>
                   {isDesktop && <th></th>}
-                  <th className="py-3 px-4 text-left text-custom-dark-blue dark:text-custom-yellow">
-                    {t("userEmail")}
-                  </th>
                   {!isMobile && (
-                    <>
-                      <th className="py-3 px-4 text-left text-custom-dark-blue dark:text-custom-yellow">
-                        {t("lastLogin")}
-                      </th>
-                      <th className="py-3 px-4 text-center text-custom-dark-blue dark:text-custom-yellow">
-                        {t("actions")}
-                      </th>
-                    </>
+                    <th className="py-3 px-4 lg:pr-12 lg:pl-4 text-left text-custom-dark-blue dark:text-custom-yellow">
+                      {t("userEmail")}
+                    </th>
                   )}
+                  {isDesktop && (
+                    <th className="py-3 px-8 text-left text-custom-dark-blue dark:text-custom-yellow">
+                      {t("lastLogin")}
+                    </th>
+                  )}
+                  <th className="py-3 px-6 text-right text-custom-dark-blue dark:text-custom-yellow"></th>
                 </tr>
               </thead>
               <tbody>
@@ -144,7 +141,7 @@ const UsersTab = () => {
                     className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300 cursor-pointer"
                     onClick={() => handleUserClick(userItem.usuario_id)}
                   >
-                    <td className="py-3 px-4 lg:pl-12 lg:pr-2 text-lg text-custom-dark-blue dark:text-custom-yellow flex items-center gap-4">
+                    <td className="py-3 px-4 lg:pl-12 lg:pr-2 text-lg text-custom-dark-blue dark:text-custom-yellow flex items-center gap-4 mr-4">
                       <Image
                         src={userItem.imagen || "/assets/default-profile.png"}
                         alt={`${userItem.usuario_nombre}'s profile`}
@@ -158,31 +155,30 @@ const UsersTab = () => {
                     {isDesktop && (
                       <td className="text-left">
                         {userItem.clase === "admin" ? (
-                          <span className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-light-gray dark:text-custom-dark-blue px-2 py-1 rounded-3xl text-sm font-bold">
+                          <span className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-light-gray dark:text-custom-dark-blue mx-6 px-2 py-1 rounded-3xl text-sm font-bold">
                             admin
                           </span>
                         ) : null}
                       </td>
                     )}
-                    <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow overflow-hidden whitespace-nowrap text-ellipsis">
-                      {isMobile && userItem.email.length > 15
-                        ? `${userItem.email.substring(0, 15)}...`
-                        : userItem.email}
-                    </td>
                     {!isMobile && (
-                      <>
-                        <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow">
-                          {isNaN(new Date(userItem.lastLogin))
-                            ? "/"
-                            : new Date(userItem.lastLogin).toLocaleDateString()}
-                        </td>
-
-                        <td className="py-3 px-4 text-center text-xl text-custom-dark-blue dark:text-custom-yellow flex gap-2 justify-center">
-                          <FaPencilAlt className="cursor-pointer hover:text-blue-500" />
-                          <FaTrash className="cursor-pointer hover:text-red-500" />
-                        </td>
-                      </>
+                      <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow overflow-hidden whitespace-nowrap text-ellipsis">
+                        {userItem.email}
+                      </td>
                     )}
+                    {isDesktop && (
+                      <td className="py-3 px-8 text-lg text-custom-dark-blue dark:text-custom-yellow">
+                        {isNaN(new Date(userItem.lastLogin)) ? (
+                          <span className="ml-10">/</span>
+                        ) : (
+                          new Date(userItem.lastLogin).toLocaleDateString()
+                        )}
+                      </td>
+                    )}
+                    <td className="relative py-3 px-4 text-center text-2xl text-custom-dark-blue dark:text-custom-yellow flex items-center justify-center gap-4">
+                      <AiOutlineEdit className=" absolute cursor-pointer hover:text-blue-500 -translate-y-[40%] right-12 lg:right-24" />
+                      <IoTrashOutline className="absolute cursor-pointer hover:text-red-500 -translate-y-[40%] right-4 lg:right-12" />
+                    </td>
                   </tr>
                 ))}
               </tbody>

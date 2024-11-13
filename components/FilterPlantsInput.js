@@ -1,24 +1,52 @@
-"use client";
+import { useState } from "react";
 
-import { useTranslation } from "next-i18next";
+const FilterPlantsInput = ({ onSearch, providers }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("");
 
-const FilterInput = ({ onFilterChange }) => {
-  const { t } = useTranslation();
+  console.log("provider in input: ", providers);
 
-  const handleInputChange = (e) => {
-    onFilterChange(e.target.value);
+  const handleSearch = () => {
+    if (searchTerm && selectedProvider) {
+      onSearch(searchTerm, selectedProvider);
+    }
   };
 
   return (
-    <div className="flex justify-center my-8 lg:my-0 lg:mb-8 z-10">
+    <div className="flex justify-center items-center">
       <input
         type="text"
-        placeholder={t("plantsfilterPlaceholder")}
-        className="z-10 px-4 py-2 w-full max-w-md text-lg font-secondary text-custom-dark-blue dark:text-custom-light-gray bg-white dark:bg-custom-dark-blue border-2 border-custom-yellow rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-custom-yellow transition duration-300"
-        onChange={handleInputChange}
+        placeholder="Search plants"
+        className="px-4 py-2 w-60 text-lg"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
+      <select
+        className="px-4 py-2 ml-2"
+        value={selectedProvider}
+        onChange={(e) => setSelectedProvider(e.target.value)}
+      >
+        <option value="">Select Provider</option>
+        {providers.map((provider) => (
+          <option key={provider.name} value={provider.name}>
+            <img
+              src={provider.img}
+              alt={provider.name}
+              className="inline-block w-6 h-6 mr-2"
+            />
+            {provider.name}
+          </option>
+        ))}
+      </select>
+      <button
+        onClick={handleSearch}
+        className="ml-2 px-4 py-2 bg-blue-500 text-white"
+        disabled={!searchTerm || !selectedVendor}
+      >
+        Search
+      </button>
     </div>
   );
 };
 
-export default FilterInput;
+export default FilterPlantsInput;

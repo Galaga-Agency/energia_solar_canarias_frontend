@@ -66,7 +66,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 -mt-12 z-50 grid place-items-center overflow-hidden rounded-lg"
+          className="fixed inset-0 -mt-12 z-[999] grid place-items-center overflow-hidden rounded-lg"
         >
           <motion.div
             initial={{ opacity: 0 }}

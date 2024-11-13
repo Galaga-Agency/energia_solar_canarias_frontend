@@ -1,39 +1,30 @@
 import { useState, useEffect } from "react";
 
-const usePlantFilter = (items) => {
-  const [filteredItems, setFilteredItems] = useState(items);
+const usePlantFilter = (plants) => {
+  const [filteredPlants, setFilteredPlants] = useState(plants);
 
+  // Update filteredPlants when the plants array changes
   useEffect(() => {
-    setFilteredItems(items);
-  }, [items]);
+    setFilteredPlants(plants);
+  }, [plants]);
 
-  const filterItems = (searchTerm) => {
-    if (!searchTerm) {
-      setFilteredItems(items);
-      return;
-    }
+  const filterItems = (searchTerm, selectedVendor) => {
+    const lowerCaseSearchTerm = searchTerm ? searchTerm.toLowerCase() : "";
+    const filtered = plants.filter((plant) => {
+      const matchesSearchTerm = plant.name
+        .toLowerCase()
+        .includes(lowerCaseSearchTerm);
+      const matchesVendor = selectedVendor
+        ? plant.organization === selectedVendor
+        : true;
 
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-
-    const filtered = items.filter((item) => {
-      return (
-        item.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (item.location?.address &&
-          item.location.address.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        (item.location?.city &&
-          item.location.city.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        (item.location?.state &&
-          item.location.state.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        (item.location?.country &&
-          item.location.country.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        (item.status && item.status.toLowerCase().includes(lowerCaseSearchTerm))
-      );
+      return matchesSearchTerm && matchesVendor;
     });
 
-    setFilteredItems(filtered);
+    setFilteredPlants(filtered);
   };
 
-  return { filteredItems, filterItems };
+  return { filteredPlants, filterItems };
 };
 
 export default usePlantFilter;

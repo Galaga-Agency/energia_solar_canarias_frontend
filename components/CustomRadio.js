@@ -24,7 +24,7 @@ const CustomRadio = ({
             ${
               checked
                 ? "border-custom-yellow"
-                : "border-gray-300 dark:border-gray-600"
+                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue"
             }
             peer-focus-visible:ring-2 
             peer-focus-visible:ring-custom-yellow 

@@ -304,10 +304,21 @@
   "providers": "Providers",
   "showProviders": "Show Providers",
   "showAllPlants": "Show All Plants",
-  "selectProvider": "Choose a Provider:",
+  "selectProvider": "Choose a Provider",
   "pleaseNote": "Please Note",
   "operationMayTake": "The operation may take a little longer depending on the number of plants being fetched. Please be patient.",
   "iUnderstand": "I Understand !",
   "findPlants": "Find a Plant",
-  "selectPlant": "Select a Plant:"
+  "selectPlant": "Select a Plant",
+  "filter": "Filter results",
+  "plantStatus": "State",
+  "filterPlaceholder": "Search by name or address...",
+  "type": "Type",
+  "type_Residential": "Residential",
+  "type_Commercial": "Commercial",
+  "type_Ground-mounted": "Ground-mounted",
+  "type_Battery-storage": "Battery storage",
+  "organization": "Provider",
+  "plantsFound": "Plants found",
+  "applyFilters": "Apply Filter"
 }

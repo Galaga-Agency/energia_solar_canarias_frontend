@@ -18,7 +18,7 @@ const CustomCheckbox = ({ checked, onChange, label, className = "" }) => {
           ${
             checked
               ? "bg-custom-yellow border-custom-yellow"
-              : "border-gray-300 dark:border-gray-600 bg-transparent"
+              : "border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue"
           }
           peer-focus-visible:ring-2 
           peer-focus-visible:ring-custom-yellow 

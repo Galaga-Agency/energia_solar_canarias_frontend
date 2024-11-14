@@ -9,20 +9,7 @@ const PlantListSkeleton = ({ theme, rows }) => {
   return (
     <div className="my-12">
       {isAdmin ? (
-        <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-700">
-              <th className="py-4 px-3 text-left">
-                <CustomSkeleton width="30%" height="20px" theme={theme} />
-              </th>
-              <th className="py-4 px-3 text-left">
-                <CustomSkeleton width="30%" height="20px" theme={theme} />
-              </th>
-              <th className="py-4 px-3 text-right">
-                <CustomSkeleton width="15%" height="20px" theme={theme} />
-              </th>
-            </tr>
-          </thead>
+        <table className="min-w-full border-b border-collapse border-gray-300 bg-transparent shadow-md mb-12">
           <tbody>
             {[...Array(rows)].map((_, index) => (
               <tr key={index} className="border-b border-gray-300">

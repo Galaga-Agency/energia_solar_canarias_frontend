@@ -1,19 +1,21 @@
 import React, { useState } from "react";
-import { BsBuilding } from "react-icons/bs"; // Example icon, replace with your own
+import { useTranslation } from "react-i18next";
+import { BsBuilding } from "react-icons/bs";
 
 const ViewChangeDropdown = ({ onChange, view }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
 
   const options = [
     {
       value: "providers",
       icon: <BsBuilding />,
-      label: "Show Providers",
+      label: t("showProviders"),
     },
     {
       value: "plants",
       icon: <BsBuilding />,
-      label: "Show All Plants",
+      label: t("showAllPlants"),
     },
   ];
 
@@ -26,7 +28,7 @@ const ViewChangeDropdown = ({ onChange, view }) => {
     <div className="relative w-full z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
+        className="w-full flex items-center justify-between bg-white/50 backdrop-blur-sm dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
       >
         <span className="flex items-center gap-2">
           <span className="flex-shrink-0">
@@ -55,14 +57,18 @@ const ViewChangeDropdown = ({ onChange, view }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 bg-white dark:bg-custom-dark-blue border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-lg min-w-[100%] whitespace-nowrap">
-          {options.map((option) => (
+        <div className="absolute z-50 mt-1 bg-white/50 backdrop-blur-sm dark:bg-custom-dark-blue border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-lg min-w-[100%] whitespace-nowrap">
+          {options.map((option, index) => (
             <button
               key={option.value}
               onClick={() => handleSelect(option.value)}
               className={`w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 ${
                 view === option.value ? "bg-gray-100 dark:bg-gray-700" : ""
-              }`}
+              } 
+              ${
+                index === 0 ? "rounded-t-lg" : ""
+              }  // Add rounded top to first item
+              ${index === options.length - 1 ? "rounded-b-lg" : ""}`}
             >
               <span className="flex-shrink-0 text-custom-dark-blue dark:text-custom-yellow">
                 {option.icon}

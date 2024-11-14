@@ -304,10 +304,21 @@
   "providers": "Provedores",
   "showProviders": "Mostrar Provedores",
   "showAllPlants": "Mostrar Todas las Plantas",
-  "selectProvider": "Elige un Provedor:",
+  "selectProvider": "Elige un Provedor",
   "pleaseNote": "Por favor ten en cuenta",
   "operationMayTake": "La operación puede tardar un poco más dependiendo de la cantidad de plantas que se estén recuperando. Por favor, sea paciente.",
   "iUnderstand": "¡Entiendo!",
   "findPlants": "Busca una planta",
-  "selectPlant": "Elige una Planta: "
+  "selectPlant": "Elige una Planta ",
+  "filter": "Filtrar resultados",
+  "plantStatus": "Estado",
+  "filterPlaceholder": "Busca por nombre o dirección...",
+  "type": "Tipo",
+  "type_Residential": "Residencial",
+  "type_Commercial": "Comercial",
+  "type_Ground-mounted": "Montado en el suelo",
+  "type_Battery-storage": "Almacenamiento de batería",
+  "organization": "Provedor",
+  "plantsFound": "Plantas encontradas",
+  "applyFilters": "Aplicar filtros"
 }

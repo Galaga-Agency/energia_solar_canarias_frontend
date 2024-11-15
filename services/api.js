@@ -211,26 +211,32 @@ export const deleteUserAPI = async (userId) => {
   }
 };
 
-export const fetchAllPlantsAPI = async ({ userId, token }) => {
+export const fetchAllPlantsAPI = async ({
+  userId,
+  token,
+  page = 1,
+  pageSize = 20,
+}) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/plants`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        usuario: USUARIO,
-        apiKey: API_KEY,
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/plants?page=${page}&pageSize=${pageSize}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Error fetching plants: ${response.statusText}`);
     }
 
     const plants = await response.json();
-
-    // console.log("plants returned: ", plants);
-
+    console.log("Plants fetched: ", plants);
     return plants.data;
   } catch (error) {
     console.error("Error fetching plants data:", error);
@@ -275,6 +281,7 @@ export const fetchPlantsByProviderAPI = async ({
 };
 
 export const fetchPlantDetailsAPI = async ({ userId, token, plantId }) => {
+  console.log("plant id passed ----> ", plantId);
   try {
     const response = await fetch(`${API_BASE_URL}/plants/${plantId}`, {
       method: "GET",
@@ -292,7 +299,7 @@ export const fetchPlantDetailsAPI = async ({ userId, token, plantId }) => {
 
     const plantDetails = await response.json();
 
-    // console.log("Plant details returned: ", plantDetails);
+    console.log("Plant details returned: ", plantDetails);
 
     return plantDetails.data;
   } catch (error) {
@@ -322,6 +329,31 @@ export const fetchProvidersAPI = async ({ token }) => {
     return data.data;
   } catch (error) {
     console.error("Error fetching providers:", error);
+    throw error;
+  }
+};
+
+export const fetchPlantsWithFilters = async ({ userId, token, filters }) => {
+  const queryParams = new URLSearchParams(filters).toString();
+  try {
+    const response = await fetch(`${API_BASE_URL}/plants?${queryParams}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error fetching filtered plants");
+    }
+
+    const plantsData = await response.json();
+    return plantsData.data;
+  } catch (error) {
+    console.error("Error fetching filtered plants:", error);
     throw error;
   }
 };

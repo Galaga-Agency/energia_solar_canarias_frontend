@@ -321,5 +321,6 @@
   "type_Optimizers & Inverters": "Optimizadores e inversores",
   "organization": "Provedor",
   "plantsFound": "Plantas encontradas",
-  "applyFilters": "Aplicar filtros"
+  "applyFilters": "Aplicar filtros",
+  "clearFilters": "Borrar Filtros"
 }

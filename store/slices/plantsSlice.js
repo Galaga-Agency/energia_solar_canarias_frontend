@@ -7,10 +7,15 @@ import {
 
 export const fetchPlants = createAsyncThunk(
   "plants/fetchPlants",
-  async ({ userId, token }) => {
-    const plantsData = await fetchAllPlantsAPI({ userId, token });
+  async ({ userId, token, page = 1, pageSize = 20 }) => {
+    const plantsData = await fetchAllPlantsAPI({
+      userId,
+      token,
+      page,
+      pageSize,
+    });
     if (!plantsData || plantsData.length === 0) {
-      throw new Error("No plants found for this userId");
+      throw new Error("No plants found");
     }
     return plantsData;
   }

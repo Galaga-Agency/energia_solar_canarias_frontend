@@ -5,6 +5,8 @@ import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
+import PrimaryButton from "./PrimaryButton";
+import SecondaryButton from "./SecondaryButton";
 
 const FilterSidebar = ({ plants, onFilterChange }) => {
   const { t } = useTranslation();
@@ -25,7 +27,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
         ? prevFilters[filterType].filter((item) => item !== value)
         : [...prevFilters[filterType], value];
       const updatedFilters = { ...prevFilters, [filterType]: updatedFilter };
-      onFilterChange(filterPlants(updatedFilters));
       return updatedFilters;
     });
   };
@@ -36,7 +37,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
       ...prevFilters,
       search: searchTerm,
     }));
-    onFilterChange(filterPlants({ ...filters, search: searchTerm }));
   };
 
   const handleCapacityChange = (type, value) => {
@@ -47,15 +47,13 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
         [type]: Number(value),
       };
       const updatedFilters = { ...prevFilters, capacity: updatedCapacity };
-      onFilterChange(filterPlants(updatedFilters));
       return updatedFilters;
     });
   };
 
-  const filterPlants = (filters) => {
+  const filterPlants = () => {
     let filtered = [...plants];
 
-    // Search filter
     if (filters.search) {
       filtered = filtered.filter(
         (plant) =>
@@ -64,26 +62,22 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
       );
     }
 
-    // Status filter
     if (filters.status.length > 0) {
       filtered = filtered.filter((plant) =>
         filters.status.includes(plant.status)
       );
     }
 
-    // Type filter
     if (filters.type.length > 0) {
       filtered = filtered.filter((plant) => filters.type.includes(plant.type));
     }
 
-    // Organization filter
     if (filters.organization.length > 0) {
       filtered = filtered.filter((plant) =>
         filters.organization.includes(plant.organization)
       );
     }
 
-    // Capacity filter
     if (filters.capacity.min || filters.capacity.max) {
       filtered = filtered.filter(
         (plant) =>
@@ -97,7 +91,23 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
     return filtered;
   };
 
-  // Function to toggle the sidebar open/close on mobile
+  const handleApplyFilters = () => {
+    onFilterChange(filterPlants());
+    closeSidebar();
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      status: [],
+      type: [],
+      organization: [],
+      search: "",
+      capacity: { min: 0, max: 10000 },
+    });
+    onFilterChange([]); // Reset the filtered data
+    closeSidebar();
+  };
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -106,7 +116,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
     setIsSidebarOpen(false);
   };
 
-  // Detect clicks outside the sidebar to close it
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -139,7 +148,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
           )}
         </div>
 
-        {/* Search Input */}
         <div className="mb-4">
           <input
             type="text"
@@ -150,7 +158,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
           />
         </div>
 
-        {/* Filter Sections (status, type, organization, etc.) */}
         <div className="mb-4">
           <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
             {t("plantStatus")}
@@ -167,7 +174,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
           </div>
         </div>
 
-        {/* Type Filters */}
         <div className="mb-4">
           <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
             {t("type")}
@@ -190,7 +196,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
           </div>
         </div>
 
-        {/* Organization Filters */}
         <div className="mb-4">
           <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
             {t("organization")}
@@ -218,7 +223,6 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
           </div>
         </div>
 
-        {/* Capacity Filters */}
         <div className="mb-4">
           <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
             {t("capacity")}
@@ -241,21 +245,18 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
           </div>
         </div>
 
-        {/* Validate Filters Button (mobile only) */}
-        <div className="xl:hidden flex justify-center mt-4">
-          <button
-            onClick={() => {
-              onFilterChange(filterPlants(filters)); // Trigger filter change on validation
-              closeSidebar(); // Close sidebar after applying filters
-            }}
-            className="bg-custom-yellow text-custom-dark-blue py-2 px-6 rounded-lg"
-          >
+        {/* Apply Filters and Clear Filters Buttons */}
+        <div className=" flex justify-between mt-4 gap-4">
+          <PrimaryButton onClick={handleApplyFilters}>
             {t("applyFilters")}
-          </button>
+          </PrimaryButton>
+
+          <SecondaryButton onClick={handleClearFilters}>
+            {t("clearFilters")}
+          </SecondaryButton>
         </div>
       </div>
 
-      {/* Button to toggle sidebar visibility */}
       <button
         className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
         onClick={toggleSidebar}

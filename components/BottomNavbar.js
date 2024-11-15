@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog, faEnvelope, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCog, faEnvelope, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
 import { FaUserCog } from "react-icons/fa";
@@ -19,14 +19,14 @@ const BottomNavbar = ({ userId }) => {
   const icons = [
     {
       icon: <PiSolarPanelFill className="text-2xl" />,
-      label: t("plants"),
+      label: t("Dashboard"),
       path: isAdmin
         ? "/dashboard/[userId]/admin"
         : "/dashboard/[userId]/plants",
     },
     {
       icon: isAdmin ? (
-        <FontAwesomeIcon icon={faUser} className="text-2xl" />
+        <FontAwesomeIcon icon={faUsers} className="text-2xl" />
       ) : (
         <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
       ),

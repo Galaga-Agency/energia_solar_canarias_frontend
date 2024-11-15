@@ -36,7 +36,6 @@ import ViewChangeDropdown from "@/components/ViewChangeDropdown";
 import FilterSidebar from "@/components/FilterSidebar";
 import usePlantSort from "@/hooks/usePlantSort";
 import { providers } from "@/data/providers";
-// import { fetchProvidersAPI } from "@/services/api";
 
 const AdminDashboard = () => {
   const user = useSelector(selectUser);
@@ -73,10 +72,15 @@ const AdminDashboard = () => {
     } else {
       setIsInitialLoad(true);
       dispatch(
-        fetchPlants({ userId: user.id, token: user.tokenIdentificador })
+        fetchPlants({
+          userId: user.id,
+          token: user.tokenIdentificador,
+          page: currentPage,
+          pageSize: plantsPerPage,
+        })
       );
     }
-  }, [user, router, dispatch]);
+  }, [user, router, dispatch, currentPage]);
 
   useEffect(() => {
     if (!loading && plants.length > 0) {
@@ -124,10 +128,6 @@ const AdminDashboard = () => {
     sortItems(criteria, order);
     setFilteredPlants(sortedItems);
   };
-
-  // useEffect(() => {
-  //   fetchProvidersAPI({ token: user.tokenIdentificador });
-  // }, []);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">

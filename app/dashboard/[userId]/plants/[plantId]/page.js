@@ -2,14 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectTheme } from "@/store/slices/themeSlice";
-import { useTranslation } from "next-i18next";
+import { useRouter } from "next/navigation";
+import { selectUser } from "@/store/slices/userSlice";
+import {
+  fetchPlantDetails,
+  selectPlantDetails,
+  selectLoadingDetails,
+  selectDetailsError,
+} from "@/store/slices/plantsSlice";
+import { IoArrowBackCircle } from "react-icons/io5";
 import WeatherWidget from "@/components/WeatherWidget";
 import ImageCarousel from "@/components/ImageCarousel";
-import PlantDetailsSkeleton from "@/components/LoadingSkeletons/PlantDetailsSkeleton";
-import PageTransition from "@/components/PageTransition";
-import Texture from "@/components/Texture";
-import axios from "axios";
+import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import { MdOutlineCo2 } from "react-icons/md";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,55 +23,48 @@ import {
   faSeedling,
   faTree,
 } from "@fortawesome/free-solid-svg-icons";
-import WeatherWidgetSkeleton from "@/components/LoadingSkeletons/WeatherWidgetSkeleton";
-import ImageCarouselSkeleton from "@/components/LoadingSkeletons/ImageCarouselSkeleton";
-import useDeviceType from "@/hooks/useDeviceType";
-import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
-import {
-  fetchPlantDetails,
-  selectPlantDetails,
-  selectLoadingDetails,
-  selectDetailsError,
-} from "@/store/slices/plantsSlice";
-import { IoArrowBackCircle } from "react-icons/io5";
-import { FaSlash } from "react-icons/fa6";
-import { selectUser } from "@/store/slices/userSlice";
-import { FaSolarPanel, FaSun } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
-import useRefresh from "@/hooks/useRefresh";
 import { BiRefresh } from "react-icons/bi";
+import PageTransition from "@/components/PageTransition";
+import Texture from "@/components/Texture";
+import useDeviceType from "@/hooks/useDeviceType";
+import { useTranslation } from "next-i18next";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId } = params;
   const dispatch = useDispatch();
+  const router = useRouter();
+  const user = useSelector(selectUser);
   const plant = useSelector(selectPlantDetails);
   const isLoading = useSelector(selectLoadingDetails);
   const error = useSelector(selectDetailsError);
-  const theme = useSelector(selectTheme);
   const { isMobile, isDesktop } = useDeviceType();
+  const theme = useSelector(selectTheme);
   const { t } = useTranslation();
   const [weatherData, setWeatherData] = useState(null);
   const apiKey = process.env.NEXT_PUBLIC_WEATHERAPI_API_KEY;
-  const user = useSelector(selectUser);
-  const { refreshPage } = useRefresh();
 
   useEffect(() => {
-    dispatch(
-      fetchPlantDetails({ userId, token: user.tokenIdentificador, plantId })
-    );
-  }, [dispatch, userId, plantId]);
+    if (user?.tokenIdentificador) {
+      dispatch(
+        fetchPlantDetails({ userId, token: user.tokenIdentificador, plantId })
+      );
+    }
+  }, [dispatch, userId, plantId, user?.tokenIdentificador]);
 
   useEffect(() => {
     const fetchWeatherData = async () => {
-      if (plant) {
+      if (plant && plant.location?.city) {
         const cityName = plant.location.city;
         try {
-          const response = await axios.get(
+          const response = await fetch(
             `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=${
               isDesktop ? 3 : 2
             }&aqi=no&alerts=no`
           );
-          setWeatherData(response.data);
+          const data = await response.json();
+          setWeatherData(data);
         } catch (error) {
           console.error("Error fetching weather data:", error);
         }
@@ -103,12 +100,8 @@ const PlantDetailsPage = ({ params }) => {
             </h1>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 min-h-[400px]">
-            <WeatherWidgetSkeleton theme={theme} />
-            <div>
-              <ImageCarouselSkeleton theme={theme} />
-            </div>
+            {/* Loading skeletons */}
           </div>
-          <PlantDetailsSkeleton theme={theme} />
         </div>
       </PageTransition>
     );
@@ -125,29 +118,14 @@ const PlantDetailsPage = ({ params }) => {
           }`}
         >
           <Texture />
-
-          {/* Back button in top-left corner */}
           <div className="absolute top-4 left-4">
             <button onClick={() => window.history.back()}>
               <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow" />
             </button>
           </div>
-
-          {/* Centered content for error or no data */}
           <div className="flex flex-col items-center text-center mt-16">
             {error ? (
-              <>
-                <div className="relative">
-                  <FaSolarPanel className="text-8xl text-red-500 mb-4" />
-                  <FaSlash className="absolute text-red-500 text-9xl -top-4 -right-2" />
-                </div>
-                <h1 className="text-4xl font-primary text-red-500 mb-2">
-                  {t("errorLoadingData")}
-                </h1>
-                <p className="text-lg font-secondary text-custom-dark-blue dark:text-custom-yellow mb-6">
-                  {t("errorMessage") || t("errorLoadingData")}
-                </p>
-              </>
+              <>{/* Error icon and message */}</>
             ) : (
               <>
                 <PiSolarPanelFill className="text-6xl text-custom-dark-blue dark:text-custom-yellow mb-4" />
@@ -160,7 +138,15 @@ const PlantDetailsPage = ({ params }) => {
               </>
             )}
             <button
-              onClick={refreshPage}
+              onClick={() =>
+                dispatch(
+                  fetchPlantDetails({
+                    userId,
+                    token: user.tokenIdentificador,
+                    plantId,
+                  })
+                )
+              }
               className="flex items-center gap-2 mt-4 text-lg font-primary text-custom-dark-blue dark:text-custom-yellow hover:scale-105 transition-transform"
             >
               <BiRefresh className="text-2xl" />

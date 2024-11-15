@@ -1,6 +1,6 @@
+import { Building2, Sun } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BsBuilding } from "react-icons/bs";
 
 const ViewChangeDropdown = ({ onChange, view }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,12 +9,12 @@ const ViewChangeDropdown = ({ onChange, view }) => {
   const options = [
     {
       value: "providers",
-      icon: <BsBuilding />,
+      icon: <Building2 size={18} />,
       label: t("showProviders"),
     },
     {
       value: "plants",
-      icon: <BsBuilding />,
+      icon: <Sun size={18} />,
       label: t("showAllPlants"),
     },
   ];

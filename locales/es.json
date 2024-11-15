@@ -318,6 +318,7 @@
   "type_Commercial": "Comercial",
   "type_Ground-mounted": "Montado en el suelo",
   "type_Battery-storage": "Almacenamiento de batería",
+  "type_Optimizers & Inverters": "Optimizadores e inversores",
   "organization": "Provedor",
   "plantsFound": "Plantas encontradas",
   "applyFilters": "Aplicar filtros"

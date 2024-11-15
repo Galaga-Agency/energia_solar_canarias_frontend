@@ -21,7 +21,7 @@ const ProviderCard = ({ provider, onClick }) => {
         >
           {/* Background image with zoom effect */}
           <div
-            className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-in-out"
+            className="w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-700 ease-in-out"
             style={{
               backgroundImage: `url(${provider.img})`,
             }}

@@ -229,7 +229,7 @@ export const fetchAllPlantsAPI = async ({ userId, token }) => {
 
     const plants = await response.json();
 
-    console.log("plants returned: ", plants);
+    // console.log("plants returned: ", plants);
 
     return plants.data;
   } catch (error) {
@@ -241,12 +241,11 @@ export const fetchAllPlantsAPI = async ({ userId, token }) => {
 export const fetchPlantsByProviderAPI = async ({
   userId,
   token,
-  page = 1,
-  vendor,
+  providerName,
 }) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/plants?page=${page}&vendor=${vendor}`,
+      `${API_BASE_URL}/plants?proveedor=${providerName?.toLowerCase()}`,
       {
         method: "GET",
         headers: {
@@ -259,13 +258,18 @@ export const fetchPlantsByProviderAPI = async ({
     );
 
     if (!response.ok) {
-      throw new Error(`Error fetching plants: ${response.statusText}`);
+      throw new Error(
+        `Error fetching plants for provider: ${response.statusText}`
+      );
     }
 
-    const plants = await response.json();
-    return plants.data;
+    const plantsData = await response.json();
+
+    // console.log("Plants from specific provider: ", plantsData);
+
+    return plantsData.data;
   } catch (error) {
-    console.error("Error fetching plants data:", error);
+    console.error("Error fetching plants by provider:", error);
     throw error;
   }
 };
@@ -288,11 +292,36 @@ export const fetchPlantDetailsAPI = async ({ userId, token, plantId }) => {
 
     const plantDetails = await response.json();
 
-    console.log("Plant details returned: ", plantDetails);
+    // console.log("Plant details returned: ", plantDetails);
 
     return plantDetails.data;
   } catch (error) {
     console.error("Error fetching plant details:", error);
+    throw error;
+  }
+};
+
+export const fetchProvidersAPI = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/proveedores`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error fetching providers: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log("providers: ", data.data);
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching providers:", error);
     throw error;
   }
 };

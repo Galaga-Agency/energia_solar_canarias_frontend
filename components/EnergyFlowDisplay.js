@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { fetchPlantsAPI } from "@/services/api";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
-import Loading from "./Loading";
 import houseIllustration from "@/public/assets/img/house-illustration.png";
 import solarPanelIllustration from "@/public/assets/img/solar-panel-illustration.png";
 import gridIllustration from "@/public/assets/img/grid.png";
 import useDeviceType from "@/hooks/useDeviceType";
+import { fetchPlants } from "@/store/slices/plantsSlice";
 
 const EnergyFlowDisplay = ({ plantId }) => {
   const theme = useSelector(selectTheme);
   const [plant, setPlant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { isMobile, isTablet, isDesktop } = useDeviceType();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchPlantData = async () => {
       try {
-        const plants = await fetchPlantsAPI();
+        const plants = dispatch(
+          fetchPlants({
+            userId: user.id,
+            token: user.tokenIdentificador,
+          })
+        );
         const selectedPlant = plants.find((p) => p.id === parseInt(plantId));
         setPlant(selectedPlant);
       } catch (error) {

@@ -1,5 +1,3 @@
-"use client";
-
 import { useRouter } from "next/navigation";
 import { FaLocationDot } from "react-icons/fa6";
 import { PiSolarPanelFill } from "react-icons/pi";
@@ -26,33 +24,41 @@ const PlantsListTableItem = ({ plant }) => {
   };
 
   return (
-    <tr
-      onClick={handleRowClick}
-      className="flex-1 flex cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-300"
-    >
-      <td
-        className={`${
-          isMobile ? "w-[80%]" : "w-[40%]"
-        } flex flex-1 py-4 pl-2 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left md:justify-left items-center`}
-      >
-        <PiSolarPanelFill className="inline mr-2 text-custom-yellow text-2xl w-[15%]" />
-        <p className="w-[85%]">{plant.name}</p>
-      </td>
-      {!isMobile && (
-        <td className="flex w-[40%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left items-center">
-          <FaLocationDot className="inline mr-2 text-custom-yellow w-[15%]" />
-          <p
-            className="w-[85%] overflow-hidden text-ellipsis whitespace-nowrap"
-            title={plant.address || "N/A"}
+    <div className="overflow-x-auto">
+      <table className="min-w-full">
+        <tbody>
+          <tr
+            onClick={handleRowClick}
+            className="flex-1 flex cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-300"
           >
-            {plant.address || "N/A"}
-          </p>
-        </td>
-      )}
-      <td className="flex w-[20%] md:w-[20%] py-4  border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">
-        <div className={`w-3 h-3 rounded-full ${statusColors[plant.status]}`} />
-      </td>
-    </tr>
+            <td
+              className={`${
+                isMobile ? "w-[80%]" : "w-[40%]"
+              } flex flex-1 py-4 pl-2 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left md:justify-left items-center`}
+            >
+              <PiSolarPanelFill className="inline mr-2 text-custom-yellow text-2xl w-[15%]" />
+              <p className="w-[85%]">{plant.name}</p>
+            </td>
+            {!isMobile && (
+              <td className="flex w-[40%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left items-center">
+                <FaLocationDot className="inline mr-2 text-custom-yellow w-[15%]" />
+                <p
+                  className="w-[85%] overflow-hidden text-ellipsis whitespace-nowrap"
+                  title={plant.address || "N/A"}
+                >
+                  {plant.address || "N/A"}
+                </p>
+              </td>
+            )}
+            <td className="flex w-[20%] md:w-[20%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">
+              <div
+                className={`w-3 h-3 rounded-full ${statusColors[plant.status]}`}
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 };
 

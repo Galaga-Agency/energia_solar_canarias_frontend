@@ -9,6 +9,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import { selectUser } from "@/store/slices/userSlice";
 import {
   fetchPlants,
+  fetchPlantsByProvider,
   selectLoading,
   selectPlants,
 } from "@/store/slices/plantsSlice";
@@ -28,13 +29,14 @@ import PlantStatuses from "@/components/PlantStatuses";
 import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "next-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { providers } from "@/data/providers";
 import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
 import useDeviceType from "@/hooks/useDeviceType";
 import ViewChangeDropdown from "@/components/ViewChangeDropdown";
 import FilterSidebar from "@/components/FilterSidebar";
 import usePlantSort from "@/hooks/usePlantSort";
+import { providers } from "@/data/providers";
+// import { fetchProvidersAPI } from "@/services/api";
 
 const AdminDashboard = () => {
   const user = useSelector(selectUser);
@@ -54,6 +56,7 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredPlants, setFilteredPlants] = useState([]);
   const isLoading = useSelector(selectLoading);
+
   const plantsPerPage = 12;
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
   const { isMobile } = useDeviceType();
@@ -97,9 +100,13 @@ const AdminDashboard = () => {
   const handleProviderClick = (provider) => {
     setSelectedProvider(provider);
     dispatch(
-      fetchPlants({ userId: user.id, token: user.tokenIdentificador, provider })
+      fetchPlantsByProvider({
+        userId: user.id,
+        token: user.tokenIdentificador,
+        provider,
+      })
     );
-    router.push(`/dashboard/1/admin/${provider.name.toLowerCase()}`);
+    router.push(`/dashboard/${user.id}/admin/${provider.name.toLowerCase()}`);
   };
 
   const closeModal = () => {
@@ -117,6 +124,10 @@ const AdminDashboard = () => {
     sortItems(criteria, order);
     setFilteredPlants(sortedItems);
   };
+
+  // useEffect(() => {
+  //   fetchProvidersAPI({ token: user.tokenIdentificador });
+  // }, []);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
@@ -148,7 +159,6 @@ const AdminDashboard = () => {
           onClose={() => setIsFormOpen(false)}
           isOpen={isFormOpen}
         />
-
         <PlantsMapModal
           isOpen={isMapOpen}
           onClose={() => setIsMapOpen(false)}
@@ -167,7 +177,6 @@ const AdminDashboard = () => {
             />
           )}
 
-          {/* Plant list */}
           <div className={`flex-grow ${view === "plants" && "lg:px-8"}`}>
             {view === "providers" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -181,7 +190,6 @@ const AdminDashboard = () => {
               </div>
             ) : (
               <>
-                {/* Display the count of plants found */}
                 <div className="mb-4 text-lg text-custom-dark-blue dark:text-custom-yellow">
                   <p>
                     {t("plantsFound")}: {filteredPlants.length} {t("plants")}
@@ -222,7 +230,6 @@ const AdminDashboard = () => {
                   </div>
                 )}
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                   <Pagination
                     currentPage={currentPage}

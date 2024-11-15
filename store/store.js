@@ -6,6 +6,7 @@ import plantsReducer from "@/store/slices/plantsSlice";
 import notificationsReducer from "./slices/notificationsSlice";
 import themeReducer from "./slices/themeSlice";
 import usersListReducer from "./slices/usersListSlice";
+import providersReducer from "./slices/providersSlice";
 
 // Combine all reducers
 const rootReducer = combineReducers({
@@ -14,13 +15,21 @@ const rootReducer = combineReducers({
   notifications: notificationsReducer,
   theme: themeReducer,
   usersList: usersListReducer,
+  providers: providersReducer,
 });
 
 // Configuration for redux-persist to persist all slices
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "plants", "notifications", "theme", "usersList"], // Persist all slices
+  whitelist: [
+    "user",
+    "providers",
+    "plants",
+    "notifications",
+    "theme",
+    "usersList",
+  ],
 };
 
 // Wrap the rootReducer with persistReducer

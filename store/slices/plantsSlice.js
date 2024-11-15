@@ -29,15 +29,14 @@ export const fetchPlantDetails = createAsyncThunk(
 
 export const fetchPlantsByProvider = createAsyncThunk(
   "plants/fetchPlantsByProvider",
-  async ({ userId, token, page, vendor }) => {
+  async ({ userId, token, providerName }) => {
     const plantsData = await fetchPlantsByProviderAPI({
       userId,
       token,
-      page,
-      vendor,
+      providerName,
     });
     if (!plantsData || plantsData.length === 0) {
-      throw new Error("No plants found for this vendor");
+      throw new Error("No plants found for this providerName");
     }
     return plantsData;
   }

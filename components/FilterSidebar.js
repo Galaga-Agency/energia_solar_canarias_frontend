@@ -178,6 +178,7 @@ const FilterSidebar = ({ plants, onFilterChange }) => {
               "Commercial",
               "Ground-mounted",
               "Battery-storage",
+              "Optimizers & Inverters",
             ].map((type) => (
               <CustomCheckbox
                 key={type}

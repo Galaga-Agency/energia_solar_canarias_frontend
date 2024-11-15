@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
 import { selectUser } from "@/store/slices/userSlice";
 import {
-  fetchPlants,
+  fetchPlantsByProvider,
   selectLoading,
   selectPlants,
 } from "@/store/slices/plantsSlice";
@@ -18,72 +18,74 @@ import SortMenu from "@/components/SortPlantsMenu";
 import Pagination from "@/components/Pagination";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
-import AddPlantForm from "@/components/AddPlantForm";
 import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
 import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "next-i18next";
-import { PlusIcon } from "@heroicons/react/24/outline";
 import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
-import useDeviceType from "@/hooks/useDeviceType";
-import FilterSidebar from "@/components/FilterSidebar";
-import usePlantSort from "@/hooks/usePlantSort";
+import ProviderFilterSidebar from "@/components/ProviderFilterSidebar";
+import { providers } from "@/data/providers";
 import PlantsMapModal from "@/components/PlantsMapModal";
+import { IoArrowBackCircle } from "react-icons/io5";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
-  const router = useRouter();
   const loading = useSelector(selectLoading);
   const plants = useSelector(selectPlants);
   const theme = useSelector(selectTheme);
   const { t } = useTranslation();
-
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [allPlants, setAllPlants] = useState([]);
   const [filteredPlants, setFilteredPlants] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Declare the state for the modal
-  const isLoading = useSelector(selectLoading);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const plantsPerPage = 10;
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
-  const { isMobile } = useDeviceType();
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = filteredPlants.slice(
     startIndex,
     startIndex + plantsPerPage
   );
-  const { sortedItems, sortItems } = usePlantSort(plants);
+  const router = useRouter();
+  const params = useParams();
+  const providerName = decodeURIComponent(params?.providerName);
+  const provider = providers.find(
+    (p) => p.name.toLowerCase() === providerName?.toLowerCase()
+  );
 
-  // We will check for the providerName in router.query but do so safely
-  const { providerName } = router.query || {}; // Safely destructure providerName
-
-  // UseEffect that only runs when `providerName` is available
   useEffect(() => {
     if (!user?.id) {
       router.push("/");
-    } else if (providerName) {
+    } else if (provider) {
       setIsInitialLoad(true);
       dispatch(
-        fetchPlants({
+        fetchPlantsByProvider({
           userId: user.id,
           token: user.tokenIdentificador,
-          provider: providerName, // Fetch plants for the selected provider
+          providerName: provider.name,
         })
       );
     }
-  }, [user, router, dispatch, providerName]);
+  }, [user, router, dispatch, provider]);
 
   useEffect(() => {
-    if (!loading && plants.length > 0) {
-      setFilteredPlants(plants);
+    if (!loading && plants.length > 0 && provider) {
+      const providerPlants = plants.filter(
+        (plant) =>
+          plant.organization.toLowerCase() === provider.name.toLowerCase()
+      );
+      setAllPlants(providerPlants);
+      setFilteredPlants(providerPlants);
       setIsInitialLoad(false);
     }
-  }, [plants, loading]);
+  }, [plants, loading, provider]);
 
   const handleFilterChange = (newFilteredPlants) => {
     setFilteredPlants(newFilteredPlants);
@@ -91,8 +93,18 @@ const ProviderPage = () => {
   };
 
   const handleSortChange = (criteria, order) => {
-    sortItems(criteria, order);
-    setFilteredPlants(sortedItems);
+    const sorted = [...filteredPlants].sort((a, b) => {
+      if (order === "asc") {
+        return a[criteria] > b[criteria] ? 1 : -1;
+      } else {
+        return a[criteria] < b[criteria] ? 1 : -1;
+      }
+    });
+    setFilteredPlants(sorted);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   return (
@@ -105,30 +117,37 @@ const ProviderPage = () => {
       <Texture />
       <div className="relative h-auto z-10 p-8">
         <div className="flex items-center mb-10 md:mb-2 z-10">
-          <Image
-            src={companyIcon}
-            alt="Company Icon"
-            className="w-12 h-12 mr-2 z-10"
-          />
-          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
-            {t("findPlants")} - {providerName}
+          <button onClick={() => window.history.back()}>
+            <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
+          </button>
+          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue max-w-[60vw]">
+            {provider?.name}
           </h2>
         </div>
 
-        <AddPlantForm
-          onClose={() => setIsFormOpen(false)}
-          isOpen={isFormOpen}
-        />
         <PlantsMapModal
           isOpen={isMapOpen}
           onClose={() => setIsMapOpen(false)}
           plants={plants}
         />
 
-        <div className="flex">
-          <FilterSidebar plants={plants} onFilterChange={handleFilterChange} />
+        <div className="flex mt-6">
+          {/* Button to open sidebar */}
+          <button
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
+            onClick={toggleSidebar}
+          >
+            <span className="text-custom-dark-blue">{t("filter")}</span>
+          </button>
 
-          {/* Plant list */}
+          {/* Sidebar */}
+          <ProviderFilterSidebar
+            plants={allPlants}
+            onFilterChange={handleFilterChange}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+
           <div className="flex-grow lg:px-8">
             <div className="mb-4 text-lg text-custom-dark-blue dark:text-custom-yellow">
               <p>
@@ -151,7 +170,7 @@ const ProviderPage = () => {
               <PlantStatuses />
             </div>
 
-            {isLoading || isModalOpen ? (
+            {loading || isModalOpen ? (
               <div className="py-8">
                 <PlantListSkeleton theme={theme} rows={plantsPerPage} />
               </div>
@@ -170,7 +189,6 @@ const ProviderPage = () => {
               </div>
             )}
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
@@ -183,7 +201,6 @@ const ProviderPage = () => {
       </div>
 
       <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
-
       <InfoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

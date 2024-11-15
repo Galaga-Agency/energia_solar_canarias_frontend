@@ -307,7 +307,7 @@
   "selectProvider": "Choose a Provider",
   "pleaseNote": "Please Note",
   "operationMayTake": "The operation may take a little longer depending on the number of plants being fetched. Please be patient.",
-  "iUnderstand": "I Understand !",
+  "iUnderstand": "Understood !",
   "findPlants": "Find a Plant",
   "selectPlant": "Select a Plant",
   "filter": "Filter results",
@@ -318,6 +318,7 @@
   "type_Commercial": "Commercial",
   "type_Ground-mounted": "Ground-mounted",
   "type_Battery-storage": "Battery storage",
+  "type_Optimizers & Inverters": "Optimizers & Inverters",
   "organization": "Provider",
   "plantsFound": "Plants found",
   "applyFilters": "Apply Filter"

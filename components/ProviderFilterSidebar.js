@@ -122,11 +122,11 @@ const ProviderFilterSidebar = ({
   };
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen); // Toggling sidebar state
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const closeSidebar = () => {
-    setIsSidebarOpen(false); // Close the sidebar
+    setIsSidebarOpen(false);
   };
 
   useEffect(() => {
@@ -197,8 +197,8 @@ const ProviderFilterSidebar = ({
           {[
             "Residential",
             "Commercial",
-            "Ground-mounted",
-            "Battery-storage",
+            "Ground Mounted",
+            "Battery Storage",
             "Optimizers & Inverters",
           ].map((type) => (
             <CustomCheckbox

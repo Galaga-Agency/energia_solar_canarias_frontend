@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import Loading from "@/components/Loading";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -15,7 +14,6 @@ import {
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import ThemeToggle from "@/components/ThemeToggle";
-import FilterPlantsInput from "@/components/FilterPlantsInput";
 import SortMenu from "@/components/SortPlantsMenu";
 import Pagination from "@/components/Pagination";
 import PlantCard from "@/components/PlantCard";
@@ -27,7 +25,7 @@ import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
-import usePlantFilter from "@/hooks/usePlantFilter";
+import FilterSidebar from "@/components/FilterSidebar";
 import usePlantSort from "@/hooks/usePlantSort";
 import useDeviceType from "@/hooks/useDeviceType";
 import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
@@ -45,17 +43,33 @@ const ClientDashboardPage = ({ params }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const { filteredItems, filterItems } = usePlantFilter(plants);
-  const { sortedItems: sortedPlants, sortItems } = usePlantSort(filteredItems);
+  const [filteredPlants, setFilteredPlants] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { sortedItems: sortedPlants, sortItems } = usePlantSort(filteredPlants);
   const { isMobile } = useDeviceType();
   const { t } = useTranslation();
-  const plantsPerPage = 6; // Default number per page for all users
+  const sidebarRef = useRef(null);
+
+  const plantsPerPage = 6;
   const totalPages = Math.ceil(sortedPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = sortedPlants.slice(
     startIndex,
     startIndex + plantsPerPage
   );
+
+  // Handle filter changes from sidebar
+  const handleFilterChange = (filteredResults) => {
+    setFilteredPlants(filteredResults);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  // Handle search input changes
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    // Pass the search term to the sidebar component
+    sidebarRef.current?.updateSearch(value);
+  };
 
   useEffect(() => {
     if (!user?.id) {
@@ -68,6 +82,11 @@ const ClientDashboardPage = ({ params }) => {
     }
   }, [user, router, dispatch]);
 
+  // Set initial filtered plants when plants are loaded
+  useEffect(() => {
+    setFilteredPlants(plants);
+  }, [plants]);
+
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto">
       <TransitionEffect />
@@ -76,6 +95,7 @@ const ClientDashboardPage = ({ params }) => {
         <LanguageSelector />
       </div>
       <Texture />
+
       <div className="relative h-auto z-10 p-8">
         <div className="flex items-center mb-10 md:mb-2 z-10">
           <Image
@@ -101,53 +121,75 @@ const ClientDashboardPage = ({ params }) => {
           plants={sortedPlants}
         />
 
-        {/* Filter and Sort */}
-        <div className="flex flex-col md:flex-row md:justify-between z-30">
-          <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
-            <div className="flex-grow">
-              <SortMenu onSortChange={sortItems} />
+        <div className="flex gap-4">
+          <FilterSidebar
+            ref={sidebarRef}
+            plants={plants}
+            onFilterChange={handleFilterChange}
+            initialSearchTerm={searchTerm}
+          />
+
+          <div className="flex-1">
+            {/* Filter and Sort */}
+            <div className="flex flex-col md:flex-row md:justify-between z-30">
+              <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
+                <div className="flex-grow">
+                  <SortMenu onSortChange={sortItems} />
+                </div>
+                <button
+                  onClick={() => setIsMapOpen(true)}
+                  className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex items-center justify-center button-shadow"
+                >
+                  <FaMapMarkedAlt className="text-2xl" />
+                </button>
+              </div>
+              <PlantStatuses />
             </div>
-            <button
-              onClick={() => setIsMapOpen(true)}
-              className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex items-center justify-center button-shadow"
-            >
-              <FaMapMarkedAlt className="text-2xl" />
-            </button>
-          </div>
-          <PlantStatuses />
-        </div>
 
-        {/* Render skeleton if loading */}
-        {loading ? (
-          <PlantListSkeleton theme={theme} rows={plantsPerPage} />
-        ) : (
-          <>
-            {/* Render Plants */}
-            {paginatedPlants.length > 0 ? (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
-                {paginatedPlants.map((plant) => (
-                  <PlantCard key={plant.id} plant={plant} />
-                ))}
-              </div>
-            ) : (
-              <div className="h-auto w-full flex flex-col justify-center items-center">
-                <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
-                <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
-                  {t("noPlantsFound")}
-                </p>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
+            {/* Optional: Main content search input */}
+            <div className="mb-4">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder={t("search")}
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow"
               />
+            </div>
+
+            {/* Render skeleton if loading */}
+            {loading ? (
+              <PlantListSkeleton theme={theme} rows={plantsPerPage} />
+            ) : (
+              <>
+                {/* Render Plants */}
+                {paginatedPlants.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
+                    {paginatedPlants.map((plant) => (
+                      <PlantCard key={plant.id} plant={plant} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-auto w-full flex flex-col justify-center items-center">
+                    <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+                    <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
+                      {t("noPlantsFound")}
+                    </p>
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                )}
+              </>
             )}
-          </>
-        )}
+          </div>
+        </div>
 
         {/* Floating Add Plant Button */}
         <button
@@ -158,7 +200,7 @@ const ClientDashboardPage = ({ params }) => {
         </button>
       </div>
 
-      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
+      <BottomNavbar userId={user && user.id} userClass={user && user.classe} />
     </div>
   );
 };

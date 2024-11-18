@@ -23,8 +23,13 @@ export const fetchPlants = createAsyncThunk(
 
 export const fetchPlantDetails = createAsyncThunk(
   "plants/fetchPlantDetails",
-  async ({ userId, token, plantId }) => {
-    const plantDetails = await fetchPlantDetailsAPI({ userId, token, plantId });
+  async ({ userId, token, plantId, proveedor }) => {
+    const plantDetails = await fetchPlantDetailsAPI({
+      userId,
+      token,
+      plantId,
+      proveedor,
+    });
     if (!plantDetails) {
       throw new Error("Plant details not found");
     }

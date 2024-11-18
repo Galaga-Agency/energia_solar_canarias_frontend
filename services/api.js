@@ -236,7 +236,7 @@ export const fetchAllPlantsAPI = async ({
     }
 
     const plants = await response.json();
-    console.log("Plants fetched: ", plants);
+    // console.log("Plants fetched: ", plants);
     return plants.data;
   } catch (error) {
     console.error("Error fetching plants data:", error);
@@ -280,29 +280,52 @@ export const fetchPlantsByProviderAPI = async ({
   }
 };
 
-export const fetchPlantDetailsAPI = async ({ userId, token, plantId }) => {
-  console.log("plant id passed ----> ", plantId);
+export const fetchPlantDetailsAPI = async ({
+  userId,
+  token,
+  plantId,
+  proveedor,
+}) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/plants/${plantId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        usuario: USUARIO,
-        apiKey: API_KEY,
-        Authorization: `Bearer ${token}`,
-      },
+    console.log("data passed api -----> ", {
+      userId,
+      token,
+      plantId,
+      proveedor,
     });
+    console.log(
+      "url : ",
+      `${API_BASE_URL}/plants/details/${plantId}?proveedor=${proveedor}`
+    );
+    const response = await fetch(
+      `${API_BASE_URL}/plants/details/${plantId}?proveedor=${proveedor}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          proveedor: proveedor,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
+      console.log(
+        "url : ",
+        `${API_BASE_URL}/plants/details/${plantId}?proveedor=${proveedor}`
+      );
       throw new Error(`Error fetching plant details: ${response.statusText}`);
     }
 
     const plantDetails = await response.json();
 
-    console.log("Plant details returned: ", plantDetails);
+    // console.log("Plant details returned: ", plantDetails);
 
-    return plantDetails.data;
+    return plantDetails.data[0];
   } catch (error) {
+    console.log("proveedor passed api : ", proveedor);
     console.error("Error fetching plant details:", error);
     throw error;
   }

@@ -1,44 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
-import { selectTheme } from "@/store/slices/themeSlice";
 import houseIllustration from "@/public/assets/img/house-illustration.png";
 import solarPanelIllustration from "@/public/assets/img/solar-panel-illustration.png";
 import gridIllustration from "@/public/assets/img/grid.png";
 import useDeviceType from "@/hooks/useDeviceType";
-import { fetchPlants } from "@/store/slices/plantsSlice";
 
-const EnergyFlowDisplay = ({ plantId }) => {
-  const theme = useSelector(selectTheme);
-  const [plant, setPlant] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+const EnergyFlowDisplay = ({ plant }) => {
   const { isMobile, isTablet, isDesktop } = useDeviceType();
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchPlantData = async () => {
-      try {
-        const plants = dispatch(
-          fetchPlants({
-            userId: user.id,
-            token: user.tokenIdentificador,
-          })
-        );
-        const selectedPlant = plants.find((p) => p.id === parseInt(plantId));
-        setPlant(selectedPlant);
-      } catch (error) {
-        console.error("Error fetching plant data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPlantData();
-  }, [plantId]);
-
-  const energyConsumed = plant?.powerFlow.LOAD.currentPower;
-  const energyProduced = plant?.powerFlow.PV.currentPower;
-  const energyExported = plant?.powerFlow.GRID.currentPower;
+  const energyConsumed = plant?.currentPower;
+  const energyProduced = plant?.currentPower;
+  const energyExported = plant?.currentPower;
 
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">

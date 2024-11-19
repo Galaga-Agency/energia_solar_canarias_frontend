@@ -5,12 +5,13 @@ import solarPanelIllustration from "@/public/assets/img/solar-panel-illustration
 import gridIllustration from "@/public/assets/img/grid.png";
 import useDeviceType from "@/hooks/useDeviceType";
 
-const EnergyFlowDisplay = ({ plant }) => {
+const EnergyFlowDisplay = ({
+  plant,
+  energyConsumed,
+  energyProduced,
+  energyExported,
+}) => {
   const { isMobile, isTablet, isDesktop } = useDeviceType();
-
-  const energyConsumed = plant?.currentPower;
-  const energyProduced = plant?.currentPower;
-  const energyExported = plant?.currentPower;
 
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">

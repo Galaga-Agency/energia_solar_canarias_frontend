@@ -30,6 +30,7 @@ export const fetchPlantDetails = createAsyncThunk(
       plantId,
       proveedor,
     });
+
     if (!plantDetails) {
       throw new Error("Plant details not found");
     }

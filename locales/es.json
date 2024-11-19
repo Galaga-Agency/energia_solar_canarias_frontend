@@ -342,5 +342,8 @@
   "totalCapacitybattery": "Capacidad Total Batería",
   "totalGeneration": "Generación Total",
   "currentStatus": "Estado Actual",
-  "productionToday": "Generación hoy"
+  "productionToday": "Generación hoy",
+  "plantDataNotFound": "Datos de la planta no encontrados",
+  "totalCapacity": "Capacidad Total",
+  "batteryCapacity": "Capacidad de la batería"
 }

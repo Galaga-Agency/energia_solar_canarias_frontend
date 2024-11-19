@@ -287,16 +287,7 @@ export const fetchPlantDetailsAPI = async ({
   proveedor,
 }) => {
   try {
-    console.log("data passed api -----> ", {
-      userId,
-      token,
-      plantId,
-      proveedor,
-    });
-    console.log(
-      "url : ",
-      `${API_BASE_URL}/plants/details/${plantId}?proveedor=${proveedor}`
-    );
+    // console.log("proveedor in api call: ", proveedor);
     const response = await fetch(
       `${API_BASE_URL}/plants/details/${plantId}?proveedor=${proveedor}`,
       {
@@ -305,28 +296,19 @@ export const fetchPlantDetailsAPI = async ({
           "Content-Type": "application/json",
           usuario: USUARIO,
           apiKey: API_KEY,
-          proveedor: proveedor,
           Authorization: `Bearer ${token}`,
         },
       }
     );
 
     if (!response.ok) {
-      console.log(
-        "url : ",
-        `${API_BASE_URL}/plants/details/${plantId}?proveedor=${proveedor}`
-      );
-      throw new Error(`Error fetching plant details: ${response.statusText}`);
+      throw new Error(`API Error: ${response.statusText}`);
     }
 
-    const plantDetails = await response.json();
-
-    // console.log("Plant details returned: ", plantDetails);
-
-    return plantDetails.data[0];
+    const responseData = await response.json();
+    return responseData?.data?.data;
   } catch (error) {
-    console.log("proveedor passed api : ", proveedor);
-    console.error("Error fetching plant details:", error);
+    console.error("Error in fetchPlantDetailsAPI:", error);
     throw error;
   }
 };

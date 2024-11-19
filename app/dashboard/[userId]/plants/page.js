@@ -58,16 +58,13 @@ const ClientDashboardPage = ({ params }) => {
     startIndex + plantsPerPage
   );
 
-  // Handle filter changes from sidebar
   const handleFilterChange = (filteredResults) => {
     setFilteredPlants(filteredResults);
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
-  // Handle search input changes
   const handleSearchChange = (value) => {
     setSearchTerm(value);
-    // Pass the search term to the sidebar component
     sidebarRef.current?.updateSearch(value);
   };
 
@@ -82,7 +79,6 @@ const ClientDashboardPage = ({ params }) => {
     }
   }, [user, router, dispatch]);
 
-  // Set initial filtered plants when plants are loaded
   useEffect(() => {
     setFilteredPlants(plants);
   }, [plants]);

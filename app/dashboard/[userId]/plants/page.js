@@ -8,6 +8,7 @@ import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
 import { selectUser } from "@/store/slices/userSlice";
 import {
+  clearPlantDetails,
   fetchPlants,
   selectLoading,
   selectPlants,
@@ -76,10 +77,12 @@ const ClientDashboardPage = ({ params }) => {
       dispatch(
         fetchPlants({ userId: user.id, token: user.tokenIdentificador })
       );
+      dispatch(clearPlantDetails());
     }
   }, [user, router, dispatch]);
 
   useEffect(() => {
+    dispatch(clearPlantDetails());
     setFilteredPlants(plants);
   }, [plants]);
 

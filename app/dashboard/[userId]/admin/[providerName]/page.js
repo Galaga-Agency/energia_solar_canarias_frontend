@@ -8,6 +8,7 @@ import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
 import { selectUser } from "@/store/slices/userSlice";
 import {
+  clearPlantDetails,
   fetchPlantsByProvider,
   selectLoading,
   selectPlants,
@@ -55,32 +56,52 @@ const ProviderPage = () => {
   );
   const router = useRouter();
   const params = useParams();
-  const providerName = decodeURIComponent(params?.providerName);
+  const providerPassed = params?.providerName.toLowerCase();
   const provider = providers.find(
-    (p) => p.name.toLowerCase() === providerName?.toLowerCase()
+    (p) => p.name.toLowerCase() === providerPassed
   );
 
   useEffect(() => {
-    if (!user?.id) {
-      router.push("/");
-    } else if (provider) {
-      setIsInitialLoad(true);
+    if (!user?.id || !providerPassed || !provider) {
+      console.error("Missing necessary parameters to dispatch.");
+      console.log("User:", user);
+      console.log("Provider Name:", providerPassed);
+      console.log("Provider Object:", provider);
+      return;
+    }
+
+    if (isInitialLoad) {
+      console.log("Dispatching fetchPlantsByProvider with:", {
+        userId: user.id,
+        token: user.tokenIdentificador,
+        provider: providerPassed,
+      });
+
       dispatch(
         fetchPlantsByProvider({
           userId: user.id,
           token: user.tokenIdentificador,
-          providerName: provider.name,
+          provider: providerPassed,
         })
       );
+      dispatch(clearPlantDetails());
+      setIsInitialLoad(false);
     }
-  }, [user, router, dispatch, provider]);
+  }, [user, providerPassed, provider, isInitialLoad, dispatch]);
 
   useEffect(() => {
     if (!loading && plants.length > 0 && provider) {
-      const providerPlants = plants.filter(
-        (plant) =>
-          plant.organization.toLowerCase() === provider.name.toLowerCase()
-      );
+      console.log("Fetched Plants List:", plants);
+    }
+  }, [plants, loading, provider]);
+
+  useEffect(() => {
+    if (!loading && plants.length > 0 && provider) {
+      const providerPlants = plants.filter((plant) => {
+        console.log("Checking plant organization:", plant.organization);
+        return plant.organization.toLowerCase() === providerPassed;
+      });
+
       setAllPlants(providerPlants);
       setFilteredPlants(providerPlants);
       setIsInitialLoad(false);
@@ -106,6 +127,8 @@ const ProviderPage = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  console.log("Filtered plants before rendering:", filteredPlants);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">

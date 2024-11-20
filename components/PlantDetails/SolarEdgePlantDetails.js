@@ -41,7 +41,7 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch(fetchPlantDetails);
 
-  console.log("Current Goodwe plant: ", plant);
+  console.log("Current SolarEdge plant: ", plant);
 
   const statusColors = {
     working: "bg-green-500",
@@ -104,10 +104,12 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
           />
           <div className="flex items-center gap-2">
             <div
-              className={`w-3 h-3 rounded-full ${statusColors[plant.status]}`}
+              className={`w-5 h-5 rounded-full ${
+                statusColors[plant.data.details.status]
+              }`}
             />
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow">
-              {plant?.name || ""}
+              {plant.data.details.name || ""}
             </h1>
           </div>
         </header>
@@ -122,10 +124,10 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
         </div> */}
 
         {/* Energy Flow */}
-        <EnergyFlowDisplay plant={plant} />
+        {/* <EnergyFlowDisplay plant={plant} /> */}
 
         {/* Plant Details */}
-        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
+        {/* <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
           <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
             {t("plantDetails")}
           </h2>
@@ -159,9 +161,9 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {plant.address}
               </span>
-            </div>
+            </div> */}
 
-            {/* <div className="flex items-start justify-between gap-2">
+        {/* <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <LiaBirthdayCakeSolid className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -173,7 +175,7 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
               </span>
             </div> */}
 
-            <div className="flex items-start justify-between gap-2">
+        {/* <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -197,20 +199,20 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
               </span>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Mobile Battery Status */}
-        {!isDesktop && (
+        {/* {!isDesktop && (
           <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
             <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
               {t("batteryStatus")}
             </h2>
             <BatteryIndicator batterySOC={plant.batterySOC} />
           </section>
-        )}
+        )} */}
 
         {/* Stats */}
-        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
+        {/* <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
           <h2 className="text-xl mb-4 flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
             <IoStatsChartSharp className="w-6 h-6" />
             {t("energyStatistics")}
@@ -276,7 +278,7 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
               </span>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Chart Section */}
         {/* <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm">

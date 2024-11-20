@@ -49,7 +49,6 @@ const NotificationsTab = () => {
   }, []);
 
   const handleMarkAsRead = (notificationId, plantId) => {
-    console.log("Redirecting to plantId:", plantId);
     router.push(`/dashboard/${userId}/plants/${plantId}`);
     dispatch(markNotificationAsRead(notificationId));
   };

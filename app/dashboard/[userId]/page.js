@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import Loading from "@/components/Loading";
 
@@ -9,6 +9,7 @@ export default function Dashboard() {
   const router = useRouter();
   const isAdmin = useSelector(selectIsAdmin);
   const user = useSelector(selectUser);
+  const dispatch = useDispatch();
 
   console.log("current user: ", user);
 
@@ -18,6 +19,10 @@ export default function Dashboard() {
   } else {
     router.push(`/dashboard/${user.id}/plants`);
   }
+
+  useEffect(() => {
+    dispatch(clearPlantDetails());
+  }, []);
 
   return (
     <div className="h-screen w-screen">

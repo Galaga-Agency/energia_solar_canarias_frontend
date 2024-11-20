@@ -4,8 +4,6 @@ const FilterPlantsInput = ({ onSearch, providers }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("");
 
-  console.log("provider in input: ", providers);
-
   const handleSearch = () => {
     if (searchTerm && selectedProvider) {
       onSearch(searchTerm, selectedProvider);

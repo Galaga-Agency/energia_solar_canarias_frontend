@@ -1,12 +1,11 @@
 "use client";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import { selectUser } from "@/store/slices/userSlice";
 import {
-  fetchPlantDetails,
-  selectLoadingDetails,
   selectDetailsError,
+  selectLoadingAny,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import PageTransition from "@/components/PageTransition";
@@ -28,17 +27,15 @@ import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import { BatteryCharging, Building2, Tag } from "lucide-react";
 import useDeviceType from "@/hooks/useDeviceType";
 import { RiBattery2ChargeLine } from "react-icons/ri";
+import Loading from "../Loading";
 
 const GoodwePlantDetails = ({ plant, handleRefresh }) => {
   const { isMobile, isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
   const user = useSelector(selectUser);
-  const isLoading = useSelector(selectLoadingDetails);
+  const isLoading = useSelector(selectLoadingAny);
   const error = useSelector(selectDetailsError);
   const { t } = useTranslation();
-  const dispatch = useDispatch(fetchPlantDetails);
-
-  console.log("Current Goodwe plant: ", plant);
 
   const statusColors = {
     working: "bg-green-500",
@@ -47,7 +44,11 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
     disconnected: "bg-gray-500",
   };
 
-  if (error || !plant) {
+  console.log("Current Goodwe plant: ", plant);
+
+  const goodwePlant = plant?.data.data;
+
+  if (error) {
     return (
       <PageTransition>
         <div
@@ -104,7 +105,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
               className={`w-3 h-3 rounded-full ${statusColors[plant.status]}`}
             />
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow">
-              {plant.info.stationname || ""}
+              {goodwePlant?.info?.stationname || ""}
             </h1>
           </div>
         </header>
@@ -121,9 +122,9 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
         {/* Energy Flow */}
         <EnergyFlowDisplay
           plant={plant}
-          energyConsumed={plant.info.capacity}
-          energyProduced={plant.pac}
-          energyExported={plant.kpi.pac}
+          energyConsumed={goodwePlant?.info?.capacity}
+          energyProduced={goodwePlant?.pac}
+          energyExported={goodwePlant?.kpi?.pac}
         />
 
         {/* Plant Details */}
@@ -142,11 +143,11 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
               <div className="flex items-center gap-2">
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    statusColors[plant.status]
+                    statusColors[goodwePlant?.status]
                   }`}
                 />
                 <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                  {t(`status.${plant.info.status}`)}
+                  {t(`status.${goodwePlant?.info?.status}`)}
                 </span>
               </div>
             </div>
@@ -159,11 +160,11 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {plant.info.address}
+                {goodwePlant?.info?.address}
               </span>
             </div>
 
-            {/* <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <LiaBirthdayCakeSolid className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -171,9 +172,9 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {plant.installationDate || "N/A"}
+                {goodwePlant?.installationDate || "N/A"}
               </span>
-            </div> */}
+            </div>
 
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -183,7 +184,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {plant.info.org_name}
+                {goodwePlant?.info?.org_name}
               </span>
             </div>
 
@@ -199,7 +200,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
-                }).format(new Date(plant.info.create_time))}
+                }).format(new Date(goodwePlant.info.create_time))}
               </span>
             </div>
 
@@ -211,21 +212,21 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {t(`type_${plant.info.powerstation_type}`)}
+                {t(`type_${goodwePlant?.info?.powerstation_type}`)}
               </span>
             </div>
           </div>
         </section>
 
         {/* Mobile Battery Status */}
-        {!isDesktop && (
+        {/* {!isDesktop && (
           <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
             <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
               {t("batteryStatus")}
             </h2>
             <BatteryIndicator batterySOC={plant.batterySOC} />
           </section>
-        )}
+        )} */}
 
         {/* Stats */}
         <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
@@ -241,7 +242,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.kpi.pac || 0} kW`}
+                {`${goodwePlant?.kpi?.pac || 0} kW`}
               </span>
             </div>
 
@@ -253,7 +254,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.info.capacity} kW`}
+                {`${goodwePlant?.info?.capacity} kW`}
               </span>
             </div>
 
@@ -265,11 +266,11 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.info.battery_capacity} kW`}
+                {`${goodwePlant?.info?.battery_capacity} kW`}
               </span>
             </div>
 
-            {/*  <div className="flex items-start justify-between gap-2">
+            {/* <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <BsGraphUpArrow className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -289,7 +290,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.kpi.month_generation || 0} kW`}
+                {`${goodwePlant?.kpi?.month_generation || 0} kW`}
               </span>
             </div>
 
@@ -301,7 +302,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.kpi.total_power || 0} kW`}
+                {`${goodwePlant?.kpi?.total_power || 0} kW`}
               </span>
             </div>
           </div>

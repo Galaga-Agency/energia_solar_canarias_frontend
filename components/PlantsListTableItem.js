@@ -20,8 +20,12 @@ const PlantsListTableItem = ({ plant }) => {
   const { isMobile } = useDeviceType();
 
   const handleRowClick = () => {
-    router.push(`/dashboard/${userId}/plants/${plant.id}`);
+    const plantId = plant.id.toString();
+    const provider = plant.organization?.toLowerCase();
+    router.push(`/dashboard/${userId}/plants/${plantId}`);
   };
+
+  const idPassed = plant.id.toString();
 
   return (
     <div className="overflow-x-auto">

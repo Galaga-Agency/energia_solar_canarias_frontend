@@ -54,11 +54,9 @@ const AdminDashboard = () => {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredPlants, setFilteredPlants] = useState([]);
-  const isLoading = useSelector(selectLoading);
-
+  const { isMobile } = useDeviceType();
   const plantsPerPage = 12;
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
-  const { isMobile } = useDeviceType();
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = filteredPlants.slice(
     startIndex,
@@ -67,10 +65,7 @@ const AdminDashboard = () => {
   const { sortedItems, sortItems } = usePlantSort(plants);
 
   useEffect(() => {
-    if (!user?.id) {
-      router.push("/");
-    } else {
-      setIsInitialLoad(true);
+    if (user?.id && user?.tokenIdentificador && isInitialLoad) {
       dispatch(
         fetchPlants({
           userId: user.id,
@@ -79,13 +74,13 @@ const AdminDashboard = () => {
           pageSize: plantsPerPage,
         })
       );
+      setIsInitialLoad(false);
     }
-  }, [user, router, dispatch, currentPage]);
+  }, [user, dispatch, currentPage, isInitialLoad, plantsPerPage]);
 
   useEffect(() => {
     if (!loading && plants.length > 0) {
       setFilteredPlants(plants);
-      setIsInitialLoad(false);
     }
   }, [plants, loading]);
 
@@ -102,26 +97,31 @@ const AdminDashboard = () => {
   };
 
   const handleProviderClick = (provider) => {
-    setSelectedProvider(provider);
+    const normalizedProviderName = provider.name?.toLowerCase() || "";
+    setSelectedProvider(normalizedProviderName);
+
     dispatch(
       fetchPlantsByProvider({
         userId: user.id,
         token: user.tokenIdentificador,
-        provider,
+        provider: normalizedProviderName,
       })
     );
-    router.push(`/dashboard/${user.id}/admin/${provider.name.toLowerCase()}`);
+
+    router.push(`/dashboard/${user.id}/admin/${normalizedProviderName}`);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    dispatch(
-      fetchPlants({
-        userId: user.id,
-        token: user.tokenIdentificador,
-        provider: selectedProvider,
-      })
-    );
+    if (selectedProvider) {
+      dispatch(
+        fetchPlantsByProvider({
+          userId: user.id,
+          token: user.tokenIdentificador,
+          provider: selectedProvider,
+        })
+      );
+    }
   };
 
   const handleSortChange = (criteria, order) => {
@@ -144,15 +144,9 @@ const AdminDashboard = () => {
             alt="Company Icon"
             className="w-12 h-12 mr-2 z-10"
           />
-          {view === "providers" ? (
-            <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
-              {t("selectProvider")}
-            </h2>
-          ) : (
-            <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
-              {t("selectPlant")}
-            </h2>
-          )}
+          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
+            {view === "providers" ? t("selectProvider") : t("selectPlant")}
+          </h2>
         </div>
 
         <AddPlantForm
@@ -198,9 +192,7 @@ const AdminDashboard = () => {
 
                 <div className="flex flex-col md:flex-row md:justify-between z-30">
                   <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
-                    <div className="flex-grow">
-                      <SortMenu onSortChange={handleSortChange} />
-                    </div>
+                    <SortMenu onSortChange={handleSortChange} />
                     <button
                       onClick={() => setIsMapOpen(true)}
                       className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex items-center justify-center button-shadow"
@@ -211,14 +203,20 @@ const AdminDashboard = () => {
                   <PlantStatuses />
                 </div>
 
-                {isLoading || isModalOpen ? (
+                {loading || isModalOpen ? (
                   <div className="py-8">
                     <PlantListSkeleton theme={theme} rows={plantsPerPage} />
                   </div>
                 ) : paginatedPlants.length > 0 ? (
                   <div className="py-8">
                     {paginatedPlants.map((plant) => (
-                      <PlantsListTableItem key={plant.id} plant={plant} />
+                      <PlantsListTableItem
+                        key={plant.id}
+                        plant={{
+                          ...plant,
+                          id: plant.id?.toString(),
+                        }}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -257,11 +255,11 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
+      <BottomNavbar userId={user?.id} userClass={user?.clase} />
 
       <InfoModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         onConfirm={closeModal}
         title={t("loadingPlants")}
         message={t("loadingPlantsMessage")}

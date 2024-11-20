@@ -41,7 +41,9 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch(fetchPlantDetails);
 
-  console.log("Current SolarEdge plant: ", plant);
+  useEffect(() => {
+    console.log("Current SolarEdge plant: ", plant);
+  }, [plant]);
 
   const statusColors = {
     working: "bg-green-500",
@@ -49,6 +51,8 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
     waiting: "bg-yellow-500",
     disconnected: "bg-gray-500",
   };
+
+  const solaredgePlant = plant?.data.details;
 
   if (error || !plant) {
     return (
@@ -95,7 +99,6 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
         }`}
       >
         <Texture />
-
         {/* Header */}
         <header className="flex justify-between items-center mb-6">
           <IoArrowBackCircle
@@ -105,15 +108,14 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
           <div className="flex items-center gap-2">
             <div
               className={`w-5 h-5 rounded-full ${
-                statusColors[plant.data.details.status]
+                statusColors[solaredgePlant.status]
               }`}
             />
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow">
-              {plant.data.details.name || ""}
+              {solaredgePlant.name || ""}
             </h1>
           </div>
         </header>
-
         {/* Weather Section */}
         {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <WeatherWidget
@@ -122,12 +124,10 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
             theme={theme}
           />
         </div> */}
-
         {/* Energy Flow */}
         {/* <EnergyFlowDisplay plant={plant} /> */}
-
         {/* Plant Details */}
-        {/* <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
           <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
             {t("plantDetails")}
           </h2>
@@ -142,11 +142,11 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
               <div className="flex items-center gap-2">
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    statusColors[plant.status]
+                    statusColors[solaredgePlant.status]
                   }`}
                 />
                 <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                  {t(`status.${plant.status}`)}
+                  {t(`status.${solaredgePlant.status}`)}
                 </span>
               </div>
             </div>
@@ -159,11 +159,13 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {plant.address}
+                {solaredgePlant.location.address},{" "}
+                {solaredgePlant.location.city},{" "}
+                {solaredgePlant.location.country}
               </span>
-            </div> */}
+            </div>
 
-        {/* <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <LiaBirthdayCakeSolid className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -171,11 +173,10 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {plant.installationDate || "N/A"}
+                {solaredgePlant.installationDate || "N/A"}
               </span>
-            </div> */}
-
-        {/* <div className="flex items-start justify-between gap-2">
+            </div>
+            <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -183,7 +184,8 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {plant.organization}
+                {solaredgePlant.organization.charAt(0).toUpperCase() +
+                  solaredgePlant.organization.slice(1)}
               </span>
             </div>
 
@@ -195,12 +197,11 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {t(`type_${plant.type}`)}
+                {t(`type_${solaredgePlant.type}`)}
               </span>
             </div>
           </div>
-        </section> */}
-
+        </section>
         {/* Mobile Battery Status */}
         {/* {!isDesktop && (
           <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
@@ -210,15 +211,13 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
             <BatteryIndicator batterySOC={plant.batterySOC} />
           </section>
         )} */}
-
         {/* Stats */}
-        {/* <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
           <h2 className="text-xl mb-4 flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-            <IoStatsChartSharp className="w-6 h-6" />
             {t("energyStatistics")}
           </h2>
           <div className="space-y-4">
-            <div className="flex items-start justify-between gap-2">
+            {/* <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <IoFlashSharp className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -226,11 +225,11 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.current_power || 0} kW`}
+                {`${solaredgePlant.current_power || 0} kW`}
               </span>
-            </div>
+            </div> */}
 
-            <div className="flex items-start justify-between gap-2">
+            {/* <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <PiSolarPanelFill className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -238,9 +237,9 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.capacity} kW`}
+                {`${solaredgePlant.capacity} kW`}
               </span>
-            </div>
+            </div> */}
 
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -250,11 +249,11 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
                 </strong>
               </div>
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.highest_impact || "N/A"} kW`}
+                {`${solaredgePlant.peakPower || "N/A"} kW`}
               </span>
             </div>
 
-            <div className="flex items-start justify-between gap-2">
+            {/* <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <BsCalendarMonth className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -264,9 +263,9 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {`${plant.monthly_energy || "N/A"} kW`}
               </span>
-            </div>
+            </div> */}
 
-            <div className="flex items-start justify-between gap-2">
+            {/* <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <IoSpeedometerOutline className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                 <strong className="text-lg dark:text-custom-light-gray">
@@ -276,9 +275,9 @@ const SolarEdgePlantDetails = ({ plant, handleRefresh }) => {
               <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {`${plant.total_energy || "N/A"} kW`}
               </span>
-            </div>
+            </div> */}
           </div>
-        </section> */}
+        </section>
 
         {/* Chart Section */}
         {/* <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm">

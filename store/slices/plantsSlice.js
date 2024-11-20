@@ -13,7 +13,6 @@ import {
 export const fetchPlants = createAsyncThunk(
   "plants/fetchPlants",
   async ({ userId, token, page = 1, pageSize = 20 }) => {
-    console.log("Fetching all plants with:", { userId, token, page, pageSize });
     const plantsData = await fetchAllPlantsAPI({
       userId,
       token,
@@ -23,7 +22,6 @@ export const fetchPlants = createAsyncThunk(
     if (!plantsData || plantsData.length === 0) {
       throw new Error("No plants found");
     }
-    console.log("Plants data received:", plantsData);
     return plantsData;
   }
 );
@@ -31,7 +29,6 @@ export const fetchPlants = createAsyncThunk(
 export const fetchPlantDetails = createAsyncThunk(
   "plants/fetchPlantDetails",
   async ({ userId, token, plantId, provider }) => {
-    console.log("Fetching plant details with:", { userId, plantId, provider });
     const plantDetails = await fetchPlantDetailsAPI({
       userId,
       token,
@@ -42,7 +39,6 @@ export const fetchPlantDetails = createAsyncThunk(
     if (!plantDetails) {
       throw new Error("Plant details not found");
     }
-    console.log("Plant details received:", plantDetails);
     return plantDetails;
   }
 );
@@ -50,7 +46,6 @@ export const fetchPlantDetails = createAsyncThunk(
 export const fetchPlantsByProvider = createAsyncThunk(
   "plants/fetchPlantsByProvider",
   async ({ userId, token, provider }) => {
-    console.log("Fetching plants by provider:", { userId, provider });
     const plantsData = await fetchPlantsByProviderAPI({
       userId,
       token,
@@ -63,7 +58,6 @@ export const fetchPlantsByProvider = createAsyncThunk(
 
     // Transform the data if needed
     const transformedData = plantsData.data || plantsData;
-    console.log("Provider plants received:", transformedData);
     return transformedData;
   }
 );
@@ -107,7 +101,6 @@ const plantsSlice = createSlice({
         state.plants = action.payload || [];
         state.error = null;
         state.lastUpdated = new Date().toISOString();
-        console.log("Plants stored in state:", state.plants);
       })
       .addCase(fetchPlants.rejected, (state, action) => {
         state.loading = false;
@@ -126,7 +119,6 @@ const plantsSlice = createSlice({
         state.plantDetails = action.payload;
         state.detailsError = null;
         state.lastUpdated = new Date().toISOString();
-        console.log("Plant details stored in state:", state.plantDetails);
       })
       .addCase(fetchPlantDetails.rejected, (state, action) => {
         state.loadingDetails = false;
@@ -145,7 +137,6 @@ const plantsSlice = createSlice({
         state.plants = Array.isArray(action.payload) ? action.payload : [];
         state.error = null;
         state.lastUpdated = new Date().toISOString();
-        console.log("Provider plants stored in state:", state.plants);
       })
       .addCase(fetchPlantsByProvider.rejected, (state, action) => {
         state.loading = false;

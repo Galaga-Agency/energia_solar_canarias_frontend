@@ -9,7 +9,6 @@ import {
   selectLoadingDetails,
   selectPlantDetails,
   selectPlants,
-  selectLoadingAny,
   selectDetailsError,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
@@ -34,38 +33,28 @@ const PlantDetailsPage = ({ params }) => {
   const detailsError = useSelector(selectDetailsError);
   const { t } = useTranslation();
 
-  // Clear only on unmount
   useEffect(() => {
     return () => dispatch(clearPlantDetails());
   }, [dispatch]);
 
   const normalizedPlantId = plantId?.toString();
 
-  console.log("Normalized Plant ID:", normalizedPlantId);
-
   const currentPlant = plantsList?.find(
     (plant) => plant?.id?.toString() === normalizedPlantId
   );
 
-  console.log("Current Plant:", currentPlant);
-
-  // Determine provider from various sources
   const determineProvider = () => {
-    // First check URL path
     const pathParts = window.location.pathname.toLowerCase().split("/");
     const providerInPath = pathParts.find((part) =>
       ["solaredge", "goodwe"].includes(part)
     );
 
     if (providerInPath) {
-      console.log("Provider from URL:", providerInPath);
       return providerInPath;
     }
 
-    // Then check current plant
     if (currentPlant?.organization) {
       const provider = currentPlant.organization.toLowerCase();
-      console.log("Provider from current plant:", provider);
       return provider;
     }
 
@@ -99,19 +88,12 @@ const PlantDetailsPage = ({ params }) => {
     );
   };
 
-  // Fetch details when needed
   useEffect(() => {
-    // Only fetch if we have the necessary data and aren't already loading
     if (
       !isLoadingDetails &&
       provider !== "unknown" &&
       (!detailedPlant || detailedPlant.id?.toString() !== normalizedPlantId)
     ) {
-      console.log("Fetching plant details:", {
-        plantId: normalizedPlantId,
-        provider,
-        currentPlant,
-      });
       handleRefresh();
     }
   }, [normalizedPlantId, provider, detailedPlant, isLoadingDetails]);
@@ -143,7 +125,6 @@ const PlantDetailsPage = ({ params }) => {
 
   const renderContent = () => {
     if (isLoadingDetails && !detailedPlant) {
-      console.log("Showing loading state");
       return (
         <div className="h-screen w-screen">
           <Loading />
@@ -152,13 +133,10 @@ const PlantDetailsPage = ({ params }) => {
     }
 
     if (detailsError) {
-      console.log("Showing error state:", detailsError);
       return renderError();
     }
 
     if (detailedPlant) {
-      console.log("Rendering plant details for provider:", provider);
-
       switch (provider) {
         case "goodwe":
           return (

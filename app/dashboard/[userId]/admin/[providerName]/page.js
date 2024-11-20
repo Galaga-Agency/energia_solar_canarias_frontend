@@ -62,21 +62,7 @@ const ProviderPage = () => {
   );
 
   useEffect(() => {
-    if (!user?.id || !providerPassed || !provider) {
-      console.error("Missing necessary parameters to dispatch.");
-      console.log("User:", user);
-      console.log("Provider Name:", providerPassed);
-      console.log("Provider Object:", provider);
-      return;
-    }
-
     if (isInitialLoad) {
-      console.log("Dispatching fetchPlantsByProvider with:", {
-        userId: user.id,
-        token: user.tokenIdentificador,
-        provider: providerPassed,
-      });
-
       dispatch(
         fetchPlantsByProvider({
           userId: user.id,
@@ -91,14 +77,7 @@ const ProviderPage = () => {
 
   useEffect(() => {
     if (!loading && plants.length > 0 && provider) {
-      console.log("Fetched Plants List:", plants);
-    }
-  }, [plants, loading, provider]);
-
-  useEffect(() => {
-    if (!loading && plants.length > 0 && provider) {
       const providerPlants = plants.filter((plant) => {
-        console.log("Checking plant organization:", plant.organization);
         return plant.organization.toLowerCase() === providerPassed;
       });
 
@@ -127,8 +106,6 @@ const ProviderPage = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  console.log("Filtered plants before rendering:", filteredPlants);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">

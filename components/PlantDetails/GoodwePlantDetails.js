@@ -1,18 +1,6 @@
-"use client";
-
+import React from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
-import { selectUser } from "@/store/slices/userSlice";
-import {
-  selectDetailsError,
-  selectLoadingAny,
-} from "@/store/slices/plantsSlice";
-import { selectTheme } from "@/store/slices/themeSlice";
-import PageTransition from "@/components/PageTransition";
-import Texture from "@/components/Texture";
-import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
-import WeatherWidget from "@/components/WeatherWidget";
-import BatteryIndicator from "@/components/BatteryIndicator";
 import {
   IoArrowBackCircle,
   IoLocationOutline,
@@ -24,15 +12,33 @@ import { BsCalendarMonth } from "react-icons/bs";
 import { BiRefresh } from "react-icons/bi";
 import { HiOutlineStatusOnline } from "react-icons/hi";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
-import { BatteryCharging, Building2, Tag } from "lucide-react";
-import useDeviceType from "@/hooks/useDeviceType";
+import {
+  Building2,
+  Tag,
+  Wallet,
+  PiggyBank,
+  BarChart2,
+  Info,
+} from "lucide-react";
 import { RiBattery2ChargeLine } from "react-icons/ri";
-import Loading from "../Loading";
+import PageTransition from "@/components/PageTransition";
+import Texture from "@/components/Texture";
+import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
+import DetailRow from "@/components/DetailRow";
+import {
+  selectDetailsError,
+  selectLoadingAny,
+} from "@/store/slices/plantsSlice";
+import { selectTheme } from "@/store/slices/themeSlice";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/Tooltip";
 
 const GoodwePlantDetails = ({ plant, handleRefresh }) => {
-  const { isMobile, isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
-  const user = useSelector(selectUser);
   const isLoading = useSelector(selectLoadingAny);
   const error = useSelector(selectDetailsError);
   const { t } = useTranslation();
@@ -44,9 +50,26 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
     disconnected: "bg-gray-500",
   };
 
-  console.log("Current Goodwe plant: ", plant);
+  const getYieldColor = (yieldRate) => {
+    if (!yieldRate) return "text-gray-500";
+    const percentage = yieldRate * 100;
+    if (percentage >= 80) return "text-green-500";
+    if (percentage >= 70) return "text-emerald-400";
+    if (percentage >= 60) return "text-yellow-500";
+    if (percentage >= 50) return "text-orange-500";
+    return "text-red-500";
+  };
 
-  const goodwePlant = plant?.data.data;
+  const getYieldIcon = (yieldRate) => {
+    const percentage = yieldRate * 100;
+    if (percentage >= 70) return "🌟";
+    if (percentage >= 50) return "⚡";
+    return "⚠️";
+  };
+
+  const goodwePlant = plant?.data?.data || {};
+
+  console.log("My Goodwe Plant: ", goodwePlant);
 
   if (error) {
     return (
@@ -102,29 +125,22 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
           />
           <div className="flex items-center gap-2">
             <div
-              className={`w-3 h-3 rounded-full ${statusColors[plant.status]}`}
+              className={`w-5 h-5 rounded-full mt-1 ${
+                statusColors[goodwePlant?.info.status] || "bg-gray-500"
+              }`}
             />
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow">
-              {goodwePlant?.info?.stationname || ""}
+              {goodwePlant?.info?.stationname || t("unknownPlant")}
             </h1>
           </div>
         </header>
 
-        {/* Weather Section */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <WeatherWidget
-            weatherData={weatherData}
-            batterySOC={plant.batterySOC}
-            theme={theme}
-          />
-        </div> */}
-
         {/* Energy Flow */}
         <EnergyFlowDisplay
           plant={plant}
-          energyConsumed={goodwePlant?.info?.capacity}
-          energyProduced={goodwePlant?.pac}
-          energyExported={goodwePlant?.kpi?.pac}
+          energyConsumed={goodwePlant?.info?.capacity || 0}
+          energyProduced={goodwePlant?.pac || 0}
+          energyExported={goodwePlant.kpi?.pac || 0}
         />
 
         {/* Plant Details */}
@@ -133,188 +149,185 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
             {t("plantDetails")}
           </h2>
           <div className="space-y-4">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
+            <DetailRow
+              icon={
                 <HiOutlineStatusOnline className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("currentStatus")}
-                </strong>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    statusColors[goodwePlant?.status]
-                  }`}
-                />
-                <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                  {t(`status.${goodwePlant?.info?.status}`)}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <IoLocationOutline className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("location")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {goodwePlant?.info?.address}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <LiaBirthdayCakeSolid className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("installationDate")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {goodwePlant?.installationDate || "N/A"}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
+              }
+              label={t("currentStatus")}
+              value={
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="flex items-center gap-2">
+                        <Info
+                          className={`h-4 w-4 ${statusColors[
+                            goodwePlant?.info?.status
+                          ]?.replace("bg-", "text-")} cursor-help mt-1`}
+                        />
+                        <span
+                          className={`${statusColors[
+                            goodwePlant?.info?.status
+                          ]?.replace("bg-", "text-")} cursor-help`}
+                        >
+                          {t(
+                            `status.${goodwePlant?.info?.status || "unknown"}`
+                          )}
+                        </span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="right"
+                      className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
+                    >
+                      <p className="font-medium">
+                        {goodwePlant?.info?.status === "working" &&
+                          t("statusDescriptions.working")}
+                        {goodwePlant?.info?.status === "waiting" &&
+                          t("statusDescriptions.waiting")}
+                        {goodwePlant?.info?.status === "disconnected" &&
+                          t("statusDescriptions.disconnected")}
+                        {goodwePlant?.info?.status === "error" &&
+                          t("statusDescriptions.error")}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              }
+            />
+            <DetailRow
+              icon={IoLocationOutline}
+              label={t("location")}
+              value={goodwePlant?.info?.address || t("unknownLocation")}
+            />
+            <DetailRow
+              icon={LiaBirthdayCakeSolid}
+              label={t("installationDate")}
+              value={
+                goodwePlant?.info?.create_time
+                  ? new Intl.DateTimeFormat("es-ES", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    }).format(new Date(goodwePlant.info.create_time))
+                  : t("unknownDate")
+              }
+            />
+            <DetailRow
+              icon={
                 <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("poweredBy")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {goodwePlant?.info?.org_name}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <LiaBirthdayCakeSolid className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("installationDate")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {new Intl.DateTimeFormat("es-ES", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                }).format(new Date(goodwePlant.info.create_time))}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
+              }
+              label={t("poweredBy")}
+              value={goodwePlant?.info?.org_name || t("unknownProvider")}
+              tooltip={t("poweredByTooltip")}
+            />
+            <DetailRow
+              icon={
                 <Tag className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("typeOfPlant")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {t(`type_${goodwePlant?.info?.powerstation_type}`)}
-              </span>
-            </div>
+              }
+              label={t("typeOfPlant")}
+              value={t(
+                `type_${goodwePlant?.info?.powerstation_type || "unknown"}`
+              )}
+              tooltip={t("typeTooltip")}
+            />
           </div>
         </section>
 
-        {/* Mobile Battery Status */}
-        {/* {!isDesktop && (
-          <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
-            <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
-              {t("batteryStatus")}
-            </h2>
-            <BatteryIndicator batterySOC={plant.batterySOC} />
-          </section>
-        )} */}
-
-        {/* Stats */}
+        {/* Energetic Statistics */}
         <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
           <h2 className="text-xl mb-4 flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
             {t("energyStatistics")}
           </h2>
           <div className="space-y-4">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <IoFlashSharp className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("currentPower")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${goodwePlant?.kpi?.pac || 0} kW`}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <PiSolarPanelFill className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("totalCapacity")} FV
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${goodwePlant?.info?.capacity} kW`}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2 ">
-                <RiBattery2ChargeLine className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("batteryCapacity")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${goodwePlant?.info?.battery_capacity} kW`}
-              </span>
-            </div>
-
-            {/* <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <BsGraphUpArrow className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("peakPower")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${plant.highest_impact || "N/A"} kW`}
-              </span>
-            </div> */}
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
+            <DetailRow
+              icon={IoFlashSharp}
+              label={t("currentPower")}
+              value={`${goodwePlant?.kpi?.pac || 0} kW`}
+              tooltip={t("currentPowerTooltip")}
+            />
+            <DetailRow
+              icon={PiSolarPanelFill}
+              label={t("totalCapacity")}
+              value={`${goodwePlant?.info?.capacity || 0} kW`}
+              tooltip={t("totalCapacityTooltip")}
+            />
+            <DetailRow
+              icon={RiBattery2ChargeLine}
+              label={t("batteryCapacity")}
+              value={`${goodwePlant?.info?.battery_capacity || 0} kW`}
+              tooltip={t("batteryCapacityTooltip")}
+            />
+            <DetailRow
+              icon={
                 <BsCalendarMonth className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("monthlyGeneration")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${goodwePlant?.kpi?.month_generation || 0} kW`}
-              </span>
-            </div>
-
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <IoSpeedometerOutline className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
-                <strong className="text-lg dark:text-custom-light-gray">
-                  {t("totalGeneration")}
-                </strong>
-              </div>
-              <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {`${goodwePlant?.kpi?.total_power || 0} kW`}
-              </span>
-            </div>
+              }
+              label={t("monthlyGeneration")}
+              value={`${goodwePlant?.kpi?.month_generation || 0} kW`}
+              tooltip={t("monthlyGenerationTooltip")}
+            />
+            <DetailRow
+              icon={IoSpeedometerOutline}
+              label={t("totalGeneration")}
+              value={`${goodwePlant?.kpi?.total_power || 0} kW`}
+              tooltip={t("totalGenerationTooltip")}
+            />
           </div>
         </section>
 
-        {/* Chart Section */}
-        {/* <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm">
+        {/* Performance Metrics */}
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
           <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
-            {t("powerTimeSeries")}
+            {t("performanceMetrics")}
           </h2>
-          <div id="powerChart"></div>
-        </section> */}
+          <div className="space-y-4">
+            {/* Monthly Income */}
+            <DetailRow
+              icon={
+                <Wallet className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
+              }
+              label={t("monthlyIncome")}
+              value={`${goodwePlant?.kpi?.day_income || 0} ${
+                goodwePlant?.kpi?.currency
+              }`}
+              tooltip={t("monthlyIncomeTooltip")}
+            />
+
+            {/* Total Income */}
+            <DetailRow
+              icon={
+                <PiggyBank className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
+              }
+              label={t("totalIncome")}
+              value={`${goodwePlant?.kpi?.total_income || 0} ${
+                goodwePlant?.kpi?.currency
+              }`}
+              tooltip={t("totalIncomeTooltip")}
+            />
+
+            {/* Performance Ratio */}
+            <DetailRow
+              icon={
+                <BarChart2 className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+              }
+              label={t("performanceRatio")}
+              value={
+                <div className="flex items-center gap-1">
+                  <span
+                    className={`text-lg font-semibold ${getYieldColor(
+                      goodwePlant?.kpi?.yield_rate
+                    )}`}
+                  >
+                    {`${((goodwePlant?.kpi?.yield_rate || 0) * 100).toFixed(
+                      1
+                    )}%`}
+                  </span>
+                  <span>{getYieldIcon(goodwePlant?.kpi?.yield_rate)}</span>
+                </div>
+              }
+              tooltip={t("performanceRatioTooltip")}
+            />
+          </div>
+        </section>
       </div>
     </PageTransition>
   );

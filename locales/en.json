@@ -386,5 +386,6 @@
   "energy": "Energy",
   "income": "Income",
   "selfUse": "Self Use",
-  "selfUseRatio": "Self Use Ratio"
+  "selfUseRatio": "Self Use Ratio",
+  "NoData": "No data "
 }

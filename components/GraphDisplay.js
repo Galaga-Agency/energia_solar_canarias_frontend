@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   LineChart,
   Line,
@@ -10,90 +11,88 @@ import {
   Legend,
   Bar,
   ComposedChart,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import { BiRefresh } from "react-icons/bi";
 import Loading from "./Loading";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
-import { clearGraphData } from "@/store/slices/plantsSlice";
+import {
+  fetchGoodweGraphData,
+  selectGraphData,
+  selectGraphLoading,
+  selectGraphError,
+  clearGraphData,
+} from "@/store/slices/plantsSlice";
+import { selectUser } from "@/store/slices/userSlice";
 
-const GraphDisplay = ({
-  data,
-  title,
-  range,
-  setRange,
-  chartIndexId,
-  setChartIndexId,
-  isLoading,
-  onRefresh,
-}) => {
+const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];
+
+const GraphDisplay = ({ plantId, title }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const [range, setRange] = useState("dia");
+  const [chartIndexId, setChartIndexId] = useState(
+    "generacion de energia y ingresos"
+  );
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const updateRange = (newRange) => {
-    if (range !== newRange) {
-      setRange(newRange);
-      onRefresh();
-    }
-  };
+  const graphData = useSelector(selectGraphData);
+  const isLoading = useSelector(selectGraphLoading);
+  const graphError = useSelector(selectGraphError);
+  const user = useSelector(selectUser);
 
-  const updateChartIndexId = (newChartIndex) => {
-    if (chartIndexId !== newChartIndex) {
-      setChartIndexId(newChartIndex);
-      onRefresh();
+  const currentDate = useMemo(() => new Date().toISOString().split("T")[0], []);
+
+  const handleFetchGraph = useCallback(() => {
+    if (plantId && user?.tokenIdentificador) {
+      dispatch(
+        fetchGoodweGraphData({
+          id: plantId,
+          date: currentDate,
+          range,
+          chartIndexId,
+          token: user.tokenIdentificador,
+        })
+      );
     }
-  };
+  }, [
+    dispatch,
+    plantId,
+    currentDate,
+    range,
+    chartIndexId,
+    user?.tokenIdentificador,
+  ]);
 
   useEffect(() => {
-    if (!data || data?.data?.data?.lines?.length === 0) {
-      onRefresh();
+    if (!isInitialized && plantId && user?.tokenIdentificador) {
+      setIsInitialized(true);
+      handleFetchGraph();
     }
-  }, [chartIndexId, range, onRefresh]);
+  }, [isInitialized, plantId, user?.tokenIdentificador, handleFetchGraph]);
 
-  const generateEmptyData = () => {
-    const metrics = getExpectedMetrics();
-    return Array.from({ length: 31 }, (_, i) => ({
-      date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
-      ...metrics.reduce(
-        (acc, metric) => ({
-          ...acc,
-          [metric.name]: 0,
-        }),
-        {}
-      ),
-    }));
-  };
+  useEffect(() => {
+    if (isInitialized) {
+      handleFetchGraph();
+    }
+  }, [range, chartIndexId]);
+
+  useEffect(() => {
+    return () => {
+      if (isInitialized) dispatch(clearGraphData());
+    };
+  }, [dispatch, isInitialized]);
 
   const getExpectedMetrics = () => {
     switch (chartIndexId) {
       case "estadisticas sobre energia":
         return [
-          {
-            name: "PV+BAT",
-            label: t("pvBat"),
-            color: "#03bbd6",
-            isBar: true,
-          },
-          {
-            name: "Red",
-            label: t("grid"),
-            color: "#ffa726",
-            isBar: true,
-          },
-          {
-            name: "Interno",
-            label: t("internal"),
-            color: "#4CC7B3",
-            isBar: true,
-          },
-          {
-            name: "Alimentar",
-            label: t("feed"),
-            color: "#8cc44d",
-            isBar: true,
-          },
+          { name: t("PV+BAT"), valueKey: "selfUseOfPv", color: COLORS[0] },
+          { name: t("Red"), valueKey: "consumptionOfLoad", color: COLORS[1] },
+          { name: t("Interno"), valueKey: "in_House", color: COLORS[2] },
+          { name: t("Alimentar"), valueKey: "buy", color: COLORS[3] },
         ];
       case "generacion de energia y ingresos":
         return [
@@ -137,10 +136,39 @@ const GraphDisplay = ({
     }
   };
 
-  const expectedMetrics = useMemo(() => getExpectedMetrics(), [chartIndexId]);
+  const expectedMetrics = useMemo(
+    () => getExpectedMetrics(),
+    [chartIndexId, t]
+  );
 
   const transformedData = useMemo(() => {
-    const validData = data?.data?.data;
+    if (chartIndexId === "estadisticas sobre energia") {
+      const modelData = graphData?.data?.data?.modelData || {};
+      return {
+        "Salida de CA": [
+          {
+            name: t("Interno"),
+            value: modelData["in_House"] || 0,
+            unit: "kWh",
+          },
+          { name: t("Alimentar"), value: modelData["buy"] || 0, unit: "kWh" },
+        ],
+        "Consumo de carga": [
+          {
+            name: t("PV+BAT"),
+            value: modelData["selfUseOfPv"] || 0,
+            unit: "kWh",
+          },
+          {
+            name: t("Red"),
+            value: modelData["consumptionOfLoad"] || 0,
+            unit: "kWh",
+          },
+        ],
+      };
+    }
+
+    const validData = graphData?.data?.data;
     if (!validData?.lines?.length) return [];
     return validData.lines[0].xy.map((point, index) => {
       const dataPoint = { date: point.x };
@@ -151,17 +179,93 @@ const GraphDisplay = ({
       });
       return dataPoint;
     });
-  }, [data, chartIndexId]);
+  }, [graphData, chartIndexId, t]);
+
+  const renderPieChart = (chartData, title) => {
+    const isEmpty = chartData.every(
+      (entry) => entry.value === 0 || entry.value === null
+    );
+
+    // Placeholder data for empty pie chart
+    const placeholderData = [
+      { name: t("NoData"), value: 1, color: "#d3d3d3" }, // Light grey color for "empty"
+    ];
+
+    return (
+      <div
+        key={`piechart-${title}`}
+        className="flex flex-col items-center mb-8"
+      >
+        <h2 className="text-lg font-semibold mb-2 text-custom-dark-blue dark:text-custom-yellow">
+          {title}
+        </h2>
+        <ResponsiveContainer width="50%" height={280}>
+          <PieChart>
+            <Pie
+              data={isEmpty ? placeholderData : chartData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              label={({ name, value, percent }) =>
+                isEmpty
+                  ? t("NoData")
+                  : `${name} (${(percent * 100).toFixed(1)}%)`
+              }
+            >
+              {(isEmpty ? placeholderData : chartData).map((entry, index) => (
+                <Cell
+                  key={`cell-${title}-${index}`}
+                  fill={entry.color || COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="mt-2">
+          {chartData.map((entry, index) => (
+            <div
+              key={`legend-${title}-${index}`}
+              className="flex items-center gap-2 text-sm"
+            >
+              <div
+                style={{
+                  backgroundColor: isEmpty
+                    ? "#d3d3d3"
+                    : COLORS[index % COLORS.length],
+                }}
+                className="w-4 h-4"
+              ></div>
+              <span className="text-custom-dark-blue dark:text-custom-yellow">
+                {entry.name}: {entry.value.toFixed(2)} {entry.unit}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const renderContent = () => {
-    const validData = data?.data?.data;
+    const validData = graphData?.data?.data;
     const hasValidLines = validData?.lines?.length > 0;
 
-    if (isLoading || !data?.data?.data) {
+    if (isLoading || !graphData?.data?.data) {
       return <Loading />;
     }
 
-    if (!isLoading && !hasValidLines) {
+    if (chartIndexId === "estadisticas sobre energia" && transformedData) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {Object.entries(transformedData).map(([title, chartData]) =>
+            renderPieChart(chartData, t(title))
+          )}
+        </div>
+      );
+    }
+
+    if (!hasValidLines) {
       return (
         <div className="flex flex-col items-center justify-center h-full">
           <h2 className="text-gray-500 text-lg">{t("noDataAvailable")}</h2>
@@ -171,6 +275,7 @@ const GraphDisplay = ({
 
     return (
       <ComposedChart
+        key={`${range}-${chartIndexId}`}
         data={transformedData}
         margin={{ left: 20, right: 20, top: 10, bottom: 10 }}
       >
@@ -181,7 +286,7 @@ const GraphDisplay = ({
         />
         {validData.axis?.map((ax) => (
           <YAxis
-            key={ax.axisId}
+            key={`y-axis-${ax.axisId}`} // Unique key for each axis
             yAxisId={ax.axisId}
             domain={[0, "auto"]}
             unit={ax.unit}
@@ -199,7 +304,7 @@ const GraphDisplay = ({
         {chartIndexId === "estadisticas sobre energia"
           ? expectedMetrics.map((metric) => (
               <Bar
-                key={metric.name}
+                key={metric.name} // Ensure each Bar component has a unique key
                 dataKey={metric.name}
                 fill={metric.color}
                 name={metric.label}
@@ -209,7 +314,7 @@ const GraphDisplay = ({
           : validData.lines.map((line, index) =>
               index % 2 === 0 ? (
                 <Bar
-                  key={line.name}
+                  key={line.name} // Unique key for each bar
                   dataKey={line.name}
                   fill={line.frontColor}
                   yAxisId={line.axis}
@@ -218,7 +323,7 @@ const GraphDisplay = ({
                 />
               ) : (
                 <Line
-                  key={line.name}
+                  key={line.name} // Unique key for each line
                   type="monotone"
                   dataKey={line.name}
                   stroke={line.frontColor}
@@ -242,7 +347,7 @@ const GraphDisplay = ({
             {title}
           </h2>
           <button
-            onClick={onRefresh}
+            onClick={handleFetchGraph}
             disabled={isLoading}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
@@ -256,7 +361,7 @@ const GraphDisplay = ({
         <div className="flex gap-4">
           <select
             value={range}
-            onChange={(e) => updateRange(e.target.value)}
+            onChange={(e) => setRange(e.target.value)}
             className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm"
             disabled={isLoading}
           >
@@ -266,7 +371,7 @@ const GraphDisplay = ({
           </select>
           <select
             value={chartIndexId}
-            onChange={(e) => updateChartIndexId(e.target.value)}
+            onChange={(e) => setChartIndexId(e.target.value)}
             className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm"
             disabled={isLoading}
           >

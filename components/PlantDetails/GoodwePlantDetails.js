@@ -1,13 +1,7 @@
 "use client";
 
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
   IoArrowBackCircle,
@@ -34,7 +28,6 @@ import Texture from "@/components/Texture";
 import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
-  clearGraphData,
   selectDetailsError,
   selectLoadingAny,
 } from "@/store/slices/plantsSlice";
@@ -45,32 +38,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/Tooltip";
-import {
-  fetchGoodweGraphData,
-  selectGraphData,
-  selectGraphLoading,
-  selectGraphError,
-} from "@/store/slices/plantsSlice";
 import GraphDisplay from "@/components/GraphDisplay";
-import { selectUser } from "@/store/slices/userSlice";
 
 const GoodwePlantDetails = ({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
   const isLoading = useSelector(selectLoadingAny);
   const error = useSelector(selectDetailsError);
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const graphData = useSelector(selectGraphData);
-  const graphLoading = useSelector(selectGraphLoading);
-  const graphError = useSelector(selectGraphError);
-  const [range, setRange] = useState("dia");
-  const [chartIndexId, setChartIndexId] = useState(
-    "generacion de energia y ingresos"
-  );
-  const user = useSelector(selectUser);
-  const currentDate = useMemo(() => new Date().toISOString().split("T")[0], []);
-  const hasFetched = useRef(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+
   const goodwePlant = useMemo(
     () => plant?.data?.data || {},
     [plant?.data?.data]
@@ -99,54 +74,6 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
     if (percentage >= 50) return "⚡";
     return "⚠️";
   };
-
-  const handleFetchGraph = useCallback(() => {
-    if (goodwePlant?.info?.powerstation_id && user?.tokenIdentificador) {
-      dispatch(
-        fetchGoodweGraphData({
-          id: goodwePlant.info.powerstation_id,
-          date: currentDate,
-          range,
-          chartIndexId,
-          token: user.tokenIdentificador,
-        })
-      );
-    }
-  }, [
-    dispatch,
-    goodwePlant?.info?.powerstation_id,
-    range,
-    chartIndexId,
-    user?.tokenIdentificador,
-  ]);
-
-  useEffect(() => {
-    if (isInitialized) {
-      handleFetchGraph();
-    }
-  }, [range, chartIndexId]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(clearGraphData());
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (
-      !isInitialized &&
-      goodwePlant?.info?.powerstation_id &&
-      user?.tokenIdentificador
-    ) {
-      setIsInitialized(true);
-      handleFetchGraph();
-    }
-  }, [
-    isInitialized,
-    goodwePlant?.info?.powerstation_id,
-    user?.tokenIdentificador,
-    handleFetchGraph,
-  ]);
 
   if (error) {
     return (
@@ -357,7 +284,6 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
             {t("performanceMetrics")}
           </h2>
           <div className="space-y-4">
-            {/* Monthly Income */}
             <DetailRow
               icon={
                 <Wallet className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
@@ -369,7 +295,6 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
               tooltip={t("monthlyIncomeTooltip")}
             />
 
-            {/* Total Income */}
             <DetailRow
               icon={
                 <PiggyBank className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
@@ -381,7 +306,6 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
               tooltip={t("totalIncomeTooltip")}
             />
 
-            {/* Performance Ratio */}
             <DetailRow
               icon={
                 <BarChart2 className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
@@ -408,14 +332,8 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
 
         <section className="mb-6">
           <GraphDisplay
-            data={graphData}
+            plantId={goodwePlant?.info?.powerstation_id}
             title={t("plantAnalytics")}
-            range={range}
-            setRange={setRange}
-            chartIndexId={chartIndexId}
-            setChartIndexId={setChartIndexId}
-            isLoading={graphLoading}
-            onRefresh={handleFetchGraph}
           />
         </section>
       </div>

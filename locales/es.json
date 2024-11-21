@@ -394,5 +394,6 @@
   "energy": "Energía",
   "income": "Ingresos",
   "selfUse": "Autoconsumo",
-  "selfUseRatio": "Ratio de Autoconsumo"
+  "selfUseRatio": "Ratio de Autoconsumo",
+  "NoData": "No datos "
 }

@@ -74,7 +74,7 @@ export const fetchGoodweGraphData = createAsyncThunk(
     { id, date, range, chartIndexId, token },
     { getState, rejectWithValue }
   ) => {
-    const requestId = `${range}-${chartIndexId}-${Date.now()}`;
+    const requestId = `${range}-${chartIndexId}`;
 
     try {
       const response = await fetchGoodweGraphDataAPI({
@@ -89,8 +89,6 @@ export const fetchGoodweGraphData = createAsyncThunk(
       if (state.plants.currentGraphRequest !== requestId) {
         return rejectWithValue("Outdated request");
       }
-
-      console.log("graph response in redux: ", response);
 
       return { ...response, requestId };
     } catch (error) {
@@ -184,9 +182,7 @@ const plantsSlice = createSlice({
       .addCase(fetchGoodweGraphData.pending, (state, action) => {
         state.graphLoading = true;
         state.graphError = null;
-        state.currentGraphRequest = `${action.meta.arg.range}-${
-          action.meta.arg.chartIndexId
-        }-${Date.now()}`;
+        state.currentGraphRequest = `${action.meta.arg.range}-${action.meta.arg.chartIndexId}`;
         state.graphData = null;
       })
       .addCase(fetchGoodweGraphData.fulfilled, (state, action) => {

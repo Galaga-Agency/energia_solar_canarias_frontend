@@ -38,8 +38,10 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
           {tooltip && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help ml-2" />
+                <TooltipTrigger asChild>
+                  <span role="button" tabIndex={0} className="cursor-help ml-2">
+                    <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow" />
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent
                   side="right"
@@ -54,10 +56,14 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
       </div>
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>
-            <div className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow cursor-help">
+          <TooltipTrigger asChild>
+            <span
+              role="button"
+              tabIndex={0}
+              className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow cursor-help"
+            >
               {renderValue()}
-            </div>
+            </span>
           </TooltipTrigger>
           {tooltip && (
             <TooltipContent

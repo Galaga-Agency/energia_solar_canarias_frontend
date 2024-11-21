@@ -378,5 +378,21 @@
   "monthlyGenerationTooltip": "Generación del mes actual",
   "monthlyGenerationValueTooltip": "Energía producida este mes",
   "totalGenerationTooltip": "Generación total histórica",
-  "totalGenerationValueTooltip": "Energía total producida desde la instalación"
+  "totalGenerationValueTooltip": "Energía total producida desde la instalación",
+  "plantAnalytics": "Analítica de Planta",
+  "noDataAvailable": "No hay datos disponibles",
+  "day": "Día",
+  "month": "Mes",
+  "year": "Año",
+  "energyAndIncome": "Energía e Ingresos",
+  "personalUse": "Uso Personal",
+  "contributionIndex": "Índice de Contribución",
+  "pvBat": "PV+BAT",
+  "grid": "Red",
+  "internal": "Interno",
+  "feed": "Alimentar",
+  "energy": "Energía",
+  "income": "Ingresos",
+  "selfUse": "Autoconsumo",
+  "selfUseRatio": "Ratio de Autoconsumo"
 }

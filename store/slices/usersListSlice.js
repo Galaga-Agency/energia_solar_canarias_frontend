@@ -5,7 +5,7 @@ import {
   updateUserProfileAPI,
   deactivateUserAPI,
   deleteUserAPI,
-} from "@/services/api";
+} from "@/services/shared-api";
 
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",

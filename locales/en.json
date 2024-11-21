@@ -370,5 +370,21 @@
   "locationTooltip": "Physical location of the solar installation",
   "installationDateTooltip": "Date when the system was installed",
   "poweredByTooltip": "Organization responsible for maintenance",
-  "typeTooltip": "Type of solar installation"
+  "typeTooltip": "Type of solar installation",
+  "plantAnalytics": "Plant Analytics",
+  "noDataAvailable": "No data available",
+  "day": "Day",
+  "month": "Month",
+  "year": "Year",
+  "energyAndIncome": "Energy & Income",
+  "personalUse": "Personal Use",
+  "contributionIndex": "Contribution Index",
+  "pvBat": "PV+BAT",
+  "grid": "Grid",
+  "internal": "Internal",
+  "feed": "Feed",
+  "energy": "Energy",
+  "income": "Income",
+  "selfUse": "Self Use",
+  "selfUseRatio": "Self Use Ratio"
 }

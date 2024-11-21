@@ -1,5 +1,13 @@
-import React from "react";
-import { useSelector } from "react-redux";
+"use client";
+
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
   IoArrowBackCircle,
@@ -26,6 +34,7 @@ import Texture from "@/components/Texture";
 import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
+  clearGraphData,
   selectDetailsError,
   selectLoadingAny,
 } from "@/store/slices/plantsSlice";
@@ -36,12 +45,36 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/Tooltip";
+import {
+  fetchGoodweGraphData,
+  selectGraphData,
+  selectGraphLoading,
+  selectGraphError,
+} from "@/store/slices/plantsSlice";
+import GraphDisplay from "@/components/GraphDisplay";
+import { selectUser } from "@/store/slices/userSlice";
 
 const GoodwePlantDetails = ({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
   const isLoading = useSelector(selectLoadingAny);
   const error = useSelector(selectDetailsError);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const graphData = useSelector(selectGraphData);
+  const graphLoading = useSelector(selectGraphLoading);
+  const graphError = useSelector(selectGraphError);
+  const [range, setRange] = useState("dia");
+  const [chartIndexId, setChartIndexId] = useState(
+    "generacion de energia y ingresos"
+  );
+  const user = useSelector(selectUser);
+  const currentDate = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const hasFetched = useRef(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const goodwePlant = useMemo(
+    () => plant?.data?.data || {},
+    [plant?.data?.data]
+  );
 
   const statusColors = {
     working: "bg-green-500",
@@ -67,9 +100,53 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
     return "⚠️";
   };
 
-  const goodwePlant = plant?.data?.data || {};
+  const handleFetchGraph = useCallback(() => {
+    if (goodwePlant?.info?.powerstation_id && user?.tokenIdentificador) {
+      dispatch(
+        fetchGoodweGraphData({
+          id: goodwePlant.info.powerstation_id,
+          date: currentDate,
+          range,
+          chartIndexId,
+          token: user.tokenIdentificador,
+        })
+      );
+    }
+  }, [
+    dispatch,
+    goodwePlant?.info?.powerstation_id,
+    range,
+    chartIndexId,
+    user?.tokenIdentificador,
+  ]);
 
-  console.log("My Goodwe Plant: ", goodwePlant);
+  useEffect(() => {
+    if (isInitialized) {
+      handleFetchGraph();
+    }
+  }, [range, chartIndexId]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearGraphData());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      !isInitialized &&
+      goodwePlant?.info?.powerstation_id &&
+      user?.tokenIdentificador
+    ) {
+      setIsInitialized(true);
+      handleFetchGraph();
+    }
+  }, [
+    isInitialized,
+    goodwePlant?.info?.powerstation_id,
+    user?.tokenIdentificador,
+    handleFetchGraph,
+  ]);
 
   if (error) {
     return (
@@ -126,7 +203,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
           <div className="flex items-center gap-2">
             <div
               className={`w-5 h-5 rounded-full mt-1 ${
-                statusColors[goodwePlant?.info.status] || "bg-gray-500"
+                statusColors[goodwePlant?.info?.status] || "bg-gray-500"
               }`}
             />
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow">
@@ -287,7 +364,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
               }
               label={t("monthlyIncome")}
               value={`${goodwePlant?.kpi?.day_income || 0} ${
-                goodwePlant?.kpi?.currency
+                goodwePlant?.kpi?.currency || "EUR"
               }`}
               tooltip={t("monthlyIncomeTooltip")}
             />
@@ -299,7 +376,7 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
               }
               label={t("totalIncome")}
               value={`${goodwePlant?.kpi?.total_income || 0} ${
-                goodwePlant?.kpi?.currency
+                goodwePlant?.kpi?.currency || "EUR"
               }`}
               tooltip={t("totalIncomeTooltip")}
             />
@@ -327,6 +404,19 @@ const GoodwePlantDetails = ({ plant, handleRefresh }) => {
               tooltip={t("performanceRatioTooltip")}
             />
           </div>
+        </section>
+
+        <section className="mb-6">
+          <GraphDisplay
+            data={graphData}
+            title={t("plantAnalytics")}
+            range={range}
+            setRange={setRange}
+            chartIndexId={chartIndexId}
+            setChartIndexId={setChartIndexId}
+            isLoading={graphLoading}
+            onRefresh={handleFetchGraph}
+          />
         </section>
       </div>
     </PageTransition>

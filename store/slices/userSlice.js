@@ -3,7 +3,7 @@ import {
   loginRequestAPI,
   validateTokenRequestAPI,
   updateUserProfileAPI,
-} from "@/services/api";
+} from "@/services/shared-api";
 
 export const authenticateUser = createAsyncThunk(
   "user/authenticateUser",

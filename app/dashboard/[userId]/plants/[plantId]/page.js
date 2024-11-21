@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   clearPlantDetails,
   fetchPlantDetails,
-  selectLoading,
   selectLoadingDetails,
   selectPlantDetails,
   selectPlants,
@@ -28,22 +27,21 @@ const PlantDetailsPage = ({ params }) => {
   const user = useSelector(selectUser);
   const plantsList = useSelector(selectPlants);
   const detailedPlant = useSelector(selectPlantDetails);
-  const isLoading = useSelector(selectLoading);
   const isLoadingDetails = useSelector(selectLoadingDetails);
   const detailsError = useSelector(selectDetailsError);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    return () => dispatch(clearPlantDetails());
-  }, [dispatch]);
-
   const normalizedPlantId = plantId?.toString();
 
-  const currentPlant = plantsList?.find(
-    (plant) => plant?.id?.toString() === normalizedPlantId
+  // Memoize currentPlant lookup
+  const currentPlant = useMemo(
+    () =>
+      plantsList?.find((plant) => plant?.id?.toString() === normalizedPlantId),
+    [plantsList, normalizedPlantId]
   );
 
-  const determineProvider = () => {
+  // Determine the provider only once per render
+  const provider = useMemo(() => {
     const pathParts = window.location.pathname.toLowerCase().split("/");
     const providerInPath = pathParts.find((part) =>
       ["solaredge", "goodwe"].includes(part)
@@ -54,17 +52,15 @@ const PlantDetailsPage = ({ params }) => {
     }
 
     if (currentPlant?.organization) {
-      const provider = currentPlant.organization.toLowerCase();
-      return provider;
+      return currentPlant.organization.toLowerCase();
     }
 
-    console.log("Provider not found in URL or current plant");
+    console.warn("Provider not found in URL or current plant");
     return "unknown";
-  };
+  }, [currentPlant]);
 
-  const provider = determineProvider();
-
-  const handleRefresh = () => {
+  // Memoize the handleRefresh function
+  const handleRefresh = useCallback(() => {
     if (
       !user?.tokenIdentificador ||
       !normalizedPlantId ||
@@ -86,8 +82,14 @@ const PlantDetailsPage = ({ params }) => {
         provider,
       })
     );
-  };
+  }, [dispatch, user?.tokenIdentificador, normalizedPlantId, provider, userId]);
 
+  // Clear plant details on unmount
+  useEffect(() => {
+    return () => dispatch(clearPlantDetails());
+  }, [dispatch]);
+
+  // Fetch plant details when necessary
   useEffect(() => {
     if (
       !isLoadingDetails &&
@@ -96,8 +98,15 @@ const PlantDetailsPage = ({ params }) => {
     ) {
       handleRefresh();
     }
-  }, [normalizedPlantId, provider, detailedPlant, isLoadingDetails]);
+  }, [
+    normalizedPlantId,
+    provider,
+    detailedPlant,
+    isLoadingDetails,
+    handleRefresh,
+  ]);
 
+  // Error rendering
   const renderError = () => (
     <>
       <Texture />
@@ -123,6 +132,7 @@ const PlantDetailsPage = ({ params }) => {
     </>
   );
 
+  // Main content rendering
   const renderContent = () => {
     if (isLoadingDetails && !detailedPlant) {
       return (

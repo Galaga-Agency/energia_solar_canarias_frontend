@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import Loading from "@/components/Loading";
+import { useEffect } from "react";
+import { clearPlantDetails } from "@/store/slices/plantsSlice";
 
 export default function Dashboard() {
   const router = useRouter();

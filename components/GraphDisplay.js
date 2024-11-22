@@ -26,6 +26,7 @@ import {
   clearGraphData,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];
 
@@ -37,13 +38,12 @@ const GraphDisplay = ({ plantId, title }) => {
     "generacion de energia y ingresos"
   );
   const [isInitialized, setIsInitialized] = useState(false);
-
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
-
   const currentDate = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const { isMobile, isDesktop } = useDeviceType();
 
   const handleFetchGraph = useCallback(() => {
     if (plantId && user?.tokenIdentificador) {
@@ -186,62 +186,64 @@ const GraphDisplay = ({ plantId, title }) => {
       (entry) => entry.value === 0 || entry.value === null
     );
 
-    // Placeholder data for empty pie chart
-    const placeholderData = [
-      { name: t("NoData"), value: 1, color: "#d3d3d3" }, // Light grey color for "empty"
-    ];
+    const placeholderData = [{ name: t("NoData"), value: 1, color: "#d3d3d3" }];
+    const totalValue = chartData.reduce((sum, entry) => sum + entry.value, 0);
 
     return (
-      <div
-        key={`piechart-${title}`}
-        className="flex flex-col items-center mb-8"
-      >
-        <h2 className="text-lg font-semibold mb-2 text-custom-dark-blue dark:text-custom-yellow">
+      <div key={`piechart-${title}`} className="flex flex-col items-center p-4">
+        <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
           {title}
         </h2>
-        <ResponsiveContainer width="50%" height={280}>
-          <PieChart>
-            <Pie
-              data={isEmpty ? placeholderData : chartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label={({ name, value, percent }) =>
-                isEmpty
-                  ? t("NoData")
-                  : `${name} (${(percent * 100).toFixed(1)}%)`
-              }
-            >
-              {(isEmpty ? placeholderData : chartData).map((entry, index) => (
-                <Cell
-                  key={`cell-${title}-${index}`}
-                  fill={entry.color || COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-        <div className="mt-2">
-          {chartData.map((entry, index) => (
-            <div
-              key={`legend-${title}-${index}`}
-              className="flex items-center gap-2 text-sm"
-            >
-              <div
-                style={{
-                  backgroundColor: isEmpty
-                    ? "#d3d3d3"
-                    : COLORS[index % COLORS.length],
-                }}
-                className="w-4 h-4"
-              ></div>
-              <span className="text-custom-dark-blue dark:text-custom-yellow">
-                {entry.name}: {entry.value.toFixed(2)} {entry.unit}
-              </span>
-            </div>
-          ))}
+        <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
+          <ResponsiveContainer
+            width={!isDesktop ? 300 : "100%"}
+            height={!isDesktop ? 250 : 350}
+          >
+            <PieChart>
+              <Pie
+                data={isEmpty ? placeholderData : chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={isMobile ? 110 : 120}
+                label={null}
+              >
+                {(isEmpty ? placeholderData : chartData).map((entry, index) => (
+                  <Cell
+                    key={`cell-${title}-${index}`}
+                    fill={entry.color || COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="flex flex-col gap-2">
+            {(isEmpty ? placeholderData : chartData).map((entry, index) => {
+              const percentage = totalValue
+                ? ((entry.value / totalValue) * 100).toFixed(1)
+                : 0;
+              return (
+                <div
+                  key={`legend-${title}-${index}`}
+                  className="flex items-center gap-2 text-sm whitespace-nowrap"
+                >
+                  <div
+                    style={{
+                      backgroundColor: isEmpty
+                        ? "#d3d3d3"
+                        : COLORS[index % COLORS.length],
+                    }}
+                    className="w-4 h-4"
+                  ></div>
+                  <span className="text-custom-dark-blue dark:text-custom-yellow">
+                    {entry.name}: {entry.value.toFixed(2)} {entry.unit} (
+                    {percentage}%)
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -277,7 +279,12 @@ const GraphDisplay = ({ plantId, title }) => {
       <ComposedChart
         key={`${range}-${chartIndexId}`}
         data={transformedData}
-        margin={{ left: 20, right: 20, top: 10, bottom: 10 }}
+        margin={{
+          left: isMobile ? -15 : 15,
+          right: isMobile ? -25 : 15,
+          top: 10,
+          bottom: 10,
+        }}
       >
         <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
         <XAxis
@@ -286,16 +293,17 @@ const GraphDisplay = ({ plantId, title }) => {
         />
         {validData.axis?.map((ax) => (
           <YAxis
-            key={`y-axis-${ax.axisId}`} // Unique key for each axis
+            key={`y-axis-${ax.axisId}`}
             yAxisId={ax.axisId}
             domain={[0, "auto"]}
-            unit={ax.unit}
+            unit={isMobile ? "" : ax.unit}
             orientation={ax.axisId === 0 ? "left" : "right"}
             label={{
-              value: "",
+              value: isMobile ? ax.unit : "",
               angle: -90,
               position: "insideLeft",
-              offset: 10,
+              offset: 20,
+              dy: -20,
             }}
           />
         ))}
@@ -304,7 +312,7 @@ const GraphDisplay = ({ plantId, title }) => {
         {chartIndexId === "estadisticas sobre energia"
           ? expectedMetrics.map((metric) => (
               <Bar
-                key={metric.name} // Ensure each Bar component has a unique key
+                key={metric.name}
                 dataKey={metric.name}
                 fill={metric.color}
                 name={metric.label}
@@ -314,7 +322,7 @@ const GraphDisplay = ({ plantId, title }) => {
           : validData.lines.map((line, index) =>
               index % 2 === 0 ? (
                 <Bar
-                  key={line.name} // Unique key for each bar
+                  key={line.name}
                   dataKey={line.name}
                   fill={line.frontColor}
                   yAxisId={line.axis}
@@ -323,7 +331,7 @@ const GraphDisplay = ({ plantId, title }) => {
                 />
               ) : (
                 <Line
-                  key={line.name} // Unique key for each line
+                  key={line.name}
                   type="monotone"
                   dataKey={line.name}
                   stroke={line.frontColor}
@@ -341,15 +349,15 @@ const GraphDisplay = ({ plantId, title }) => {
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+      <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left">
             {title}
           </h2>
           <button
             onClick={handleFetchGraph}
             disabled={isLoading}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
           >
             <BiRefresh
               className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
@@ -358,11 +366,11 @@ const GraphDisplay = ({ plantId, title }) => {
             />
           </button>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
           <select
             value={range}
             onChange={(e) => setRange(e.target.value)}
-            className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm"
+            className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
             disabled={isLoading}
           >
             <option value="dia">{t("day")}</option>
@@ -372,7 +380,7 @@ const GraphDisplay = ({ plantId, title }) => {
           <select
             value={chartIndexId}
             onChange={(e) => setChartIndexId(e.target.value)}
-            className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm"
+            className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
             disabled={isLoading}
           >
             <option value="generacion de energia y ingresos">
@@ -390,7 +398,14 @@ const GraphDisplay = ({ plantId, title }) => {
           </select>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer
+        width="100%"
+        height={
+          chartIndexId === "estadisticas sobre energia" && isMobile
+            ? "auto "
+            : 400
+        }
+      >
         {renderContent()}
       </ResponsiveContainer>
     </div>

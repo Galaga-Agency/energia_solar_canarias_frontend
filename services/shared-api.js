@@ -248,10 +248,12 @@ export const fetchPlantsByProviderAPI = async ({ userId, token, provider }) => {
       typeof provider === "object" ? provider.name : provider
     )
       .toLowerCase()
-      .trim();
+      .trim()
+      .replace(/\s+/g, "");
+    console.log("provider passed in api call: ", providerParam);
 
     const apiUrl = `${API_BASE_URL}/plants?proveedor=${providerParam}`;
-
+    console.log("apiUrl passed in api call: ", apiUrl);
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -278,6 +280,7 @@ export const fetchPlantsByProviderAPI = async ({ userId, token, provider }) => {
       }));
     }
 
+    console.log("plantsData: ", plantsData);
     return plantsData;
   } catch (error) {
     console.error("Error in fetchPlantsByProviderAPI:", error);

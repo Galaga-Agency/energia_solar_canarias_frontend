@@ -97,7 +97,9 @@ const AdminDashboard = () => {
   };
 
   const handleProviderClick = (provider) => {
-    const normalizedProviderName = provider.name?.toLowerCase() || "";
+    const normalizedProviderName =
+      decodeURIComponent(provider.name?.toLowerCase().replace(/\s+/g, "")) ||
+      "";
     setSelectedProvider(normalizedProviderName);
 
     dispatch(

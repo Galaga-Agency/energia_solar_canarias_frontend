@@ -27,6 +27,8 @@ import {
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
+import GraphDisplaySkeleton from "./LoadingSkeletons/GraphDisplaySkeleton";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];
 
@@ -44,6 +46,7 @@ const GraphDisplay = ({ plantId, title }) => {
   const user = useSelector(selectUser);
   const currentDate = useMemo(() => new Date().toISOString().split("T")[0], []);
   const { isMobile, isDesktop } = useDeviceType();
+  const theme = useSelector(selectTheme);
 
   const handleFetchGraph = useCallback(() => {
     if (plantId && user?.tokenIdentificador) {
@@ -195,10 +198,7 @@ const GraphDisplay = ({ plantId, title }) => {
           {title}
         </h2>
         <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
-          <ResponsiveContainer
-            width={!isDesktop ? 300 : "100%"}
-            height={!isDesktop ? 250 : 350}
-          >
+          <ResponsiveContainer width={300} height={!isDesktop ? 250 : 350}>
             <PieChart>
               <Pie
                 data={isEmpty ? placeholderData : chartData}
@@ -348,67 +348,73 @@ const GraphDisplay = ({ plantId, title }) => {
   };
 
   return (
-    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
-      <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left">
-            {title}
-          </h2>
-          <button
-            onClick={handleFetchGraph}
-            disabled={isLoading}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
+    <>
+      {isLoading ? (
+        <GraphDisplaySkeleton theme={theme} />
+      ) : (
+        <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
+          <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
+            <div className="flex items-center gap-4 w-full md:w-auto">
+              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left">
+                {title}
+              </h2>
+              <button
+                onClick={handleFetchGraph}
+                disabled={isLoading}
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
+              >
+                <BiRefresh
+                  className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
+                    isLoading ? "animate-spin" : ""
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
+              <select
+                value={range}
+                onChange={(e) => setRange(e.target.value)}
+                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
+                disabled={isLoading}
+              >
+                <option value="dia">{t("day")}</option>
+                <option value="mes">{t("month")}</option>
+                <option value="año">{t("year")}</option>
+              </select>
+              <select
+                value={chartIndexId}
+                onChange={(e) => setChartIndexId(e.target.value)}
+                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
+                disabled={isLoading}
+              >
+                <option value="generacion de energia y ingresos">
+                  {t("energyAndIncome")}
+                </option>
+                <option value="proporcion para uso personal">
+                  {t("personalUse")}
+                </option>
+                <option value="indice de contribucion">
+                  {t("contributionIndex")}
+                </option>
+                <option value="estadisticas sobre energia">
+                  {t("energyStatistics")}
+                </option>
+              </select>
+            </div>
+          </div>
+          <ResponsiveContainer
+            width="100%"
+            height={
+              chartIndexId === "estadisticas sobre energia" && isMobile
+                ? "auto "
+                : 400
+            }
           >
-            <BiRefresh
-              className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                isLoading ? "animate-spin" : ""
-              }`}
-            />
-          </button>
+            {renderContent()}
+          </ResponsiveContainer>
         </div>
-        <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
-          <select
-            value={range}
-            onChange={(e) => setRange(e.target.value)}
-            className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
-            disabled={isLoading}
-          >
-            <option value="dia">{t("day")}</option>
-            <option value="mes">{t("month")}</option>
-            <option value="año">{t("year")}</option>
-          </select>
-          <select
-            value={chartIndexId}
-            onChange={(e) => setChartIndexId(e.target.value)}
-            className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
-            disabled={isLoading}
-          >
-            <option value="generacion de energia y ingresos">
-              {t("energyAndIncome")}
-            </option>
-            <option value="proporcion para uso personal">
-              {t("personalUse")}
-            </option>
-            <option value="indice de contribucion">
-              {t("contributionIndex")}
-            </option>
-            <option value="estadisticas sobre energia">
-              {t("energyStatistics")}
-            </option>
-          </select>
-        </div>
-      </div>
-      <ResponsiveContainer
-        width="100%"
-        height={
-          chartIndexId === "estadisticas sobre energia" && isMobile
-            ? "auto "
-            : 400
-        }
-      >
-        {renderContent()}
-      </ResponsiveContainer>
-    </div>
+      )}
+    </>
   );
 };
 

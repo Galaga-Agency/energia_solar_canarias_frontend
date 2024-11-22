@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 
-const ImageCarousel = ({ images }) => {
+const ImageCarousel = ({ plant }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
   const theme = useSelector(selectTheme);
@@ -34,7 +34,7 @@ const ImageCarousel = ({ images }) => {
           thumbs={{ swiper: thumbsSwiper }}
           className="rounded-lg h-full w-full shadow-lg min-h-[400px]"
         >
-          {images.map((image, index) => (
+          {plant?.images.map((image, index) => (
             <SwiperSlide key={index}>
               <div className="relative w-full h-full">
                 <Image

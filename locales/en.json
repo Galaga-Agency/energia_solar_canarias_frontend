@@ -387,5 +387,10 @@
   "income": "Income",
   "selfUse": "Self Use",
   "selfUseRatio": "Self Use Ratio",
-  "NoData": "No data "
+  "NoData": "No data ",
+  "description": "Description",
+  "unknown": "Unknown",
+  "failedToFetchWeather": "Failed to fetch weather data",
+  "today": "Today",
+  "feelsLike": "Feels Like"
 }

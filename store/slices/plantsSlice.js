@@ -8,7 +8,10 @@ import {
   fetchPlantDetailsAPI,
   fetchPlantsByProviderAPI,
 } from "@/services/shared-api";
-import { fetchGoodweGraphDataAPI } from "@/services/goodwe-api";
+import {
+  fetchGoodweGraphDataAPI,
+  fetchGoodweWeatherDataAPI,
+} from "@/services/goodwe-api";
 
 // Thunks
 export const fetchPlants = createAsyncThunk(
@@ -97,6 +100,20 @@ export const fetchGoodweGraphData = createAsyncThunk(
   }
 );
 
+export const fetchGoodweWeatherData = createAsyncThunk(
+  "plants/fetchGoodweWeatherData",
+  async ({ name, token }, { rejectWithValue }) => {
+    try {
+      const weatherData = await fetchGoodweWeatherDataAPI(name, token);
+      if (!weatherData) throw new Error("No weather data found");
+      return weatherData;
+    } catch (error) {
+      console.error("Fetch weather data error:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   plants: [],
   plantDetails: null,
@@ -110,6 +127,9 @@ const initialState = {
   graphLoading: false,
   graphError: null,
   currentGraphRequest: null,
+  weatherData: null,
+  weatherLoading: false,
+  weatherError: null,
 };
 
 const plantsSlice = createSlice({
@@ -179,6 +199,8 @@ const plantsSlice = createSlice({
         state.error = action.payload || "Failed to fetch plants by provider";
         state.plants = [];
       })
+
+      // Goodwe graphs
       .addCase(fetchGoodweGraphData.pending, (state, action) => {
         state.graphLoading = true;
         state.graphError = null;
@@ -198,6 +220,22 @@ const plantsSlice = createSlice({
           state.graphData = null;
           state.graphError = action.payload || "Failed to fetch graph data";
         }
+      })
+
+      // Goodwe weather
+      .addCase(fetchGoodweWeatherData.pending, (state) => {
+        state.weatherLoading = true;
+        state.weatherError = null;
+      })
+      .addCase(fetchGoodweWeatherData.fulfilled, (state, action) => {
+        state.weatherLoading = false;
+        state.weatherData = action.payload;
+        state.weatherError = null;
+      })
+      .addCase(fetchGoodweWeatherData.rejected, (state, action) => {
+        state.weatherLoading = false;
+        state.weatherData = null;
+        state.weatherError = action.payload || "Failed to fetch weather data";
       });
   },
 });
@@ -249,6 +287,9 @@ export const selectAllErrors = createSelector(
 export const selectGraphData = (state) => state.plants.graphData;
 export const selectGraphLoading = (state) => state.plants.graphLoading;
 export const selectGraphError = (state) => state.plants.graphError;
+export const selectWeatherData = (state) => state.plants.weatherData;
+export const selectWeatherLoading = (state) => state.plants.weatherLoading;
+export const selectWeatherError = (state) => state.plants.weatherError;
 
 export const {
   clearPlants,

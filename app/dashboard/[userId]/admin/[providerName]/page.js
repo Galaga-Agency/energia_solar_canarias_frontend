@@ -58,7 +58,7 @@ const ProviderPage = () => {
   const params = useParams();
   const providerPassed = params?.providerName.toLowerCase();
   const provider = providers.find(
-    (p) => p.name.toLowerCase() === providerPassed
+    (p) => p.name.toLowerCase().replace(/\s+/g, "") === providerPassed
   );
 
   useEffect(() => {

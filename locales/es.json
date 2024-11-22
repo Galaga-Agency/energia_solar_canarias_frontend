@@ -62,7 +62,7 @@
   "location": "Ubicación",
   "powerOutput": "Salida de energía",
   "todaysGeneration": "Generación de hoy",
-  "totalIncome": "Ingresos totales",
+  "totalIncome": "Ingresos Totales",
   "noPlantsFound": "No se encontraron plantas.",
   "sortByName": "Ordenar por Nombre",
   "sortByCreationDate": "Ordenar por Fecha de Creación",
@@ -323,7 +323,7 @@
   "plantsFound": "Plantas encontradas",
   "applyFilters": "Aplicar filtros",
   "clearFilters": "Borrar Filtros",
-  "installationDate": "Fecha de instalación",
+  "installationDate": "Fecha Instalación",
   "poweredBy": "Impulsado Por",
   "typeOfPlant": "Clasificación",
   "currentPower": "Potencia Actual",
@@ -345,8 +345,8 @@
   "productionToday": "Generación hoy",
   "plantDataNotFound": "Datos de la planta no encontrados",
   "totalCapacity": "Capacidad Total",
-  "batteryCapacity": "Capacidad de la batería",
-  "performanceRatio": "Relación de Rendimiento",
+  "batteryCapacity": "Capacidad Batería",
+  "performanceRatio": "Rel. de Rendimiento",
   "monthlyIncome": "Ingresos Mensuales",
   "noData": "Sin datos disponibles",
   "excellentPerformance": "Rendimiento Excelente",
@@ -395,5 +395,8 @@
   "income": "Ingresos",
   "selfUse": "Autoconsumo",
   "selfUseRatio": "Ratio de Autoconsumo",
-  "NoData": "No datos "
+  "NoData": "No datos ",
+  "failedToFetchWeather": "Error al cargar los datos del tiempo",
+  "today": "Hoy",
+  "feelsLike": "Sensación"
 }

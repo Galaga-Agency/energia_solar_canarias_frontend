@@ -36,3 +36,54 @@ export const fetchGoodweGraphDataAPI = async ({
     throw error;
   }
 };
+
+export const fetchGoodweWeatherDataAPI = async (name, token) => {
+  console.log("Full address received: ", name);
+
+  // Extract city and country
+  const extractCityAndCountry = (address) => {
+    if (!address) return null;
+
+    const parts = address.split(",").map((part) => part.trim());
+    if (parts.length >= 2) {
+      const city = parts[parts.length - 2];
+      const country = parts[parts.length - 1];
+      return `${city}, ${country}`;
+    }
+
+    return null;
+  };
+
+  const cityAndCountry = extractCityAndCountry(name);
+  if (!cityAndCountry) {
+    console.error(
+      "Unable to extract city and country from the provided address."
+    );
+    throw new Error("Invalid address format");
+  }
+
+  console.log("Extracted city and country: ", cityAndCountry);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/clima`, {
+      method: "POST",
+      body: JSON.stringify({ name: cityAndCountry }),
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch weather data");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Weather data fetch error:", error);
+    throw error;
+  }
+};

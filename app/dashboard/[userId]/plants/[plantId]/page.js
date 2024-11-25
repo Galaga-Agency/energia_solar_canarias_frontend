@@ -31,110 +31,99 @@ const PlantDetailsPage = ({ params }) => {
   const detailsError = useSelector(selectDetailsError);
   const { t } = useTranslation();
 
-  const normalizedPlantId = plantId?.toString();
+  const normalizedPlantId = useMemo(() => plantId?.toString(), [plantId]);
+  const userToken = useMemo(() => user?.tokenIdentificador, [user]);
 
-  // Memoize currentPlant lookup
   const currentPlant = useMemo(
     () =>
       plantsList?.find((plant) => plant?.id?.toString() === normalizedPlantId),
     [plantsList, normalizedPlantId]
   );
 
-  // Determine the provider only once per render
   const provider = useMemo(() => {
+    if (typeof window === "undefined") return "unknown";
+
     const pathParts = window.location.pathname.toLowerCase().split("/");
     const providerInPath = pathParts.find((part) =>
       ["solaredge", "goodwe"].includes(part)
     );
 
-    if (providerInPath) {
-      return providerInPath;
-    }
-
-    if (currentPlant?.organization) {
+    if (providerInPath) return providerInPath;
+    if (currentPlant?.organization)
       return currentPlant.organization.toLowerCase();
-    }
 
-    console.warn("Provider not found in URL or current plant");
     return "unknown";
   }, [currentPlant]);
 
-  // Memoize the handleRefresh function
   const handleRefresh = useCallback(() => {
-    if (
-      !user?.tokenIdentificador ||
-      !normalizedPlantId ||
-      provider === "unknown"
-    ) {
-      console.warn("Missing required data for refresh:", {
-        hasToken: !!user?.tokenIdentificador,
-        plantId: normalizedPlantId,
-        provider,
-      });
-      return;
-    }
+    if (!userToken || !normalizedPlantId || provider === "unknown") return;
 
     dispatch(
       fetchPlantDetails({
         userId,
-        token: user.tokenIdentificador,
+        token: userToken,
         plantId: normalizedPlantId,
         provider,
       })
     );
-  }, [dispatch, user?.tokenIdentificador, normalizedPlantId, provider, userId]);
+  }, [dispatch, userToken, normalizedPlantId, provider, userId]);
 
-  // Clear plant details on unmount
+  // Initial data fetch
+  useEffect(() => {
+    const shouldFetch =
+      provider !== "unknown" &&
+      userToken &&
+      normalizedPlantId &&
+      (!detailedPlant || detailedPlant.id?.toString() !== normalizedPlantId);
+
+    if (shouldFetch && !isLoadingDetails) {
+      handleRefresh();
+    }
+  }, [
+    provider,
+    userToken,
+    normalizedPlantId,
+    detailedPlant,
+    handleRefresh,
+    isLoadingDetails,
+  ]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => dispatch(clearPlantDetails());
   }, [dispatch]);
 
-  // Fetch plant details when necessary
-  useEffect(() => {
-    if (
-      !isLoadingDetails &&
-      provider !== "unknown" &&
-      (!detailedPlant || detailedPlant.id?.toString() !== normalizedPlantId)
-    ) {
-      handleRefresh();
-    }
-  }, [
-    normalizedPlantId,
-    provider,
-    detailedPlant,
-    isLoadingDetails,
-    handleRefresh,
-  ]);
-
-  // Error rendering
-  const renderError = () => (
-    <>
-      <Texture />
-      <button onClick={() => window.history.back()}>
-        <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
-      </button>
-      <div className="h-auto w-full flex flex-col justify-center items-center">
-        <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
-        <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
-          {detailsError || t("plantDataNotFound")}
-        </p>
-        <button
-          onClick={handleRefresh}
-          className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow hover:scale-105 transition-transform mt-4"
-          disabled={isLoadingDetails}
-        >
-          <BiRefresh
-            className={`text-2xl ${isLoadingDetails ? "animate-spin" : ""}`}
-          />
-          <span>{t("refresh")}</span>
+  const renderError = useCallback(
+    () => (
+      <>
+        <Texture />
+        <button onClick={() => window.history.back()}>
+          <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
         </button>
-      </div>
-    </>
+        <div className="h-auto w-full flex flex-col justify-center items-center">
+          <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+          <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
+            {detailsError || t("plantDataNotFound")}
+          </p>
+          <button
+            onClick={handleRefresh}
+            className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow hover:scale-105 transition-transform mt-4"
+            disabled={isLoadingDetails}
+          >
+            <BiRefresh
+              className={`text-2xl ${isLoadingDetails ? "animate-spin" : ""}`}
+            />
+            <span>{t("refresh")}</span>
+          </button>
+        </div>
+      </>
+    ),
+    [detailsError, handleRefresh, isLoadingDetails, t]
   );
 
-  // Main content rendering
-  const renderContent = () => {
-    if (isLoadingDetails && !detailedPlant) {
+  const renderContent = useCallback(() => {
+    // Only show loading on initial fetch
+    if (!detailedPlant && isLoadingDetails) {
       return (
         <div className="h-screen w-screen">
           <Loading />
@@ -147,30 +136,24 @@ const PlantDetailsPage = ({ params }) => {
     }
 
     if (detailedPlant) {
+      const props = {
+        plant: detailedPlant,
+        handleRefresh,
+        isLoading: isLoadingDetails,
+      };
+
       switch (provider) {
         case "goodwe":
-          return (
-            <GoodwePlantDetails
-              plant={detailedPlant}
-              handleRefresh={handleRefresh}
-            />
-          );
+          return <GoodwePlantDetails {...props} />;
         case "solaredge":
-          return (
-            <SolarEdgePlantDetails
-              plant={detailedPlant}
-              handleRefresh={handleRefresh}
-            />
-          );
+          return <SolarEdgePlantDetails {...props} />;
         default:
-          console.warn("Unknown provider:", provider);
           return renderError();
       }
     }
 
-    // Fallback to error if we have no data
     return renderError();
-  };
+  }, [detailedPlant, detailsError, handleRefresh, isLoadingDetails, provider]);
 
   return (
     <PageTransition>

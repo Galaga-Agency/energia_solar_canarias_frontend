@@ -145,7 +145,6 @@ const ClientDashboardPage = ({ params }) => {
               <PlantStatuses />
             </div>
 
-            {/* Optional: Main content search input */}
             <div className="mb-4">
               <input
                 type="text"
@@ -156,7 +155,6 @@ const ClientDashboardPage = ({ params }) => {
               />
             </div>
 
-            {/* Render skeleton if loading */}
             {loading ? (
               <PlantListSkeleton theme={theme} rows={plantsPerPage} />
             ) : (

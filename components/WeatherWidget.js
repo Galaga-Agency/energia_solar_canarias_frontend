@@ -141,7 +141,7 @@ const WeatherWidget = ({ plant }) => {
                     >
                       <div className="flex flex-col">
                         <p className="text-sm text-slate-600 dark:text-slate-300">
-                          {new Date(date).toLocaleDateString("en-US", {
+                          {new Date(date).toLocaleDateString("es-ES", {
                             weekday: "short",
                           })}
                         </p>

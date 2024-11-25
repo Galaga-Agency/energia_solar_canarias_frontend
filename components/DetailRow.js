@@ -17,7 +17,7 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
     }
     if (typeof Icon === "function") {
       return (
-        <Icon className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+        <Icon className="text-2xl text-custom-dark-blue dark:text-custom-yellow shrink-0" />
       );
     }
     return null;
@@ -29,15 +29,14 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
     return text
       .split(" ") // Split the value into words
       .map((word) => {
-        if (word.length > 10) {
-          // Break the word at 10 characters
-          const firstPart = word.slice(0, 10);
-          const restPart = word.slice(10);
-          return `${firstPart}-\n${restPart}`; // Break and add the rest on a new line
+        if (word.length > 11) {
+          const firstPart = word.slice(0, 11);
+          const restPart = word.slice(11);
+          return `${firstPart}-\n${restPart}`;
         }
         return word;
       })
-      .join(" "); // Rejoin the formatted words into a single string
+      .join(" "); // Rejoin the formatted words
   };
 
   const renderValue = () => {
@@ -46,7 +45,7 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
     return (
       <span
         className="text-right text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow whitespace-pre-wrap break-words"
-        title={value} // Show full text on hover
+        title={value}
       >
         {formattedValue}
       </span>
@@ -54,10 +53,10 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
   };
 
   return (
-    <div className="flex items-start justify-between gap-2 w-full">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between gap-2 w-full max-w-full overflow-hidden">
+      <div className="flex items-center gap-2 overflow-hidden">
         {renderIcon()}
-        <strong className="text-lg dark:text-custom-light-gray whitespace-nowrap">
+        <strong className="text-lg dark:text-custom-light-gray text-wrap overflow-hidden text-ellipsis">
           {label}
         </strong>
         {tooltip && (
@@ -78,7 +77,9 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
           </TooltipProvider>
         )}
       </div>
-      <div className="text-right max-w-[70%]">{renderValue()}</div>
+      <div className="text-right max-w-[70%] overflow-hidden">
+        {renderValue()}
+      </div>
     </div>
   );
 };

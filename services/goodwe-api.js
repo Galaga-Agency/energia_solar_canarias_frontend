@@ -38,7 +38,7 @@ export const fetchGoodweGraphDataAPI = async ({
 };
 
 export const fetchGoodweWeatherDataAPI = async (name, token) => {
-  console.log("Full address received: ", name);
+  //   console.log("Full address received: ", name);
 
   // Extract city and country
   const extractCityAndCountry = (address) => {
@@ -62,7 +62,7 @@ export const fetchGoodweWeatherDataAPI = async (name, token) => {
     throw new Error("Invalid address format");
   }
 
-  console.log("Extracted city and country: ", cityAndCountry);
+  //   console.log("Extracted city and country: ", cityAndCountry);
 
   try {
     const response = await fetch(`${API_BASE_URL}/clima`, {
@@ -84,6 +84,37 @@ export const fetchGoodweWeatherDataAPI = async (name, token) => {
     return await response.json();
   } catch (error) {
     console.error("Weather data fetch error:", error);
+    throw error;
+  }
+};
+
+export const fetchGoodweRealtimeDataAPI = async ({ plantId, token }) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/power/realtime/${plantId}?proveedor=goodwe`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("API Error Response:", errorData);
+      throw new Error(errorData.message || "Failed to fetch real-time data");
+    }
+
+    const data = await response.json();
+    console.log("API Response Data:", data.data);
+
+    return data.data;
+  } catch (error) {
+    console.error("Real-time data fetch error:", error);
     throw error;
   }
 };

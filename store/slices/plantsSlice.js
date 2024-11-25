@@ -10,6 +10,7 @@ import {
 } from "@/services/shared-api";
 import {
   fetchGoodweGraphDataAPI,
+  fetchGoodweRealtimeDataAPI,
   fetchGoodweWeatherDataAPI,
 } from "@/services/goodwe-api";
 
@@ -114,6 +115,20 @@ export const fetchGoodweWeatherData = createAsyncThunk(
   }
 );
 
+export const fetchGoodweRealtimeData = createAsyncThunk(
+  "plants/fetchGoodweRealtimeData",
+  async ({ plantId, token }, { rejectWithValue }) => {
+    try {
+      const realtimeData = await fetchGoodweRealtimeDataAPI({ plantId, token });
+      if (!realtimeData) throw new Error("No real-time data found");
+      return realtimeData;
+    } catch (error) {
+      console.error("Fetch real-time data error:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   plants: [],
   plantDetails: null,
@@ -130,6 +145,7 @@ const initialState = {
   weatherData: null,
   weatherLoading: false,
   weatherError: null,
+  loadingStates: {},
 };
 
 const plantsSlice = createSlice({
@@ -150,6 +166,10 @@ const plantsSlice = createSlice({
       state.graphError = null;
       state.graphLoading = false;
       state.currentGraphRequest = null;
+    },
+    clearRealtimeData: (state) => {
+      state.realtimeData = null;
+      state.realtimeError = null;
     },
   },
   extraReducers: (builder) => {
@@ -236,6 +256,26 @@ const plantsSlice = createSlice({
         state.weatherLoading = false;
         state.weatherData = null;
         state.weatherError = action.payload || "Failed to fetch weather data";
+      })
+
+      // Real-time data
+      .addCase(fetchGoodweRealtimeData.pending, (state) => {
+        console.log("Fetching real-time data: pending...");
+        state.realtimeLoading = true;
+        state.realtimeError = null;
+      })
+      .addCase(fetchGoodweRealtimeData.fulfilled, (state, action) => {
+        console.log("Real-time data fetched successfully:", action.payload);
+        state.realtimeLoading = false;
+        state.realtimeData = action.payload;
+        state.realtimeError = null;
+      })
+      .addCase(fetchGoodweRealtimeData.rejected, (state, action) => {
+        console.error("Real-time data fetch failed:", action.payload);
+        state.realtimeLoading = false;
+        state.realtimeData = null;
+        state.realtimeError =
+          action.payload || "Failed to fetch real-time data";
       });
   },
 });
@@ -255,7 +295,11 @@ export const selectLoading = createSelector([selectPlantsState], (state) =>
 );
 export const selectLoadingDetails = createSelector(
   [selectPlantsState],
-  (state) => Boolean(state.loadingDetails)
+  (state) => state.loadingDetails
+);
+export const selectPlantLoadingState = createSelector(
+  [selectPlantsState, (_, plantId) => plantId],
+  (state, plantId) => Boolean(state.loadingStates[plantId])
 );
 export const selectError = createSelector(
   [selectPlantsState],
@@ -290,12 +334,16 @@ export const selectGraphError = (state) => state.plants.graphError;
 export const selectWeatherData = (state) => state.plants.weatherData;
 export const selectWeatherLoading = (state) => state.plants.weatherLoading;
 export const selectWeatherError = (state) => state.plants.weatherError;
+export const selectRealtimeData = (state) => state.plants.realtimeData;
+export const selectRealtimeLoading = (state) => state.plants.realtimeLoading;
+export const selectRealtimeError = (state) => state.plants.realtimeError;
 
 export const {
   clearPlants,
   clearPlantDetails,
   setCurrentProvider,
   clearGraphData,
+  clearRealtimeData,
 } = plantsSlice.actions;
 
 export default plantsSlice.reducer;

@@ -24,6 +24,8 @@ module.exports = {
         "orbit-path-3": "orbit-path-3 4s linear infinite",
         "orbit-path-4": "orbit-path-4 3.5s linear infinite reverse",
         grid: "grid 150s linear infinite",
+        textBlink: "textBlink 0.5s ease-in-out",
+        "double-blink": "doubleBlink 1s ease-in-out 1",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -55,6 +57,10 @@ module.exports = {
           },
           "100%": { boxShadow: "0 0 0 rgba(255, 255, 255, 0)" },
         },
+        textBlink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
         grid: {
           "0%": {
             transform: "translateY(-50%)",
@@ -63,7 +69,6 @@ module.exports = {
             transform: "translateY(0)",
           },
         },
-        // Expanded orbit paths for larger radius effect
         "orbit-path-1": {
           "0%": { transform: "rotate(0deg) translateX(70px) rotate(0deg)" },
           "100%": {
@@ -87,6 +92,11 @@ module.exports = {
           "100%": {
             transform: "rotate(360deg) translateX(65px) rotate(-360deg)",
           },
+        },
+        doubleBlink: {
+          "0%, 100%": { opacity: "1" },
+          "25%, 50%": { opacity: "0.3" },
+          "75%": { opacity: "1" },
         },
       },
     },

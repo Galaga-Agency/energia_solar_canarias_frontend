@@ -17,6 +17,7 @@ import FormFace from "./FormFace";
 import ResultContent from "./ResultContent";
 import FormInput from "./FormInput";
 import { useForm } from "react-hook-form";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const AuthenticationForm = () => {
   const [currentFace, setCurrentFace] = useState("login");
@@ -114,6 +115,8 @@ const AuthenticationForm = () => {
       formState: { errors },
     } = useForm();
 
+    const [showPassword, setShowPassword] = useState(false);
+
     return (
       <>
         <h2 className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-4">
@@ -132,14 +135,23 @@ const AuthenticationForm = () => {
             type="email"
             placeholder={t("emailPlaceholder")}
           />
-          <FormInput
-            label={t("password")}
-            error={errors.password}
-            register={register}
-            name="password"
-            type="password"
-            placeholder={t("passwordPlaceholder")}
-          />
+          <div className="relative">
+            <FormInput
+              label={t("password")}
+              error={errors.password}
+              register={register}
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder={t("passwordPlaceholder")}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-10 text-xl text-custom-dark-blue"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </button>
+          </div>
           <div className="text-center">
             <button
               type="button"
@@ -178,6 +190,8 @@ const AuthenticationForm = () => {
       formState: { errors },
     } = useForm();
 
+    const [showPassword, setShowPassword] = useState(false);
+
     return (
       <>
         <h2 className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-4">
@@ -205,14 +219,23 @@ const AuthenticationForm = () => {
             type="email"
             placeholder={t("emailPlaceholder")}
           />
-          <FormInput
-            label={t("password")}
-            error={errors.password}
-            register={register}
-            name="password"
-            type="password"
-            placeholder={t("passwordPlaceholder")}
-          />
+          <div className="relative">
+            <FormInput
+              label={t("password")}
+              error={errors.password}
+              register={register}
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder={t("passwordPlaceholder")}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-10 text-xl text-custom-dark-blue"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </button>
+          </div>
           <div className="mb-4">
             <label className="inline-flex items-center">
               <input

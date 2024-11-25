@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import BottomNavbar from "@/components/BottomNavbar";
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   const plants = useSelector(selectPlants);
   const theme = useSelector(selectTheme);
   const { t } = useTranslation();
-
+  const sidebarRef = useRef(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -63,6 +63,12 @@ const AdminDashboard = () => {
     startIndex + plantsPerPage
   );
   const { sortedItems, sortItems } = usePlantSort(plants);
+
+  useEffect(() => {
+    if (view === "plants") {
+      setFilteredPlants(plants);
+    }
+  }, [view, plants]);
 
   useEffect(() => {
     if (user?.id && user?.tokenIdentificador && isInitialLoad) {
@@ -131,6 +137,13 @@ const AdminDashboard = () => {
     setFilteredPlants(sortedItems);
   };
 
+  useEffect(() => {
+    if (view === "plants") {
+      setFilteredPlants(plants);
+      sidebarRef.current?.clearFilters();
+    }
+  }, [view, plants]);
+
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
       <TransitionEffect />
@@ -168,6 +181,7 @@ const AdminDashboard = () => {
         <div className="flex">
           {view === "plants" && (
             <FilterSidebar
+              ref={sidebarRef}
               plants={plants}
               onFilterChange={handleFilterChange}
             />

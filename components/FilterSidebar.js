@@ -16,12 +16,9 @@ import SecondaryButton from "./SecondaryButton";
 
 const FilterSidebar = forwardRef(
   ({ plants, onFilterChange, initialSearchTerm }, ref) => {
-    // Hooks
     const { t } = useTranslation();
     const { isDesktop } = useDeviceType();
     const sidebarRef = useRef(null);
-
-    // State
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [filters, setFilters] = useState({
       status: [],
@@ -30,8 +27,8 @@ const FilterSidebar = forwardRef(
       search: initialSearchTerm || "",
       capacity: { min: 0, max: 10000 },
     });
+    const normalizeString = (str) => str.replace(/\s+/g, "").toLowerCase();
 
-    // Expose methods to parent
     useImperativeHandle(ref, () => ({
       updateSearch: (value) => {
         setFilters((prev) => ({
@@ -39,9 +36,17 @@ const FilterSidebar = forwardRef(
           search: value,
         }));
       },
+      clearFilters: () => {
+        setFilters({
+          status: [],
+          type: [],
+          organization: [],
+          search: "",
+          capacity: { min: 0, max: 10000 },
+        });
+      },
     }));
 
-    // Effects
     useEffect(() => {
       if (initialSearchTerm !== filters.search) {
         setFilters((prev) => ({
@@ -62,7 +67,6 @@ const FilterSidebar = forwardRef(
         document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Filter Logic
     const filterPlants = () => {
       let filtered = [...plants];
 
@@ -93,7 +97,10 @@ const FilterSidebar = forwardRef(
       // Organization filter
       if (filters.organization.length > 0) {
         filtered = filtered.filter((plant) =>
-          filters.organization.includes(plant.organization)
+          filters.organization.some(
+            (filterOrg) =>
+              normalizeString(filterOrg) === normalizeString(plant.organization)
+          )
         );
       }
 
@@ -113,13 +120,14 @@ const FilterSidebar = forwardRef(
       return filtered;
     };
 
-    // Handlers
     const handleCheckboxChange = (filterType, value) => {
+      const normalizedValue = normalizeString(value);
+
       setFilters((prev) => ({
         ...prev,
-        [filterType]: prev[filterType].includes(value)
-          ? prev[filterType].filter((item) => item !== value)
-          : [...prev[filterType], value],
+        [filterType]: prev[filterType].includes(normalizedValue)
+          ? prev[filterType].filter((item) => item !== normalizedValue)
+          : [...prev[filterType], normalizedValue],
       }));
     };
 
@@ -253,9 +261,14 @@ const FilterSidebar = forwardRef(
                 <CustomCheckbox
                   key={organization}
                   label={organization}
-                  checked={filters.organization.includes(organization)}
+                  checked={filters.organization.includes(
+                    normalizeString(organization)
+                  )}
                   onChange={() =>
-                    handleCheckboxChange("organization", organization)
+                    handleCheckboxChange(
+                      "organization",
+                      normalizeString(organization)
+                    )
                   }
                 />
               ))}

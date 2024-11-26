@@ -22,7 +22,7 @@ const ProviderFilterSidebar = ({
   });
   const { isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
-  const initialRenderRef = useRef(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const filterPlants = useCallback(
     (currentFilters) => {
@@ -74,17 +74,16 @@ const ProviderFilterSidebar = ({
     [plants]
   );
 
-  const closeSidebar = useCallback(() => {
-    setIsSidebarOpen(false);
-  }, [setIsSidebarOpen]);
-
-  // Only run when plants change
+  // Initialize filters
   useEffect(() => {
-    if (plants?.length > 0 && initialRenderRef.current) {
-      initialRenderRef.current = false;
-      onFilterChange(filterPlants(filters));
+    if (plants?.length > 0 && !isInitialized) {
+      setIsInitialized(true);
+      // Use setTimeout to avoid render-time setState
+      setTimeout(() => {
+        onFilterChange(plants);
+      }, 0);
     }
-  }, [plants, filterPlants, onFilterChange]);
+  }, [plants, isInitialized, onFilterChange]);
 
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
@@ -98,7 +97,11 @@ const ProviderFilterSidebar = ({
           [filterType]: updatedFilter,
         };
 
-        onFilterChange(filterPlants(updatedFilters));
+        // Use setTimeout to avoid render-time setState
+        setTimeout(() => {
+          onFilterChange(filterPlants(updatedFilters));
+        }, 0);
+
         return updatedFilters;
       });
     },
@@ -113,7 +116,12 @@ const ProviderFilterSidebar = ({
           ...prevFilters,
           search: searchTerm,
         };
-        onFilterChange(filterPlants(updatedFilters));
+
+        // Use setTimeout to avoid render-time setState
+        setTimeout(() => {
+          onFilterChange(filterPlants(updatedFilters));
+        }, 0);
+
         return updatedFilters;
       });
     },
@@ -132,12 +140,21 @@ const ProviderFilterSidebar = ({
           ...prevFilters,
           capacity: updatedCapacity,
         };
-        onFilterChange(filterPlants(updatedFilters));
+
+        // Use setTimeout to avoid render-time setState
+        setTimeout(() => {
+          onFilterChange(filterPlants(updatedFilters));
+        }, 0);
+
         return updatedFilters;
       });
     },
     [filterPlants, onFilterChange]
   );
+
+  const closeSidebar = useCallback(() => {
+    setIsSidebarOpen(false);
+  }, [setIsSidebarOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

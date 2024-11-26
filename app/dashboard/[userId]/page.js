@@ -15,7 +15,6 @@ export default function Dashboard() {
 
   console.log("current user: ", user);
 
-  // Redirect based on user role
   if (isAdmin) {
     router.push(`/dashboard/${user.id}/admin`);
   } else {
@@ -24,7 +23,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     dispatch(clearPlantDetails());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="h-screen w-screen">

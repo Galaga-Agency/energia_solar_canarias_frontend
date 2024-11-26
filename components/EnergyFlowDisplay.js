@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo, useRef } from "react";
+import React, { useEffect, useState, memo, useRef, useCallback } from "react";
 import Image from "next/image";
 import houseIllustration from "@/public/assets/img/house-illustration.png";
 import solarPanelIllustration from "@/public/assets/img/solar-panel-illustration.png";
@@ -42,21 +42,18 @@ const EnergyFlowDisplay = memo(({ provider }) => {
   const formattedPlantId = params?.plantId?.toString() || null;
   const token = useSelector(selectUser).tokenIdentificador;
 
-  if (!formattedPlantId) {
-    console.error("Plant ID is missing");
-    return;
-  }
+  const fetchRealtimeData = useCallback(async () => {
+    if (!formattedPlantId || !token) {
+      console.error("Plant ID or token is missing");
+      return;
+    }
 
-  console.log("Plant ID from params:", params.plantId);
-  console.log("Token:", token);
-
-  const fetchRealtimeData = async () => {
     try {
       setIsFetching(true);
 
       let response;
       let parsedData = {
-        powerflow: { load: 0, pv: 0, grid: 0, soc: 0 }, // Default structure
+        powerflow: { load: 0, pv: 0, grid: 0, soc: 0 },
       };
 
       switch (provider) {
@@ -64,14 +61,14 @@ const EnergyFlowDisplay = memo(({ provider }) => {
           response = await dispatch(
             fetchGoodweRealtimeData({ plantId: formattedPlantId, token })
           ).unwrap();
-          parsedData = response?.data || parsedData; // Ensure fallback structure
+          parsedData = response?.data || parsedData;
           break;
 
         case "solaredge":
           response = await dispatch(
             fetchSolarEdgeRealtimeData({ plantId: formattedPlantId, token })
           ).unwrap();
-          parsedData = response?.data || parsedData; // Same fallback structure
+          parsedData = response?.data || parsedData;
           break;
 
         default:
@@ -91,12 +88,12 @@ const EnergyFlowDisplay = memo(({ provider }) => {
       console.error("Error fetching real-time data:", err);
       setError(true);
       setRealtimeData({
-        powerflow: { load: 0, pv: 0, grid: 0, soc: 0 }, // Reset to default
+        powerflow: { load: 0, pv: 0, grid: 0, soc: 0 },
       });
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [formattedPlantId, token, dispatch, provider]);
 
   useEffect(() => {
     if (!formattedPlantId || !token) {
@@ -104,9 +101,13 @@ const EnergyFlowDisplay = memo(({ provider }) => {
       return;
     }
     fetchRealtimeData();
-  }, [formattedPlantId, token, dispatch]);
+  }, [fetchRealtimeData, formattedPlantId, token]);
 
-  const { load, pv, grid, soc } = realtimeData || {};
+  if (!formattedPlantId) {
+    return null;
+  }
+
+  const { load = 0, pv = 0, grid = 0, soc = 0 } = realtimeData?.powerflow || {};
 
   return (
     <>
@@ -148,7 +149,6 @@ const EnergyFlowDisplay = memo(({ provider }) => {
             </div>
           )}
 
-          {/* Battery Indicator with Tooltip */}
           <div className="flex items-center gap-2 mt-8 md:mt-0">
             <BatteryIndicator soc={soc} />
             <TooltipProvider>
@@ -214,7 +214,6 @@ const EnergyFlowDisplay = memo(({ provider }) => {
             </div>
           </div>
 
-          {/* Energy stats with responsive grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center">
               <span className="block text-sm text-slate-600 dark:text-slate-300">
@@ -258,5 +257,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
     </>
   );
 });
+
+EnergyFlowDisplay.displayName = "EnergyFlowDisplay";
 
 export default EnergyFlowDisplay;

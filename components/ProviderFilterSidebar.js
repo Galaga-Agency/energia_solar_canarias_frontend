@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
@@ -20,104 +20,124 @@ const ProviderFilterSidebar = ({
     search: "",
     capacity: { min: 0, max: 10000 },
   });
-  const { isDesktop, isMobile } = useDeviceType();
+  const { isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
+  const initialRenderRef = useRef(true);
 
-  const filterPlants = (currentFilters) => {
-    if (!plants) return [];
+  const filterPlants = useCallback(
+    (currentFilters) => {
+      if (!plants) return [];
 
-    let filtered = [...plants];
+      let filtered = [...plants];
 
-    if (currentFilters.search) {
-      const searchTerm = currentFilters.search.toLowerCase();
-      filtered = filtered.filter(
-        (plant) =>
-          plant.name.toLowerCase().includes(searchTerm) ||
-          plant.address.toLowerCase().includes(searchTerm)
-      );
-    }
+      if (currentFilters.search) {
+        const searchTerm = currentFilters.search.toLowerCase();
+        filtered = filtered.filter(
+          (plant) =>
+            plant.name.toLowerCase().includes(searchTerm) ||
+            plant.address.toLowerCase().includes(searchTerm)
+        );
+      }
 
-    if (currentFilters.status.length > 0) {
-      filtered = filtered.filter((plant) =>
-        currentFilters.status.includes(plant.status)
-      );
-    }
+      if (currentFilters.status.length > 0) {
+        filtered = filtered.filter((plant) =>
+          currentFilters.status.includes(plant.status)
+        );
+      }
 
-    if (currentFilters.type.length > 0) {
-      filtered = filtered.filter((plant) =>
-        currentFilters.type.includes(plant.type)
-      );
-    }
+      if (currentFilters.type.length > 0) {
+        filtered = filtered.filter((plant) =>
+          currentFilters.type.includes(plant.type)
+        );
+      }
 
-    if (currentFilters.organization.length > 0) {
-      filtered = filtered.filter((plant) =>
-        currentFilters.organization.includes(plant.organization)
-      );
-    }
+      if (currentFilters.organization.length > 0) {
+        filtered = filtered.filter((plant) =>
+          currentFilters.organization.includes(plant.organization)
+        );
+      }
 
-    if (currentFilters.capacity.min || currentFilters.capacity.max) {
-      filtered = filtered.filter(
-        (plant) =>
-          (currentFilters.capacity.min
-            ? plant.capacity >= currentFilters.capacity.min
-            : true) &&
-          (currentFilters.capacity.max
-            ? plant.capacity <= currentFilters.capacity.max
-            : true)
-      );
-    }
+      if (currentFilters.capacity.min || currentFilters.capacity.max) {
+        filtered = filtered.filter(
+          (plant) =>
+            (currentFilters.capacity.min
+              ? plant.capacity >= currentFilters.capacity.min
+              : true) &&
+            (currentFilters.capacity.max
+              ? plant.capacity <= currentFilters.capacity.max
+              : true)
+        );
+      }
 
-    return filtered;
-  };
+      return filtered;
+    },
+    [plants]
+  );
 
-  const handleCheckboxChange = (filterType, value) => {
-    setFilters((prevFilters) => {
-      const updatedFilter = prevFilters[filterType].includes(value)
-        ? prevFilters[filterType].filter((item) => item !== value)
-        : [...prevFilters[filterType], value];
-
-      const updatedFilters = {
-        ...prevFilters,
-        [filterType]: updatedFilter,
-      };
-
-      return updatedFilters;
-    });
-  };
-
-  useEffect(() => {
-    if (plants) {
-      const filtered = filterPlants(filters);
-      onFilterChange(filtered);
-    }
-  }, [filters, plants, onFilterChange]);
-
-  const handleSearchChange = (event) => {
-    const searchTerm = event.target.value;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      search: searchTerm,
-    }));
-  };
-
-  const handleCapacityChange = (type, value) => {
-    if (!value || isNaN(value)) return;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      capacity: {
-        ...prevFilters.capacity,
-        [type]: Number(value),
-      },
-    }));
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const closeSidebar = () => {
+  const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);
-  };
+  }, [setIsSidebarOpen]);
+
+  // Only run when plants change
+  useEffect(() => {
+    if (plants?.length > 0 && initialRenderRef.current) {
+      initialRenderRef.current = false;
+      onFilterChange(filterPlants(filters));
+    }
+  }, [plants, filterPlants, onFilterChange]);
+
+  const handleCheckboxChange = useCallback(
+    (filterType, value) => {
+      setFilters((prevFilters) => {
+        const updatedFilter = prevFilters[filterType].includes(value)
+          ? prevFilters[filterType].filter((item) => item !== value)
+          : [...prevFilters[filterType], value];
+
+        const updatedFilters = {
+          ...prevFilters,
+          [filterType]: updatedFilter,
+        };
+
+        onFilterChange(filterPlants(updatedFilters));
+        return updatedFilters;
+      });
+    },
+    [filterPlants, onFilterChange]
+  );
+
+  const handleSearchChange = useCallback(
+    (event) => {
+      const searchTerm = event.target.value;
+      setFilters((prevFilters) => {
+        const updatedFilters = {
+          ...prevFilters,
+          search: searchTerm,
+        };
+        onFilterChange(filterPlants(updatedFilters));
+        return updatedFilters;
+      });
+    },
+    [filterPlants, onFilterChange]
+  );
+
+  const handleCapacityChange = useCallback(
+    (type, value) => {
+      if (!value || isNaN(value)) return;
+      setFilters((prevFilters) => {
+        const updatedCapacity = {
+          ...prevFilters.capacity,
+          [type]: Number(value),
+        };
+        const updatedFilters = {
+          ...prevFilters,
+          capacity: updatedCapacity,
+        };
+        onFilterChange(filterPlants(updatedFilters));
+        return updatedFilters;
+      });
+    },
+    [filterPlants, onFilterChange]
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -127,7 +147,7 @@ const ProviderFilterSidebar = ({
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [closeSidebar]);
 
   return (
     <div
@@ -150,7 +170,6 @@ const ProviderFilterSidebar = ({
         )}
       </div>
 
-      {/* Search Input */}
       <div className="mb-4">
         <input
           type="text"
@@ -161,7 +180,6 @@ const ProviderFilterSidebar = ({
         />
       </div>
 
-      {/* Filter Sections (status, type, organization, etc.) */}
       <div className="mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("plantStatus")}
@@ -178,7 +196,6 @@ const ProviderFilterSidebar = ({
         </div>
       </div>
 
-      {/* Type Filters */}
       <div className="mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("type")}
@@ -201,7 +218,6 @@ const ProviderFilterSidebar = ({
         </div>
       </div>
 
-      {/* Capacity Filters */}
       <div className="mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("capacity")}
@@ -224,7 +240,6 @@ const ProviderFilterSidebar = ({
         </div>
       </div>
 
-      {/* Validate Filters Button (mobile only) */}
       <div className="xl:hidden flex justify-center mt-4">
         <button
           onClick={() => {

@@ -70,7 +70,9 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
   ]);
 
   useEffect(() => {
-    if (!isInitialized && plantId && user?.tokenIdentificador) {
+    const shouldFetchData =
+      !isInitialized && plantId && user?.tokenIdentificador;
+    if (shouldFetchData) {
       setIsInitialized(true);
       handleFetchGraph();
     }
@@ -80,15 +82,15 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
     if (isInitialized) {
       handleFetchGraph();
     }
-  }, [range, chartIndexId, handleFetchGraph]);
+  }, [isInitialized, handleFetchGraph]);
 
   useEffect(() => {
     return () => {
-      if (isInitialized) dispatch(clearGraphData());
+      dispatch(clearGraphData());
     };
-  }, [dispatch, isInitialized]);
+  }, [dispatch]);
 
-  const getExpectedMetrics = () => {
+  const getExpectedMetrics = useCallback(() => {
     switch (chartIndexId) {
       case "estadisticas sobre energia":
         return [
@@ -137,11 +139,11 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
           },
         ];
     }
-  };
+  }, [t]);
 
   const expectedMetrics = useMemo(
     () => getExpectedMetrics(),
-    [chartIndexId, t, getExpectedMetrics]
+    [getExpectedMetrics]
   );
 
   const transformedData = useMemo(() => {
@@ -173,6 +175,7 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
 
     const validData = graphData?.data?.data;
     if (!validData?.lines?.length) return [];
+
     return validData.lines[0].xy.map((point, index) => {
       const dataPoint = { date: point.x };
       validData.lines.forEach((line) => {
@@ -182,74 +185,84 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
       });
       return dataPoint;
     });
-  }, [graphData, chartIndexId, t]);
+  }, [graphData?.data?.data, chartIndexId, t]);
 
-  const renderPieChart = (chartData, title) => {
-    const isEmpty = chartData.every(
-      (entry) => entry.value === 0 || entry.value === null
-    );
+  const renderPieChart = useCallback(
+    (chartData, title) => {
+      const isEmpty = chartData.every(
+        (entry) => entry.value === 0 || entry.value === null
+      );
 
-    const placeholderData = [{ name: t("NoData"), value: 1, color: "#d3d3d3" }];
-    const totalValue = chartData.reduce((sum, entry) => sum + entry.value, 0);
+      const placeholderData = [
+        { name: t("NoData"), value: 1, color: "#d3d3d3" },
+      ];
+      const totalValue = chartData.reduce((sum, entry) => sum + entry.value, 0);
 
-    return (
-      <div key={`piechart-${title}`} className="flex flex-col items-center p-4">
-        <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
-          {title}
-        </h2>
-        <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
-          <ResponsiveContainer width={300} height={!isDesktop ? 250 : 350}>
-            <PieChart>
-              <Pie
-                data={isEmpty ? placeholderData : chartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={isMobile ? 110 : 120}
-                label={null}
-              >
-                {(isEmpty ? placeholderData : chartData).map((entry, index) => (
-                  <Cell
-                    key={`cell-${title}-${index}`}
-                    fill={entry.color || COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="flex flex-col gap-2">
-            {(isEmpty ? placeholderData : chartData).map((entry, index) => {
-              const percentage = totalValue
-                ? ((entry.value / totalValue) * 100).toFixed(1)
-                : 0;
-              return (
-                <div
-                  key={`legend-${title}-${index}`}
-                  className="flex items-center gap-2 text-sm whitespace-nowrap"
+      return (
+        <div
+          key={`piechart-${title}`}
+          className="flex flex-col items-center p-4"
+        >
+          <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
+            {title}
+          </h2>
+          <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
+            <ResponsiveContainer width={300} height={!isDesktop ? 250 : 350}>
+              <PieChart>
+                <Pie
+                  data={isEmpty ? placeholderData : chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={isMobile ? 110 : 120}
+                  label={null}
                 >
+                  {(isEmpty ? placeholderData : chartData).map(
+                    (entry, index) => (
+                      <Cell
+                        key={`cell-${title}-${index}`}
+                        fill={entry.color || COLORS[index % COLORS.length]}
+                      />
+                    )
+                  )}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex flex-col gap-2">
+              {(isEmpty ? placeholderData : chartData).map((entry, index) => {
+                const percentage = totalValue
+                  ? ((entry.value / totalValue) * 100).toFixed(1)
+                  : 0;
+                return (
                   <div
-                    style={{
-                      backgroundColor: isEmpty
-                        ? "#d3d3d3"
-                        : COLORS[index % COLORS.length],
-                    }}
-                    className="w-4 h-4"
-                  ></div>
-                  <span className="text-custom-dark-blue dark:text-custom-yellow">
-                    {entry.name}: {entry.value.toFixed(2)} {entry.unit} (
-                    {percentage}%)
-                  </span>
-                </div>
-              );
-            })}
+                    key={`legend-${title}-${index}`}
+                    className="flex items-center gap-2 text-sm whitespace-nowrap"
+                  >
+                    <div
+                      style={{
+                        backgroundColor: isEmpty
+                          ? "#d3d3d3"
+                          : COLORS[index % COLORS.length],
+                      }}
+                      className="w-4 h-4"
+                    ></div>
+                    <span className="text-custom-dark-blue dark:text-custom-yellow">
+                      {entry.name}: {entry.value.toFixed(2)} {entry.unit} (
+                      {percentage}%)
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
-    );
-  };
+      );
+    },
+    [isDesktop, isMobile, t]
+  );
 
-  const renderContent = () => {
+  const renderContent = useCallback(() => {
     const validData = graphData?.data?.data;
     const hasValidLines = validData?.lines?.length > 0;
 
@@ -345,7 +358,17 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
             )}
       </ComposedChart>
     );
-  };
+  }, [
+    graphData?.data?.data,
+    isLoading,
+    chartIndexId,
+    transformedData,
+    range,
+    expectedMetrics,
+    isMobile,
+    t,
+    renderPieChart,
+  ]);
 
   return (
     <>
@@ -406,7 +429,7 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
             width="100%"
             height={
               chartIndexId === "estadisticas sobre energia" && isMobile
-                ? "auto "
+                ? "auto"
                 : 400
             }
           >

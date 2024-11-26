@@ -61,12 +61,11 @@ const SolarEdgePlantDetails = React.memo(
       return plant.data.details;
     }, [plant]);
 
-    console.log("solaredgePlant in component details: ", solaredgePlant);
-
     const formattedAddress = useMemo(() => {
       if (!solaredgePlant?.location) return "";
-      return `${solaredgePlant.location.city}, ${solaredgePlant.location.country}`;
-    }, []);
+      const { city = "", country = "" } = solaredgePlant.location;
+      return `${city}, ${country}`;
+    }, [solaredgePlant?.location]);
 
     const tStatus = useMemo(
       () => t(`status.${solaredgePlant?.status}` || "status.unknown"),

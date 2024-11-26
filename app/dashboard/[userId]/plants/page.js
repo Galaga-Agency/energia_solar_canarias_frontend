@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import BottomNavbar from "@/components/BottomNavbar";
@@ -59,32 +59,38 @@ const ClientDashboardPage = ({ params }) => {
     startIndex + plantsPerPage
   );
 
-  const handleFilterChange = (filteredResults) => {
+  const handleFilterChange = useCallback((filteredResults) => {
     setFilteredPlants(filteredResults);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handleSearchChange = (value) => {
+  const handleSearchChange = useCallback((value) => {
     setSearchTerm(value);
     sidebarRef.current?.updateSearch(value);
-  };
+  }, []);
+
+  const fetchUserPlants = useCallback(() => {
+    if (user?.id) {
+      dispatch(
+        fetchPlants({ userId: user.id, token: user.tokenIdentificador })
+      );
+      dispatch(clearPlantDetails());
+    }
+  }, [dispatch, user]);
 
   useEffect(() => {
     if (!user?.id) {
       router.push("/");
     } else {
       setIsInitialLoad(false);
-      dispatch(
-        fetchPlants({ userId: user.id, token: user.tokenIdentificador })
-      );
-      dispatch(clearPlantDetails());
+      fetchUserPlants();
     }
-  }, [user, router, dispatch]);
+  }, [user, router, fetchUserPlants]);
 
   useEffect(() => {
     dispatch(clearPlantDetails());
     setFilteredPlants(plants);
-  }, [plants]);
+  }, [plants, dispatch]);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto">
@@ -107,13 +113,11 @@ const ClientDashboardPage = ({ params }) => {
           </h2>
         </div>
 
-        {/* Add Plant Form */}
         <AddPlantForm
           onClose={() => setIsFormOpen(false)}
           isOpen={isFormOpen}
         />
 
-        {/* Plants Map Modal */}
         <PlantsMapModal
           isOpen={isMapOpen}
           onClose={() => setIsMapOpen(false)}
@@ -129,7 +133,6 @@ const ClientDashboardPage = ({ params }) => {
           />
 
           <div className="flex-1">
-            {/* Filter and Sort */}
             <div className="flex flex-col md:flex-row md:justify-between z-30">
               <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
                 <div className="flex-grow">
@@ -159,7 +162,6 @@ const ClientDashboardPage = ({ params }) => {
               <PlantListSkeleton theme={theme} rows={plantsPerPage} />
             ) : (
               <>
-                {/* Render Plants */}
                 {paginatedPlants.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
                     {paginatedPlants.map((plant) => (
@@ -175,7 +177,6 @@ const ClientDashboardPage = ({ params }) => {
                   </div>
                 )}
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                   <Pagination
                     currentPage={currentPage}
@@ -188,7 +189,6 @@ const ClientDashboardPage = ({ params }) => {
           </div>
         </div>
 
-        {/* Floating Add Plant Button */}
         <button
           onClick={() => setIsFormOpen(true)}
           className="fixed bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"

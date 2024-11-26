@@ -13,6 +13,7 @@ import {
   fetchGoodweRealtimeDataAPI,
   fetchGoodweWeatherDataAPI,
 } from "@/services/goodwe-api";
+import { fetchSolarEdgeWeatherDataAPI } from "@/services/solardedge-api";
 
 // Thunks
 export const fetchPlants = createAsyncThunk(
@@ -129,6 +130,55 @@ export const fetchGoodweRealtimeData = createAsyncThunk(
   }
 );
 
+// Solaredge
+
+export const fetchSolarEdgeGraphData = createAsyncThunk(
+  "plants/fetchSolarEdgeGraphData",
+  async ({ plantId, date, range, chartType, token }, { rejectWithValue }) => {
+    try {
+      const response = await fetchSolarEdgeGraphDataAPI({
+        plantId,
+        date,
+        range,
+        chartType,
+        token,
+      });
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchSolarEdgeRealtimeData = createAsyncThunk(
+  "plants/fetchSolarEdgeRealtimeData",
+  async ({ name, token }, { rejectWithValue }) => {
+    try {
+      const weatherData = await fetchSolarEdgeWeatherDataAPI(name, token);
+      if (!weatherData) throw new Error("No weather data found");
+      return weatherData;
+    } catch (error) {
+      console.error("Fetch weather data error:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchSolarEdgeWeatherData = createAsyncThunk(
+  "plants/fetchSolarEdgeWeatherData",
+  async ({ name, token }, { rejectWithValue }) => {
+    try {
+      const weatherData = await fetchSolarEdgeWeatherDataAPI({
+        name,
+        token,
+      });
+      return weatherData;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   plants: [],
   plantDetails: null,
@@ -220,7 +270,7 @@ const plantsSlice = createSlice({
         state.plants = [];
       })
 
-      // Goodwe graphs
+      // Goodwe
       .addCase(fetchGoodweGraphData.pending, (state, action) => {
         state.graphLoading = true;
         state.graphError = null;
@@ -241,8 +291,6 @@ const plantsSlice = createSlice({
           state.graphError = action.payload || "Failed to fetch graph data";
         }
       })
-
-      // Goodwe weather
       .addCase(fetchGoodweWeatherData.pending, (state) => {
         state.weatherLoading = true;
         state.weatherError = null;
@@ -257,8 +305,6 @@ const plantsSlice = createSlice({
         state.weatherData = null;
         state.weatherError = action.payload || "Failed to fetch weather data";
       })
-
-      // Real-time data
       .addCase(fetchGoodweRealtimeData.pending, (state) => {
         console.log("Fetching real-time data: pending...");
         state.realtimeLoading = true;
@@ -276,6 +322,44 @@ const plantsSlice = createSlice({
         state.realtimeData = null;
         state.realtimeError =
           action.payload || "Failed to fetch real-time data";
+      })
+
+      // Solaredge
+      .addCase(fetchSolarEdgeGraphData.pending, (state) => {
+        state.graphLoading = true;
+        state.graphError = null;
+      })
+      .addCase(fetchSolarEdgeGraphData.fulfilled, (state, action) => {
+        state.graphLoading = false;
+        state.graphData = action.payload;
+      })
+      .addCase(fetchSolarEdgeGraphData.rejected, (state, action) => {
+        state.graphLoading = false;
+        state.graphError = action.payload;
+      })
+      .addCase(fetchSolarEdgeRealtimeData.pending, (state) => {
+        state.realtimeLoading = true;
+        state.realtimeError = null;
+      })
+      .addCase(fetchSolarEdgeRealtimeData.fulfilled, (state, action) => {
+        state.realtimeLoading = false;
+        state.realtimeData = action.payload;
+      })
+      .addCase(fetchSolarEdgeRealtimeData.rejected, (state, action) => {
+        state.realtimeLoading = false;
+        state.realtimeError = action.payload;
+      })
+      .addCase(fetchSolarEdgeWeatherData.pending, (state) => {
+        state.weatherLoading = true;
+        state.weatherError = null;
+      })
+      .addCase(fetchSolarEdgeWeatherData.fulfilled, (state, action) => {
+        state.weatherLoading = false;
+        state.weatherData = action.payload;
+      })
+      .addCase(fetchSolarEdgeWeatherData.rejected, (state, action) => {
+        state.weatherLoading = false;
+        state.weatherError = action.payload;
       });
   },
 });

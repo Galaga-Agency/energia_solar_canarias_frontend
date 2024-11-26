@@ -40,7 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/Tooltip";
-import GraphDisplay from "@/components/GraphDisplay";
+import GoodweGraphDisplay from "@/components/GoodweGraphDisplay";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "../WeatherWidget";
 import ImageCarousel from "../ImageCarousel";
@@ -69,6 +69,11 @@ const GoodwePlantDetails = React.memo(
       () => goodwePlant?.info?.powerstation_id,
       [goodwePlant]
     );
+
+    const formattedAddress = useMemo(() => {
+      if (!solaredgePlant?.location) return "";
+      return `${solaredgePlant.location.city}, ${solaredgePlant.location.country}`;
+    }, [solaredgePlant?.location]);
 
     const statusColors = {
       working: "bg-green-500",
@@ -167,7 +172,11 @@ const GoodwePlantDetails = React.memo(
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 ">
-            <WeatherWidget plant={goodwePlant} />
+            <WeatherWidget
+              plant={goodwePlant}
+              address={formattedAddress}
+              provider={goodwePlant?.info?.org_name}
+            />
 
             {/* Plant Details */}
             {isLoading ? (
@@ -449,7 +458,7 @@ const GoodwePlantDetails = React.memo(
           </div>
 
           <section className="mb-6">
-            <GraphDisplay
+            <GoodweGraphDisplay
               plantId={goodwePlant?.info?.powerstation_id}
               title={t("plantAnalytics")}
             />

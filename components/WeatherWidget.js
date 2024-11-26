@@ -8,6 +8,7 @@ import {
   selectWeatherData,
   selectWeatherLoading,
   selectWeatherError,
+  fetchSolarEdgeWeatherData,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import { BsCloudSun, BsSnow } from "react-icons/bs";
@@ -16,7 +17,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidgetSkeleton from "./LoadingSkeletons/WeatherWidgetSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
-const WeatherWidget = ({ plant }) => {
+const WeatherWidget = ({ plant, address, provider }) => {
   const dispatch = useDispatch();
   const weatherData = useSelector(selectWeatherData);
   const weatherLoading = useSelector(selectWeatherLoading);
@@ -26,19 +27,32 @@ const WeatherWidget = ({ plant }) => {
   const { isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
 
-  const memoizedPlant = useMemo(() => plant, [plant]);
+  console.log("address passed in weather widget: ", address);
 
   useEffect(() => {
-    if (memoizedPlant?.info?.address && user?.tokenIdentificador) {
-      const address = memoizedPlant.info.address;
-      dispatch(
-        fetchGoodweWeatherData({
-          name: address,
-          token: user.tokenIdentificador,
-        })
-      );
+    if (address && user?.tokenIdentificador && provider) {
+      switch (provider.toLowerCase()) {
+        case "goodwe":
+          dispatch(
+            fetchGoodweWeatherData({
+              name: address,
+              token: user.tokenIdentificador,
+            })
+          );
+          break;
+        case "solaredge":
+          dispatch(
+            fetchSolarEdgeWeatherData({
+              name: address,
+              token: user.tokenIdentificador,
+            })
+          );
+          break;
+        default:
+          console.warn(`Unsupported provider: ${provider}`);
+      }
     }
-  }, [dispatch, memoizedPlant?.info?.address, user?.tokenIdentificador]);
+  }, [dispatch, address, user?.tokenIdentificador, provider]);
 
   const getWeatherIcon = (code, isToday = false) => {
     const sizeClass = isToday ? "text-8xl" : "text-4xl";

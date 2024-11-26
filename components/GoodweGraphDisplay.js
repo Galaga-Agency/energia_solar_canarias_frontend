@@ -32,7 +32,7 @@ import { selectTheme } from "@/store/slices/themeSlice";
 
 const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];
 
-const GraphDisplay = ({ plantId, title }) => {
+const GoodweGraphDisplay = ({ plantId, title }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [range, setRange] = useState("dia");
@@ -418,4 +418,4 @@ const GraphDisplay = ({ plantId, title }) => {
   );
 };
 
-export default GraphDisplay;
+export default GoodweGraphDisplay;

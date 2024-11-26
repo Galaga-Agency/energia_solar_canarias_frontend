@@ -85,7 +85,7 @@ const ProviderPage = () => {
       setFilteredPlants(providerPlants);
       setIsInitialLoad(false);
     }
-  }, [plants, loading, provider]);
+  }, [plants, loading, provider, providerPassed]);
 
   const handleFilterChange = (newFilteredPlants) => {
     setFilteredPlants(newFilteredPlants);

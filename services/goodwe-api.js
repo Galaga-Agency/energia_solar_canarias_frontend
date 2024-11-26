@@ -40,7 +40,6 @@ export const fetchGoodweGraphDataAPI = async ({
 export const fetchGoodweWeatherDataAPI = async (name, token) => {
   //   console.log("Full address received: ", name);
 
-  // Extract city and country
   const extractCityAndCountry = (address) => {
     if (!address) return null;
 

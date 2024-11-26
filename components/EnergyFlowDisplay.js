@@ -7,6 +7,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchGoodweRealtimeData,
+  fetchSolarEdgeRealtimeData,
   selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import EnergyLoadingClock from "@/components/EnergyLoadingClock";
@@ -21,12 +22,13 @@ import {
 import { Info } from "lucide-react";
 import EnergyFlowSkeleton from "./LoadingSkeletons/EnergyFlowSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
+import { useParams } from "next/navigation";
+import { selectUser } from "@/store/slices/userSlice";
 
-const EnergyFlowDisplay = memo(({ plantId, token }) => {
+const EnergyFlowDisplay = memo(({ provider }) => {
   const { isMobile } = useDeviceType();
   const dispatch = useDispatch();
   const { t } = useTranslation();
-
   const [realtimeData, setRealtimeData] = useState({
     powerflow: { load: 0, pv: 0, grid: 0, soc: 0 },
   });
@@ -36,16 +38,51 @@ const EnergyFlowDisplay = memo(({ plantId, token }) => {
   const lastUpdatedRef = useRef("");
   const isLoading = useSelector(selectRealtimeLoading);
   const theme = useSelector(selectTheme);
+  const params = useParams();
+  const formattedPlantId = params?.plantId?.toString() || null;
+  const token = useSelector(selectUser).tokenIdentificador;
+
+  if (!formattedPlantId) {
+    console.error("Plant ID is missing");
+    return;
+  }
+
+  console.log("Plant ID from params:", params.plantId);
+  console.log("Token:", token);
 
   const fetchRealtimeData = async () => {
     try {
       setIsFetching(true);
-      const response = await dispatch(
-        fetchGoodweRealtimeData({ plantId, token })
-      ).unwrap();
-      setRealtimeData(
-        response?.data || { powerflow: { load: 0, pv: 0, grid: 0, soc: 0 } }
-      );
+
+      let response;
+      let parsedData = {
+        powerflow: { load: 0, pv: 0, grid: 0, soc: 0 }, // Default structure
+      };
+
+      switch (provider) {
+        case "goodwe":
+          response = await dispatch(
+            fetchGoodweRealtimeData({ plantId: formattedPlantId, token })
+          ).unwrap();
+          parsedData = response?.data || parsedData; // Ensure fallback structure
+          break;
+
+        case "solaredge":
+          response = await dispatch(
+            fetchSolarEdgeRealtimeData({ plantId: formattedPlantId, token })
+          ).unwrap();
+          parsedData = response?.data || parsedData; // Same fallback structure
+          break;
+
+        default:
+          throw new Error("Unsupported provider");
+      }
+
+      if (!parsedData.powerflow) {
+        parsedData.powerflow = { load: 0, pv: 0, grid: 0, soc: 0 };
+      }
+
+      setRealtimeData(parsedData);
       setError(false);
       lastUpdatedRef.current = new Date().toLocaleString();
       setIsBlinking(true);
@@ -53,20 +90,23 @@ const EnergyFlowDisplay = memo(({ plantId, token }) => {
     } catch (err) {
       console.error("Error fetching real-time data:", err);
       setError(true);
+      setRealtimeData({
+        powerflow: { load: 0, pv: 0, grid: 0, soc: 0 }, // Reset to default
+      });
     } finally {
       setIsFetching(false);
     }
   };
 
   useEffect(() => {
-    if (!plantId || !token) {
+    if (!formattedPlantId || !token) {
       console.warn("Missing plant ID or token. Skipping API call.");
       return;
     }
     fetchRealtimeData();
-  }, [plantId, token, dispatch]);
+  }, [formattedPlantId, token, dispatch]);
 
-  const { load, pv, grid, soc } = realtimeData?.powerflow || {};
+  const { load, pv, grid, soc } = realtimeData || {};
 
   return (
     <>

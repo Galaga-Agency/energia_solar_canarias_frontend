@@ -80,7 +80,7 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
     if (isInitialized) {
       handleFetchGraph();
     }
-  }, [range, chartIndexId]);
+  }, [range, chartIndexId, handleFetchGraph]);
 
   useEffect(() => {
     return () => {
@@ -141,7 +141,7 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
 
   const expectedMetrics = useMemo(
     () => getExpectedMetrics(),
-    [chartIndexId, t]
+    [chartIndexId, t, getExpectedMetrics]
   );
 
   const transformedData = useMemo(() => {

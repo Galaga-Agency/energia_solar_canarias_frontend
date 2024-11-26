@@ -27,7 +27,7 @@ const WeatherWidget = ({ plant, address, provider }) => {
   const { isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
 
-  console.log("address passed in weather widget: ", address);
+  // console.log("address passed in weather widget: ", address);
 
   useEffect(() => {
     if (address && user?.tokenIdentificador && provider) {

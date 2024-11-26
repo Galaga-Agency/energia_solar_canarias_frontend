@@ -13,7 +13,10 @@ import {
   fetchGoodweRealtimeDataAPI,
   fetchGoodweWeatherDataAPI,
 } from "@/services/goodwe-api";
-import { fetchSolarEdgeWeatherDataAPI } from "@/services/solardedge-api";
+import {
+  fetchSolarEdgeRealtimeDataAPI,
+  fetchSolarEdgeWeatherDataAPI,
+} from "@/services/solardedge-api";
 
 // Thunks
 export const fetchPlants = createAsyncThunk(
@@ -152,9 +155,9 @@ export const fetchSolarEdgeGraphData = createAsyncThunk(
 
 export const fetchSolarEdgeRealtimeData = createAsyncThunk(
   "plants/fetchSolarEdgeRealtimeData",
-  async ({ name, token }, { rejectWithValue }) => {
+  async ({ plantId, token }, { rejectWithValue }) => {
     try {
-      const weatherData = await fetchSolarEdgeWeatherDataAPI(name, token);
+      const weatherData = await fetchSolarEdgeRealtimeDataAPI(plantId, token);
       if (!weatherData) throw new Error("No weather data found");
       return weatherData;
     } catch (error) {

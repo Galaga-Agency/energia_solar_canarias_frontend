@@ -49,6 +49,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import PerformanceMetricsSkeleton from "../LoadingSkeletons/PerformanceMetricsSkeleton";
 import PlantDetailsSkeleton from "../LoadingSkeletons/PlantDetailsSkeleton";
 import EnergyStatisticsSkeleton from "../LoadingSkeletons/EnergyStatisticsSkeleton";
+import Loading from "../Loading";
 
 const GoodwePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -70,10 +71,12 @@ const GoodwePlantDetails = React.memo(
       [goodwePlant]
     );
 
+    // check this function here when we get goodwe back, pretty sure its false
+
     const formattedAddress = useMemo(() => {
-      if (!solaredgePlant?.location) return "";
-      return `${solaredgePlant.location.city}, ${solaredgePlant.location.country}`;
-    }, [solaredgePlant?.location]);
+      if (!goodwePlant?.location) return "";
+      return `${goodwePlant.location.city}, ${goodwePlant.location.country}`;
+    }, [goodwePlant?.location]);
 
     const statusColors = {
       working: "bg-green-500",
@@ -106,6 +109,14 @@ const GoodwePlantDetails = React.memo(
       const formattedNumber = parseFloat(value).toFixed(2);
       return `${formattedNumber} ${unit}`;
     };
+
+    if (!goodwePlant) {
+      return (
+        <div className="h-screen w-screen">
+          <Loading />
+        </div>
+      );
+    }
 
     if (error) {
       return (
@@ -276,7 +287,11 @@ const GoodwePlantDetails = React.memo(
           </div>
 
           {/* Energy Flow */}
-          <EnergyFlowDisplay plantId={plantId} token={token} />
+          <EnergyFlowDisplay
+            plantId={plantId}
+            token={token}
+            provider={goodwePlant?.info?.org_name}
+          />
 
           <div className="flex flex-col md:flex-row md:gap-4 w-full">
             {/* Energetic Statistics */}
@@ -472,5 +487,7 @@ const GoodwePlantDetails = React.memo(
     return JSON.stringify(prevProps.plant) === JSON.stringify(nextProps.plant);
   }
 );
+
+GoodwePlantDetails.displayName = "GoodwePlantDetails";
 
 export default GoodwePlantDetails;

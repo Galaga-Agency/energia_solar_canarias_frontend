@@ -86,6 +86,7 @@ const PlantDetailsPage = ({ params }) => {
     detailedPlant,
     handleRefresh,
     isLoadingDetails,
+    dispatch,
   ]);
 
   // Cleanup on unmount
@@ -153,7 +154,14 @@ const PlantDetailsPage = ({ params }) => {
     }
 
     return renderError();
-  }, [detailedPlant, detailsError, handleRefresh, isLoadingDetails, provider]);
+  }, [
+    detailedPlant,
+    detailsError,
+    handleRefresh,
+    isLoadingDetails,
+    provider,
+    renderError,
+  ]);
 
   return (
     <PageTransition>

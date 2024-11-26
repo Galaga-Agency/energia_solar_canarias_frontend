@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
@@ -45,6 +45,7 @@ import PlantDetailsSkeleton from "../LoadingSkeletons/PlantDetailsSkeleton";
 import EnergyFlowSkeleton from "../LoadingSkeletons/EnergyFlowSkeleton";
 import { useParams } from "next/navigation";
 import SolarEdgeGraphDisplay from "../SolarEdgeGraphDisplay";
+import Loading from "../Loading";
 
 const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -54,7 +55,6 @@ const SolarEdgePlantDetails = React.memo(
     const user = useSelector(selectUser);
     const token = useMemo(() => user?.tokenIdentificador, [user]);
     const { t } = useTranslation();
-    const { plantId } = useParams();
 
     const solaredgePlant = useMemo(() => {
       if (!plant?.data?.details) return null;
@@ -66,7 +66,12 @@ const SolarEdgePlantDetails = React.memo(
     const formattedAddress = useMemo(() => {
       if (!solaredgePlant?.location) return "";
       return `${solaredgePlant.location.city}, ${solaredgePlant.location.country}`;
-    }, [solaredgePlant?.location]);
+    }, []);
+
+    const tStatus = useMemo(
+      () => t(`status.${solaredgePlant?.status}` || "status.unknown"),
+      [t, solaredgePlant?.status]
+    );
 
     const statusColors = useMemo(
       () => ({
@@ -78,18 +83,43 @@ const SolarEdgePlantDetails = React.memo(
       []
     );
 
-    const formatValueWithDecimals = (value, unit) => {
+    const getYieldColor = useCallback((yieldRate) => {
+      if (!yieldRate) return "text-gray-500";
+      const percentage = yieldRate * 100;
+      if (percentage >= 80) return "text-green-500";
+      if (percentage >= 70) return "text-emerald-400";
+      if (percentage >= 60) return "text-yellow-500";
+      if (percentage >= 50) return "text-orange-500";
+      return "text-red-500";
+    }, []);
+
+    const getYieldIcon = useCallback((yieldRate) => {
+      const percentage = yieldRate * 100;
+      if (percentage >= 70) return "🌟";
+      if (percentage >= 50) return "⚡";
+      return "⚠️";
+    }, []);
+
+    const formatValueWithDecimals = useCallback((value, unit) => {
       if (!value || isNaN(parseFloat(value))) {
         return `N/A ${unit}`;
       }
       const formattedNumber = parseFloat(value).toFixed(2);
       return `${formattedNumber} ${unit}`;
-    };
+    }, []);
 
-    const capitalizeFirstLetter = (str) => {
+    const capitalizeFirstLetter = useCallback((str) => {
       if (!str) return str;
       return str.charAt(0).toUpperCase() + str.slice(1);
-    };
+    }, []);
+
+    if (!solaredgePlant) {
+      return (
+        <div className="h-screen w-screen">
+          <Loading />
+        </div>
+      );
+    }
 
     if (error) {
       return (
@@ -136,6 +166,8 @@ const SolarEdgePlantDetails = React.memo(
           }`}
         >
           <Texture />
+
+          {/* Header */}
           <header className="flex justify-between items-center mb-6">
             <IoArrowBackCircle
               className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer"
@@ -161,6 +193,8 @@ const SolarEdgePlantDetails = React.memo(
                 provider={solaredgePlant?.organization}
               />
             )}
+
+            {/* Plant Details */}
             {isLoading ? (
               <PlantDetailsSkeleton theme={theme} />
             ) : (
@@ -174,7 +208,45 @@ const SolarEdgePlantDetails = React.memo(
                       <HiOutlineStatusOnline className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                     }
                     label={t("currentStatus")}
-                    value={capitalizeFirstLetter(solaredgePlant?.status)}
+                    value={
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div className="flex items-center gap-1">
+                              <Info
+                                className={`h-4 w-4 ${statusColors[
+                                  solaredgePlant?.status
+                                ]?.replace("bg-", "text-")} cursor-help mt-1`}
+                              />
+                              <span
+                                className={`${statusColors[
+                                  solaredgePlant?.status
+                                ]?.replace("bg-", "text-")} cursor-help`}
+                              >
+                                {solaredgePlant?.status
+                                  ? tStatus
+                                  : t("loading")}
+                              </span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="right"
+                            className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
+                          >
+                            <p className="font-medium">
+                              {solaredgePlant?.status === "working" &&
+                                t("statusDescriptions.working")}
+                              {solaredgePlant?.status === "waiting" &&
+                                t("statusDescriptions.waiting")}
+                              {solaredgePlant?.status === "disconnected" &&
+                                t("statusDescriptions.disconnected")}
+                              {solaredgePlant?.status === "error" &&
+                                t("loading")}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    }
                   />
                   <DetailRow
                     icon={IoLocationOutline}
@@ -193,21 +265,52 @@ const SolarEdgePlantDetails = React.memo(
                             day: "2-digit",
                             month: "2-digit",
                             year: "numeric",
-                          }).format(new Date(solaredgePlant.installationDate))
+                          }).format(new Date(solaredgePlant?.installationDate))
                         : t("loading")
                     }
+                  />
+                  <DetailRow
+                    icon={
+                      <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
+                    }
+                    label={t("poweredBy")}
+                    value={capitalizeFirstLetter(
+                      solaredgePlant?.organization || t("loading")
+                    )}
+                    tooltip={t("poweredByTooltip")}
+                  />
+                  <DetailRow
+                    icon={
+                      <Tag className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
+                    }
+                    label={t("typeOfPlant")}
+                    value={
+                      solaredgePlant?.type
+                        ? t(`type_${solaredgePlant?.type}`)
+                        : t("loading")
+                    }
+                    tooltip={t("typeTooltip")}
                   />
                 </div>
               </section>
             )}
           </div>
+
+          {/* Energy Flow */}
+          {/* <EnergyFlowDisplay provider={solaredgePlant?.organization} /> */}
         </div>
       </PageTransition>
     );
   },
   (prevProps, nextProps) => {
-    return JSON.stringify(prevProps.plant) === JSON.stringify(nextProps.plant);
+    if (!prevProps.plant && !nextProps.plant) return true;
+    if (!prevProps.plant || !nextProps.plant) return false;
+    return (
+      prevProps.plant?.data?.details?.id === nextProps.plant?.data?.details?.id
+    );
   }
 );
+
+SolarEdgePlantDetails.displayName = "SolarEdgePlantDetails";
 
 export default SolarEdgePlantDetails;

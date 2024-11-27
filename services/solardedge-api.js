@@ -4,6 +4,7 @@ const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 // Fetch plant details for SolarEdge
 export const fetchSolarEdgePlantDetailsAPI = async ({ plantId, token }) => {
+  console.log("token & id passed in api call / goodwe: ", { plantId, token });
   try {
     const response = await fetch(
       `${API_BASE_URL}/plants/details/${plantId}?proveedor=solaredge`,
@@ -60,7 +61,10 @@ export const fetchSolarEdgeGraphDataAPI = async ({
       throw new Error(errorData.message || "Failed to fetch graph data");
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log("API Graphs Response Data:", data.data);
+
+    return data.data;
   } catch (error) {
     console.error("Error fetching SolarEdge graph data:", error);
     throw error;

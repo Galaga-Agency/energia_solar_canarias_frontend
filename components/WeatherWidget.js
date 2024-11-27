@@ -24,35 +24,39 @@ const WeatherWidget = ({ plant, address, provider }) => {
   const weatherError = useSelector(selectWeatherError);
   const { t } = useTranslation();
   const user = useSelector(selectUser);
+  const token = useMemo(() => user?.tokenIdentificador, [user]);
   const { isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
 
   // console.log("address passed in weather widget: ", address);
 
   useEffect(() => {
-    if (address && user?.tokenIdentificador && provider) {
-      switch (provider.toLowerCase()) {
-        case "goodwe":
-          dispatch(
-            fetchGoodweWeatherData({
-              name: address,
-              token: user.tokenIdentificador,
-            })
-          );
-          break;
-        case "solaredge":
-          dispatch(
-            fetchSolarEdgeWeatherData({
-              name: address,
-              token: user.tokenIdentificador,
-            })
-          );
-          break;
-        default:
-          console.warn(`Unsupported provider: ${provider}`);
-      }
+    if (!address || !token || !provider) {
+      console.warn("Missing required data. Waiting for user data...");
+      return;
     }
-  }, [dispatch, address, user?.tokenIdentificador, provider]);
+
+    switch (provider.toLowerCase()) {
+      case "goodwe":
+        dispatch(
+          fetchGoodweWeatherData({
+            name: address,
+            token: token,
+          })
+        );
+        break;
+      case "solaredge":
+        dispatch(
+          fetchSolarEdgeWeatherData({
+            name: address,
+            token: token,
+          })
+        );
+        break;
+      default:
+        console.warn(`Unsupported provider: ${provider}`);
+    }
+  }, [dispatch, address, token, provider]);
 
   const getWeatherIcon = (code, isToday = false) => {
     const sizeClass = isToday ? "text-8xl" : "text-4xl";

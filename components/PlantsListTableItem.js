@@ -16,7 +16,8 @@ const statusColors = {
 const PlantsListTableItem = ({ plant }) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const userId = useSelector(selectUser).id;
+  const user = useSelector(selectUser);
+  const userId = user?.id;
   const { isMobile } = useDeviceType();
 
   const handleRowClick = () => {

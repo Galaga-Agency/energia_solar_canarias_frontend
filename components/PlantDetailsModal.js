@@ -7,7 +7,8 @@ import Link from "next/link"; // Import Link from Next.js
 
 const PlantDetailsModal = ({ selectedPlant, onClose }) => {
   const { t } = useTranslation();
-  const userId = useSelector(selectUser).id;
+  const user = useSelector(selectUser);
+  const userId = user?.id;
 
   return (
     <AnimatePresence>

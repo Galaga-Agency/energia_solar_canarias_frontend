@@ -280,7 +280,7 @@ export const fetchPlantsByProviderAPI = async ({ userId, token, provider }) => {
       }));
     }
 
-    console.log("plantsData: ", plantsData);
+    // console.log("plantsData: ", plantsData);
     return plantsData;
   } catch (error) {
     console.error("Error in fetchPlantsByProviderAPI:", error);

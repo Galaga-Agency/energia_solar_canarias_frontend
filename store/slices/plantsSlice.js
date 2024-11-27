@@ -157,7 +157,10 @@ export const fetchSolarEdgeRealtimeData = createAsyncThunk(
   "plants/fetchSolarEdgeRealtimeData",
   async ({ plantId, token }, { rejectWithValue }) => {
     try {
-      const weatherData = await fetchSolarEdgeRealtimeDataAPI(plantId, token);
+      const weatherData = await fetchSolarEdgeRealtimeDataAPI({
+        plantId,
+        token,
+      });
       if (!weatherData) throw new Error("No weather data found");
       return weatherData;
     } catch (error) {

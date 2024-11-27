@@ -46,6 +46,7 @@ import EnergyFlowSkeleton from "../LoadingSkeletons/EnergyFlowSkeleton";
 import { useParams } from "next/navigation";
 import SolarEdgeGraphDisplay from "../SolarEdgeGraphDisplay";
 import Loading from "../Loading";
+import EnergyStatisticsSkeleton from "../LoadingSkeletons/EnergyStatisticsSkeleton";
 
 const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -215,7 +216,6 @@ const SolarEdgePlantDetails = React.memo(
           }`}
         >
           <Texture />
-
           {/* Header */}
           <header className="flex justify-between items-center mb-6">
             <IoArrowBackCircle
@@ -227,13 +227,12 @@ const SolarEdgePlantDetails = React.memo(
                 {solaredgePlant?.name || t("loading")}
               </h1>
               <div
-                className={`w-6 h-6 rounded-full ml-2 ${
+                className={`w-8 h-8 rounded-full ml-2 ${
                   statusColors[solaredgePlant?.status] || "bg-gray-500"
                 }`}
               />
             </div>
           </header>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {solaredgePlant && (
               <WeatherWidget
@@ -330,9 +329,73 @@ const SolarEdgePlantDetails = React.memo(
               </section>
             )}
           </div>
-
           {/* Energy Flow */}
-          {/* <EnergyFlowDisplay provider={solaredgePlant?.organization} /> */}
+          <EnergyFlowDisplay provider={solaredgePlant?.organization} />
+          <div className="flex flex-col md:flex-row md:gap-4 w-full">
+            {/* Energetic Statistics */}
+            {isLoading ? (
+              <EnergyStatisticsSkeleton theme={theme} />
+            ) : (
+              <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
+                <h2 className="text-xl mb-4 flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+                  {t("energyStatistics")}
+                </h2>
+                <div className="space-y-4">
+                  <DetailRow
+                    icon={IoFlashSharp}
+                    label={t("currentPower")}
+                    value={formatValueWithDecimals(
+                      solaredgePlant?.kpi?.pac || 0,
+                      "kW"
+                    )}
+                    tooltip={t("currentPowerTooltip")}
+                  />
+                  <DetailRow
+                    icon={PiSolarPanelFill}
+                    label={t("totalCapacity")}
+                    value={formatValueWithDecimals(
+                      solaredgePlant?.info?.capacity || 0,
+                      "kW"
+                    )}
+                    tooltip={t("totalCapacityTooltip")}
+                  />
+                  <DetailRow
+                    icon={RiBattery2ChargeLine}
+                    label={t("batteryCapacity")}
+                    value={formatValueWithDecimals(
+                      solaredgePlant?.info?.battery_capacity || 0,
+                      "kW"
+                    )}
+                    tooltip={t("batteryCapacityTooltip")}
+                  />
+                  <DetailRow
+                    icon={
+                      <BsCalendarMonth className="text-xl text-custom-dark-blue dark:text-custom-yellow" />
+                    }
+                    label={t("monthlyGeneration")}
+                    value={formatValueWithDecimals(
+                      solaredgePlant?.kpi?.month_generation || 0,
+                      "kW"
+                    )}
+                    tooltip={t("monthlyGenerationTooltip")}
+                  />
+                  <DetailRow
+                    icon={IoSpeedometerOutline}
+                    label={t("totalGeneration")}
+                    value={formatValueWithDecimals(
+                      solaredgePlant?.kpi?.total_power || 0,
+                      "kW"
+                    )}
+                    tooltip={t("totalGenerationTooltip")}
+                  />
+                </div>
+              </section>
+            )}
+          </div>
+          <SolarEdgeGraphDisplay
+            plantId={solaredgePlant.id}
+            title="SolarEdge Energy"
+          />
         </div>
       </PageTransition>
     );

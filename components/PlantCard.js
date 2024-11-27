@@ -17,7 +17,8 @@ const statusColors = {
 const PlantCard = ({ plant }) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const userId = useSelector(selectUser).id;
+  const user = useSelector(selectUser);
+  const userId = user?.id;
 
   const handleCardClick = () => {
     router.push(`/dashboard/${userId}/plants/${plant.id}`);

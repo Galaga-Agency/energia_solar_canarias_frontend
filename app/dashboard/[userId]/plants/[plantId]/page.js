@@ -33,15 +33,13 @@ const PlantDetailsPage = ({ params }) => {
   const detailsError = useSelector(selectDetailsError);
 
   const [showLoading, setShowLoading] = useState(false);
+  const [shouldShowError, setShouldShowError] = useState(false);
   const hasFetched = useRef(false);
-  const retryTimeoutRef = useRef(null);
-  const fetchAttempts = useRef(0);
-  const MAX_RETRY_ATTEMPTS = 3;
 
   const normalizedPlantId = useMemo(() => plantId?.toString(), [plantId]);
   const userToken = useMemo(() => user?.tokenIdentificador, [user]);
 
-  const currentPlant = useMemo(
+  const listViewPlant = useMemo(
     () =>
       plantsList?.find((plant) => plant?.id?.toString() === normalizedPlantId),
     [plantsList, normalizedPlantId]
@@ -56,29 +54,40 @@ const PlantDetailsPage = ({ params }) => {
     );
 
     if (providerInPath) return providerInPath;
-    if (currentPlant?.organization) {
-      return currentPlant.organization.toLowerCase().trim();
+    if (listViewPlant?.organization) {
+      return listViewPlant.organization.toLowerCase().trim();
     }
 
     return "unknown";
-  }, [currentPlant?.organization]);
+  }, [listViewPlant?.organization]);
 
-  const isPlantDataIncomplete = useCallback((plant) => {
-    if (!plant || !plant.data || !plant.data.details) return true;
+  const hasOnlyOrganizationField = useCallback((plant) => {
+    if (!plant?.data?.details) return false;
     const details = plant.data.details;
-    return (
-      !details.name ||
-      !details.status ||
-      details.name === null ||
-      details.status === null
-    );
+    return Object.keys(details).length === 1 && details.organization;
   }, []);
+
+  const createEnhancedPlantData = useCallback(() => {
+    if (!listViewPlant || !detailedPlant) return null;
+
+    return {
+      ...detailedPlant,
+      data: {
+        details: {
+          ...listViewPlant,
+          organization: provider,
+          primary_module: listViewPlant.primary_module || {},
+          public_settings: listViewPlant.public_settings || { isPublic: false },
+        },
+      },
+    };
+  }, [listViewPlant, detailedPlant, provider]);
 
   const handleDataFetch = useCallback(() => {
     if (!userToken || !normalizedPlantId || provider === "unknown") return;
 
-    fetchAttempts.current += 1;
     hasFetched.current = true;
+    setShouldShowError(false);
 
     dispatch(
       fetchPlantDetails({
@@ -91,67 +100,40 @@ const PlantDetailsPage = ({ params }) => {
   }, [dispatch, userToken, normalizedPlantId, provider, userId]);
 
   const handleRefresh = useCallback(() => {
-    fetchAttempts.current = 0;
     hasFetched.current = false;
-    if (retryTimeoutRef.current) {
-      clearTimeout(retryTimeoutRef.current);
-    }
+    setShouldShowError(false);
     handleDataFetch();
   }, [handleDataFetch]);
 
-  useEffect(() => {
-    return () => {
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
-      hasFetched.current = false;
-      dispatch(clearPlantDetails());
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (
-      !isLoadingDetails &&
-      detailedPlant &&
-      isPlantDataIncomplete(detailedPlant)
-    ) {
-      if (fetchAttempts.current < MAX_RETRY_ATTEMPTS) {
-        console.log(
-          `Incomplete plant data detected. Retry attempt ${
-            fetchAttempts.current + 1
-          } of ${MAX_RETRY_ATTEMPTS}`
-        );
-
-        retryTimeoutRef.current = setTimeout(() => {
-          handleDataFetch();
-        }, 2000);
-      } else {
-        console.error(
-          "Max retry attempts reached. Plant data still incomplete:",
-          detailedPlant
-        );
-      }
-    }
-  }, [detailedPlant, isLoadingDetails, handleDataFetch, isPlantDataIncomplete]);
-
+  // Initial data fetch
   useEffect(() => {
     if (
       !hasFetched.current &&
       provider !== "unknown" &&
       userToken &&
-      normalizedPlantId &&
-      !isLoadingDetails
+      normalizedPlantId
     ) {
       handleDataFetch();
     }
-  }, [
-    provider,
-    userToken,
-    normalizedPlantId,
-    isLoadingDetails,
-    handleDataFetch,
-  ]);
+  }, [provider, userToken, normalizedPlantId, handleDataFetch]);
 
+  // Error state management
+  useEffect(() => {
+    let timeoutId;
+    if (
+      detailsError ||
+      (hasOnlyOrganizationField(detailedPlant) && !listViewPlant)
+    ) {
+      timeoutId = setTimeout(() => {
+        setShouldShowError(true);
+      }, 500);
+    } else {
+      setShouldShowError(false);
+    }
+    return () => clearTimeout(timeoutId);
+  }, [detailsError, detailedPlant, listViewPlant, hasOnlyOrganizationField]);
+
+  // Loading state management
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setShowLoading(isLoadingDetails);
@@ -160,9 +142,17 @@ const PlantDetailsPage = ({ params }) => {
     return () => clearTimeout(timeoutId);
   }, [isLoadingDetails]);
 
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      hasFetched.current = false;
+      dispatch(clearPlantDetails());
+    };
+  }, [dispatch]);
+
   const renderError = useCallback(
     () => (
-      <>
+      <div className="min-h-screen p-6 w-auto">
         <Texture />
         <button onClick={() => window.history.back()}>
           <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
@@ -183,13 +173,14 @@ const PlantDetailsPage = ({ params }) => {
             <span>{t("refresh")}</span>
           </button>
         </div>
-      </>
+      </div>
     ),
     [detailsError, handleRefresh, showLoading, t]
   );
 
   const renderContent = useMemo(() => {
-    if (!detailedPlant && showLoading) {
+    // Show loading state during initial load or when loading details
+    if (isLoadingDetails || (!detailedPlant && !shouldShowError)) {
       return (
         <div className="h-screen w-screen">
           <Loading />
@@ -197,19 +188,24 @@ const PlantDetailsPage = ({ params }) => {
       );
     }
 
-    if (
-      detailsError ||
-      (fetchAttempts.current >= MAX_RETRY_ATTEMPTS &&
-        isPlantDataIncomplete(detailedPlant))
-    ) {
+    // Show error only after loading is complete and error is confirmed
+    if (shouldShowError && !isLoadingDetails) {
       return renderError();
     }
 
-    if (detailedPlant && !isPlantDataIncomplete(detailedPlant)) {
+    let plantData = detailedPlant;
+
+    // Use enhanced data if we only have organization field
+    if (hasOnlyOrganizationField(detailedPlant) && listViewPlant) {
+      plantData = createEnhancedPlantData();
+    }
+
+    if (plantData) {
       const props = {
-        plant: detailedPlant,
+        plant: plantData,
         handleRefresh,
         isLoading: showLoading,
+        isFallbackData: hasOnlyOrganizationField(detailedPlant),
       };
 
       switch (provider) {
@@ -222,15 +218,23 @@ const PlantDetailsPage = ({ params }) => {
       }
     }
 
-    return renderError();
+    // Fallback to loading if we don't have data yet
+    return (
+      <div className="h-screen w-screen">
+        <Loading />
+      </div>
+    );
   }, [
+    isLoadingDetails,
     detailedPlant,
-    detailsError,
+    shouldShowError,
+    hasOnlyOrganizationField,
+    listViewPlant,
+    createEnhancedPlantData,
     handleRefresh,
     showLoading,
     provider,
     renderError,
-    isPlantDataIncomplete,
   ]);
 
   return (

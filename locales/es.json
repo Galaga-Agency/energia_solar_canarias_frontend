@@ -405,5 +405,10 @@
   "Real-Time Energy Flow": "Flujo de Energía en Tiempo Real",
   "Energy Consumed": "Energía Consumida",
   "Energy Produced": "Energía Producida",
-  "Energy Exported": "Energía Exportada"
+  "Energy Exported": "Energía Exportada",
+  "addressNotAvailable": "Dirección no disponible",
+  "dateNotAvailable": "Fecha no disponible",
+  "typeNotAvailable": "Tipo no disponible",
+  "organizationNotAvailable": "Organización no disponible",
+  "nameNotAvailable": "Nombre no disponible"
 }

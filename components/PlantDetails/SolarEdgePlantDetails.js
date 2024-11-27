@@ -61,6 +61,59 @@ const SolarEdgePlantDetails = React.memo(
       return plant.data.details;
     }, [plant]);
 
+    const capitalizeFirstLetter = useCallback((str) => {
+      if (!str) return str;
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }, []);
+
+    const formatAddress = useCallback(
+      (location) => {
+        if (!location) return t("addressNotAvailable");
+
+        const parts = [];
+        if (location.address) parts.push(location.address);
+        if (location.city) parts.push(location.city);
+        if (location.country) parts.push(location.country);
+
+        return parts.length > 0 ? parts.join(", ") : t("addressNotAvailable");
+      },
+      [t]
+    );
+
+    const formatInstallationDate = useCallback(
+      (date) => {
+        if (!date) return t("dateNotAvailable");
+
+        try {
+          return new Intl.DateTimeFormat("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }).format(new Date(date));
+        } catch (error) {
+          console.error("Error formatting date:", error);
+          return t("dateNotAvailable");
+        }
+      },
+      [t]
+    );
+
+    const formatType = useCallback(
+      (type) => {
+        if (!type) return t("typeNotAvailable");
+        return t(`type_${type}`);
+      },
+      [t]
+    );
+
+    const formatOrganization = useCallback(
+      (org) => {
+        if (!org) return t("organizationNotAvailable");
+        return capitalizeFirstLetter(org);
+      },
+      [capitalizeFirstLetter]
+    );
+
     const formattedAddress = useMemo(() => {
       if (!solaredgePlant?.location) return "";
       const { city = "", country = "" } = solaredgePlant.location;
@@ -105,11 +158,6 @@ const SolarEdgePlantDetails = React.memo(
       }
       const formattedNumber = parseFloat(value).toFixed(2);
       return `${formattedNumber} ${unit}`;
-    }, []);
-
-    const capitalizeFirstLetter = useCallback((str) => {
-      if (!str) return str;
-      return str.charAt(0).toUpperCase() + str.slice(1);
     }, []);
 
     if (!solaredgePlant) {
@@ -213,18 +261,22 @@ const SolarEdgePlantDetails = React.memo(
                           <TooltipTrigger>
                             <div className="flex items-center gap-1">
                               <Info
-                                className={`h-4 w-4 ${statusColors[
-                                  solaredgePlant?.status
-                                ]?.replace("bg-", "text-")} cursor-help mt-1`}
+                                className={`h-4 w-4 ${
+                                  statusColors[solaredgePlant?.status]?.replace(
+                                    "bg-",
+                                    "text-"
+                                  ) || "text-gray-500"
+                                } cursor-help mt-1`}
                               />
                               <span
-                                className={`${statusColors[
-                                  solaredgePlant?.status
-                                ]?.replace("bg-", "text-")} cursor-help`}
+                                className={`${
+                                  statusColors[solaredgePlant?.status]?.replace(
+                                    "bg-",
+                                    "text-"
+                                  ) || "text-gray-500"
+                                } cursor-help`}
                               >
-                                {solaredgePlant?.status
-                                  ? tStatus
-                                  : t("loading")}
+                                {tStatus}
                               </span>
                             </div>
                           </TooltipTrigger>
@@ -233,14 +285,11 @@ const SolarEdgePlantDetails = React.memo(
                             className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
                           >
                             <p className="font-medium">
-                              {solaredgePlant?.status === "working" &&
-                                t("statusDescriptions.working")}
-                              {solaredgePlant?.status === "waiting" &&
-                                t("statusDescriptions.waiting")}
-                              {solaredgePlant?.status === "disconnected" &&
-                                t("statusDescriptions.disconnected")}
-                              {solaredgePlant?.status === "error" &&
-                                t("loading")}
+                              {t(
+                                `statusDescriptions.${
+                                  solaredgePlant?.status || "unknown"
+                                }`
+                              )}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -250,32 +299,21 @@ const SolarEdgePlantDetails = React.memo(
                   <DetailRow
                     icon={IoLocationOutline}
                     label={t("location")}
-                    value={
-                      `${solaredgePlant?.location?.address}, ${solaredgePlant?.location?.city}, ${solaredgePlant?.location?.country}` ||
-                      t("loading")
-                    }
+                    value={formatAddress(solaredgePlant?.location)}
                   />
                   <DetailRow
                     icon={LiaBirthdayCakeSolid}
                     label={t("installationDate")}
-                    value={
+                    value={formatInstallationDate(
                       solaredgePlant?.installationDate
-                        ? new Intl.DateTimeFormat("es-ES", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          }).format(new Date(solaredgePlant?.installationDate))
-                        : t("loading")
-                    }
+                    )}
                   />
                   <DetailRow
                     icon={
                       <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                     }
                     label={t("poweredBy")}
-                    value={capitalizeFirstLetter(
-                      solaredgePlant?.organization || t("loading")
-                    )}
+                    value={formatOrganization(solaredgePlant?.organization)}
                     tooltip={t("poweredByTooltip")}
                   />
                   <DetailRow
@@ -283,11 +321,7 @@ const SolarEdgePlantDetails = React.memo(
                       <Tag className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
                     }
                     label={t("typeOfPlant")}
-                    value={
-                      solaredgePlant?.type
-                        ? t(`type_${solaredgePlant?.type}`)
-                        : t("loading")
-                    }
+                    value={formatType(solaredgePlant?.type)}
                     tooltip={t("typeTooltip")}
                   />
                 </div>

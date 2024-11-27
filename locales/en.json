@@ -399,5 +399,10 @@
   "Real-Time Energy Flow": "Real-Time Energy Flow",
   "Energy Consumed": "Energy Consumed",
   "Energy Produced": "Energy Produced",
-  "Energy Exported": "Energy Exported"
+  "Energy Exported": "Energy Exported",
+  "addressNotAvailable": "Address not available",
+  "dateNotAvailable": "Date not available",
+  "typeNotAvailable": "Type not available",
+  "organizationNotAvailable": "Organization not available",
+  "nameNotAvailable": "Name not available"
 }

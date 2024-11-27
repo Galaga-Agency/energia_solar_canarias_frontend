@@ -15,11 +15,15 @@ export default function Dashboard() {
 
   console.log("current user: ", user);
 
-  if (isAdmin) {
-    router.push(`/dashboard/${user.id}/admin`);
-  } else {
-    router.push(`/dashboard/${user.id}/plants`);
-  }
+  useEffect(() => {
+    if (user) {
+      if (isAdmin) {
+        router.push(`/dashboard/${user.id}/admin`);
+      } else {
+        router.push(`/dashboard/${user.id}/plants`);
+      }
+    }
+  }, [isAdmin, user, router]);
 
   useEffect(() => {
     dispatch(clearPlantDetails());

@@ -82,7 +82,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-custom-light-gray dark:bg-custom-dark-blue/90 backdrop-blur-sm  text-custom-dark-blue dark:text-custom-light-gray rounded-lg shadow-dark-shadow w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto"
+            className="bg-custom-light-gray dark:bg-custom-dark-blue/90 backdrop-blur-sm  text-custom-dark-blue dark:text-custom-light-gray rounded-lg shadow-dark-shadow w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto max-h-[80vh]"
           >
             <Texture />
             <div className="bg-custom-yellow dark:bg-custom-yellow text-custom-dark-blue dark:text-custom-dark-blue p-4 flex items-center shadow-dark-shadow">

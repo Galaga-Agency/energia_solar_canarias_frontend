@@ -60,7 +60,7 @@ const ProviderCard = ({ provider, onClick }) => {
         >
           {/* Title on hover */}
           <h2
-            className="font-primary text-3xl font-bold text-custom-yellow mb-4 
+            className="text-center font-primary text-3xl font-bold text-custom-yellow mb-4 
                        tracking-wider transform group-hover:scale-110 
                        transition-transform duration-700
                        drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]"

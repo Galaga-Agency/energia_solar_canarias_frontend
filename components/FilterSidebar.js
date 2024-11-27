@@ -15,6 +15,33 @@ import { IoMdClose } from "react-icons/io";
 import PrimaryButton from "./PrimaryButton";
 import SecondaryButton from "./SecondaryButton";
 
+const STATUS_OPTIONS = ["working", "error", "waiting", "disconnected"];
+const TYPE_OPTIONS = [
+  "Residential",
+  "Commercial",
+  "Ground Mounted",
+  "Battery Storage",
+  "Optimizers & Inverters",
+];
+const ORGANIZATION_OPTIONS = [
+  "Goodwe",
+  "SolarEdge",
+  "Bluetti",
+  "Sungrow",
+  "Victron Energy",
+  "Sigenergy",
+  "SMA",
+  "Solarweb",
+];
+
+const INITIAL_FILTER_STATE = {
+  status: [],
+  type: [],
+  organization: [],
+  search: "",
+  capacity: { min: 0, max: 10000 },
+};
+
 const FilterSidebar = forwardRef(
   ({ plants, onFilterChange, initialSearchTerm }, ref) => {
     const { t } = useTranslation();
@@ -22,108 +49,20 @@ const FilterSidebar = forwardRef(
     const sidebarRef = useRef(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [filters, setFilters] = useState({
-      status: [],
-      type: [],
-      organization: [],
+      ...INITIAL_FILTER_STATE,
       search: initialSearchTerm || "",
-      capacity: { min: 0, max: 10000 },
     });
 
-    const normalizeString = (str) => str.replace(/\s+/g, "").toLowerCase();
+    const normalizeString = (str) => {
+      if (!str) return "";
+      return str.toLowerCase().replace(/\s+/g, "");
+    };
 
-    const closeSidebar = useCallback(() => {
-      setIsSidebarOpen(false);
-    }, []);
-
-    const filterPlants = useCallback(() => {
-      let filtered = [...plants];
-
-      if (filters.search) {
-        const searchTerm = filters.search.toLowerCase();
-        filtered = filtered.filter(
-          (plant) =>
-            plant.name.toLowerCase().includes(searchTerm) ||
-            plant.address.toLowerCase().includes(searchTerm)
-        );
-      }
-
-      if (filters.status.length > 0) {
-        filtered = filtered.filter((plant) =>
-          filters.status.includes(plant.status)
-        );
-      }
-
-      if (filters.type.length > 0) {
-        filtered = filtered.filter((plant) =>
-          filters.type.includes(plant.type)
-        );
-      }
-
-      if (filters.organization.length > 0) {
-        filtered = filtered.filter((plant) =>
-          filters.organization.some(
-            (filterOrg) =>
-              normalizeString(filterOrg) === normalizeString(plant.organization)
-          )
-        );
-      }
-
-      if (filters.capacity.min || filters.capacity.max) {
-        filtered = filtered.filter(
-          (plant) =>
-            (filters.capacity.min
-              ? plant.capacity >= filters.capacity.min
-              : true) &&
-            (filters.capacity.max
-              ? plant.capacity <= filters.capacity.max
-              : true)
-        );
-      }
-
-      return filtered;
-    }, [filters, plants]);
-
-    useImperativeHandle(
-      ref,
-      () => ({
-        updateSearch: (value) => {
-          setFilters((prev) => ({
-            ...prev,
-            search: value,
-          }));
-        },
-        clearFilters: () => {
-          setFilters({
-            status: [],
-            type: [],
-            organization: [],
-            search: "",
-            capacity: { min: 0, max: 10000 },
-          });
-        },
-      }),
+    const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
+    const toggleSidebar = useCallback(
+      () => setIsSidebarOpen((prev) => !prev),
       []
     );
-
-    useEffect(() => {
-      if (initialSearchTerm !== filters.search) {
-        setFilters((prev) => ({
-          ...prev,
-          search: initialSearchTerm,
-        }));
-      }
-    }, [initialSearchTerm, filters.search]);
-
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-          closeSidebar();
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }, [closeSidebar]);
 
     const handleCheckboxChange = useCallback((filterType, value) => {
       const normalizedValue = normalizeString(value);
@@ -135,13 +74,29 @@ const FilterSidebar = forwardRef(
       }));
     }, []);
 
-    const handleSearchChange = useCallback((event) => {
-      const searchTerm = event.target.value;
-      setFilters((prev) => ({
-        ...prev,
-        search: searchTerm,
-      }));
-    }, []);
+    const handleSearchChange = useCallback(
+      (event) => {
+        const newSearchValue = event.target.value;
+        setFilters((prev) => ({
+          ...prev,
+          search: newSearchValue,
+        }));
+        // Apply filters immediately when search changes
+        onFilterChange(
+          plants.filter((plant) => {
+            if (!newSearchValue) return true;
+
+            const searchTerm = newSearchValue.toLowerCase();
+            return (
+              (plant.name && plant.name.toLowerCase().includes(searchTerm)) ||
+              (plant.address &&
+                plant.address.toLowerCase().includes(searchTerm))
+            );
+          })
+        );
+      },
+      [plants, onFilterChange]
+    );
 
     const handleCapacityChange = useCallback((type, value) => {
       if (!value || isNaN(value)) return;
@@ -154,26 +109,122 @@ const FilterSidebar = forwardRef(
       }));
     }, []);
 
+    const filterPlants = useCallback(() => {
+      return plants.filter((plant) => {
+        const matchesSearch =
+          !filters.search ||
+          (plant.name &&
+            plant.name.toLowerCase().includes(filters.search.toLowerCase())) ||
+          (plant.address &&
+            plant.address.toLowerCase().includes(filters.search.toLowerCase()));
+
+        const matchesStatus =
+          filters.status.length === 0 ||
+          (plant.status &&
+            filters.status.includes(normalizeString(plant.status)));
+
+        const matchesType =
+          filters.type.length === 0 ||
+          (plant.type && filters.type.includes(normalizeString(plant.type)));
+
+        const matchesOrganization =
+          filters.organization.length === 0 ||
+          (plant.organization &&
+            filters.organization.includes(normalizeString(plant.organization)));
+
+        const matchesCapacity =
+          (!filters.capacity.min ||
+            (plant.capacity != null &&
+              plant.capacity >= filters.capacity.min)) &&
+          (!filters.capacity.max ||
+            (plant.capacity != null && plant.capacity <= filters.capacity.max));
+
+        return (
+          matchesSearch &&
+          matchesStatus &&
+          matchesType &&
+          matchesOrganization &&
+          matchesCapacity
+        );
+      });
+    }, [filters, plants]);
+
     const handleApplyFilters = useCallback(() => {
       onFilterChange(filterPlants());
       closeSidebar();
     }, [onFilterChange, filterPlants, closeSidebar]);
 
     const handleClearFilters = useCallback(() => {
-      setFilters({
-        status: [],
-        type: [],
-        organization: [],
-        search: "",
-        capacity: { min: 0, max: 10000 },
-      });
+      setFilters(INITIAL_FILTER_STATE);
       onFilterChange(plants);
       closeSidebar();
     }, [onFilterChange, plants, closeSidebar]);
 
-    const toggleSidebar = useCallback(() => {
-      setIsSidebarOpen((prev) => !prev);
-    }, []);
+    useImperativeHandle(
+      ref,
+      () => ({
+        updateSearch: (value) => {
+          setFilters((prev) => ({ ...prev, search: value }));
+        },
+        clearFilters: () => {
+          setFilters(INITIAL_FILTER_STATE);
+        },
+      }),
+      []
+    );
+
+    useEffect(() => {
+      if (initialSearchTerm !== filters.search) {
+        setFilters((prev) => ({ ...prev, search: initialSearchTerm }));
+        // Apply initial search filter
+        if (initialSearchTerm) {
+          const searchTerm = initialSearchTerm.toLowerCase();
+          onFilterChange(
+            plants.filter(
+              (plant) =>
+                (plant.name && plant.name.toLowerCase().includes(searchTerm)) ||
+                (plant.address &&
+                  plant.address.toLowerCase().includes(searchTerm))
+            )
+          );
+        }
+      }
+    }, [initialSearchTerm, filters.search, plants, onFilterChange]);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+          closeSidebar();
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, [closeSidebar]);
+
+    const renderFilterSection = (title, options, filterType) => (
+      <div className="mb-4">
+        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+          {t(title)}
+        </h3>
+        <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+          {options.map((option) => (
+            <CustomCheckbox
+              key={option}
+              label={
+                filterType === "status"
+                  ? t(`status.${option}`)
+                  : filterType === "type"
+                  ? t(`type_${option}`)
+                  : option
+              }
+              checked={filters[filterType].includes(normalizeString(option))}
+              onChange={() => handleCheckboxChange(filterType, option)}
+            />
+          ))}
+        </div>
+      </div>
+    );
 
     return (
       <div>
@@ -207,75 +258,13 @@ const FilterSidebar = forwardRef(
             />
           </div>
 
-          <div className="mb-4">
-            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-              {t("plantStatus")}
-            </h3>
-            <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-              {["working", "error", "waiting", "disconnected"].map((status) => (
-                <CustomCheckbox
-                  key={status}
-                  label={t(`status.${status}`)}
-                  checked={filters.status.includes(status)}
-                  onChange={() => handleCheckboxChange("status", status)}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-              {t("type")}
-            </h3>
-            <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-              {[
-                "Residential",
-                "Commercial",
-                "Ground Mounted",
-                "Battery Storage",
-                "Optimizers & Inverters",
-              ].map((type) => (
-                <CustomCheckbox
-                  key={type}
-                  label={t(`type_${type}`)}
-                  checked={filters.type.includes(type)}
-                  onChange={() => handleCheckboxChange("type", type)}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-              {t("organization")}
-            </h3>
-            <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-              {[
-                "Goodwe",
-                "SolarEdge",
-                "Bluetti",
-                "Sungrow",
-                "Victron Energy",
-                "Sigenergy",
-                "SMA",
-                "Solarweb",
-              ].map((organization) => (
-                <CustomCheckbox
-                  key={organization}
-                  label={organization}
-                  checked={filters.organization.includes(
-                    normalizeString(organization)
-                  )}
-                  onChange={() =>
-                    handleCheckboxChange(
-                      "organization",
-                      normalizeString(organization)
-                    )
-                  }
-                />
-              ))}
-            </div>
-          </div>
+          {renderFilterSection("plantStatus", STATUS_OPTIONS, "status")}
+          {renderFilterSection("type", TYPE_OPTIONS, "type")}
+          {renderFilterSection(
+            "organization",
+            ORGANIZATION_OPTIONS,
+            "organization"
+          )}
 
           <div className="mb-4">
             <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
@@ -303,7 +292,6 @@ const FilterSidebar = forwardRef(
             <PrimaryButton onClick={handleApplyFilters}>
               {t("applyFilters")}
             </PrimaryButton>
-
             <SecondaryButton onClick={handleClearFilters}>
               {t("clearFilters")}
             </SecondaryButton>

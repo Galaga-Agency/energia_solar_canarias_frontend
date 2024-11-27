@@ -70,11 +70,21 @@ const PlantDetailsPage = ({ params }) => {
   const createEnhancedPlantData = useCallback(() => {
     if (!listViewPlant || !detailedPlant) return null;
 
+    // Parse the address components from the list view
+    const [streetAddress, city, country] =
+      listViewPlant.address?.split(", ") || [];
+
     return {
       ...detailedPlant,
       data: {
         details: {
           ...listViewPlant,
+          location: {
+            address: streetAddress || "",
+            city: city || "",
+            country: country || "",
+          },
+          installationDate: listViewPlant.installation_date,
           organization: provider,
           primary_module: listViewPlant.primary_module || {},
           public_settings: listViewPlant.public_settings || { isPublic: false },

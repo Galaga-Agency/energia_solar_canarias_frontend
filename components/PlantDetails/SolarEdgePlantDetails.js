@@ -75,7 +75,9 @@ const SolarEdgePlantDetails = React.memo(
         if (location.city) parts.push(location.city);
         if (location.country) parts.push(location.country);
 
-        return parts.length > 0 ? parts.join(", ") : t("addressNotAvailable");
+        return parts.length > 0
+          ? Array.from(new Set(parts)).join(", ")
+          : t("addressNotAvailable");
       },
       [t]
     );

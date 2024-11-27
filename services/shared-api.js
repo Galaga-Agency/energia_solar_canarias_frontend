@@ -250,10 +250,10 @@ export const fetchPlantsByProviderAPI = async ({ userId, token, provider }) => {
       .toLowerCase()
       .trim()
       .replace(/\s+/g, "");
-    console.log("provider passed in api call: ", providerParam);
+    // console.log("provider passed in api call: ", providerParam);
 
     const apiUrl = `${API_BASE_URL}/plants?proveedor=${providerParam}`;
-    console.log("apiUrl passed in api call: ", apiUrl);
+    // console.log("apiUrl passed in api call: ", apiUrl);
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -304,6 +304,12 @@ export const fetchPlantDetailsAPI = async ({
     const normalizedPlantId = plantId?.toString();
     const apiUrl = `${API_BASE_URL}/plants/details/${normalizedPlantId}?proveedor=${providerParam}`;
 
+    console.log("Fetching plant details:", {
+      url: apiUrl,
+      plantId: normalizedPlantId,
+      provider: providerParam,
+    });
+
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -314,15 +320,20 @@ export const fetchPlantDetailsAPI = async ({
       },
     });
 
+    const responseData = await response.json();
+
+    console.log("Plant details response:", {
+      status: response.status,
+      hasData: !!responseData,
+      hasDetails: !!responseData?.data?.details,
+      plantId: normalizedPlantId,
+    });
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        errorData.message ||
-          `API Error: ${response.statusText} for plant ${normalizedPlantId} with provider ${providerParam}`
+        `API Error: ${response.statusText} for plant ${normalizedPlantId} with provider ${providerParam}`
       );
     }
-
-    const responseData = await response.json();
 
     return responseData;
   } catch (error) {
@@ -330,6 +341,7 @@ export const fetchPlantDetailsAPI = async ({
       error,
       plantId,
       provider,
+      errorMessage: error.message,
     });
     throw error;
   }

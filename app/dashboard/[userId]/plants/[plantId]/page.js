@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useCallback, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   clearPlantDetails,
@@ -24,12 +24,19 @@ import PageTransition from "@/components/PageTransition";
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId } = params;
   const dispatch = useDispatch();
+  const { t } = useTranslation();
+
   const user = useSelector(selectUser);
   const plantsList = useSelector(selectPlants);
   const detailedPlant = useSelector(selectPlantDetails);
   const isLoadingDetails = useSelector(selectLoadingDetails);
   const detailsError = useSelector(selectDetailsError);
-  const { t } = useTranslation();
+
+  const [showLoading, setShowLoading] = useState(false);
+  const hasFetched = useRef(false);
+  const retryTimeoutRef = useRef(null);
+  const fetchAttempts = useRef(0);
+  const MAX_RETRY_ATTEMPTS = 3;
 
   const normalizedPlantId = useMemo(() => plantId?.toString(), [plantId]);
   const userToken = useMemo(() => user?.tokenIdentificador, [user]);
@@ -49,14 +56,29 @@ const PlantDetailsPage = ({ params }) => {
     );
 
     if (providerInPath) return providerInPath;
-    if (currentPlant?.organization)
-      return currentPlant.organization.toLowerCase();
+    if (currentPlant?.organization) {
+      return currentPlant.organization.toLowerCase().trim();
+    }
 
     return "unknown";
-  }, [currentPlant]);
+  }, [currentPlant?.organization]);
 
-  const handleRefresh = useCallback(() => {
+  const isPlantDataIncomplete = useCallback((plant) => {
+    if (!plant || !plant.data || !plant.data.details) return true;
+    const details = plant.data.details;
+    return (
+      !details.name ||
+      !details.status ||
+      details.name === null ||
+      details.status === null
+    );
+  }, []);
+
+  const handleDataFetch = useCallback(() => {
     if (!userToken || !normalizedPlantId || provider === "unknown") return;
+
+    fetchAttempts.current += 1;
+    hasFetched.current = true;
 
     dispatch(
       fetchPlantDetails({
@@ -68,31 +90,75 @@ const PlantDetailsPage = ({ params }) => {
     );
   }, [dispatch, userToken, normalizedPlantId, provider, userId]);
 
-  // Initial data fetch
+  const handleRefresh = useCallback(() => {
+    fetchAttempts.current = 0;
+    hasFetched.current = false;
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+    }
+    handleDataFetch();
+  }, [handleDataFetch]);
+
   useEffect(() => {
-    const shouldFetch =
+    return () => {
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+      hasFetched.current = false;
+      dispatch(clearPlantDetails());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      !isLoadingDetails &&
+      detailedPlant &&
+      isPlantDataIncomplete(detailedPlant)
+    ) {
+      if (fetchAttempts.current < MAX_RETRY_ATTEMPTS) {
+        console.log(
+          `Incomplete plant data detected. Retry attempt ${
+            fetchAttempts.current + 1
+          } of ${MAX_RETRY_ATTEMPTS}`
+        );
+
+        retryTimeoutRef.current = setTimeout(() => {
+          handleDataFetch();
+        }, 2000);
+      } else {
+        console.error(
+          "Max retry attempts reached. Plant data still incomplete:",
+          detailedPlant
+        );
+      }
+    }
+  }, [detailedPlant, isLoadingDetails, handleDataFetch, isPlantDataIncomplete]);
+
+  useEffect(() => {
+    if (
+      !hasFetched.current &&
       provider !== "unknown" &&
       userToken &&
       normalizedPlantId &&
-      (!detailedPlant || detailedPlant.id?.toString() !== normalizedPlantId);
-
-    if (shouldFetch && !isLoadingDetails) {
-      handleRefresh();
+      !isLoadingDetails
+    ) {
+      handleDataFetch();
     }
   }, [
     provider,
     userToken,
     normalizedPlantId,
-    detailedPlant,
-    handleRefresh,
     isLoadingDetails,
-    dispatch,
+    handleDataFetch,
   ]);
 
-  // Cleanup on unmount
   useEffect(() => {
-    return () => dispatch(clearPlantDetails());
-  }, [dispatch]);
+    const timeoutId = setTimeout(() => {
+      setShowLoading(isLoadingDetails);
+    }, 200);
+
+    return () => clearTimeout(timeoutId);
+  }, [isLoadingDetails]);
 
   const renderError = useCallback(
     () => (
@@ -109,22 +175,21 @@ const PlantDetailsPage = ({ params }) => {
           <button
             onClick={handleRefresh}
             className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow hover:scale-105 transition-transform mt-4"
-            disabled={isLoadingDetails}
+            disabled={showLoading}
           >
             <BiRefresh
-              className={`text-2xl ${isLoadingDetails ? "animate-spin" : ""}`}
+              className={`text-2xl ${showLoading ? "animate-spin" : ""}`}
             />
             <span>{t("refresh")}</span>
           </button>
         </div>
       </>
     ),
-    [detailsError, handleRefresh, isLoadingDetails, t]
+    [detailsError, handleRefresh, showLoading, t]
   );
 
-  const renderContent = useCallback(() => {
-    // Only show loading on initial fetch
-    if (!detailedPlant && isLoadingDetails) {
+  const renderContent = useMemo(() => {
+    if (!detailedPlant && showLoading) {
       return (
         <div className="h-screen w-screen">
           <Loading />
@@ -132,15 +197,19 @@ const PlantDetailsPage = ({ params }) => {
       );
     }
 
-    if (detailsError) {
+    if (
+      detailsError ||
+      (fetchAttempts.current >= MAX_RETRY_ATTEMPTS &&
+        isPlantDataIncomplete(detailedPlant))
+    ) {
       return renderError();
     }
 
-    if (detailedPlant) {
+    if (detailedPlant && !isPlantDataIncomplete(detailedPlant)) {
       const props = {
         plant: detailedPlant,
         handleRefresh,
-        isLoading: isLoadingDetails,
+        isLoading: showLoading,
       };
 
       switch (provider) {
@@ -158,14 +227,15 @@ const PlantDetailsPage = ({ params }) => {
     detailedPlant,
     detailsError,
     handleRefresh,
-    isLoadingDetails,
+    showLoading,
     provider,
     renderError,
+    isPlantDataIncomplete,
   ]);
 
   return (
     <PageTransition>
-      <div className="min-h-screen">{renderContent()}</div>
+      <div className="min-h-screen">{renderContent}</div>
     </PageTransition>
   );
 };

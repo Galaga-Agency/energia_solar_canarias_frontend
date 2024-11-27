@@ -243,8 +243,10 @@ const plantsSlice = createSlice({
         state.plants = [];
       })
       .addCase(fetchPlantDetails.pending, (state) => {
-        state.loadingDetails = true;
-        state.detailsError = null;
+        if (!state.loadingDetails) {
+          state.loadingDetails = true;
+          state.detailsError = null;
+        }
       })
       .addCase(fetchPlantDetails.fulfilled, (state, action) => {
         state.loadingDetails = false;

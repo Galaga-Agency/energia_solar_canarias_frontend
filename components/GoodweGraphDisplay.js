@@ -27,7 +27,7 @@ import {
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import GraphDisplaySkeleton from "./LoadingSkeletons/GraphDisplaySkeleton";
+import GoodweGraphDisplaySkeleton from "./LoadingSkeletons/GoodweGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];
@@ -373,7 +373,7 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
   return (
     <>
       {isLoading ? (
-        <GraphDisplaySkeleton theme={theme} />
+        <GoodweGraphDisplaySkeleton theme={theme} />
       ) : (
         <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
           <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">

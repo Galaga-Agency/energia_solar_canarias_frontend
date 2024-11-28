@@ -1,9 +1,9 @@
 import React from "react";
 import CustomSkeleton from "@/components/LoadingSkeletons/Skeleton";
 
-const GraphDisplaySkeleton = ({ theme }) => {
+const GoodweGraphDisplaySkeleton = ({ theme }) => {
   return (
-    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
+    <div className="bg-transparent rounded-lg p-6">
       {/* Header Skeleton */}
       <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
         <div className="flex items-center gap-4 w-full md:w-auto">
@@ -36,4 +36,4 @@ const GraphDisplaySkeleton = ({ theme }) => {
   );
 };
 
-export default GraphDisplaySkeleton;
+export default GoodweGraphDisplaySkeleton;

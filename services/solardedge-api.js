@@ -2,7 +2,6 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const USUARIO = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-// Fetch plant details for SolarEdge
 export const fetchSolarEdgePlantDetailsAPI = async ({ plantId, token }) => {
   console.log("token & id passed in api call / goodwe: ", { plantId, token });
   try {
@@ -26,22 +25,28 @@ export const fetchSolarEdgePlantDetailsAPI = async ({ plantId, token }) => {
     }
 
     const text = await response.text();
-    return text ? JSON.parse(text) : {}; // Parse if text exists, otherwise return empty object
+    return text ? JSON.parse(text) : {};
   } catch (error) {
     console.error("Error fetching SolarEdge plant details:", error);
     throw error;
   }
 };
 
-// Fetch SolarEdge graph data
 export const fetchSolarEdgeGraphDataAPI = async ({
   plantId,
-  date,
-  range,
-  chartType,
+  dia,
+  fechaInicio,
+  fechaFin,
   token,
 }) => {
   try {
+    // console.log("API call made with body: ", {
+    //   plantId,
+    //   dia,
+    //   fechaInicio,
+    //   fechaFin,
+    //   token,
+    // });
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=solaredge`,
       {
@@ -52,26 +57,31 @@ export const fetchSolarEdgeGraphDataAPI = async ({
           apiKey: API_KEY,
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ plantId, date, range, chartType }),
+        body: JSON.stringify({
+          id: plantId,
+          dia,
+          fechaInicio,
+          fechaFin,
+        }),
       }
     );
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error("Error Response:", errorData);
       throw new Error(errorData.message || "Failed to fetch graph data");
     }
 
     const data = await response.json();
-    console.log("API Graphs Response Data:", data.data);
+    console.log("Graph Data Response:", data);
 
-    return data.data;
+    return data?.data;
   } catch (error) {
     console.error("Error fetching SolarEdge graph data:", error);
     throw error;
   }
 };
 
-// Fetch real-time data for SolarEdge
 export const fetchSolarEdgeRealtimeDataAPI = async ({ plantId, token }) => {
   console.log(
     "Request URL:",
@@ -99,7 +109,7 @@ export const fetchSolarEdgeRealtimeDataAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
-    console.log("API Response Data:", data.data);
+    // console.log("API Response Data:", data.data);
 
     return data.data;
   } catch (error) {
@@ -108,7 +118,6 @@ export const fetchSolarEdgeRealtimeDataAPI = async ({ plantId, token }) => {
   }
 };
 
-// Fetch weather data for SolarEdge
 export const fetchSolarEdgeWeatherDataAPI = async ({ name, token }) => {
   //   console.log("Full address received: ", name);
 

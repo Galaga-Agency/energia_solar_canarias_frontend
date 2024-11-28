@@ -33,7 +33,6 @@ import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
 
 const EnergyFlowDisplay = memo(({ provider }) => {
-  // Hooks and state management
   const { isMobile } = useDeviceType();
   const dispatch = useDispatch();
   const { t } = useTranslation();

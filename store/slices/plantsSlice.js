@@ -14,6 +14,7 @@ import {
   fetchGoodweWeatherDataAPI,
 } from "@/services/goodwe-api";
 import {
+  fetchSolarEdgeGraphDataAPI,
   fetchSolarEdgeRealtimeDataAPI,
   fetchSolarEdgeWeatherDataAPI,
 } from "@/services/solardedge-api";
@@ -137,15 +138,19 @@ export const fetchGoodweRealtimeData = createAsyncThunk(
 
 export const fetchSolarEdgeGraphData = createAsyncThunk(
   "plants/fetchSolarEdgeGraphData",
-  async ({ plantId, date, range, chartType, token }, { rejectWithValue }) => {
+  async (
+    { plantId, dia, fechaFin, fechaInicio, token },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await fetchSolarEdgeGraphDataAPI({
         plantId,
-        date,
-        range,
-        chartType,
+        dia,
+        fechaFin,
+        fechaInicio,
         token,
       });
+
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -190,6 +195,8 @@ const initialState = {
   plantDetails: null,
   loading: false,
   loadingDetails: false,
+  loadingDynamicData: false,
+  loadingStaticdata: false,
   error: null,
   detailsError: null,
   currentProvider: null,

@@ -29,6 +29,7 @@ import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
+  selectLoadingDetails,
   selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
@@ -52,7 +53,7 @@ const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
     const theme = useSelector(selectTheme);
     const error = useSelector(selectDetailsError);
-    const isLoading = useSelector(selectRealtimeLoading);
+    const isLoading = useSelector(selectLoadingDetails);
     const user = useSelector(selectUser);
     const token = useMemo(() => user?.tokenIdentificador, [user]);
     const { t } = useTranslation();
@@ -394,7 +395,7 @@ const SolarEdgePlantDetails = React.memo(
           </div>
           <SolarEdgeGraphDisplay
             plantId={solaredgePlant.id}
-            title="SolarEdge Energy"
+            title={t("plantAnalytics")}
           />
         </div>
       </PageTransition>

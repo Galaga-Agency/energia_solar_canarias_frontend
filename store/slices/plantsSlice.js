@@ -51,6 +51,7 @@ export const fetchPlantDetails = createAsyncThunk(
         provider,
       });
       if (!plantDetails) throw new Error("Plant details not found");
+      console.log("plant details in redux: ", plantDetails);
       return plantDetails;
     } catch (error) {
       console.error("Fetch plant details error:", error);

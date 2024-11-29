@@ -304,11 +304,11 @@ export const fetchPlantDetailsAPI = async ({
     const normalizedPlantId = plantId?.toString();
     const apiUrl = `${API_BASE_URL}/plants/details/${normalizedPlantId}?proveedor=${providerParam}`;
 
-    console.log("Fetching plant details:", {
-      url: apiUrl,
-      plantId: normalizedPlantId,
-      provider: providerParam,
-    });
+    // console.log("Fetching plant details:", {
+    //   url: apiUrl,
+    //   plantId: normalizedPlantId,
+    //   provider: providerParam,
+    // });
 
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -322,12 +322,12 @@ export const fetchPlantDetailsAPI = async ({
 
     const responseData = await response.json();
 
-    console.log("Plant details response:", {
-      status: response.status,
-      hasData: !!responseData,
-      hasDetails: !!responseData?.data?.details,
-      plantId: normalizedPlantId,
-    });
+    // console.log("Plant details response:", {
+    //   status: response.status,
+    //   hasData: !!responseData,
+    //   hasDetails: !!responseData?.data?.details,
+    //   plantId: normalizedPlantId,
+    // });
 
     if (!response.ok) {
       throw new Error(
@@ -335,6 +335,7 @@ export const fetchPlantDetailsAPI = async ({
       );
     }
 
+    // console.log("Plant details API response: ", response);
     return responseData;
   } catch (error) {
     console.error("Error in fetchPlantDetailsAPI:", {

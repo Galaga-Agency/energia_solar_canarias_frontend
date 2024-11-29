@@ -1,28 +1,30 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
   IoArrowBackCircle,
   IoLocationOutline,
-  IoFlashSharp,
-  IoSpeedometerOutline,
+  IoCashOutline,
+  IoAnalyticsOutline,
+  IoEarthOutline,
+  IoLeaf,
+  IoWater,
+  IoSunny,
 } from "react-icons/io5";
-import { PiSolarPanelFill } from "react-icons/pi";
-import { BsCalendarMonth } from "react-icons/bs";
+import { SiOxygen } from "react-icons/si";
+import {
+  PiSolarPanelFill,
+  PiSunHorizon,
+  PiTree,
+  PiTreeFill,
+} from "react-icons/pi";
+import { BsCalendar2Month, BsCircleFill } from "react-icons/bs";
 import { BiRefresh } from "react-icons/bi";
 import { HiOutlineStatusOnline } from "react-icons/hi";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
-import {
-  Building2,
-  Tag,
-  Wallet,
-  PiggyBank,
-  BarChart2,
-  Info,
-} from "lucide-react";
-import { RiBattery2ChargeLine } from "react-icons/ri";
+import { Building2, Tag, Info } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
 import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
@@ -30,7 +32,6 @@ import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
   selectLoadingDetails,
-  selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import {
@@ -39,15 +40,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/Tooltip";
-import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "../WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
 import PlantDetailsSkeleton from "../LoadingSkeletons/PlantDetailsSkeleton";
 import EnergyFlowSkeleton from "../LoadingSkeletons/EnergyFlowSkeleton";
-import { useParams } from "next/navigation";
 import SolarEdgeGraphDisplay from "../SolarEdgeGraphDisplay";
 import Loading from "../Loading";
 import EnergyStatisticsSkeleton from "../LoadingSkeletons/EnergyStatisticsSkeleton";
+import { GiSpeedometer } from "react-icons/gi";
+import { FaEuroSign } from "react-icons/fa";
+import { FaDroplet } from "react-icons/fa6";
+import EnvironmentalBenefits from "../EnvironmentalBenefits";
 
 const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -332,65 +335,108 @@ const SolarEdgePlantDetails = React.memo(
           </div>
           {/* Energy Flow */}
           <EnergyFlowDisplay provider={solaredgePlant?.organization} />
-          <div className="flex flex-col md:flex-row md:gap-4 w-full">
+          <div className="flex flex-col lg:flex-row md:gap-4 w-full">
             {/* Energetic Statistics */}
             {isLoading ? (
               <EnergyStatisticsSkeleton theme={theme} />
             ) : (
-              <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm">
-                <h2 className="text-xl mb-4 flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+              <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm shadow-lg">
+                <h2 className="text-2xl font-bold mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
                   {t("energyStatistics")}
                 </h2>
-                <div className="space-y-4">
-                  <DetailRow
-                    icon={IoFlashSharp}
-                    label={t("currentPower")}
-                    value={formatValueWithDecimals(
-                      solaredgePlant?.kpi?.pac || 0,
-                      "kW"
-                    )}
-                    tooltip={t("currentPowerTooltip")}
-                  />
-                  <DetailRow
-                    icon={PiSolarPanelFill}
-                    label={t("totalCapacity")}
-                    value={formatValueWithDecimals(
-                      solaredgePlant?.info?.capacity || 0,
-                      "kW"
-                    )}
-                    tooltip={t("totalCapacityTooltip")}
-                  />
-                  <DetailRow
-                    icon={RiBattery2ChargeLine}
-                    label={t("batteryCapacity")}
-                    value={formatValueWithDecimals(
-                      solaredgePlant?.info?.battery_capacity || 0,
-                      "kW"
-                    )}
-                    tooltip={t("batteryCapacityTooltip")}
-                  />
-                  <DetailRow
-                    icon={
-                      <BsCalendarMonth className="text-xl text-custom-dark-blue dark:text-custom-yellow" />
-                    }
-                    label={t("monthlyGeneration")}
-                    value={formatValueWithDecimals(
-                      solaredgePlant?.kpi?.month_generation || 0,
-                      "kW"
-                    )}
-                    tooltip={t("monthlyGenerationTooltip")}
-                  />
-                  <DetailRow
-                    icon={IoSpeedometerOutline}
-                    label={t("totalGeneration")}
-                    value={formatValueWithDecimals(
-                      solaredgePlant?.kpi?.total_power || 0,
-                      "kW"
-                    )}
-                    tooltip={t("totalGenerationTooltip")}
-                  />
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Energy Today Card */}
+                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
+                    <PiSunHorizon className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
+                      {t("energyToday")}
+                    </p>
+                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
+                      {formatValueWithDecimals(
+                        solaredgePlant?.kpi?.pac || 0,
+                        "kW"
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Energy This Month Card */}
+                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
+                    <BsCalendar2Month className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
+                      {t("energyThisMonth")}
+                    </p>
+                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
+                      {formatValueWithDecimals(
+                        solaredgePlant?.info?.capacity || 0,
+                        "kW"
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Energy Total Card */}
+                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
+                    <IoAnalyticsOutline className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
+                      {t("energyTotal")}
+                    </p>
+                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
+                      {formatValueWithDecimals(
+                        solaredgePlant?.info?.battery_capacity || 0,
+                        "kW"
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Today Money Card */}
+                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
+                    <FaEuroSign className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
+                      {t("todayMoney")}
+                    </p>
+                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
+                      {formatValueWithDecimals(
+                        solaredgePlant?.kpi?.month_generation || 0,
+                        "kW"
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Total Money Card */}
+                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
+                    <IoCashOutline className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
+                      {t("totalMoney")}
+                    </p>
+                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
+                      {formatValueWithDecimals(
+                        solaredgePlant?.kpi?.month_generation || 0,
+                        "kW"
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Max Power Card */}
+                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
+                    <GiSpeedometer className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
+                      {t("maxPower")}
+                    </p>
+                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
+                      {formatValueWithDecimals(
+                        solaredgePlant?.peakPower || 0,
+                        "kW"
+                      )}
+                    </p>
+                  </div>
                 </div>
               </section>
+            )}
+
+            {/* Environmental Benefits */}
+            {isLoading ? (
+              <EnergyStatisticsSkeleton theme={theme} />
+            ) : (
+              <EnvironmentalBenefits t={t} />
             )}
           </div>
           <SolarEdgeGraphDisplay

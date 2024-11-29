@@ -13,7 +13,17 @@ module.exports = {
         secondary: ['"Corbert"', "sans-serif"],
       },
       animation: {
+        bubble: "float 6s ease-in-out infinite",
+        "drop-smooth": "smoothDrop 4s linear infinite",
+        fall: "fall 5s linear infinite",
+        drop: "drop 5s linear infinite",
+        "leaf-fall": "leafFall 7s ease-in-out infinite",
+        "gradient-move": "gradientMove 5s ease-in-out infinite",
         "spin-slow": "spin 3s linear infinite",
+        "gradient-spin": "spin 5s linear infinite",
+        "icon-float": "float 6s ease-in-out infinite",
+        "icon-float-alt": "float-alt 6s ease-in-out infinite",
+        float: "float 12s ease-in-out infinite",
         "spin-fast": "spin 1s linear infinite",
         flash: "flash 1.5s ease-in-out forwards",
         orbit: "orbit 2s linear infinite",
@@ -45,6 +55,47 @@ module.exports = {
         "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },
       keyframes: {
+        float: {
+          "0%": { transform: "translateY(0) scale(1)", opacity: "0.8" },
+          "50%": { transform: "translateY(-20px) scale(1.2)", opacity: "1" },
+          "100%": { transform: "translateY(0) scale(1)", opacity: "0.8" },
+        },
+        smoothDrop: {
+          "0%": { transform: "translateY(-100%)", opacity: "0.8" },
+          "50%": { transform: "translateY(50%)", opacity: "1" },
+          "100%": { transform: "translateY(100%)", opacity: "0" },
+        },
+        fall: {
+          "0%": { transform: "translateY(-100%)", opacity: "1" },
+          "100%": { transform: "translateY(100%)", opacity: "0" },
+        },
+        drop: {
+          "0%": { transform: "translateY(-100%)", opacity: "1" },
+          "100%": { transform: "translateY(100%)", opacity: "0" },
+        },
+        leafFall: {
+          "0%": {
+            transform: "translate(-50px, -100%) rotate(0deg)",
+            opacity: "1",
+          },
+          "50%": {
+            transform: "translate(50px, 50%) rotate(180deg)",
+            opacity: "0.6",
+          },
+          "100%": {
+            transform: "translate(-50px, 100%) rotate(360deg)",
+            opacity: "0",
+          },
+        },
+        gradientMove: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        "float-alt": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(10px)" },
+        },
         spin: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },

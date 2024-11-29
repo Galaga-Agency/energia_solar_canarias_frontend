@@ -6,10 +6,6 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import Image from "next/image";
-import houseIllustration from "@/public/assets/img/house-illustration.png";
-import solarPanelIllustration from "@/public/assets/img/solar-panel-illustration.png";
-import gridIllustration from "@/public/assets/img/grid.png";
 import useDeviceType from "@/hooks/useDeviceType";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,11 +22,12 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/Tooltip";
-import { Info } from "lucide-react";
-import EnergyFlowSkeleton from "./LoadingSkeletons/EnergyFlowSkeleton";
+import { Info, UtilityPole } from "lucide-react";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse, faSolarPanel } from "@fortawesome/free-solid-svg-icons";
 
 const EnergyFlowDisplay = memo(({ provider }) => {
   const { isMobile } = useDeviceType();
@@ -70,7 +67,6 @@ const EnergyFlowDisplay = memo(({ provider }) => {
             fetchGoodweRealtimeData({ plantId: formattedPlantId, token })
           ).unwrap();
 
-          // Map the Goodwe API response data to the expected structure
           parsedData = {
             powerflow: {
               load: parseFloat(
@@ -99,7 +95,6 @@ const EnergyFlowDisplay = memo(({ provider }) => {
             fetchSolarEdgeRealtimeData({ plantId: formattedPlantId, token })
           ).unwrap();
 
-          // Map the SolarEdge API response data to the expected structure
           parsedData = {
             powerflow: {
               load: response.siteCurrentPowerFlow.LOAD.currentPower,
@@ -132,10 +127,8 @@ const EnergyFlowDisplay = memo(({ provider }) => {
     }
   }, [formattedPlantId, token, dispatch, provider]);
 
-  // Fetch data on component mount and every 30 seconds
   useEffect(() => {
     if (!formattedPlantId || !token) {
-      console.warn("Missing plant ID or token. Waiting for user data...");
       return;
     }
 
@@ -144,7 +137,6 @@ const EnergyFlowDisplay = memo(({ provider }) => {
     return () => clearInterval(interval);
   }, [fetchRealtimeData, formattedPlantId, token]);
 
-  // Render the component
   if (!formattedPlantId) {
     return null;
   }
@@ -166,116 +158,53 @@ const EnergyFlowDisplay = memo(({ provider }) => {
   };
 
   return (
-    <>
-      <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
-        {/* Mobile layout */}
-        {isMobile ? (
-          <div className="relative flex flex-col justify-left">
-            <h2 className="text-xl font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
-              {t("Real-Time Energy Flow")}
-            </h2>
-            <div className="relative flex items-center gap-2 justify-around">
-              <span className="text-left text-sm text-gray-600 dark:text-gray-400">
-                {t("lastUpdated")}: {lastUpdatedRef.current}
-              </span>
-              <EnergyLoadingClock
-                duration={30}
-                onComplete={fetchRealtimeData}
-                isPaused={isFetching}
-              />
-            </div>
-          </div>
-        ) : (
-          // Desktop layout
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
-              {t("Real-Time Energy Flow")}
-            </h2>
-            <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
-              <EnergyLoadingClock
-                duration={30}
-                onComplete={fetchRealtimeData}
-                isPaused={isFetching}
-              />
-              <span className="absolute top-4 right-16 max-w-36">
-                {t("lastUpdated")}: {lastUpdatedRef.current}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Battery indicator */}
-        {provider === "goodwe" && (
-          <div className="flex items-center gap-2 mt-8 md:mt-0">
-            <BatteryIndicator soc={soc} />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="text-md text-custom-dark-blue dark:text-custom-yellow cursor-pointer" />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs p-2 rounded-md shadow-lg"
-                >
-                  <p className="text-sm font-medium">
-                    {t("batteryIndicatorTooltip")}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        )}
-
-        {/* Energy flow illustrations */}
-        <div className="relative w-full h-auto">
-          <div className="relative inset-0 flex flex-col items-center justify-center">
-            {isMobile ? (
-              <div className="relative flex flex-col items-center mt-10 mb-6">
-                <Image
-                  src={solarPanelIllustration}
-                  alt="Solar Panel"
-                  className="relative max-w-[35%] h-auto object-contain mb-2 p-2"
-                />
-                <div className="flex justify-between w-full mt-2 items-center">
-                  <Image
-                    src={houseIllustration}
-                    alt="House"
-                    className="max-w-[35%] h-auto object-contain p-2 pb-0"
-                  />
-                  <Image
-                    src={gridIllustration}
-                    alt="Grid"
-                    className="max-w-[30%] h-auto object-contain mb-2 p-2"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="flex justify-between mx-12">
-                <Image
-                  src={houseIllustration}
-                  alt="House"
-                  className="max-w-[15%] h-auto object-contain mb-2 p-2"
-                />
-                <div className="flex my-auto h-1 bg-blue-500 w-full"></div>
-                <Image
-                  src={solarPanelIllustration}
-                  alt="Solar Panel"
-                  className="max-w-[15%] h-auto object-contain mb-4 p-2 pr-4"
-                />
-                <div className="flex my-auto h-1 bg-blue-500 w-full"></div>
-                <Image
-                  src={gridIllustration}
-                  alt="Grid"
-                  className="md:max-w-[14%] lg:max-w-[12%] h-auto object-contain md:mb-12 lg:mb-16 p-2"
-                />
-              </div>
-            )}
+    <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
+      {isMobile ? (
+        <div className="relative flex flex-col justify-left mb-6">
+          <h2 className="text-xl font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
+            {t("Real-Time Energy Flow")}
+          </h2>
+          <div className="relative flex items-center gap-2 justify-around">
+            <span className="text-left text-sm text-gray-600 dark:text-gray-400">
+              {t("lastUpdated")}: {lastUpdatedRef.current}
+            </span>
+            <EnergyLoadingClock
+              duration={30}
+              onComplete={fetchRealtimeData}
+              isPaused={isFetching}
+            />
           </div>
         </div>
+      ) : (
+        // Desktop layout
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
+            {t("Real-Time Energy Flow")}
+          </h2>
+          <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
+            <EnergyLoadingClock
+              duration={30}
+              onComplete={fetchRealtimeData}
+              isPaused={isFetching}
+            />
+            <span className="absolute top-4 right-16 max-w-36">
+              {t("lastUpdated")}: {lastUpdatedRef.current}
+            </span>
+          </div>
+        </div>
+      )}
 
-        {/* Energy flow metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center">
+      {/* Energy Flow */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+        {/* Energy Consumed */}
+        <div className="w-full md:w-1/3 group flex flex-col items-center gap-4 relative">
+          {/* Glow Effect */}
+          <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-custom-light-gray/05 dark:bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
+          <FontAwesomeIcon
+            icon={faHouse}
+            className="text-custom-dark-blue dark:text-custom-yellow text-[150px] group-hover:scale-105 transition-transform my-4"
+          />
+          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
             <span className="block text-sm text-slate-600 dark:text-slate-300">
               {t("Energy Consumed")}
             </span>
@@ -287,7 +216,16 @@ const EnergyFlowDisplay = memo(({ provider }) => {
               {error ? "N/A" : formatPowerValue(load, unit)}
             </span>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center">
+        </div>
+
+        {/* Energy Produced */}
+        <div className="w-full md:w-1/3 group flex flex-col items-center gap-4 relative">
+          <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-custom-light-gray/05 dark:bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
+          <FontAwesomeIcon
+            icon={faSolarPanel}
+            className="text-custom-dark-blue dark:text-custom-yellow text-[150px] group-hover:scale-105 transition-transform my-4"
+          />
+          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
             <span className="block text-sm text-slate-600 dark:text-slate-300">
               {t("Energy Produced")}
             </span>
@@ -299,7 +237,16 @@ const EnergyFlowDisplay = memo(({ provider }) => {
               {error ? "N/A" : formatPowerValue(pv, unit)}
             </span>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center">
+        </div>
+
+        {/* Energy Exported */}
+        <div className="w-full md:w-1/3 group flex flex-col items-center gap-4 relative">
+          <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-custom-light-gray/05 dark:bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10"></div>
+          <UtilityPole
+            size={150}
+            className="text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform my-4"
+          />
+          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
             <span className="block text-sm text-slate-600 dark:text-slate-300">
               {t("Energy Exported")}
             </span>
@@ -313,7 +260,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 });
 

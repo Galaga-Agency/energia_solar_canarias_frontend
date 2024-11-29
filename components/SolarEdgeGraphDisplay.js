@@ -46,7 +46,6 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const [endDate, setEndDate] = useState(new Date());
   const [retryCount, setRetryCount] = useState(0);
   const [hasEmptyCurves, setHasEmptyCurves] = useState(false);
-
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
@@ -98,24 +97,28 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     }
   }, [range, customRange, calculateStartDate]);
 
-  const handleFetchGraph = useCallback(() => {
-    if (plantId && token) {
-      dispatch(
-        fetchSolarEdgeGraphData({
-          plantId,
-          dia:
-            range === "DAY"
-              ? "QUARTER_OF_AN_HOUR"
-              : range === "YEAR"
-              ? "MONTH"
-              : "DAY",
-          fechaInicio: formatDate(
-            customRange ? startDate : calculateStartDate()
-          ),
-          fechaFin: formatDate(customRange ? endDate : new Date()),
-          token,
-        })
-      );
+  const handleFetchGraph = useCallback(async () => {
+    try {
+      if (plantId && token) {
+        await dispatch(
+          fetchSolarEdgeGraphData({
+            plantId,
+            dia:
+              range === "DAY"
+                ? "QUARTER_OF_AN_HOUR"
+                : range === "YEAR"
+                ? "MONTH"
+                : "DAY",
+            fechaInicio: formatDate(
+              customRange ? startDate : calculateStartDate()
+            ),
+            fechaFin: formatDate(customRange ? endDate : new Date()),
+            token,
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching graph data:", error.message);
     }
   }, [
     dispatch,
@@ -137,9 +140,9 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
 
   // Add effect to handle retries
   useEffect(() => {
-    if (hasEmptyCurves && retryCount < 3) {
+    if (hasEmptyCurves && retryCount < 5) {
       const retryTimer = setTimeout(() => {
-        console.log(`Retrying fetch (attempt ${retryCount + 1}/3)...`);
+        console.log(`Retrying fetch (attempt ${retryCount + 1}/5)...`);
         setRetryCount((prev) => prev + 1);
         handleFetchGraph();
       }, 100); // Wait 0.1 seconds between retries

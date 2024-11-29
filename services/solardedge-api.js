@@ -2,36 +2,6 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const USUARIO = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-export const fetchSolarEdgePlantDetailsAPI = async ({ plantId, token }) => {
-  console.log("token & id passed in api call / goodwe: ", { plantId, token });
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/plants/details/${plantId}?proveedor=solaredge`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          usuario: USUARIO,
-          apiKey: API_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("Error response body:", errorData);
-      throw new Error(errorData || "Failed to fetch plant details");
-    }
-
-    const text = await response.text();
-    return text ? JSON.parse(text) : {};
-  } catch (error) {
-    console.error("Error fetching SolarEdge plant details:", error);
-    throw error;
-  }
-};
-
 export const fetchSolarEdgeGraphDataAPI = async ({
   plantId,
   dia,

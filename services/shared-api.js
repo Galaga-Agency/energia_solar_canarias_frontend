@@ -396,3 +396,56 @@ export const fetchPlantsWithFilters = async ({ userId, token, filters }) => {
     throw error;
   }
 };
+
+export const fetchEnvironmentalBenefitsAPI = async ({
+  plantId,
+  provider,
+  token,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/benefits/${plantId}?proveedor=${provider}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      let errorMessage;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message;
+      } catch {
+        errorMessage = `Server error: ${response.status}`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    const text = await response.text();
+    if (!text) {
+      return { gasEmissionSaved: { co2: 0 }, treesPlanted: 0 };
+    }
+
+    try {
+      const data = JSON.parse(text);
+      return (
+        data.data?.envBenefits || {
+          gasEmissionSaved: { co2: 0 },
+          treesPlanted: 0,
+        }
+      );
+    } catch {
+      throw new Error("Invalid JSON response from server");
+    }
+  } catch (error) {
+    console.error("Error fetching environmental benefits:", error);
+    // Return default values instead of throwing
+    return { gasEmissionSaved: { co2: 0 }, treesPlanted: 0 };
+  }
+};

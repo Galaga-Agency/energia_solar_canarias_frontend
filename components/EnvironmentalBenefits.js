@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { IoEarthOutline, IoLeaf } from "react-icons/io5";
 import { PiTree } from "react-icons/pi";
 import { BsCircleFill } from "react-icons/bs";
@@ -11,20 +11,43 @@ import {
   TooltipTrigger,
 } from "@/components/Tooltip";
 import { Info } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
+import {
+  fetchEnvironmentalBenefits,
+  selectEnvironmentalBenefits,
+  selectErrorBenefits,
+  selectLoadingBenefits,
+} from "@/store/slices/plantsSlice";
+import { selectUser } from "@/store/slices/userSlice";
+import EnvironmentalBenefitsSkeleton from "@/components/LoadingSkeletons/EnvironmentalBenefitsSkeleton";
 
-const EnvironmentalBenefits = ({ t }) => {
+const EnvironmentalBenefits = ({ t, plantId, provider }) => {
   const theme = useSelector(selectTheme);
   const { isMobile } = useDeviceType();
+  const dispatch = useDispatch();
+  const benefits = useSelector(selectEnvironmentalBenefits);
+  const loading = useSelector(selectLoadingBenefits);
+  const user = useSelector(selectUser);
+  const token = user?.tokenIdentificador;
+
+  useEffect(() => {
+    if (plantId && provider) {
+      dispatch(fetchEnvironmentalBenefits({ plantId, provider, token }));
+    }
+  }, [dispatch, plantId, provider, token]);
+
+  if (loading) {
+    return <EnvironmentalBenefitsSkeleton theme={theme} />;
+  }
 
   return (
-    <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 sm:p-6 md:p-8 mb-6 backdrop-blur-sm shadow-lg">
-      <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-12 text-left text-custom-dark-blue dark:text-custom-yellow">
+    <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 md:pb-8 mb-6 backdrop-blur-sm shadow-lg">
+      <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
         {t("environmentalBenefits")}
       </h2>
-      <div className="flex flex-col gap-8 sm:gap-12">
+      <div className="flex flex-col justify-around gap-8 sm:gap-12">
         {/* CO2 Emissions Saved */}
         <div className="relative flex flex-col sm:flex-row items-center hover:scale-105 transition-transform duration-300 mx-4 sm:mx-6 group">
           <div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">
@@ -46,7 +69,7 @@ const EnvironmentalBenefits = ({ t }) => {
               </div>
             ))}
           </div>
-          <IoEarthOutline className="absolute text-[100px] md:text-[180px] lg:text-[160px] z-20 top-1/2 -translate-y-1/2 -left-4 md:left-4 lg:left-8 text-custom-dark-blue dark:text-custom-yellow" />
+          <IoEarthOutline className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute text-[100px] md:text-[180px] lg:text-[220px] xl:text-[160px] z-20 top-1/2 -translate-y-1/2 -left-4 md:left-4 xl:left-8 text-custom-dark-blue dark:text-custom-yellow" />
           <div className="z-10 bg-slate-50/70 dark:bg-slate-700/50 p-4 sm:p-6 w-full rounded-lg shadow-md flex flex-col items-end sm:items-center md:items-end gap-2 sm:gap-4">
             <div className="flex items-center">
               {!isMobile && (
@@ -67,7 +90,7 @@ const EnvironmentalBenefits = ({ t }) => {
                   </Tooltip>
                 </TooltipProvider>
               )}
-              <p className="text-sm md:text-lg font-medium text-slate-600 dark:text-slate-300 max-w-36 md:max-w-full text-right">
+              <p className="text-sm md:text-lg font-medium text-slate-600 dark:text-slate-300 max-w-36 xl:max-w-full text-right">
                 {t("co2EmissionsSaved")}
               </p>
             </div>
@@ -91,7 +114,7 @@ const EnvironmentalBenefits = ({ t }) => {
                 </TooltipProvider>
               )}
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow text-center">
-                4,164.76 kg
+                {benefits?.gasEmissionSaved?.co2.toFixed(2) || 0} {t("kg")}
               </p>
             </div>
           </div>
@@ -111,15 +134,16 @@ const EnvironmentalBenefits = ({ t }) => {
                   top: `${Math.random() * 100}%`,
                   left: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 5}s`,
+                  fontSize: `${Math.random() * 2 + 1.3}rem`,
                 }}
               >
-                <IoLeaf className="w-8" />
+                <IoLeaf />
               </div>
             ))}
           </div>
           <div className="z-10 bg-slate-50/70 dark:bg-slate-700/50 p-4 sm:p-6 w-full rounded-lg shadow-md flex flex-col items-start sm:items-center md:items-start gap-2 sm:gap-4">
             <div className="flex items-center">
-              <p className="text-sm sm:text-lg font-medium text-slate-600 dark:text-slate-300 max-w-36 md:max-w-full">
+              <p className="text-sm sm:text-lg font-medium text-slate-600 dark:text-slate-300 max-w-36 xl:max-w-full">
                 {t("equivalentTreesPlanted")}
               </p>
               {!isMobile && (
@@ -143,7 +167,7 @@ const EnvironmentalBenefits = ({ t }) => {
             </div>
             <div className="flex items-center">
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow text-center">
-                183.6
+                {benefits?.treesPlanted.toFixed(0) || 0}
               </p>
               {isMobile && (
                 <TooltipProvider>
@@ -165,7 +189,7 @@ const EnvironmentalBenefits = ({ t }) => {
               )}
             </div>
           </div>
-          <PiTree className="absolute text-[100px] md:text-[180px] lg:text-[160px] z-20 top-1/2 -translate-y-1/2 -right-4 md:right-4 lg:right-8 text-custom-dark-blue dark:text-custom-yellow" />
+          <PiTree className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute text-[100px] md:text-[180px] lg:text-[220px] xl:text-[160px] z-20 top-1/2 -translate-y-1/2 -right-4 md:right-4 xl:right-8 text-custom-dark-blue dark:text-custom-yellow" />
         </div>
       </div>
     </section>

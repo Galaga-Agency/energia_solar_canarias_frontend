@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
-import { useSelector } from "react-redux";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
   IoArrowBackCircle,
@@ -30,8 +30,11 @@ import Texture from "@/components/Texture";
 import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
+  fetchSolarEdgeOverview,
   selectDetailsError,
   selectLoadingDetails,
+  selectOverviewLoading,
+  selectPlantOverview,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import {
@@ -51,6 +54,8 @@ import { GiSpeedometer } from "react-icons/gi";
 import { FaEuroSign } from "react-icons/fa";
 import { FaDroplet } from "react-icons/fa6";
 import EnvironmentalBenefits from "../EnvironmentalBenefits";
+import BatteryIndicator from "../BatteryIndicator";
+import EnergyStatistics from "../EnergyStatistics";
 
 const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -65,6 +70,9 @@ const SolarEdgePlantDetails = React.memo(
       if (!plant?.data?.details) return null;
       return plant.data.details;
     }, [plant]);
+
+    const batteryLevel =
+      solaredgePlant?.siteCurrentPowerFlow?.STORAGE?.chargeLevel;
 
     const capitalizeFirstLetter = useCallback((str) => {
       if (!str) return str;
@@ -223,7 +231,7 @@ const SolarEdgePlantDetails = React.memo(
           {/* Header */}
           <header className="flex justify-between items-center mb-6">
             <IoArrowBackCircle
-              className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer"
+              className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
               onClick={() => window.history.back()}
             />
             <div className="flex items-center ml-auto">
@@ -231,7 +239,7 @@ const SolarEdgePlantDetails = React.memo(
                 {solaredgePlant?.name || t("loading")}
               </h1>
               <div
-                className={`w-8 h-8 rounded-full ml-2 ${
+                className={`w-8 h-8 rounded-full ml-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] ${
                   statusColors[solaredgePlant?.status] || "bg-gray-500"
                 }`}
               />
@@ -250,7 +258,7 @@ const SolarEdgePlantDetails = React.memo(
             {isLoading ? (
               <PlantDetailsSkeleton theme={theme} />
             ) : (
-              <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm flex flex-col justify-between">
+              <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm flex flex-col justify-between">
                 <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
                   {t("plantDetails")}
                 </h2>
@@ -333,110 +341,33 @@ const SolarEdgePlantDetails = React.memo(
               </section>
             )}
           </div>
+
           {/* Energy Flow */}
           <EnergyFlowDisplay provider={solaredgePlant?.organization} />
-          <div className="flex flex-col lg:flex-row md:gap-4 w-full">
+
+          <div className="flex flex-col xl:flex-row md:gap-6 w-full">
             {/* Energetic Statistics */}
-            {isLoading ? (
-              <EnergyStatisticsSkeleton theme={theme} />
-            ) : (
-              <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 mb-6 backdrop-blur-sm shadow-lg">
-                <h2 className="text-2xl font-bold mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
-                  {t("energyStatistics")}
-                </h2>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-                  {/* Energy Today Card */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
-                    <PiSunHorizon className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
-                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                      {t("energyToday")}
-                    </p>
-                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                      {formatValueWithDecimals(
-                        solaredgePlant?.kpi?.pac || 0,
-                        "kW"
-                      )}
-                    </p>
-                  </div>
+            <EnergyStatistics
+              solaredgePlant={solaredgePlant}
+              t={t}
+              theme={theme}
+              formatValueWithDecimals={formatValueWithDecimals}
+              token={token}
+            />
 
-                  {/* Energy This Month Card */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
-                    <BsCalendar2Month className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
-                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                      {t("energyThisMonth")}
-                    </p>
-                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                      {formatValueWithDecimals(
-                        solaredgePlant?.info?.capacity || 0,
-                        "kW"
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Energy Total Card */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
-                    <IoAnalyticsOutline className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
-                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                      {t("energyTotal")}
-                    </p>
-                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                      {formatValueWithDecimals(
-                        solaredgePlant?.info?.battery_capacity || 0,
-                        "kW"
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Today Money Card */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
-                    <FaEuroSign className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
-                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                      {t("todayMoney")}
-                    </p>
-                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                      {formatValueWithDecimals(
-                        solaredgePlant?.kpi?.month_generation || 0,
-                        "kW"
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Total Money Card */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
-                    <IoCashOutline className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
-                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                      {t("totalMoney")}
-                    </p>
-                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                      {formatValueWithDecimals(
-                        solaredgePlant?.kpi?.month_generation || 0,
-                        "kW"
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Max Power Card */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg shadow-md flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-300">
-                    <GiSpeedometer className="text-4xl text-custom-dark-blue dark:text-custom-yellow" />
-                    <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                      {t("maxPower")}
-                    </p>
-                    <p className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                      {formatValueWithDecimals(
-                        solaredgePlant?.peakPower || 0,
-                        "kW"
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </section>
-            )}
+            <div className=" bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex items-center">
+              <BatteryIndicator soc={batteryLevel} />
+            </div>
 
             {/* Environmental Benefits */}
             {isLoading ? (
               <EnergyStatisticsSkeleton theme={theme} />
             ) : (
-              <EnvironmentalBenefits t={t} />
+              <EnvironmentalBenefits
+                t={t}
+                plantId={solaredgePlant.id}
+                provider={solaredgePlant.organization}
+              />
             )}
           </div>
           <SolarEdgeGraphDisplay

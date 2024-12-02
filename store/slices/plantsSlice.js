@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import {
   fetchAllPlantsAPI,
+  fetchEnvironmentalBenefitsAPI,
   fetchPlantDetailsAPI,
   fetchPlantsByProviderAPI,
 } from "@/services/shared-api";
@@ -15,6 +16,7 @@ import {
 } from "@/services/goodwe-api";
 import {
   fetchSolarEdgeGraphDataAPI,
+  fetchSolarEdgeOverviewAPI,
   fetchSolarEdgeRealtimeDataAPI,
   fetchSolarEdgeWeatherDataAPI,
 } from "@/services/solardedge-api";
@@ -77,6 +79,24 @@ export const fetchPlantsByProvider = createAsyncThunk(
     }
   }
 );
+
+export const fetchEnvironmentalBenefits = createAsyncThunk(
+  "plants/fetchEnvironmentalBenefits",
+  async ({ plantId, provider, token }, { rejectWithValue }) => {
+    try {
+      const benefits = await fetchEnvironmentalBenefitsAPI({
+        plantId,
+        provider,
+        token,
+      });
+      return benefits;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Goodwe
 
 export const fetchGoodweGraphData = createAsyncThunk(
   "plants/fetchGoodweGraphData",
@@ -191,6 +211,18 @@ export const fetchSolarEdgeWeatherData = createAsyncThunk(
   }
 );
 
+export const fetchSolarEdgeOverview = createAsyncThunk(
+  "plants/fetchSolarEdgeOverview",
+  async ({ plantId, token }, { rejectWithValue }) => {
+    try {
+      const data = await fetchSolarEdgeOverviewAPI({ plantId, token });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   plants: [],
   plantDetails: null,
@@ -210,6 +242,12 @@ const initialState = {
   weatherLoading: false,
   weatherError: null,
   loadingStates: {},
+  environmentalBenefits: null,
+  loadingBenefits: false,
+  errorBenefits: null,
+  overview: null,
+  overviewLoading: false,
+  overviewError: null,
 };
 
 const plantsSlice = createSlice({
@@ -284,6 +322,21 @@ const plantsSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Failed to fetch plants by provider";
         state.plants = [];
+      })
+      .addCase(fetchEnvironmentalBenefits.pending, (state) => {
+        state.loadingBenefits = true;
+        state.errorBenefits = null;
+      })
+      .addCase(fetchEnvironmentalBenefits.fulfilled, (state, action) => {
+        state.loadingBenefits = false;
+        state.environmentalBenefits = action.payload;
+        state.errorBenefits = null;
+      })
+      .addCase(fetchEnvironmentalBenefits.rejected, (state, action) => {
+        state.loadingBenefits = false;
+        state.environmentalBenefits = null;
+        state.errorBenefits =
+          action.payload || "Failed to fetch environmental benefits";
       })
 
       // Goodwe
@@ -376,6 +429,18 @@ const plantsSlice = createSlice({
       .addCase(fetchSolarEdgeWeatherData.rejected, (state, action) => {
         state.weatherLoading = false;
         state.weatherError = action.payload;
+      })
+      .addCase(fetchSolarEdgeOverview.pending, (state) => {
+        state.overviewLoading = true;
+        state.overviewError = null;
+      })
+      .addCase(fetchSolarEdgeOverview.fulfilled, (state, action) => {
+        state.overviewLoading = false;
+        state.overview = action.payload;
+      })
+      .addCase(fetchSolarEdgeOverview.rejected, (state, action) => {
+        state.overviewLoading = false;
+        state.overviewError = action.payload;
       });
   },
 });
@@ -437,6 +502,12 @@ export const selectWeatherError = (state) => state.plants.weatherError;
 export const selectRealtimeData = (state) => state.plants.realtimeData;
 export const selectRealtimeLoading = (state) => state.plants.realtimeLoading;
 export const selectRealtimeError = (state) => state.plants.realtimeError;
+export const selectEnvironmentalBenefits = (state) =>
+  state.plants.environmentalBenefits;
+export const selectLoadingBenefits = (state) => state.plants.loadingBenefits;
+export const selectErrorBenefits = (state) => state.plants.errorBenefits;
+export const selectPlantOverview = (state) => state.plants.overview;
+export const selectOverviewLoading = (state) => state.plants.overviewLoading;
 
 export const {
   clearPlants,

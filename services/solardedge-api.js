@@ -10,13 +10,6 @@ export const fetchSolarEdgeGraphDataAPI = async ({
   token,
 }) => {
   try {
-    // console.log("API call made with body: ", {
-    //   plantId,
-    //   dia,
-    //   fechaInicio,
-    //   fechaFin,
-    //   token,
-    // });
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=solaredge`,
       {
@@ -36,8 +29,10 @@ export const fetchSolarEdgeGraphDataAPI = async ({
       }
     );
 
+    const clonedResponse = response.clone();
+
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await clonedResponse.json().catch(() => ({}));
       console.error("Error Response:", errorData);
       throw new Error(errorData.message || "Failed to fetch graph data");
     }
@@ -53,11 +48,6 @@ export const fetchSolarEdgeGraphDataAPI = async ({
 };
 
 export const fetchSolarEdgeRealtimeDataAPI = async ({ plantId, token }) => {
-  console.log(
-    "Request URL:",
-    `/plant/power/realtime/${plantId}?proveedor=solaredge`
-  );
-
   try {
     const response = await fetch(
       `${API_BASE_URL}/plant/power/realtime/${plantId}?proveedor=solaredge`,
@@ -72,15 +62,15 @@ export const fetchSolarEdgeRealtimeDataAPI = async ({ plantId, token }) => {
       }
     );
 
+    const clonedResponse = response.clone();
+
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await clonedResponse.json().catch(() => ({}));
       console.error("API Error Response:", errorData);
       throw new Error(errorData.message || "Failed to fetch real-time data");
     }
 
     const data = await response.json();
-    // console.log("API Response Data:", data.data);
-
     return data.data;
   } catch (error) {
     console.error("Real-time data fetch error:", error);
@@ -89,51 +79,72 @@ export const fetchSolarEdgeRealtimeDataAPI = async ({ plantId, token }) => {
 };
 
 export const fetchSolarEdgeWeatherDataAPI = async ({ name, token }) => {
-  //   console.log("Full address received: ", name);
-
   const extractCityAndCountry = (address) => {
     if (!address) return null;
-
     const parts = address.split(",").map((part) => part.trim());
-    if (parts.length >= 2) {
-      const city = parts[parts.length - 2];
-      const country = parts[parts.length - 1];
-      return `${city}, ${country}`;
-    }
-
-    return null;
+    return parts.length >= 2
+      ? `${parts[parts.length - 2]}, ${parts[parts.length - 1]}`
+      : null;
   };
 
   const cityAndCountry = extractCityAndCountry(name);
   if (!cityAndCountry) {
-    console.error(
-      "Unable to extract city and country from the provided address."
-    );
     throw new Error("Invalid address format");
   }
-
-  // console.log("Extracted city and country: ", cityAndCountry);
 
   try {
     const response = await fetch(`${API_BASE_URL}/clima`, {
       method: "POST",
-      body: JSON.stringify({ name: cityAndCountry }),
       headers: {
         "Content-Type": "application/json",
         usuario: USUARIO,
         apiKey: API_KEY,
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ name: cityAndCountry }),
     });
 
+    const clonedResponse = response.clone();
+
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await clonedResponse.json().catch(() => ({}));
       throw new Error(errorData.message || "Failed to fetch weather data");
     }
 
     return await response.json();
   } catch (error) {
     console.error("Weather data fetch error:", error);
+    throw error;
+  }
+};
+
+export const fetchSolarEdgeOverviewAPI = async ({ plantId, token }) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/overview/${plantId}?proveedor=solaredge`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const clonedResponse = response.clone();
+
+    if (!response.ok) {
+      const errorData = await clonedResponse.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to fetch overview data");
+    }
+
+    const data = await response.json();
+    console.log("Overview data response:", data);
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching SolarEdge overview:", error);
     throw error;
   }
 };

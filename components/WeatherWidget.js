@@ -11,8 +11,21 @@ import {
   fetchSolarEdgeWeatherData,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
-import { BsCloudSun, BsSnow } from "react-icons/bs";
+import {
+  BsSun,
+  BsCloudSun,
+  BsCloud,
+  BsCloudRain,
+  BsCloudRainHeavy,
+  BsCloudDrizzle,
+  BsCloudSnow,
+  BsSnow,
+  BsCloudLightningRain,
+  BsCloudFog,
+} from "react-icons/bs";
 import { FiWind } from "react-icons/fi";
+import { FaSmog } from "react-icons/fa";
+import { WiDayFog, WiNightAltThunderstorm } from "react-icons/wi";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidgetSkeleton from "./LoadingSkeletons/WeatherWidgetSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
@@ -59,41 +72,43 @@ const WeatherWidget = ({ plant, address, provider }) => {
   }, [dispatch, address, token, provider]);
 
   const getWeatherIcon = (code, isToday = false) => {
-    const sizeClass = isToday ? "text-8xl" : "text-4xl";
+    const sizeClass = isToday
+      ? "text-8xl mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
+      : "text-4xl drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]";
     const commonClass = `${sizeClass} text-custom-dark-blue dark:text-custom-yellow`;
 
     const icons = {
-      0: <BsCloudSun className={`${commonClass}`} />, // Clear sky
-      1: <BsCloudSun className={`${commonClass}`} />, // Mainly clear
+      0: <BsSun className={`${commonClass}`} />, // Clear sky
+      1: <BsSun className={`${commonClass}`} />, // Mainly clear
       2: <BsCloudSun className={`${commonClass}`} />, // Partly cloudy
       3: <BsCloudSun className={`${commonClass}`} />, // Overcast
-      45: <FiWind className={`${commonClass}`} />, // Fog
-      48: <FiWind className={`${commonClass}`} />, // Depositing rime fog
-      51: <BsCloudSun className={`${commonClass}`} />, // Light drizzle
-      53: <BsCloudSun className={`${commonClass}`} />, // Moderate drizzle
-      55: <BsCloudSun className={`${commonClass}`} />, // Dense drizzle
-      56: <FiWind className={`${commonClass} text-blue-300`} />, // Light freezing drizzle
-      57: <FiWind className={`${commonClass} text-blue-300`} />, // Dense freezing drizzle
-      61: <BsCloudSun className={`${commonClass}`} />, // Slight rain
-      63: <BsCloudSun className={`${commonClass}`} />, // Moderate rain
-      65: <BsCloudSun className={`${commonClass}`} />, // Heavy rain
-      66: <FiWind className={`${commonClass} text-blue-300`} />, // Light freezing rain
-      67: <FiWind className={`${commonClass} text-blue-300`} />, // Heavy freezing rain
+      45: <WiDayFog className={`${commonClass}`} />, // Fog
+      48: <WiDayFog className={`${commonClass}`} />, // Depositing rime fog
+      51: <BsCloudDrizzle className={`${commonClass}`} />, // Light drizzle
+      53: <BsCloudDrizzle className={`${commonClass}`} />, // Moderate drizzle
+      55: <BsCloudDrizzle className={`${commonClass}`} />, // Dense drizzle
+      56: <BsCloudRain className={`${commonClass} text-blue-300`} />, // Light freezing drizzle
+      57: <BsCloudRain className={`${commonClass} text-blue-300`} />, // Dense freezing drizzle
+      61: <BsCloudRain className={`${commonClass}`} />, // Slight rain
+      63: <BsCloudRainHeavy className={`${commonClass}`} />, // Moderate rain
+      65: <BsCloudRainHeavy className={`${commonClass}`} />, // Heavy rain
+      66: <BsCloudRain className={`${commonClass} text-blue-300`} />, // Light freezing rain
+      67: <BsCloudRainHeavy className={`${commonClass} text-blue-300`} />, // Heavy freezing rain
       71: <BsSnow className={`${commonClass}`} />, // Slight snowfall
-      73: <BsSnow className={`${commonClass}`} />, // Moderate snowfall
-      75: <BsSnow className={`${commonClass}`} />, // Heavy snowfall
+      73: <BsCloudSnow className={`${commonClass}`} />, // Moderate snowfall
+      75: <BsCloudSnow className={`${commonClass}`} />, // Heavy snowfall
       77: <BsSnow className={`${commonClass}`} />, // Snow grains
-      80: <BsCloudSun className={`${commonClass}`} />, // Slight rain showers
-      81: <BsCloudSun className={`${commonClass}`} />, // Moderate rain showers
-      82: <BsCloudSun className={`${commonClass}`} />, // Violent rain showers
-      85: <BsSnow className={`${commonClass}`} />, // Slight snow showers
-      86: <BsSnow className={`${commonClass}`} />, // Heavy snow showers
-      95: <FiWind className={`${commonClass} text-red-500`} />, // Thunderstorm
-      96: <FiWind className={`${commonClass} text-red-500`} />, // Thunderstorm with light hail
-      99: <FiWind className={`${commonClass} text-red-500`} />, // Thunderstorm with heavy hail
+      80: <BsCloudRain className={`${commonClass}`} />, // Slight rain showers
+      81: <BsCloudRainHeavy className={`${commonClass}`} />, // Moderate rain showers
+      82: <BsCloudLightningRain className={`${commonClass}`} />, // Violent rain showers
+      85: <BsCloudSnow className={`${commonClass}`} />, // Slight snow showers
+      86: <BsCloudSnow className={`${commonClass}`} />, // Heavy snow showers
+      95: <WiNightAltThunderstorm className={`${commonClass} text-red-500`} />, // Thunderstorm
+      96: <WiNightAltThunderstorm className={`${commonClass} text-red-500`} />, // Thunderstorm with light hail
+      99: <WiNightAltThunderstorm className={`${commonClass} text-red-500`} />, // Thunderstorm with heavy hail
     };
 
-    return icons[code] || <BsCloudSun className={`${commonClass}`} />;
+    return icons[code] || <BsCloud className={`${commonClass}`} />; // Default icon for unknown codes
   };
 
   return (
@@ -121,19 +136,98 @@ const WeatherWidget = ({ plant, address, provider }) => {
           {!weatherLoading && !weatherError && weatherData && (
             <div className="flex flex-1 flex-col">
               {/* Today's Weather */}
-              <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex items-center justify-between flex-1">
-                <div className="flex">
+              <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex items-center justify-between flex-1 relative group overflow-hidden">
+                {/* Weather-based background animation container */}
+                <div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">
+                  {/* Gradient background */}
+                  <div
+                    className="absolute w-full h-full blur-2xl  transition-opacity duration-700"
+                    style={{
+                      background:
+                        theme === "dark"
+                          ? "linear-gradient(45deg, rgba(255, 213, 122, 0.2), rgba(0, 44, 63, 0.1))"
+                          : "linear-gradient(45deg, rgba(0, 44, 63, 0.1), rgba(255, 213, 122, 0.2))",
+                    }}
+                  />
+
+                  {/* Weather-specific animations */}
+                  {[0, 1, 2].includes(weatherData?.daily?.weather_code?.[0]) &&
+                    // Sunny weather
+                    Array.from({ length: 8 }).map((_, i) => (
+                      <div
+                        key={`sun-particle-${i}`}
+                        className={`absolute ${
+                          theme === "dark"
+                            ? "text-custom-yellow"
+                            : "text-custom-dark-blue"
+                        } opacity-0 group-hover:opacity-10 animate-float`}
+                        style={{
+                          top: `${Math.random() * 100}%`,
+                          left: `${Math.random() * 100}%`,
+                          animationDelay: `${Math.random() * 3}s`,
+                          fontSize: `${Math.random() * 1.5 + 0.5}rem`,
+                        }}
+                      >
+                        <BsCloudSun />
+                      </div>
+                    ))}
+
+                  {[51, 53, 55, 61, 63, 65, 80, 81, 82].includes(
+                    weatherData?.daily?.weather_code?.[0]
+                  ) &&
+                    // Rain
+                    Array.from({ length: 20 }).map((_, i) => (
+                      <div
+                        key={`rain-drop-${i}`}
+                        className={`absolute w-[1px] h-[10px] ${
+                          theme === "dark"
+                            ? "bg-custom-yellow/30"
+                            : "bg-custom-dark-blue/30"
+                        } opacity-0 group-hover:opacity-50 animate-drop-smooth`}
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          animationDelay: `${Math.random() * 2}s`,
+                          animationDuration: "1s",
+                        }}
+                      />
+                    ))}
+
+                  {[71, 73, 75, 77, 85, 86].includes(
+                    weatherData?.daily?.weather_code?.[0]
+                  ) &&
+                    // Snow
+                    Array.from({ length: 15 }).map((_, i) => (
+                      <div
+                        key={`snowflake-${i}`}
+                        className={`absolute ${
+                          theme === "dark"
+                            ? "text-custom-yellow"
+                            : "text-custom-dark-blue"
+                        } opacity-0 group-hover:opacity-20 animate-fall`}
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          animationDelay: `${Math.random() * 3}s`,
+                          fontSize: "0.5rem",
+                        }}
+                      >
+                        ❄
+                      </div>
+                    ))}
+                </div>
+
+                <div className="flex relative z-10">
                   <p className="text-xl text-left text-slate-600 dark:text-slate-300">
                     {t("today")}
                   </p>
-                  <div className="flex justify-center mt-2">
+                  <div className="flex justify-center">
                     {getWeatherIcon(
                       weatherData?.daily?.weather_code?.[0],
                       true
                     )}
                   </div>
                 </div>
-                <div>
+
+                <div className="relative z-10">
                   <p className="text-4xl font-bold text-custom-dark-blue dark:text-custom-yellow">
                     {Math.round(weatherData?.current?.temperature_2m || 0)}°C
                   </p>

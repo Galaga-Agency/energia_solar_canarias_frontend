@@ -13,11 +13,21 @@ module.exports = {
         secondary: ['"Corbert"', "sans-serif"],
       },
       animation: {
+        "rise-sun": "riseSun 4s ease-in-out infinite",
+        "rain-drop": "rainDrop 1.5s ease-in-out infinite",
+        "snow-fall": "snowFall 3s linear infinite",
+        "energy-flow": "energyFlow 2s ease-in-out infinite",
+        "glow-pulse": "glowPulse 2s ease-in-out infinite",
+        "flow-right": "flowRight 2s ease-in-out infinite",
+        "flow-left": "flowLeft 2s ease-in-out infinite",
+        fade: "fadeIn 0.5s ease-in-out",
+        bounceX: "bounceX 1.2s infinite",
         bubble: "float 6s ease-in-out infinite",
         "drop-smooth": "smoothDrop 4s linear infinite",
         fall: "fall 5s linear infinite",
         drop: "drop 5s linear infinite",
         "leaf-fall": "leafFall 7s ease-in-out infinite",
+        "gradient-move": "gradientMove 5s ease-in-out infinite",
         "gradient-move": "gradientMove 5s ease-in-out infinite",
         "spin-slow": "spin 3s linear infinite",
         "gradient-spin": "spin 5s linear infinite",
@@ -55,6 +65,61 @@ module.exports = {
         "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },
       keyframes: {
+        riseSun: {
+          "0%": { transform: "translateY(50px) scale(0.8)", opacity: "0" },
+          "50%": { transform: "translateY(0) scale(1.2)", opacity: "0.8" },
+          "100%": { transform: "translateY(-20px) scale(1)", opacity: "1" },
+        },
+        rainDrop: {
+          "0%": { transform: "translateY(-100px)", opacity: "0" },
+          "50%": { opacity: "0.8" },
+          "100%": { transform: "translateY(200px)", opacity: "0" },
+        },
+        snowFall: {
+          "0%": { transform: "translateY(-50px) rotate(0deg)", opacity: "1" },
+          "50%": {
+            transform: "translateY(100px) rotate(180deg)",
+            opacity: "0.6",
+          },
+          "100%": {
+            transform: "translateY(200px) rotate(360deg)",
+            opacity: "0",
+          },
+        },
+        energyFlow: {
+          "0%": { opacity: 0.2, transform: "translateX(0) scale(0.8)" },
+          "50%": { opacity: 1, transform: "translateX(20px) scale(1)" },
+          "100%": { opacity: 0.2, transform: "translateX(40px) scale(0.8)" },
+        },
+        glowPulse: {
+          "0%, 100%": { boxShadow: "0 0 15px rgba(255, 255, 0, 0.5)" },
+          "50%": { boxShadow: "0 0 30px rgba(255, 255, 0, 1)" },
+        },
+        flowRight: {
+          "0%": { transform: "translateX(-100%)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { transform: "translateX(100%)", opacity: "0" },
+        },
+        flowLeft: {
+          "0%": { transform: "translateX(100%)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { transform: "translateX(-100%)", opacity: "0" },
+        },
+        doubleBlink: {
+          "0%, 100%": { opacity: "1" },
+          "25%, 50%": { opacity: "0.3" },
+          "75%": { opacity: "1" },
+        },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        bounceX: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(10px)" },
+        },
         float: {
           "0%": { transform: "translateY(0) scale(1)", opacity: "0.8" },
           "50%": { transform: "translateY(-20px) scale(1.2)", opacity: "1" },

@@ -1,7 +1,10 @@
+import useDeviceType from "@/hooks/useDeviceType";
 import React from "react";
 import BatteryGauge from "react-battery-gauge";
 
 const BatteryIndicator = ({ soc }) => {
+  const { isMobile } = useDeviceType();
+
   return (
     <div className="flex justify-left items-center">
       <BatteryGauge
@@ -10,6 +13,7 @@ const BatteryIndicator = ({ soc }) => {
         animated={true}
         charging={false}
         size={130}
+        orientation={isMobile ? "horizontal" : "vertical"}
         customization={{
           batteryBody: {
             strokeWidth: 4,
@@ -33,8 +37,8 @@ const BatteryIndicator = ({ soc }) => {
             interCellsGap: 1,
           },
           readingText: {
-            lightContrastColor: "#111",
-            darkContrastColor: "#fff",
+            lightContrastColor: "rgb(201, 202, 202)",
+            darkContrastColor: "rgb(201, 202, 202)",
             lowBatteryColor: "#f44336",
             fontFamily: "Corbert, sans-serif",
             fontSize: 14,

@@ -9,7 +9,7 @@ const BatteryIndicator = ({ soc }) => {
   const theme = useSelector(selectTheme);
 
   const getBatteryColor = useMemo(() => {
-    if (soc === null || soc === undefined) return "none"; // No fill color for invalid data
+    if (soc === null || soc === undefined) return "none";
     if (soc <= 10) return "#ef4444"; // Red - Critical
     if (soc <= 20) return "#f97316"; // Orange - Low
     if (soc <= 40) return "#eab308"; // Yellow - Medium-Low
@@ -17,6 +17,13 @@ const BatteryIndicator = ({ soc }) => {
     if (soc <= 80) return "#22c55e"; // Green - Good
     return "#22c55e"; // Default Green
   }, [soc]);
+
+  // Define text shadow based on theme
+  const getTextShadow = useMemo(() => {
+    return theme === "dark"
+      ? "0 2px 4px rgba(0,0,0,0.8), 0 0 2px rgba(0,0,0,0.9)" // Stronger shadow for dark theme
+      : "0 1px 3px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.9)"; // Subtle shadow for light theme
+  }, [theme]);
 
   const showPercentage = soc !== null && soc !== undefined;
 
@@ -35,13 +42,13 @@ const BatteryIndicator = ({ soc }) => {
             cornerRadius: 6,
             fill: "none",
             strokeColor:
-              theme === "dark" ? " rgb(203 213 225)" : "rgb(71 85 105)",
+              theme === "dark" ? "rgb(203 213 225)" : "rgb(71 85 105)",
           },
           batteryCap: {
             fill: "none",
             strokeWidth: 4,
             strokeColor:
-              theme === "dark" ? " rgb(203 213 225)" : "rgb(71 85 105)",
+              theme === "dark" ? "rgb(203 213 225)" : "rgb(71 85 105)",
             cornerRadius: 2,
             capToBodyRatio: 0.4,
           },
@@ -55,13 +62,17 @@ const BatteryIndicator = ({ soc }) => {
           },
           readingText: {
             lightContrastColor:
-              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(161, 161, 170)",
+              theme === "dark" ? "rgb(203 213 225)" : "rgb(71 85 105)",
             darkContrastColor:
-              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(161, 161, 170)",
+              theme === "dark" ? "rgb(203 213 225)" : "rgb(71 85 105)",
             lowBatteryColor: "#ef4444",
             fontFamily: "Corbert, sans-serif",
             fontSize: 14,
             showPercentage: showPercentage,
+            style: {
+              textShadow: getTextShadow,
+              fontWeight: "800",
+            },
           },
         }}
       />

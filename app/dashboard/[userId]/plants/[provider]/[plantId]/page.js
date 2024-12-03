@@ -171,7 +171,7 @@ const PlantDetailsPage = ({ params }) => {
         <div className="h-auto w-full flex flex-col justify-center items-center">
           <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
           <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
-            {detailsError || t("plantDataNotFound")}
+            {t("plantDataNotFound")}
           </p>
           <button
             onClick={handleRefresh}

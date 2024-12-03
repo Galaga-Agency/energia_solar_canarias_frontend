@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
@@ -23,8 +23,6 @@ import {
   BsCloudLightningRain,
   BsCloudFog,
 } from "react-icons/bs";
-import { FiWind } from "react-icons/fi";
-import { FaSmog } from "react-icons/fa";
 import { WiDayFog, WiNightAltThunderstorm } from "react-icons/wi";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidgetSkeleton from "./LoadingSkeletons/WeatherWidgetSkeleton";
@@ -38,12 +36,12 @@ const WeatherWidget = ({ plant, address, provider }) => {
   const { t } = useTranslation();
   const user = useSelector(selectUser);
   const token = useMemo(() => user?.tokenIdentificador, [user]);
-  const { isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
+  const { isDesktop } = useDeviceType();
+  const [retryCount, setRetryCount] = useState(0);
 
-  // console.log("address passed in weather widget: ", address);
-
-  useEffect(() => {
+  // Fetch weather data
+  const fetchWeatherData = () => {
     if (!address || !token || !provider) {
       console.warn("Missing required data. Waiting for user data...");
       return;
@@ -51,25 +49,38 @@ const WeatherWidget = ({ plant, address, provider }) => {
 
     switch (provider.toLowerCase()) {
       case "goodwe":
-        dispatch(
-          fetchGoodweWeatherData({
-            name: address,
-            token: token,
-          })
-        );
+        dispatch(fetchGoodweWeatherData({ name: address, token }));
         break;
       case "solaredge":
-        dispatch(
-          fetchSolarEdgeWeatherData({
-            name: address,
-            token: token,
-          })
-        );
+        dispatch(fetchSolarEdgeWeatherData({ name: address, token }));
         break;
       default:
         console.warn(`Unsupported provider: ${provider}`);
     }
-  }, [dispatch, address, token, provider]);
+  };
+
+  // Initial fetch
+  useEffect(() => {
+    if (retryCount === 0) fetchWeatherData();
+  }, [address, token, provider, retryCount]);
+
+  // Retry logic
+  useEffect(() => {
+    if (weatherError && retryCount < 5) {
+      const retryTimeout = setTimeout(() => {
+        console.log(`Retrying fetch (attempt ${retryCount + 1}/5)...`);
+        setRetryCount((prev) => prev + 1);
+        fetchWeatherData();
+      }, 2000); // Retry after 2 seconds
+
+      return () => clearTimeout(retryTimeout);
+    }
+  }, [weatherError, retryCount]);
+
+  // Reset retry count when dependencies change
+  useEffect(() => {
+    setRetryCount(0);
+  }, [address, token, provider]);
 
   const getWeatherIcon = (code, isToday = false) => {
     const sizeClass = isToday

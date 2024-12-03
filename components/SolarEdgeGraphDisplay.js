@@ -32,7 +32,7 @@ import {
   TooltipTrigger,
 } from "@/components/Tooltip";
 import { Info } from "lucide-react";
-import PercentageBar from "@/components/PercentageBar";
+import PercentageBar from "./PercentageBar";
 import PrimaryButton from "./PrimaryButton";
 
 const SolarEdgeGraphDisplay = ({ plantId, title }) => {
@@ -40,18 +40,50 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const dispatch = useDispatch();
   const { isMobile } = useDeviceType();
 
+  // State for date range and retries
   const [range, setRange] = useState("DAY");
   const [customRange, setCustomRange] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [retryCount, setRetryCount] = useState(0);
   const [hasEmptyCurves, setHasEmptyCurves] = useState(false);
+
+  // Redux selectors
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
   const token = user?.tokenIdentificador;
   const theme = useSelector(selectTheme);
+
+  // Define only the curves we want to show
+  const VISIBLE_CURVES = [
+    {
+      dataKey: "selfConsumption",
+      color: "#4CAF50",
+      name: t("Autoconsumo"),
+    },
+    {
+      dataKey: "consumption",
+      color: "#F44336",
+      name: t("Consumo"),
+    },
+    {
+      dataKey: "solarProduction",
+      color: "#FFEB3B",
+      name: t("Producción Solar"),
+    },
+    {
+      dataKey: "export",
+      color: "#FF5722",
+      name: t("Exportación"),
+    },
+    {
+      dataKey: "import",
+      color: "#2196F3",
+      name: t("Importación"),
+    },
+  ];
 
   const formatDate = (date) =>
     date ? date.toISOString().replace("T", " ").slice(0, 19) : undefined;
@@ -82,8 +114,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
         return yearStart;
       }
       case "CICLO": {
-        const cicloStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        return cicloStart;
+        return new Date(now.getFullYear(), now.getMonth(), 1);
       }
       default:
         return now;
@@ -138,20 +169,17 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     };
   }, [handleFetchGraph, dispatch]);
 
-  // Add effect to handle retries
   useEffect(() => {
-    if (hasEmptyCurves && retryCount < 5) {
+    if (hasEmptyCurves && retryCount < 8) {
       const retryTimer = setTimeout(() => {
-        console.log(`Retrying fetch (attempt ${retryCount + 1}/5)...`);
         setRetryCount((prev) => prev + 1);
         handleFetchGraph();
-      }, 100); // Wait 0.1 seconds between retries
+      }, 200);
 
       return () => clearTimeout(retryTimer);
     }
   }, [hasEmptyCurves, retryCount, handleFetchGraph]);
 
-  // Reset retry count when range changes
   useEffect(() => {
     setRetryCount(0);
     setHasEmptyCurves(false);
@@ -160,19 +188,15 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const transformedData = useMemo(() => {
     if (!graphData || isLoading) return [];
 
-    // First, check if all curves have data
     const hasEmptyArray = Object.keys(graphData).some(
       (key) => Array.isArray(graphData[key]) && graphData[key].length === 0
     );
 
-    // If any curve is empty and we haven't retried 3 times yet, trigger retry
     if (hasEmptyArray && retryCount < 3) {
       setHasEmptyCurves(true);
-      // Will trigger retry effect
       return [];
     }
 
-    // If all curves have data or we've retried 3 times, proceed with transform
     const mergedData = {};
     Object.keys(graphData).forEach((key) => {
       if (Array.isArray(graphData[key])) {
@@ -183,7 +207,6 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
       }
     });
 
-    // All good, no need for more retries
     setHasEmptyCurves(false);
     return Object.values(mergedData).sort(
       (a, b) => new Date(a.date) - new Date(b.date)
@@ -197,8 +220,6 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     switch (range) {
       case "DAY": {
         const past24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-
-        // Keep only one data point per hour
         return transformedData
           .filter((item) => {
             const itemDate = new Date(item.date);
@@ -311,6 +332,8 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const customLegendRenderer = useCallback(
     (props) => {
       const { payload } = props;
+      if (!payload) return null;
+
       return (
         <div className="flex flex-wrap justify-center gap-4 mt-4">
           {payload.map((entry, index) => (
@@ -319,7 +342,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
                 className="w-3 h-3 rounded-sm"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-sm dark:text-custom-light-gray">
+              <span className="text-sm text-custom-dark-blue dark:text-custom-light-gray">
                 {entry.value}
               </span>
               {renderTooltip(entry.value.toLowerCase())}
@@ -404,9 +427,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
       </div>
 
       {isLoading || (hasEmptyCurves && retryCount < 3) ? (
-        <>
-          <SolarEdgeGraphDisplaySkeleton theme={theme} />
-        </>
+        <SolarEdgeGraphDisplaySkeleton theme={theme} />
       ) : filteredData.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 gap-4">
           <p className="text-lg text-gray-500 dark:text-gray-400">
@@ -417,62 +438,76 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
           </PrimaryButton>
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={400}>
-          <ComposedChart
-            data={filteredData}
-            margin={{
-              left: isMobile ? -15 : 15,
-              right: isMobile ? -25 : 15,
-              top: 10,
-              bottom: 10,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={formatXAxis}
-              interval="preserveStartEnd"
+        <>
+          {/* Percentage Bars */}
+          <div className="mb-6 flex flex-col gap-6">
+            <PercentageBar
+              title={t("Producción del Sistema")}
+              value1={graphData.totalSelfConsumption}
+              value2={graphData.totalExport}
+              label1={t("Autoconsumo")}
+              label2={t("Exportada")}
+              color1="#4CAF50"
+              color2="#FF5722"
             />
-            <YAxis
-              label={{
-                value: "kW",
-                angle: -90,
-                position: "insideLeft",
-                offset: 5,
+            <PercentageBar
+              title={t("Consumo")}
+              value1={graphData.totalSelfConsumption}
+              value2={graphData.totalImport}
+              label1={t("Autoconsumo")}
+              label2={t("Importada")}
+              color1="#4CAF50"
+              color2="#2196F3"
+            />
+          </div>
+
+          {/* Graph */}
+          <ResponsiveContainer width="100%" height={400}>
+            <ComposedChart
+              data={filteredData}
+              margin={{
+                left: isMobile ? -15 : 15,
+                right: isMobile ? -25 : 15,
+                top: 10,
+                bottom: 10,
               }}
-            />
-            <Tooltip
-              labelFormatter={formatXAxis}
-              formatter={(value, name) => [
-                `${Number(value).toFixed(2)} kW`,
-                t(name),
-              ]}
-            />
-            <Legend content={customLegendRenderer} />
-            {Object.keys(graphData || {})
-              .filter((key) => key !== "storagePower")
-              .map((key, index) => (
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={formatXAxis}
+                interval="preserveStartEnd"
+              />
+              <YAxis
+                label={{
+                  value: "kW",
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: 5,
+                }}
+              />
+              <Tooltip
+                labelFormatter={formatXAxis}
+                formatter={(value, name) => [
+                  `${Number(value).toFixed(2)} kW`,
+                  t(name),
+                ]}
+              />
+              <Legend content={customLegendRenderer} />
+              {VISIBLE_CURVES.map((curve) => (
                 <Line
-                  key={key}
+                  key={curve.dataKey}
                   type="monotone"
-                  dataKey={key}
-                  stroke={
-                    [
-                      "#F44336",
-                      "#2196F3",
-                      "#4CAF50",
-                      "#FFEB3B",
-                      "#9C27B0",
-                      "#FF5722",
-                    ][index % 6]
-                  }
-                  name={t(key)}
+                  dataKey={curve.dataKey}
+                  stroke={curve.color}
+                  name={curve.name}
                   dot={false}
                   strokeWidth={2}
                 />
               ))}
-          </ComposedChart>
-        </ResponsiveContainer>
+            </ComposedChart>
+          </ResponsiveContainer>
+        </>
       )}
     </div>
   );

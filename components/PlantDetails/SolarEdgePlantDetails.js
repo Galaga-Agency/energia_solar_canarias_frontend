@@ -153,14 +153,6 @@ const SolarEdgePlantDetails = React.memo(
       return `${formattedNumber} ${unit}`;
     }, []);
 
-    if (!solaredgePlant) {
-      return (
-        <div className="h-screen w-screen">
-          <Loading />
-        </div>
-      );
-    }
-
     if (error) {
       return (
         <PageTransition>

@@ -15,37 +15,15 @@ import {
 } from "@/store/slices/plantsSlice";
 import EnergyLoadingClock from "@/components/EnergyLoadingClock";
 import { useTranslation } from "next-i18next";
-import BatteryIndicator from "./BatteryIndicator";
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/Tooltip";
-import { Info, UtilityPole } from "lucide-react";
+import { UtilityPole } from "lucide-react";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faSolarPanel } from "@fortawesome/free-solid-svg-icons";
-import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
-import {
-  ChevronRight,
-  ChevronLeft,
-  ChevronsRight,
-  ChevronsLeft,
-  ArrowRight,
-  ArrowLeft,
-  MoveRight,
-  MoveLeft,
-} from "lucide-react";
-import {
-  Home, // Simple outlined house
-  Building, // Modern building outline
-  Building2, // Alternative building style
-  HomeIcon, // Another house variant
-  Store, // Shop/house style
-} from "lucide-react";
+import { faSolarPanel } from "@fortawesome/free-solid-svg-icons";
+import { ChevronRight, ChevronLeft } from "lucide-react";
+import { Home } from "lucide-react";
+import { FaSolarPanel } from "react-icons/fa";
 
 const EnergyFlowDisplay = memo(({ provider }) => {
   const { isMobile, isTablet } = useDeviceType();
@@ -267,10 +245,8 @@ const EnergyFlowDisplay = memo(({ provider }) => {
             hasFlow && "mb-32"
           } `}
         >
-          <FontAwesomeIcon
-            icon={faSolarPanel}
-            className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-7xl mb-2"
-          />
+          <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] font-group-hover:scale-105 transition-transform mb-2" />
+
           <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
             <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
               {t("Energy Produced")}
@@ -367,7 +343,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
               {t("lastUpdated")}: {lastUpdatedRef.current}
             </span>
             <EnergyLoadingClock
-              duration={30}
+              duration={15}
               onComplete={fetchRealtimeData}
               isPaused={isFetching}
             />
@@ -375,7 +351,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
         ) : (
           <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
             <EnergyLoadingClock
-              duration={30}
+              duration={15}
               onComplete={fetchRealtimeData}
               isPaused={isFetching}
             />
@@ -420,10 +396,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
         <div className="w-1/3 relative flex flex-col items-center">
           <div className="group flex flex-col items-center gap-4 w-full relative">
             <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
-            <FontAwesomeIcon
-              icon={faSolarPanel}
-              className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] group-hover:scale-105 transition-transform mb-2"
-            />
+            <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] group-hover:scale-105 transition-transform mb-2" />
             <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
               <span className="block text-sm text-slate-600 dark:text-slate-300">
                 {t("Energy Produced")}

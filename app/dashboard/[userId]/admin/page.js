@@ -119,6 +119,8 @@ const AdminDashboard = () => {
     router.push(`/dashboard/${user.id}/admin/${normalizedProviderName}`);
   };
 
+  console.log("plant from list: ", plants);
+
   const closeModal = () => {
     setIsModalOpen(false);
     if (selectedProvider) {

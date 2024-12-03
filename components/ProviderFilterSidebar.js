@@ -5,12 +5,14 @@ import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
+import { useParams } from "next/navigation";
 
 const ProviderFilterSidebar = ({
   plants,
   onFilterChange,
   isSidebarOpen,
   setIsSidebarOpen,
+  provider,
 }) => {
   const { t } = useTranslation();
   const [filters, setFilters] = useState({
@@ -34,26 +36,26 @@ const ProviderFilterSidebar = ({
         const searchTerm = currentFilters.search.toLowerCase();
         filtered = filtered.filter(
           (plant) =>
-            plant.name.toLowerCase().includes(searchTerm) ||
-            plant.address.toLowerCase().includes(searchTerm)
+            plant?.name?.toLowerCase().includes(searchTerm) ||
+            plant?.address?.toLowerCase().includes(searchTerm)
         );
       }
 
       if (currentFilters.status.length > 0) {
         filtered = filtered.filter((plant) =>
-          currentFilters.status.includes(plant.status)
+          currentFilters?.status?.includes(plant.status)
         );
       }
 
       if (currentFilters.type.length > 0) {
         filtered = filtered.filter((plant) =>
-          currentFilters.type.includes(plant.type)
+          currentFilters?.type?.includes(plant.type)
         );
       }
 
       if (currentFilters.organization.length > 0) {
         filtered = filtered.filter((plant) =>
-          currentFilters.organization.includes(plant.organization)
+          currentFilters?.organization?.includes(plant.organization)
         );
       }
 

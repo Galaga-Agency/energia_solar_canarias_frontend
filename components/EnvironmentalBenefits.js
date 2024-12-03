@@ -23,7 +23,7 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import EnvironmentalBenefitsSkeleton from "@/components/LoadingSkeletons/EnvironmentalBenefitsSkeleton";
 
-const EnvironmentalBenefits = ({ t, plantId, provider }) => {
+const EnvironmentalBenefits = ({ t, plantId, provider, batteryLevel }) => {
   const theme = useSelector(selectTheme);
   const { isMobile } = useDeviceType();
   const dispatch = useDispatch();
@@ -43,7 +43,11 @@ const EnvironmentalBenefits = ({ t, plantId, provider }) => {
   }
 
   return (
-    <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 md:pb-8 mb-6 backdrop-blur-sm shadow-lg">
+    <section
+      className={`flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 md:pb-8 mb-6 backdrop-blur-sm shadow-lg ${
+        batteryLevel > 0 ? "xl:min-w-[40vw]" : "xl:min-w-[calc(50vw-36px)]"
+      } `}
+    >
       <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
         {t("environmentalBenefits")}
       </h2>
@@ -69,7 +73,7 @@ const EnvironmentalBenefits = ({ t, plantId, provider }) => {
               </div>
             ))}
           </div>
-          <IoEarthOutline className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute text-[100px] md:text-[180px] lg:text-[220px] xl:text-[160px] z-20 top-1/2 -translate-y-1/2 -left-4 md:left-4 xl:left-8 text-custom-dark-blue dark:text-custom-yellow" />
+          <IoEarthOutline className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute text-[100px] md:text-[180px] lg:text-[220px] xl:text-[160px] z-20 top-1/2 -translate-y-1/2 -left-4 md:left-4 xl:-left-6 2xl:left-8 text-custom-dark-blue dark:text-custom-yellow" />
           <div className="z-10 bg-slate-50/70 dark:bg-slate-700/50 p-4 sm:p-6 w-full rounded-lg shadow-md flex flex-col items-end sm:items-center md:items-end gap-2 sm:gap-4">
             <div className="flex items-center">
               {!isMobile && (
@@ -189,7 +193,7 @@ const EnvironmentalBenefits = ({ t, plantId, provider }) => {
               )}
             </div>
           </div>
-          <PiTree className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute text-[100px] md:text-[180px] lg:text-[220px] xl:text-[160px] z-20 top-1/2 -translate-y-1/2 -right-4 md:right-4 xl:right-8 text-custom-dark-blue dark:text-custom-yellow" />
+          <PiTree className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute text-[100px] md:text-[180px] lg:text-[220px] xl:text-[160px] z-20 top-1/2 -translate-y-1/2 -right-4 md:right-4 xl:-right-6 2xl:right-8 text-custom-dark-blue dark:text-custom-yellow" />
         </div>
       </div>
     </section>

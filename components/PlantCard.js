@@ -19,9 +19,10 @@ const PlantCard = ({ plant }) => {
   const router = useRouter();
   const user = useSelector(selectUser);
   const userId = user?.id;
+  const provider = plant?.organization?.toLowerCase();
 
   const handleCardClick = () => {
-    router.push(`/dashboard/${userId}/plants/${plant.id}`);
+    router.push(`/dashboard/${userId}/plants/${provider}/${plant.id}`);
   };
 
   return (

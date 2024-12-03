@@ -1,26 +1,10 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
-import {
-  IoArrowBackCircle,
-  IoLocationOutline,
-  IoCashOutline,
-  IoAnalyticsOutline,
-  IoEarthOutline,
-  IoLeaf,
-  IoWater,
-  IoSunny,
-} from "react-icons/io5";
-import { SiOxygen } from "react-icons/si";
-import {
-  PiSolarPanelFill,
-  PiSunHorizon,
-  PiTree,
-  PiTreeFill,
-} from "react-icons/pi";
-import { BsCalendar2Month, BsCircleFill } from "react-icons/bs";
+import { IoArrowBackCircle, IoLocationOutline } from "react-icons/io5";
+import { PiSolarPanelFill } from "react-icons/pi";
 import { BiRefresh } from "react-icons/bi";
 import { HiOutlineStatusOnline } from "react-icons/hi";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
@@ -30,11 +14,8 @@ import Texture from "@/components/Texture";
 import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
-  fetchSolarEdgeOverview,
   selectDetailsError,
   selectLoadingDetails,
-  selectOverviewLoading,
-  selectPlantOverview,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import {
@@ -46,16 +27,13 @@ import {
 import WeatherWidget from "../WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
 import PlantDetailsSkeleton from "../LoadingSkeletons/PlantDetailsSkeleton";
-import EnergyFlowSkeleton from "../LoadingSkeletons/EnergyFlowSkeleton";
 import SolarEdgeGraphDisplay from "../SolarEdgeGraphDisplay";
 import Loading from "../Loading";
 import EnergyStatisticsSkeleton from "../LoadingSkeletons/EnergyStatisticsSkeleton";
-import { GiSpeedometer } from "react-icons/gi";
-import { FaEuroSign } from "react-icons/fa";
-import { FaDroplet } from "react-icons/fa6";
 import EnvironmentalBenefits from "../EnvironmentalBenefits";
 import BatteryIndicator from "../BatteryIndicator";
 import EnergyStatistics from "../EnergyStatistics";
+import { IoFlashOutline } from "react-icons/io5";
 
 const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -345,31 +323,57 @@ const SolarEdgePlantDetails = React.memo(
           {/* Energy Flow */}
           <EnergyFlowDisplay provider={solaredgePlant?.organization} />
 
-          <div className="flex flex-col xl:flex-row md:gap-6 w-full">
+          <div className="flex flex-col xl:flex-row xl:gap-6 w-full">
             {/* Energetic Statistics */}
             <EnergyStatistics
-              solaredgePlant={solaredgePlant}
+              plant={solaredgePlant}
               t={t}
               theme={theme}
               formatValueWithDecimals={formatValueWithDecimals}
               token={token}
             />
 
-            <div className=" bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex items-center">
-              <BatteryIndicator soc={batteryLevel} />
-            </div>
+            <div className=" flex flex-col md:flex-row md:gap-6">
+              {batteryLevel > 0 && (
+                <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
+                  <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
+                    {/* Cool Energy Icon */}
+                    <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
+                      <IoFlashOutline className="text-3xl md:text-4xl" />
+                    </div>
 
-            {/* Environmental Benefits */}
-            {isLoading ? (
-              <EnergyStatisticsSkeleton theme={theme} />
-            ) : (
-              <EnvironmentalBenefits
-                t={t}
-                plantId={solaredgePlant.id}
-                provider={solaredgePlant.organization}
-              />
-            )}
+                    {/* Battery Gauge */}
+                    <BatteryIndicator soc={batteryLevel} />
+
+                    {/* Tooltip */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+                          <Info className="h-4 w-4" />
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs">
+                          <p>{t("batteryTooltipContent")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+              )}
+
+              {/* Environmental Benefits */}
+              {isLoading ? (
+                <EnergyStatisticsSkeleton theme={theme} />
+              ) : (
+                <EnvironmentalBenefits
+                  t={t}
+                  plantId={solaredgePlant.id}
+                  provider={solaredgePlant.organization}
+                  batteryLevel={batteryLevel}
+                />
+              )}
+            </div>
           </div>
+
           <SolarEdgeGraphDisplay
             plantId={solaredgePlant.id}
             title={t("plantAnalytics")}

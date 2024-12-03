@@ -19,11 +19,11 @@ const PlantsListTableItem = ({ plant }) => {
   const user = useSelector(selectUser);
   const userId = user?.id;
   const { isMobile } = useDeviceType();
+  const plantId = plant.id.toString();
+  const provider = plant.organization?.toLowerCase();
 
   const handleRowClick = () => {
-    const plantId = plant.id.toString();
-    const provider = plant.organization?.toLowerCase();
-    router.push(`/dashboard/${userId}/plants/${plantId}`);
+    router.push(`/dashboard/${userId}/plants/${provider}/${plantId}`);
   };
 
   const idPassed = plant.id.toString();
@@ -44,7 +44,7 @@ const PlantsListTableItem = ({ plant }) => {
               <PiSolarPanelFill className="inline mr-2 text-custom-yellow text-2xl w-[15%] drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]" />
               <p className="w-[85%]">{plant.name}</p>
             </td>
-            {!isMobile && (
+            {!isMobile && provider !== "victronenergy" && (
               <td className="flex w-[40%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left items-center">
                 <FaLocationDot className="inline mr-2 text-custom-yellow w-[15%] drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]" />
                 <p

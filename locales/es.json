@@ -464,5 +464,899 @@
   "co2EmissionsSaved": "Ahorro de Emisiones de CO2",
   "equivalentTreesPlanted": "Árboles Equivalentes Plantados",
   "gasEmissionSavedTooltip": "Cantidad de emisiones de CO2 que habría generado un sistema equivalente de combustibles fósiles.",
-  "treesPlantedTooltip": "Plantación equivalente de nuevos árboles para reducir los niveles de CO2."
+  "treesPlantedTooltip": "Plantación equivalente de nuevos árboles para reducir los niveles de CO2.",
+  "batteryTooltipTrigger": "Nivel de Batería",
+  "batteryTooltipContent": "Nivel de carga actual de la batería de almacenamiento",
+  "FAN_ALERT_2": {
+    "resolution": "Realizar los siguientes pasos para intentar solucionar este problema: <br/>\n\n1. Comprobar la conexión física del cableado <br/>\n\n2. Limpiar el ventilador<br/>\n\n3. Sustituir el ventilador<br/>\n\nSi no se consigue solucionar el problema con ninguno de estos pasos, abrir una incidencia con el <a href=\"https://www.solaredge.com/service/support/cases\">equipo de asistencia de SolarEdge </a> facilitando los detalles necesarios para procesarla.\n",
+    "type": "Fallo ventilador interno",
+    "description": "Uno de los ventiladores internos del inversor no funciona."
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_DC_PLUS": {
+    "description": "El terminal DC+ de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción.",
+    "type": "Critical temperature on DC+ terminal",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC se han introducido correctamente en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC+ esté ajustado según el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abrir un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>"
+  },
+  "PANEL_COMMUNICATION_FAULT": {
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n1.\tRealizar el emparejamiento del inversor (puede realizarse pulsando botón derecho del ratón encima del inversor en la pestaña Layout de la plataforma de monitorización). <br/>\n2.\tUtilizar la plataforma de monitorización para encontrar el optimizador de potencia que no comunica y revisar si hay problemas de conectividad. Si todas las conexiones se han verificado, revisar el voltaje de seguridad siguiendo el <a href=\"https://knowledge-center.solaredge.com/sites/kc/files/se-power-optimizer-safety-voltage-check-procedure-technical-note.pdf\"> siguiente procedimiento</a>. <br/>\n\n             Tener en cuenta que, para ver el artículo, es necesario haber iniciado sesión. <br/>\n\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso facilitando la información necesaria: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>",
+    "description": "El optimizador de potencia no está enviando datos. Solo hay alertas de este tipo si no se ha comunicado durante al menos 2 días.",
+    "type": "Optimizador de potencia: sin comunicación"
+  },
+  "RAPID_INVERTER_COMMUNICATION_FAULT": {
+    "description": "El inversor no está comunicando con los servidores de SolarEdge. Esta alerta se activa solo si no hay comunicación durante al menos 3 horas",
+    "type": "Alerta rápida de inversor sin com. ",
+    "resolution": "El inversor no está comunicando con los servidores de SolarEdge. Esta alerta se activa solo si no hay comunicación durante al menos 3 horas",
+    "profile": "Alerta rápida de inversor sin com. "
+  },
+  "BATTERY_BELOW_MIN_SOE": {
+    "resolution_SE_BATTERY": "1. Las siguientes alertas pueden haber ocasionado que la batería llegue al SOE mínimo. Comprobar si están pendientes, y si lo están, intentar solucionarlas: <br/>\n- El inversor no está generando energía.<br/>\n- El interruptor automático de la batería se ha disparado.<br/>\n- Fallo interno de la batería<br/>\n- Error de cableado de CC de la batería<br/>\n- La batería no comunica.<br/>\n<br/>\n2. Seguir las siguientes instrucciones para apagar el sistema y volver a encenderlo:<br/>\na. Mover el interruptor ON/OFF/P del inversor en OFF.<br/>\nb. Esperar 5 minutos a que la CC sea inferior a 50 V.<br/>\nc. Mover el interruptor ON/OFF de la batería en la posición OFF y desconectar el automático de la batería.<br/>\nd. Si el inversor dispone de una unidad de desconexión, apaguar el interruptor de desconexión de CC.<br/>\ne. Desconectar la alimentación de CA del inversor.<br/>\n<br/>\nPara activar la alimentación:<br/>\na. Conectar la CA al inversor.<br/>\nb. Si el inversor dispone de una unidad de desconexión, mover el interruptor de desconexión de CC en la posición ON.<br/>\nc. Conectar el automático de la batería y luego mover el interruptor ON/OFF de la batería en ON.<br/>\nd. Colocar el interruptor ON/OFF/P del inversor en la posición ON.<br/>\n<br/>\n3. Comprobar que se haya seleccionado un perfil de batería. En el menú Puesta en marcha, seleccionar Administrador de dispositivos > SolarEdge Energy Bank > Configuración > Modo de control de energía y, continuación, seleccionar el perfil correspondiente.<br/>\n<br/>\n4. Si el problema persiste, abrir una incidencia indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.\n<br/>\nNota: La alerta puede tardar hasta 2 horas en cerrarse",
+    "description": "La batería ha entrado en modo de ahorro de energía porque ha llegado al mínimo SOE (Estado de energía)  y no se puede cargar.\n<br/><br/>\nNota importante: En modo de ahorro de energía, la batería continúa descargándose y puede llegar hasta un estado irrecuperable.\n",
+    "profile": "Batería por debajo del SOE mínimo",
+    "resolution_BATTERY": "1. Las siguientes alertas pueden haber ocasionado que la batería llegue al SOE mínimo. Comprobar si están pendientes, y si lo están, intentar solucionarlas: <br/>\n- El inversor no está produciendo energía<br/>\n- Batería: el interruptor automático ha disparado<br/>\n<br/>\n2. Seguir las instrucciones a continuación para apagar el sistema y luego encenderlo de nuevo:<br/>\na. Mover el interruptor ON/OFF/P del inversor a la posición OFF (0).<br/>\nb. Esperar a que la tensión CC baje a menos de 50V. Esperar 5 minutos o comprobar la tensión en SetApp o la pantalla LCD del inversor.<br/>\nc. Apagar el interruptor automático de la batería y luego desconectar el interruptor de desconexión/auxiliar.<br/>\nd. Si el sistema está conectado a una interfaz StorEdge, desconectar la interfaz de la fuente de alimentación.<br/>\ne. Si el inversor tiene una unidad de desconexión, apagar el interruptor de desconexión CC.<br/>\nf. Apagar la CA del inversor.<br/>\nPara encender:<br/>\na. Encender la CA del inversor.<br/>\nb. Si el inversor tiene una unidad de desconexión, encender el interruptor de desconexión CC.<br/>\nc. Si el sistema está conectado a una interfaz StorEdge, conectar de nuevo la interfaz a la fuente de alimentación.<br/>\nd. Encender el interruptor de desconexión/auxiliar y luego el interruptor automatice de la batería.<br/>\ne. Mover el interruptor de ON/OFF/P del inversor a la posición ON (I).<br/>\n<br/>\n3. Si es posible cargar la batería de la red, comprobar que la opción \"Cargar de la red\" esté activa. En el menú del inversor, ir a \"Control de Energía\" ? \"Administrador de Energía\" ? \"Control de Almacenamiento\" ? \"Carga de red\" ? \"Activar\".<br/>\n<br/>\n4. Comprobar que haya un perfil de batería seleccionado. En el menú del inversor, ir a \"Control de Energía\" ? \"Administrador de Energía\" ? \"Control de Energía\" y seleccione el perfil correspondiente.<br/>\n<br/>\n5. Si la alerta no se soluciona, abrir una incidencia suministrando la información correspondiente: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>.\n",
+    "description_BATTERY": "La batería ha entrado en modo de ahorro de energía porque ha llegado al mínimo SOE (Estado de energía)  y no se puede cargar.\n<br/><br/>\nNota importante: En modo de ahorro de energía, la batería continúa descargándose y puede llegar hasta un estado irrecuperable.\n",
+    "type": "Batería por debajo del SOE mínimo",
+    "description_SE_BATTERY": "La batería ha entrado en modo de ahorro de energía porque ha llegado al mínimo SOE (Estado de energía)  y no se puede cargar.\n<br/><br/>\nNota importante: En modo de ahorro de energía, la batería continúa descargándose y puede llegar hasta un estado irrecuperable.\n",
+    "resolution_SE_BATTERY_48V": "1. The following alerts may have caused the battery to reach minimum SOE. Please check if they are open and if so, try to resolve them: :Inverter is not producing energy* Battery tripped* Battery is not communicatingAlerts to add to this point in phase 2:* Battery temperature is too high* Battery temperature is too low2. Follow the instructions below to turn the system off and then turn it back on:To power OFF:1. Switch the inverter's ON/OFF/P switch to OFF.2. Wait 5 minutes for the DC to drop below 50V.3. Reset all battery's modules by pressing each module's black reset button on front of the module.4. If the inverter has a disconnection unit, switch off the DC disconnect switch.5. Turn off the AC supply to the inverter.To power ON:1. Turn on the AC supply to the inverter.2. If the inverter has a disconnection unit, switch the DC disconnect switch to ON.3. Switch the inverter's ON/OFF/P switch to ON.  3. Verify that a battery profile is selected. From the Commissioning menu, select Device Manager > SolarEdge Energy Bank > Settings > Energy Control Mode and select the relevant profile.4. If the issue persists, please open a case providing the relevant details: https://www.solaredge.com/service/support/cases SolarEdge Support. Note: it may take up to 2 hours for the alert to be closed.",
+    "resolution": "La batería ha entrado en modo de ahorro de energía porque ha llegado al mínimo SOE (Estado de energía)  y no se puede cargar.\n<br/><br/>\nNota importante: En modo de ahorro de energía, la batería continúa descargándose y puede llegar hasta un estado irrecuperable.\n"
+  },
+  "ORION_DC_SPD_FAILURE": {
+    "description": "El SPD de CC no funciona.",
+    "resolution": "1. Comprobar que la tarjeta de SPD de CC esté correctamente instalada según el manual. 2. Si el problema persiste, puede que el SPD de CC haya absorbido una sobretensión eléctrica y haya que sustituir la tarjeta. ",
+    "type": "Fallo SPD de CC "
+  },
+  "SYNERGY_AC_SPD_FAILURE": {
+    "resolution": "SPD needs to be replaced",
+    "type": "Synergy SPD failure",
+    "description": "The AC SPD in not functioning."
+  },
+  "SYNERGY_HIGH_TEMPERATURE_LEVELS": {
+    "resolution": "Se indicarán pasos específicos de resolución de problemas para cada alerta activada, correspondientes al tipo de bloques de terminales.",
+    "profile": "Inversor: temperatura elevada"
+  },
+  "AC_SPD_FAILURE": {
+    "resolution_SYNERGY": "<ol style=\"list-style:auto;padding-left:16px;\"> <li> Comprobar que la tarjeta de descargadores de CA esté instalada correctamente como se indica en este <a href=\"https://www.solaredge.com/sites/default/files/se-commercial-3ph-inverter-w-synergy-tech-installation-guide-pn-SExxK-xxxxIxxxx.pdf\">manual</a>.</li><li> Si el problema persiste, es posible que el descargador de CA haya absorbido una sobretensión eléctrica y sea necesario sustituir la tarjeta.</li> </ol>",
+    "type": "Fallo SPD de CA",
+    "description_SYNERGY": "El descargador de CA no funciona",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Comprobar que la tarjeta del SPD de CA esté instalada correctamente como se indica en este <a href=\"https://www.solaredge.com/sites/default/files/se-three-phase-inverter-with-setapp-configuration-manual-row.pdf\">manual</a>.</li>\n<li>Si el problema persiste, es posible que el SPD de CA haya absorbido una sobretensión eléctrica y sea necesario sustituir la placa.</li> </ol>",
+    "description": "El descargador de CA no funciona"
+  },
+  "BACKUP_SOCKET": {
+    "profile": "Enchufe de backup",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Reiniciar el módulo del enchufe de backup:<br/>\na. Apagar el sistema moviendo el interruptor ON/OFF a la posición OFF y luego esperar 5 segundos. <br/>\nb. Mover el interruptor ON/OFF/P del inversor en la posición ON. <br/>\nc. Esperar a que el inversor entre en modo de producción y pulsar el botón negro «off grid» en la parte inferior del inversor durante 3 segundos.<br/>\n</li> \n<li>Si el problema persiste, abrir un caso proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li> \n</ol>"
+  },
+  "BACKUP_INVERTER_DOESNOT_ALLOW_TRANSITION_TO_ON_GRID": {
+    "resolution": "Sieguir las instrucciones de abajo para apagar el inversor y volver a encenderlo: Para apagarlo: poner el interruptor ON/OFF/P del inversor en posición OFF. Esperar a que la tensión CC baje por debajo de los 50V. Esperar 5 minutos o comprobar la tensión en SetApp o en la pantalla LCD del inversor. Si el inversor dispone de una unidad de desconexión, apagar el interruptor de desconexión de CC. Desconectar la CA del inversor. Para encenderlo: a. Conectar la CA al inversor. b. Si el inversor dispone de una unidad de desconexión, conectar el interruptor de desconexión de CC. c. Colocar el interruptor ON/OFF/P del inversor en la posición ON. 2. Si el problema sigue sin resolverse, abrir una incidencia proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia SolarEdge </a>.",
+    "description": "El inversor no detiene la producción de backup para permitir la transición al estado de conexión a red eléctrica.",
+    "type": "El inversor no permite la transición a red"
+  },
+  "WEAKER_PANEL_DUE_STRING_OVER_POWER": {
+    "type": "Weaker panel due to string over power",
+    "resolution": "Weaker panel due to string over power Resolution",
+    "description": "Weaker panel due to string over power Description"
+  },
+  "GRID_FREQUENCY": {
+    "description": "El inversor ha detectado irregularidad en la frecuencia de la red",
+    "type": "Frecuencia de Red",
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el asunto: <br/>\n1.\tComprobar la conexión CA del inversor. <br/>\n2.\tVerificar que se haya configurado correctamente el país. Para más información consultar Commissioning and Activating the Installation la sección <a href=\"https://www.solaredge.com/downloads#/?cb=187537%7C187197 \">del manual de instalación del inversor</a>. <br/>\nNota: para visualizar este articulo es necesario iniciar sesión. <br/>\n<br/>\nO seguir la guía paso a paso <a href=\" https://www.solaredge.com/service/support/kb?mode=installer&search=set%20country&taxonomies={%22product_type%22:[],%22article_type%22:[]}&collapse=collapse-0. \">in this article</a> <br/>\nNota: para visualizar este articulo es necesario iniciar sesión. <br/>\n3.\tContactar con el operador de red para verificar si existe una carga muy grande o muy irregular cerca de la instalación. <br/>\n4.\tSi autorizado por parte de la compañía eléctrica, es posible cambiar los vaIores de protección de red. Consultar <a href=\" https://www.solaredge.com/sites/default/files/viewing_grid_protection_values.pdf\"> esta Nota Técnica </a> para cambiar los vaIores de protección de red."
+  },
+  "SAFE_CONNECT": {
+    "profile": "Sense Connect",
+    "resolution": "Se presentarán pasos específicos para resolución de problemas para cada alerta activada, correspondientes al tipo de alerta."
+  },
+  "STORAGE_COMMUNICATION_FAULT": {
+    "resolution": "Realizar los siguientes pasos para intentar solucionar este problema: <br/>\n1.\tVerificar las conexiones de CC y de comunicación de la batería con el inversor, tanto en la batería como en el inversor. <br/>\n2.\tComprobar que el interruptor de la batería está en la posición ON. <br/>\n3.\tSi no se ha solucionado su problema realizando estos pasos, abrir una incidencia facilitando los detalles: <a href=\"https://www.solaredge.com/service/support/cases\">asistencia técnica SolarEdge</a>\n\n\n",
+    "resolution_SE_BATTERY": "En caso de que la comunicación de la batería con el inversor sea inalámbrica: <br/>\n<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Mover el interruptor ON/OFF/P de la batería en la posición P durante más de 2 segundos pero no más de 7 segundos.</li>\n<li>Comprobar que el LED AZUL permanezca encendido fijo (sin parpadear).</li>\n<li>Si no fuera así, intentar colocar la antena de la batería en una posición alejada de superficies metálicas como la batería.</li>\n</ol>\n<br/>\nEn caso de que la batería se comunique con el inversor a través de RS485: <br/>\n<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Verificar la conexión del cable de comunicación tanto del lado del inversor como de la batería.</li>\n<li>Comprobar que el LED azul permanezca encendido fijo (sin parpadear).</li>\n</ol>\n<br/>\nSi el problema persiste, abrir una incidencia proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.",
+    "resolution_SE_BATTERY_48V": "1.Verify the communication cable connection on both the inverter's and battery's side according to the installation manual. 2.Verify battery SOE is not N/A in SetApp status screen.3.If the issue persists, please open a case providing the relevant details: https://www.solaredge.com/service/support/cases SolarEdge Support.",
+    "description": "Batería sin comunicación.\n¡Atención!: Si no se soluciona el problema, la batería se descargará automáticamente y la carga puede agotarse hasta un nivel donde no pueda recuperarse.",
+    "type": "Batería: sin comunicación"
+  },
+  "BACKUP_FAILED_INTERNAL_CIRCUIT_BREAKER_TRIPPED": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Apagar todos los interruptores automáticos situados en el cuadro que estén conectados a las cargas de backup.</li>\n<li>Encender el interruptor automático interno en el DCD del inversor.</li>\n<li>Esperar 7 minutos y comprobar que hay 230V entre los terminales L1 y N de la salida CA de backup en el DCD del inversor.</li>\n<li>Encender las cargas de respaldo, una a una. Buscar la carga que pueda estar provocando el cortocircuito y solucionar el problema.</li>\n<li>Si el interruptor está encendido y sigue apareciendo un error, ejecutar un ciclo reset de potencia completo del sistema:<br/>\na. Apagar el interruptor ON/OFF del inversor. <br/>\nb. Colocar el interruptor de seguridad CC en la posición OFF. <br/>\nc. Desconectar la CA del inversor y luego volver a conectarla (reinicio de CA). <br/>\nd. Colocar el interruptor de seguridad de CA en la posición ON. <br/>\ne. Apagar el interruptor ON/OFF del inversor. <br/>\nf. Esperar a que el inversor pase al modo producción y luego comprobar que la batería funciona.<br/>\n</li>  \n<li>Comprobar que ya no aparece el error .</li>  \n<li>Desconectar la alimentación de las cargas y comprobar que la operación de backup funciona correctamente durante al menos 1 minuto.</li>  \n<li> Si el problema persiste, abrir una incidencia añadiendo los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li></ol>",
+    "type": "Fallo en backup: el interruptor automático interno se ha disparado",
+    "description": "El interruptor automático interno se ha disparado. Las cargas en backup se han desconectado en los modos de conexión a la red y backup."
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L3_ABS": {
+    "description": "El conductor L3 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "type": "Temperatura crítica en el bloque de terminales de CA (conductor L3)"
+  },
+  "RECURRING_GRID_FREQUENCY": {
+    "type": "Problema recurrente con la frecuencia de red",
+    "resolution": "<p>Realice los siguientes pasos para intentar resolver este problema:</p>\n<ol style=\"list-style:revert;padding-left:16px;\">\n  <li>Compruebe la conexión de CA al inversor.</li>\n  <li>Compruebe que el inversor está configurado con el código de país correcto. Para obtener más información, consulte la sección  <a href=\"https://www.youtube.com/watch?v=cG20bS7_hdU&ab_channel=SolarEdgePV\">Puesta en marcha y activación de la instalación</a> del manual de instalación de su inversor.<br>\n  Tenga en cuenta que, para ver el artículo, debe iniciar sesión o seguir la <a href=\"https://www.solaredge.com/service/support/kb?mode=installer&search=set%22country&taxonomies={%22product_type%22:[],%22article_type%22:[]}&collapse=collapse-0.\">guía paso a paso</a>.</li>\n  <li>Compruebe con el operador de red local si existe una fuente de sobretensión importante o una carga irregular cerca de la instalación.</li>\n  <li>Si la autoridad local lo permite, cambie los valores de protección de red. Consulte la siguiente  <a href=\"https://www.solaredge.com/sites/default/files/viewing_grid_protection_values.pdf\">Nota de aplicación</a> para cambiar los valores de protección de red.</li>\n</ol>\n<p>Tenga en cuenta que, para ver el artículo, debe iniciar sesión.</p>",
+    "description": "El inversor ha detectado una irregularidad recurrente en la frecuencia de la red. Esto afecta a la producción."
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L2": {
+    "type": "Temperatura crítica en el bloque de terminales de CA (conductor L2)",
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "description": "El conductor L2 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción."
+  },
+  "ORION_AC_SPD_FAILURE": {
+    "description": "El SPD de CA no funciona.",
+    "resolution": "1. Compobar que la tarjeta de SPD de CA esté correctamente instalada según el manual. 2. Si el problema persiste, puede que el SPD de CA haya absorbido una sobretensión eléctrica y haya que sustituir la tarjeta.",
+    "type": "Fallo SPD de CA"
+  },
+  "SYNERGY_SPD_FAILURE": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\"> <li> Comprobar que la tarjeta de descargadores esté instalada correctamente, tal y como se indica en este <a href=\"https://www.solaredge.com/sites/default/files/se-synergy-manager-dc-spd-installation-guide.pdf\">manual</a>.</li> <li> Si el problema persiste, es posible que el descargador haya absorbido una sobretensión eléctrica y sea necesario sustituir la tarjeta.</li>\n</ol>",
+    "profile": "Fallo de descargador"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L2": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "description": "El conductor L2 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Temperatura crítica en el terminal de CA (conductor L2)"
+  },
+  "BCM_FOLLOWER_COMMUNICATION_LOSS": {
+    "type": "Pérdida de comunicación seguidor BCM",
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li>Compruebe el cable de conexión del inversor seguidor.</li><li>Si la conexión es inalámbrica, pruebe a mejorar la señal orientando la antena.</li><li> Si ninguno de los pasos anteriores soluciona su problema, abra una incidencia proporcionando los detalles relevantes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica SolarEdge</a></li></ol>",
+    "description": "Pérdida de comunicación con inversores seguidores"
+  },
+  "NEW_ALERTS_STRING_NOT_PRODUCING": {
+    "profile": "Problema con la producción del string ",
+    "description": "String CC produciendo energía muy baja. La alerta se activa cuando el sistema reconoce un problema de producción en el string.",
+    "resolution": "Realice los siguientes pasos para intentar solucionar este problema:<ol style=\"list-style:auto;padding-left:16px;\"> <li> Compruebe que las cajas de combinación están correctamente cableadas, es decir, tienen la polaridad correcta y los conectores asegurados.</li><li>Compruebe si hay alguna ruptura entre el inversor y el string CC. </li><li>Compruebe que las conexiones del inversor CC están correctamente conectadas. </li><li>Ejecute el procedimiento de resolución de problemas de strings <a href=\"https://www.solaredge.com/service/support/kb?mode=installer&search=KB961EN&taxonomies={%22product_type%22:[],%22article_type%22:[]}&collapse=collapse-0\"></a>. Tenga en cuenta que para ver el artículo tiene que haber iniciado sesión. </li></ol><br> Si ninguno de los pasos anteriores resuelve el problema, abra una incidencia con los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a> ",
+    "type": "Alerta interna: el string no está produciendo"
+  },
+  "SYSTEM_OVERLOADED": {
+    "resolution_ENERGY_HUB": "<ol style=\"list-style: auto; padding-left: 16px;\">\n<li>Asegurarse de que las cargas de backup no superan el máximo de potencia en el funcionamiento de backup y, si fuera necesario, desconectarlas. </li>\n<li>Restablecer la energía de backup cambiando el interruptor ON/OFF/P de cualquier inversor con un LED encendido a 0 y, a continuación, de nuevo a 1.</li>\n<li>Desconectar el suministro del cuadro principal en caso de que el sistema esté funcionando en modo de red y comprobar que la producción de backup funciona correctamente durante 15 minutos.</li>\n<li>Si el error sigue apareciendo en la pantalla de SetApp, desactivar todas las cargas de backup y restablecer la energía de backup pasando el interruptor ON/OFF/P de cualquier inversor con un LED encendido a 0 y, a continuación, de nuevo a 1.</li>\n<li>Comprobar que haya 240 V entre los terminales L1 y N de backup de CA en el inversor.</li>\n<li>Activar las cargas de backup una por una y buscar una carga que pueda causar un consumo excesivo. Mantener la desconexión y comprobar que la producción de backup funciona correctamente durante 15 minutos.</li>\n<li>Si el problema persiste, verificar que todas las conexiones de CA (fase, neutro, tierra) a la red y las cargas de backup estén conectadas correctamente. Comprobar que haya producción de backup durante 15 minutos.</li>\n<li>Si el problema persiste, abrir un caso proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "resolution": "El inversor se ha bloqueado debido a una sobrecarga del sistema y se ha detenido la producción tanto del modo de backup como del modo conectado a red.",
+    "resolution_JUPITER48_BACKUP": "<ol style=\"list-style:auto;padding-left:16px;\">\n\n<li>\nComprobar que las cargas de backup no superan el máximo de potencia en el funcionamiento de backup y, si necesario, desconectar algunas.\n<li>\n</li>\nRestablecer la energía de backup cambiando el interruptor ON/OFF/P de cualquier inversor con un LED encendido a 0 y, a continuación, de nuevo a 1.\n<li> \n</li>Desconectar la alimentación del cuadro principal en caso de que el sistema esté funcionando en modo de red y verificar que la producción de backup funciona correctamente durante 15 minutos.\n<li>  \n</li>\nSi el error sigue apareciendo en la pantalla de SetApp, desactivar todas las cargas de backup y restablecer la energía de backup moviendo el interruptor ON/OFF/P de cualquier inversor con un LED encendido a 0 y, a continuación, de nuevo a 1.\n<li> \n</li>\nComprobar que hay 240 V en los terminales L1/L2/L3 de backup de CA en el DCD del inversor.\n<li> \n</li>\nActivar las cargas de backup una a una y buscar alguna que pueda estar causando un consumo excesivo. Mantenerla desconectada y comprobar que la producción de backup funciona correctamente durante 15 minutos.\n<li> \n</li>\nSi el problema persiste, comprobar que todas las conexiones de CA (fase, neutro, tierra) a la red y a las cargas de backup estén debidamente conectadas. Comprobar que hay producción de backup durante 15 minutos.\n<li>  \n</li>\nSi el problema persiste, abrir un ticket de asistencia proporcionando los detalles pertinentes: https://www.solaredge.com/service/support/cases SolarEdge Support. Nota: tras añadir articulos Smart Energy la resolución podría cambiar. Las cargas se activarán automáticamente.\n</li>\n\n</ol>\n\n\n",
+    "profile": "Sobrecarga sistema",
+    "type": "Sobrecarga sistema",
+    "description": "El inversor se ha bloqueado debido a una sobrecarga del sistema y se ha detenido la producción tanto del modo de backup como del modo conectado a red."
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L1_ABS": {
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "description": "El conductor L1 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Temperatura crítica en el bloque de terminales de CA (conductor L1)"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_AC_TERMINAL": {
+    "description_L1_ABS": "El conductor L1 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "description_L1": "El conductor L1 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "description_L2": "El conductor L2 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "description_L3": "El conductor L3 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "description_L2_ABS": "El conductor L2 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "description_L3_ABS": "El conductor L3 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "resolution_L3": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "resolution_L1": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "resolution_L2": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "resolution_L3_ABS": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "type": "Temperatura crítica en el terminal de CA",
+    "resolution_L2_ABS": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "resolution_L1_ABS": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>"
+  },
+  "SYNERGY_TEMPERATURE_WARNING_ON_AC_TERMINAL": {
+    "resolution_L3": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "resolution_L2": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "resolution_L1": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "description_L3": "Advertencia: La temperatura del conductor L3 del bloque de terminales de CA es alta.",
+    "description_L2": "Advertencia: La temperatura del conductor L2 del bloque de terminales de CA es alta.",
+    "description_L1": "Advertencia: La temperatura del conductor L1 del bloque de terminales de CA es alta.",
+    "type": "Advertencia de temperatura en el terminal CA"
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L3": {
+    "description": "El conductor L3 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Temperatura crítica en el bloque de terminales de CA (conductor L3)",
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases."
+  },
+  "BCM_BUI_COMMUNICATION_LOSS": {
+    "type": "Pérdida de comunicación entre BCM y BUI",
+    "resolution": "Compruebe el cable que conecta el BUI y que no se haya modificado la configuración del sistema. Si ninguno de los pasos anteriores resuelve el problema, abra un caso con los datos relevantes para <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica de SolarEdge</a>",
+    "description": "Pérdida de comunicación con la BUI. Es posible que se restrinja el nivel de producción para proteger la barra colectora."
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L3": {
+    "type": "Temperatura crítica en el terminal de CA (conductor L3)",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "description": "El conductor L3 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción."
+  },
+  "OPTIMIZER_NEVER_PAIRED": {
+    "resolution": "Optimizer never paired Resolution",
+    "description": "Optimizer never paired Description",
+    "type": "Optimizer never paired"
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L1": {
+    "description": "El conductor L1 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Temperatura crítica en el bloque de terminales de CA (conductor L1)",
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases."
+  },
+  "SEM_DCS_POWER_LIMIT_ALERT": {
+    "type": "Se ha alcanzado la carga máx. del controlador de cargas SolarEdge Home",
+    "description": "device_name ha superado su potencia máxima permitida y, por tanto, se ha apagado.",
+    "resolution": "El device_name se ha desconectado de sus aparatos conectados porque su consumo de energía medido ha superado los valores máximos permitidos que se indican en la placa de características de device_name. <br/>1. Comprobar que el aparato conectado al dispositivo no supere la capacidad máxima permitida del interruptor <br/>2. Si el aparato conectado no supera los valores de la placa de características, contactar con el servicio de asistencia de SolarEdge "
+  },
+  "INVERTER_BELOW_THRESHOLD_ERROR": {
+    "description": "El inversor no está produciendo - (estado: error)",
+    "type": "Inversor  - detectado un problema de producción",
+    "resolution": "Si las condiciones meteorológicas eran buenas, revise los registros de errores y contacte con <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica de SolarEdge</a> para notificar el problema."
+  },
+  "BATTERY_CONNECTION_ERROR": {
+    "resolution_48V_LG": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Comprobar la conexión del cable de comunicación tanto en el lado del inversor como en el de la batería.</li>\n<li>Comprobar que el indicador LED de encendido delante del conjunto de la batería está ON.</li>\n<li>Si el LED de encendido está ON, seguir la configuración de comunicación usando SetApp según este manual: <a href=\"https://www.solaredge.com/sites/default/files/se-storedge-three-phase-inverter-installation-guide.pdf\"> este manual</a>.</li>\n<li>Seleccionar una conexión a tierra Pin 6 para el conector del bus CAN mediante el interruptor DIP en la tarjeta de comunicación CAN.</li>\n<li>Si el LED de encendido está OFF, comprobar la alimentación CA:<br/>\na. Retirar la tapa superior. Aflojar los cuatro tornillos hexagonales en cada esquina de la tapa y levantarla.<br/>\nb. Mover el interruptor por detrás de la posición OFF hasta que no pueda moverse más y, a continuación, moverlo a la posición ON.<br/>\nc. Si el interruptor se vuelve a mover solo hacia cualquier otra posición, no usar el conjunto de la batería y contactar con LG Chem o con su distribuidor. <br/>\n</li>\n<li>Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li>\n</ol>",
+    "resolution": "Contactar Asistencia Técnica",
+    "resolution_48V_SE": "Contactar Asistencia Técnica",
+    "resolution_48V_BYD": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Comprobar la conexión del cable de comunicación tanto en el lado del inversor como en el de la batería.</li>\n<li>Comprobar que el indicador LED de encendido del conjunto de la batería esté ON.</li>\n<li>Si el LED de encendido está ON, seguir la configuración de comunicación a través de SetApp según este manual: <a href=\"https://www.solaredge.com/sites/default/files/se-storedge-three-phase-inverter-installation-guide.pdf\"> este manual</a>.</li>\n<li>Seleccionar una conexión a tierra PIN6 para el conector del bus CAN mediante el interruptor DIP en la tarjeta de comunicación CAN.</li>\n<li>Si el LED de encendido está OFF, encender el botón ON/OFF de la batería.</li>\n<li>Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li>\n</ol>",
+    "type": "Error en la conexión de la batería",
+    "resolution_HV_LG": "Contactar Asistencia Técnica",
+    "description": "Description for battery connection error",
+    "resolution_HV_SE": "Contactar Asistencia Técnica"
+  },
+  "INVERTER_PRODUCTION_ISSUE_LOW_TELEMETRIES_OFF": {
+    "resolution": "In case weather conditions were ok, check the error logs and contact <a href=https://www.solaredge.com/service/support/cases>SolarEdge Support</a> to report the issue",
+    "type": "Inverter - Production issues (Low Telemetries in off mode)",
+    "description": "The system identified production issues (low telemetries in off mode)"
+  },
+  "KSTAR_BATTERY_OVER_VOLTAGE_PROTECTION": {
+    "description": "La tensión de la batería supera el valor recomendado. Esto ha provocado que el sistema ha abierto el circuito de carga y no se puede cargar hasta que se solucione",
+    "type": "Protección de sobretensión de la batería",
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"> Realice los siguientes pasos para intentar resolver este problema:<li>Reinicie la batería.</li><li>Si no desaparece la alerta, espere 1 hora para ver si desaparece. </li><li> Si la alerta no desaparece, abra una incidencia con los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">Soporte Técnico SolarEdge </a>.</span></li></ol>"
+  },
+  "SYNERGY_TEMPERATURE_WARNING_ON_AC_TERMINAL_L1": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "type": "Aviso de temperatura en el terminal de CA (conductor L1)",
+    "description": "Advertencia: La temperatura del conductor L1 del bloque de terminales de CA es alta."
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_DC_PLUS_ABS": {
+    "resolution": "1. Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan cables de CC sueltos. 2. Si los cables de CC están asegurados al bloque de terminales con tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC + está ajustado según el manual de instalación. 3. Si los módulos FV están conectados al inversor mediante cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación. 4.  Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "description": "El terminal de CC + ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Critical temperature on DC+ terminal"
+  },
+  "INVERTER_BELOW_THRESHOLD_STDBY": {
+    "type": "Modo Standby (el inversor no está produciendo)",
+    "description": "El inversor está bloqueado por haber sido configurado en modo Standby",
+    "resolution": "El inversor no está produciendo energía porque está en modo Standby.\nPara que produzca debe ser activado (se requieren los permisos correspondientes para realizar esta acción)."
+  },
+  "SYNERGY_TEMPERATURE_WARNING_ON_DC_PLUS": {
+    "type": "Aviso de temperatura en el terminal DC+",
+    "description": "Advertencia: La temperatura de una de las unidades del bloque de terminales de DC+ es alta",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC se han introducido correctamente en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC+ esté ajustado según el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abrir un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>"
+  },
+  "BATTERY_INTERNAL_FAULT_SUPPORT": {
+    "description": "Fallo interno de la batería: debe resolverlo el equipo de Asistencia Técnica de SolarEdge.\nNota: Si no se soluciona el problema, la batería se descargará por si misma y la carga puede agotarse hasta el punto de no poder recuperarse.",
+    "type": "SE - Fallo interno de la batería",
+    "resolution": "Abrir una incidencia añadiendo los detalles relevantes: https://www.solaredge.com/service/support/cases SolarEdge Support."
+  },
+  "STRING_NOT_PRODUCING": {
+    "type": "Alerta interna: el string no está produciendo",
+    "resolution": "<ol style=\"list-style: revert; padding-left: 16px;\">\n  <li>Compruebe el cableado de la caja combinadora:\n    <ol style=\"list-style-type: lower-alpha; margin-left: 2rem;\">\n      <li>Asegúrese de que la polaridad es correcta.</li>\n      <li>Compruebe que los conectores son seguros.</li>\n    </ol>\n  </li>\n  <li>Busque posibles rupturas de CC en la conexión entre el inversor y el string CC. </li>\n  <li>Confirme las conexiones CC del inversor.</li>\n  <li>Si procede, compruebe los fusibles del disyuntor de CC.</li>\n</ol>\n\n<br>Si el problema persiste tras realizar estos pasos, <a href=\"https://www.solaredge.com/service/support/cases\" target=\"_blank\">abra una incidencia en la Asistencia SolarEdge</a> facilitando la siguiente información:<br>\n\n<ol style=\"list-style: revert; padding-left: 16px;\">\n  <li>Mediciones relevantes tomadas</li>\n  <li>Pasos específicos realizados para solucionar el problema</li>\n</ol>",
+    "description": "String CC produciendo energía muy baja. La alerta se activa cuando el sistema reconoce un problema de producción en el string.",
+    "profile": "Problema con la producción del string"
+  },
+  "DC_SPD_FAILURE": {
+    "type": "Fallo SPD de CC ",
+    "description_SYNERGY": "El descargador de sobretensiones de CC de una de las unidades Synergy no funciona",
+    "description": "El SPD de CC no funciona",
+    "resolution_SYNERGY": "<ol style=\"list-style:auto;padding-left:16px;\"> <li> Comprobar que la tarjeta de descargadores de CC esté instalada correctamente como se indica en este manual <a href=\"https://www.solaredge.com/sites/default/files/se-commercial-3ph-inverter-w-synergy-tech-installation-guide-pn-SExxK-xxxxIxxxx.pdf\"></a>.</li><li> Si el problema persiste, es posible que el descargador de CC haya absorbido una sobretensión eléctrica y sea necesario sustituir la tarjeta.</li> </ol>",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Comprobar que la tarjeta SPD de CC esté instalada correctamente, tal y como se indica en este <a href=\"https://www.solaredge.com/sites/default/files/se-three-phase-inverter-with-setapp-configuration-manual-row.pdf\">manual</a>.</li>\n<li>Si el problema persiste, es posible que el SPD de CC haya absorbido una sobrecarga eléctrica y sea necesario sustituir la placa.</li> </ol>"
+  },
+  "SEM_DCS_DEVICE_ISSUE": {
+    "type": "Fallo del dispositivo DCS",
+    "description": "Se ha detectado consumo en el dispositivo cuando se encontraba en estado OFF ",
+    "resolution": "El dispositivo Controlador de cargas se utiliza para evitar sobrecarga del sistema. Cuando se mide el consumo del aparato mientras el dispositivo está en la posición de apagado, podría significar que el relé no ha podido apagar el aparato conectado. <br><ol style=\"list-style:revert;padding-left:16px;\"> <li> Compruebe que el dispositivo funcione manualmente accionando manualmente el {{deviceName}} en la aplicación móvil.</li> <li>Intente desconectar manualmente el aparato pulsando el botón ON/OFF durante más de 3 segundos.</li> <li> Si el relé sigue sin conmutar el aparato conectado, póngase en contacto con el servicio técnico de SolarEdge.</li></ol>"
+  },
+  "BACKUP_DISABLED": {
+    "resolution": "Si hay R y D, el texto según el tipo de inversor: Para R y D- Si hay inversor de almacenamiento (respaldo Venus 2): 1.Active el respaldo en la pantalla LCD (pase al modo Configuración)  Si hay inversor Energy Hub: 1.Active el respaldo en la aplicación móvil SetApp (Puesta en marcha -> Control de potencia -> Gestor de energía -> Backup Configuración -> Respaldo -> Activar). 2.Desconecte el suministro a las cargas (cambie a fuera red desactivada) y verifique el funcionamiento del respaldo. 3.Conecte el suministro a las cargas (cambie a red activada).",
+    "description": "Aunque el sistema de backup está instalado, la configuración de backup está deshabilitada.",
+    "type": "Backup deshabilitado"
+  },
+  "INVERTER_BELOW_THRESHOLD_OFF": {
+    "description": "El sistema está en modo OFF",
+    "resolution": "El inversor fue apagado. Si es necesario, encenderlo de nuevo.",
+    "type": "Modo OFF (el inversor no está produciendo)"
+  },
+  "PRODUCTION_ISSUE_SYNRGY_INVERTER_OVER_TEMPERATURE": {
+    "resolution": "<ol style=\"list-style: auto; padding-left: 16px;\">\n\n<li>Comprobar que el Synergy Manager y las unidades se hayan instalado según el <a href=\"https://www.solaredge.com/sites/default/files/se-commercial-3ph-inverter-w-synergy-tech-installation-nam-guide-pn-SExxK-xxxxIxxxx.pdf\">manual de instalación</a>.</li>\n\n<li>Si el problema persiste, abrir un caso proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica SolarEdge</a>.</li>\n</ol>",
+    "description": "La temperatura del inversor es crítica, la producción se ha detenido.",
+    "type": "Problema de producción: temperatura excesiva en el inversor"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_DC_PLUS_ABS": {
+    "type": "Temperatura crítica en el terminal de CC+",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC se han introducido correctamente en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC+ esté ajustado según el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abrir un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "description": "El terminal DC+ de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción."
+  },
+  "SEM": {
+    "profile": "SEM ",
+    "description": "Descripción de SEM",
+    "resolution": "Resolución de problemas para la alerta SEM"
+  },
+  "INVERTER_PRODUCTION_ISSUE_INTERNAL_COMMUNICATION_FAULT": {
+    "resolution": "<ol style=\"list-style: auto; padding-left: 16px;\">\n<li>Actualizar el firmware del inversor con las últimas versiones publicadas. Hay 2 opciones:\n<ol style=\"list-style-type: lower-alpha;\">\n<li><a href=\"https://www.solaredge.com/sites/default/files/se-remote-inverter-firmware-upgrade-using-the-monitoring-platform-application-note-row.pdf\">Actualización remota</a></li>\n<li>Actualización local:\n<ol style=\"list-style-type: lower-roman;\">\n<li>Encontrará las últimas versiones de firmware para inversor StorEdge aquí <a href=\"https://www.solaredge.com/us/service/firmware\">here</a>.</li>\n<li>El archivo de firmware solo puede cargarse en una tarjeta de memoria que se ajuste a las especificaciones indicadas en la última actualización de software <a href=\"https://www.solaredge.com/sites/default/files/upgrading_an_inverter_using_micro_sd_card.pdf\">application note</a> using a SD/MicroSD card.</li>\n</ol>\n</li>\n</ol>\n</li>\n<li>Perform a full system power cycle:\n<ol style=\"list-style-type: lower-alpha;\">\n<li>Apague el interruptor ON/OFF del inversor.</li>\n<li>Coloque el interruptor de seguridad de CC en la posición OFF.</li>\n<li>Apague el inversor y luego vuelva a conectar la CA (reinicio de CA).</li>\n<li>Coloque el interruptor de seguridad de CA en la posición ON.</li>\n<li>Encienda el interruptor ON/OFF del inversor.</li>\n<li>Espere a que el inversor pase al modo producción y luego compruebe que la batería funciona.</li>\n</ol>\n</li>\n<li>Si el problema persiste, abra una incidencia con los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li>\n</ol>",
+    "type": "Error interno de comunicación (el inversor no está produciendo)",
+    "description": "El inversor detuvo la producción debido a un error interno de comunicación"
+  },
+  "KSTAR_BATTERY_TEMPERATURE_TOO_LOW_PROTECTION": {
+    "resolution": "Espere hasta que desaparezca esta alerta. Si no desaparece en 1 hora, póngase en contacto con el servicio de asistencia",
+    "description": "La temperatura interna de la batería está por debajo del límite. No se puede cargar ni descargar.",
+    "type": "Temperatura de la batería demasiado baja"
+  },
+  "GRID_VOLTAGE": {
+    "description": "El inversor ha detectado irregularidad en la tensión de red",
+    "type": "Tensión de Red",
+    "resolution": "Realice los siguientes pasos para intentar resolver este problema: <br> <ol style=\"list-style: revert;padding-left:16px;\"> <li> Vuelva a seleccionar el código de país. Para más información, consulte el apartado «País y red» de las instrucciones de instalación del inversor. </li><li>Utilice un DVM para comprobar que la conexión de CA al inversor mide correctamente la tensión de fase a fase, de fase a neutro y de fase a tierra.</li> <li>Compruebe que el tamaño del cable de salida coincide con la distancia entre el inversor y la ubicación de la conexión a la red (consulte la <a href=\" https://www.solaredge.com/sites/default/files/application-note-recommended-wiring.pdf \">nota de aplicación del cableado de CA</a>). Si es necesario, utilice un cable más grande para la salida de CA. </li><li>Consulte al operador de la red eléctrica local para verificar la alta tensión de CA en la misma.</li> <li>Si las autoridades locales lo permiten, modifique los valores de protección de la red. Consulte <a href=\"https://www.solaredge.com/sites/default/files/viewing_grid_protection_values.pdf\">esta nota técnica</a> para cambiar los valores de protección de la red eléctrica.</li> <br> Tenga en cuenta que para ver el artículo debe iniciar sesión. </ol>"
+  },
+  "RECURRING_INVERTER_PRODUCTION_ISSUE": {
+    "resolution": "Si las condiciones meteorológicas eran buenas, mire los registros de error y contacte <a href\\=\"https\\://www.solaredge.com/service/support/cases\">Asistencia de SolarEdge</a> para comunicar el problema.",
+    "description": "El inversor ha detectado un error recurrente de producción. Esto afecta a la producción.",
+    "type": "Error recurrente de producción del inversor"
+  },
+  "ARC_DETECTION": {
+    "resolution": "1. Realizar una actualización de firmware del inversor para asegurarse de que cumpla los últimos requisitos de certificación para detección de arcos. Consultar <a href=\"https://solared.ge/firmware_upgrade\">este artículo</a> para obtener instrucciones detalladas. <br/>\n\n2. Si ocurre un error, consultar nuestras <a href=\"https://www.solaredge.com/sites/default/files/arc_fault_detection_application_note_na.pdf\">Notas de la aplicación de detección de arcos</a> para obtener más información sobre cómo solucionar los códigos de errores de fallo de arco.<br/><br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso suministrando la información correspondiente: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge.</a>\n",
+    "type": "Posible arco detectado",
+    "description": "Posible arco detectado"
+  },
+  "BCM_CONTINUES_FAILURE": {
+    "description": "La producción del sistema está restringida; debido al fallo de la conectividad, CT continúa la comprobación de estado en las líneas L1 y L2.",
+    "type": "El BCM sigue fallando.",
+    "resolution": "Para solucionar el problema, debe ejecutar la prueba de conectividad CT para encontrar la causa raíz del problema. Si necesita más ayuda, abra un caso con los datos pertinentes para <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica de SolarEdge</a>."
+  },
+  "SEM_DCS_TEMPERATURE_ISSUE_ALERT": {
+    "description": "{{deviceName}} está registrando una temperatura ambiente alta que supera la temperatura máxima de funcionamiento, esto podría tener como resultado la degradación de la vida útil del dispositivo",
+    "resolution": "<p>Si los dispositivos funcionan por encima de su temperatura nominal máxima, puede deteriorarse su vida útil y su rendimiento.</p>\n<ol style=\"list-style:revert;padding-left:16px;\">\n<li>Compruebe que el dispositivo no está obstruido.</li>\n<li>Compruebe que el flujo de aire es suficiente.</li>\n<li>En un entorno cerrado, instálelo en un lugar donde no reciba luz solar directa.</li>\n</ol>",
+    "type": "Se ha alcanzado una temperatura ambiente crítica en el controlador de cargas"
+  },
+  "ENERGY_MANAGEMENT": {
+    "profile": "Gestión de energía",
+    "description": "Se genera una alerta cuando hay un problema con la gestión de energía. Si es posible, el sistema también indicará el error específico que ha detectado.",
+    "resolution": "Se mostrarán pasos para resolver los problemas con cada alerta activada para el tipo de problema detectado."
+  },
+  "BACKUP_FUNCTIONALITY_UNAVAILABLE": {
+    "type": "Interfaz de backup: fallo interno",
+    "description": "Debido a un fallo interno, la interfaz de backup no pasa de la red al backup. La función de backup no está disponible.",
+    "resolution": "Abrir una incidencia añadiendo los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>."
+  },
+  "INVERTER_SHUT_OFF_HIGH_TEMPERATURE_OPTIMIZER_OUTPUT_CONNECTOR": {
+    "description": "Evento de seguridad: La producción ha resultado afectada debido al aumento de la temperatura en el conector de salida del optimizador de potencia (lado del string). Se ha generado una alerta adicional para el optimizador correspondiente.",
+    "resolution": "<ol style=\"list-style: auto; padding-left: 16px;\">\n<li>Desbloquear el inversor a distancia en la Plataforma de monitorización</li>\n<li>Si el error persiste, realizar el mantenimiento del optimizador de potencia en situ e inspeccionar sus conexiones. Si los conectores están defectuosos, sustituir el optimizador.</li>\n<li>Si no hay defectos identificables, asegurarse de que los conectores estén firmemente conectados y reiniciar el inversor.</li>\n</ol>",
+    "type": "Apagado del inversor: Sense Connect\n"
+  },
+  "BATTERY_PROTECTION": {
+    "profile": "Hay un problema con la batería, el sistema ejecuta medidas de protección que afectan a la carga de la batería y a la función de backup.\nEsto generará una alerta, si es posible, el sistema también indicará el problema específico detectado",
+    "description": "Description for Battery Protection"
+  },
+  "BATTERY_LOCKOUT_FAULT": {
+    "resolution": "La batería está protegida por un estado de bloqueo y no puede liberarse. Contacte con <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica SolarEdge</a> para obtener ayuda.",
+    "type": "Bloqueo de batería",
+    "description": "Batería en estado de bloqueo."
+  },
+  "BATTERY_DC_WIRING_ERROR": {
+    "resolution": "<ol> <li>1. Comprobar que todas las conexiones de la batería estén conectadas según se indica en el <a href=\"https://www.solaredge.com/sites/default/files/se-energy-bank-installation-guide.pdf\"> manual de instalación</a>. </li><li>2. Si el problema persiste, abrir una incidencia indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li> </ol>",
+    "type": "Error de cableado CC de la batería",
+    "description": "Hay un error de cableado de CC con la batería.\nNota: Si no se soluciona el problema, la batería se descargará por si misma y la carga puede agotarse hasta el punto de no poder recuperarse."
+  },
+  "SEM_DCS_TEMPERATURE_ISSUE": {
+    "description": "{{deviceName}} está registrando una temperatura ambiente alta que supera la temperatura máxima de funcionamiento, esto podría tener como resultado la degradación de la vida útil del dispositivo",
+    "resolution": "Si el dispositivo funciona a una temperatura superior a la permitida, se puede reducir su vida útil y su rendimiento <br><ol style=\"list-style:revert;padding-left:16px;\"> <li>. Asegurarse que el dispositivo no tiene obstrucciones.</li><li>Asegurarse de que hay un flujo de aire suficiente. </li><li>No instalar en un lugar cerrado que reciba luz solar directa</li></ol>",
+    "type": "Critical ambient temperature reached"
+  },
+  "WEAKER_PANEL_DUE_INVERTER_OVER_POWER": {
+    "description": "Weaker panel due to inverter over power Description",
+    "resolution": "Weaker panel due to inverter over power Resolution",
+    "type": "Weaker panel due to inverter over power"
+  },
+  "METER_CT_CLAMPS_INSTALLED_INCORRECTLY": {
+    "type": "Abrazaderas CT del contador mal instaladas",
+    "description": "Realice los siguientes pasos para intentar resolver este problema: 1. Intercambie las abrazaderas de importación y exportación.   2. Compruebe que la exportación a la red funciona durante el día. Tenga en cuenta que la alerta se cierra automáticamente tras 24 horas de funcionamiento normal. Si han transcurrido 24 horas y ninguno de estos pasos ha resuelto satisfactoriamente su problema, abra un caso para el <a href=https://www.solaredge.com/service/support/cases>equipo de Asistencia Técnica de SolarEdge</a> facilitando los datos pertinentes.",
+    "resolution": "Perform the following steps to try and resolve this issue: 1) Please swap the import and export clamps. 2) Check the export to the grid is working during the day. Please note: The alert will be closed automatically after 24 hours of regular operation. If 24 hours have passed and none of these steps successfully solved your issue, open a case with the <a href=\"https://www. solaredge. com/service/support/cases\">SolarEdge Support team </a> providing the relevant details"
+  },
+  "SEM_PRSE_DEVICE_ISSUE_ALERT": {
+    "type": "Error del dispositivo regulador para agua caliente",
+    "resolution": "El control de la carga de los aparatos se utiliza para evitar la sobrecarga del sistema. Cuando se mide el consumo del aparato mientras el dispositivo está en la posición de apagado, podría significar que el relé no pudo apagar el aparato conectado. <br/>1. Comprobar que el dispositivo pueda funcionar manualmente accionando manualmente el \"device_name\" en la aplicación móvil. <br/>2. Intentar anular manualmente el dispositivo pulsando el botón ON/OFF durante <3 segundos. <br/>3. Si el relé sigue sin activar el aparato conectado, contactar con el servicio de asistencia de SolarEdge ",
+    "description": "Se ha detectado consumo en el dispositivo cuando se encontraba en estado OFF"
+  },
+  "SYNERGY_TEMPERATURE_WARNING_ON_DC": {
+    "type": "Advertencia de temperatura en el terminal CC",
+    "description_MINUS": "Advertencia: La temperatura de una de las unidades del bloque de terminales de CC es alta.",
+    "description_PLUS": "Advertencia: La temperatura de una de las unidades del bloque de terminales de DC+ es alta",
+    "resolution_PLUS": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC se han introducido correctamente en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC+ esté ajustado según el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abrir un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "resolution_MINUS": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC esté ajustado según indicado en el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abra un caso proporcionando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>"
+  },
+  "BATTERY_SWITCH_IS_OFF": {
+    "description": "El interruptor de la batería está en OFF",
+    "type": "El interruptor de la batería está en OFF",
+    "resolution": "Contactar Asistencia Técnica"
+  },
+  "SAFEDC_FAULT_1": {
+    "description": "One or more faulty optimizers within the array are causing string safety voltage to surpass safe levels.",
+    "resolution": "Pasos para identificar y solucionar un problema de tensión de seguridad.\n\n<ol style=\"list-style:revert;padding-left:16px;\">\n <li>\n Inspeccione las cadenas del inversor por si hubiera un fallo de aislamiento:\nSiga las instrucciones detalladas de este documento:\n <a href=\"https://knowledge-center. solaredge. com/sites/kc/files/application_note_isolation_fault_troubleshooting. pdf\">Resolución de fallos de aislamiento</a>\n </li>\n <li>\n Si no se encuentran fallos de aislamiento:\n <ol type=\"a\">\n <li>\n Apague el inversor y el interruptor de CC (si procede).\n </li>\n <li>\n Desconecte y mida la tensión CC de cada cadena del inversor afectado.\n </li>\n <li>\n Identifique los optimizadores averiados:\n Con cada cadena cuya tensión supere los 30 V, busque optimizadores que tengan una tensión de salida mayor que 1,1 V. Estos optimizadores se consideran averiados y deben sustituirse.\n <br>\n <em>(Consejo: La tensión de seguridad de los optimizadores es 1 V, por lo que, en una cadena con 20 optimizadores, la tensión no debe superar los ~20 V +/-1 V para que sea válida.)</em>\n </li>\n <li>\n Compruebe la tensión de la cadena antes de volver a conectarla:\n En cada cadena, después de sustituir los optimizadores y antes de conectarla de nuevo al Cb/inversor, compruebe que su tensión es inferior a 30 V.\n </li>\n <li>\n Tras la reconexión, efectúe el emparejamiento:\n Una vez sustituidos los optimizadores y reconectada la cadena, es crucial realizar el emparejamiento mediante SolarEdge SetApp.\n </li>\n </ol>\n </li>\n</ol>\n\nNota: La alerta se cerrará automáticamente el día siguiente tras haber comprobado que la tensión de seguridad se encuentra dentro de los límites válidos",
+    "type": "String wakeup Voltage Above safety level",
+    "profile": "Sense Connect"
+  },
+  "INVERTER_BELOW_THRESHOLD_LOW_VOLTAGE": {
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n\n1.\tComprobar que el diseño de conexión CC se haya realizado según las reglas de diseño de SolarEdge.\n<br/>\n2.\tRevisar que no haya optimizadores de potencia con bajo rendimiento en los strings CC (debido a sombra, nieve o suciedad, mal funcionamiento técnico, etc.). <br/>\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso suministrando la información necesaria: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>",
+    "description": "El voltaje del inversor es bajo. El inversor no está produciendo energía.",
+    "type": "Tensión baja (el inversor no está produciendo)"
+  },
+  "SEM_DCS_CONNECTION_ISSUE_ALERT": {
+    "resolution": "El sistema SolarEdge utiliza dispositivos inteligentes para el uso de su Ecosistema de Energía Inteligente. Si se pierde la conexión con los dispositivos inteligentes, no podemos garantizar un funcionamiento óptimo. <br/>1. Comprobar que el dispositivo no esté físicamente obstruido <br/>2. Si es posible, acercar el dispositivo a un dispositivo cercano con funcionalidad Home Network. <br/>3. Como alternativa, se puede instalar un dispositivo inteligente SolarEdge adicional que actúe como repetidor.",
+    "description": "El dispositivo regulador de carga del hogar tiene una señal de Home Network baja que podría causar un mal aprovechamiento de excedentes FV y de la operación de backup",
+    "type": "Se ha alcanzado un bajo RSSI del controlador de cargas Solaredge Home "
+  },
+  "SEM_DCS_POWER_LIMIT": {
+    "type": "Carga máxima alcanzada",
+    "resolution": "{{deviceName}} se ha desconectado de sus dispositivos conectados porque su consumo de energía medido ha superado los valores máximos permitidos que se indican en la placa de características de {{deviceName}}. <br><ol style=\"list-style:auto;padding-left:16px;\"> <li> Compruebe que el aparato conectado al dispositivo no supere la capacidad máxima permitida del Switch.</li> <li> Si el aparato conectado no supera los valores de la placa de características, póngase en contacto con el servicio de asistencia de SolarEdge \n</li></ol> ",
+    "description": "{{deviceName}} ha superado su potencia máxima permitida y, por tanto, se ha apagado "
+  },
+  "STRING_COMMUNICATION_FAULT": {
+    "description": "Un string CC específico no está enviado datos. Esto puede ocasionar problemas de producción. Solo hay alertas de este tipo si no se ha comunicado durante un día entero como mínimo.",
+    "type": "String - Sin comunicación",
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n1.\tRealizar el emparejamiento del inversor (puede realizarse pulsando botón derecho del ratón encima del inversor en la pestaña Layout de la plataforma de monitorización). <br/>\n2.\tUtilizar la plataforma de monitorización para encontrar el optimizador de potencia que no comunica y revisar si hay problemas de conectividad. Si todas las conexiones se han verificado, revisar el voltaje de seguridad siguiendo el <a href=\"https://www.solaredge.com/service/support/kb?mode=installer&search=KB961EN&taxonomies={%22product_type%22:[],%22article_type%22:[]}&collapse=collapse-0\"> siguiente procedimiento</a>. <br/>\n\n             Tener en cuenta que, para ver el artículo, es necesario haber iniciado sesión. <br/>\n\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso facilitando la información necesaria: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>"
+  },
+  "RAPID_SITE_COMMUNICATION_FAULT": {
+    "profile": "Alerta rápida sin comunicación",
+    "description": "Ninguno de los inversores/dispositivos de la planta está comunicando. Esta alerta se activa si no hubo comunicación durante al menos 3 horas.",
+    "type": "Alerta rápida sin comunicación",
+    "resolution": "Ninguno de los inversores/dispositivos de la planta está comunicando. Esta alerta se activa si no hubo comunicación durante al menos 3 horas."
+  },
+  "G100_EXPORT_RESTRICTION": {
+    "resolution": "Para resolver el problema, ponga el control G.100 en modo funcionamiento normal. Puede usar el portal de monitorización SolarEdge o la aplicación SetApp.  <br><br><b>Nota:</b> En plantas industriales, puede volver al modo normal 4 horas después de haber establecido el modo producción restringida",
+    "description": "Sistema en modo producción restringida por limitaciones de exportación G.100.",
+    "type": "Restricción de exportación G100"
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_DC_PLUS": {
+    "type": "Critical temperature on DC+ terminal",
+    "resolution": "1. Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan cables de CC sueltos. 2. Si los cables de CC están asegurados al bloque de terminales con tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC + está ajustado según el manual de instalación. 3. Si los módulos FV están conectados al inversor mediante cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación. 4.  Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "description": "El terminal de CC + ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción."
+  },
+  "KSTAR_BATTERY_TEMPERATURE_TOO_HIGH_PROTECTION": {
+    "description": "La temperatura interna de la batería está por encima del límite. No se puede cargar ni descargar.",
+    "type": "Temperatura de la batería demasiado alta",
+    "resolution": "Espere hasta que desaparezca esta alerta. Si no desaparece en 1 hora, póngase en contacto con el servicio de asistencia"
+  },
+  "G100_IMPORT_RESTRICTION": {
+    "type": "Restricción de importación G100",
+    "description": "Sistema en modo importación restringida por limitaciones de importación máx. G.100.",
+    "resolution": "Para resolver el problema, ponga el control G.100 en modo funcionamiento normal. Puede usar el portal de monitorización SolarEdge o la aplicación SetApp.  <br><br><b>Note:</b> En plantas industriales, puede volver al modo normal 4 horas después de haber fijado el modo producción restringida"
+  },
+  "SEM_PRSE_CONNECTION_ISSUE": {
+    "type": "Se ha alcanzado un RSSI bajo",
+    "resolution": "\nEl sistema SolarEdge utiliza dispositivos inteligentes para el uso de su Ecosistema de Energía Inteligente. Si se pierde la conexión con los dispositivos inteligentes, no podemos garantizar un funcionamiento óptimo. <br><ol style=\"list-style:revert;padding-left:16px;\"> <li> Comprobar que el dispositivo no esté físicamente obstruido. </li><li> Si es posible, acercar el dispositivo a un dispositivo cercano con funcionalidad Home Network.</li> <li>Como alternativa, se puede instalar un dispositivo inteligente SolarEdge adicional que actúe como repetidor.</li></ol>",
+    "description": "El dispositivo tiene una señal de Home Network baja, lo que podría causar un mal rendimiento de los excedentes de FV y de la operación en backup"
+  },
+  "BACKUP_FAILED": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Comprobar que todas las conexiones de CA (fase, neutro y tierra) estén correctamente conectadas a la red y a las cargas de backupo.</li>\n<li>Desconectar la alimentación de las cargas y comprobar que la operación de backup funciona correctamente durante al menos 15 minutos.</li>\n<li>Conectar la alimentación de las cargas.</li>\n<li> Si el problema persiste, abrir una incidencia añadiendo los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li></ol>",
+    "type": "Fallo en backup",
+    "description": "Error al generar tensión de CA; debido a ello la transición al modo de backup no ha sido posible."
+  },
+  "ORION_TEMPERATURE_WARNING_ON_DC_PLUS": {
+    "description": "Advertencia: la temperatura del bloque de terminales de CC + es alta.",
+    "type": "Aviso de temperatura en el terminal DC+",
+    "resolution": "1. Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan cables de CC sueltos. 2. Si los cables de CC están asegurados al bloque de terminales con tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC + está ajustado según el manual de instalación. 3. Si los módulos FV están conectados al inversor mediante cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación. 4.  Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases."
+  },
+  "BCM_CT_LOSS": {
+    "description": "<ol style=\"list-style:none;padding-left:unset;\"><li>{{L1}}</li><li>{{L2}}</li></ol>",
+    "CTStatus1": "Circuito abierto",
+    "CTStatus4": "Circuito cerrado",
+    "description_L": "Pérdida de CT {{LcircuitStatus}} del CT conectado a L{{LNum}}",
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li> Compruebe la conexión del meter con los CT.</li><li> Compruebe si los cables de conexión están desconectados o dañados.</li><li> Si ninguno de los pasos anterior soluciona su problema, abra una incidencia con los detalles relevantes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica SolarEdge</a></li></ol>",
+    "type": "Pérdida de CT BCM"
+  },
+  "INVERTER_BELOW_THRESHOLD_DC_ISOLATION": {
+    "resolution": "Consultar las<a href=\"https://www.solaredge.com/files/pdfs/application_note_isolation_fault_troubleshooting.pdf\">siguientes instrucciones</a> para tratar de solucionar el problema.\nTener en cuenta que para ver el artículo es necesario iniciar sesión.",
+    "type": "Aislamiento CC",
+    "description": "El inversor ha detectado una fuga de corriente CC a tierra."
+  },
+  "G100_LOCKED_OUT": {
+    "type": "Modo bloqueo G100",
+    "resolution": "Para resolver el problema, ponga el control G.100 en modo funcionamiento normal. Puede usar el portal de monitorización SolarEdge o la aplicación SetApp. <br><br><b>Nota: solo los instaladores tienen acceso para volver a establecer el modo normal.</b>",
+    "description": "Sistema ha entrado en modo bloqueo G.100"
+  },
+  "BATTERY_INSTALLATION_FAULT": {
+    "resolution": "La batería no funciona debido a un fallo de instalación.",
+    "profile": "Error en la instalación de la batería"
+  },
+  "METER_COMMUNICATION_FAULT": {
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n1.\tComprobar que no haya conexiones sueltas en la placa de comunicaciones del inversor. <br/>\n2.\tComprobar que no haya conexiones sueltas en el Meter. <br/>\n3.\tComprobarque el cable RS485 entre el Meter y el inversor no esté desconectado ni tenga algún daño.\n<br/>\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso suministrando la información correspondiente: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>",
+    "description": "El Meter no está comunicando. Solo hay alertas de este tipo si no se ha comunicado durante un día entero como mínimo.",
+    "type": "Meter: sin comunicación",
+    "resolution_IMPORT_LIMIT": "<ol style=\"list-style: auto; padding-left: 16px;\"> \n\n<li>Comprobar la conectividad del inversor con el meter.</li>\n<li>Comprobar si el cable de conexión estaba desconectado o dañado.</li>\n<li>Si se usa una conexión Home Network (inalámbrica), intentar mejorar la señal seleccionando una mejor posición de la antena.</li></ol>\n<br>\nSi ninguno de estos pasos soluciona su problema, abra una incidencia proporcionando los detalles correspondientes: <a href=\"https://www. solaredge. com/service/support/cases\">Asistencia Técnica SolarEdge</a>",
+    "description_IMPORT_LIMIT": "<ol style=\"list-style: auto; padding-left: 16px;\"> \n\n<li>Comprobar la conectividad del inversor con el meter.</li>\n<li>Comprobar si el cable de conexión estaba desconectado o dañado.</li>\n<li>Si se usa una conexión Home Network (inalámbrica), intente mejorar la señal seleccionando una mejor posición de la antena.</li></ol>\n<br>\nSi ninguno de estos pasos soluciona su problema, abra una incidencia proporcionando los detalles correspondientes: <a href=\"https://www. solaredge. com/service/support/cases\">SolarEdge Técnical Support</a>"
+  },
+  "INVERTER_NOT_PRODUCING_FIREFIGHTERS_SAFETY_MODE_ON": {
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li>Vea si se ha activado \nel botón de emergencia.</li>\n<ol style=\"list-style-type: lower-alpha;padding-left:16px;\"><li>Para \nnormalmente abierto - si se pulsa el botón</li>\n<li>Para norm. cerrado - si se suelta el botón</li>\n<li>Para borrar la alarma en el FFG, vea la página 41 del <a href=\"https://knowledge-center.solaredge.com/sites/kc/files/se_firefighter_safety_gateway_installation_guide.pdf\">manual</a></li></ol>\n<li>Si no se activó el botón y el FFG está conectado al sistema de alarma de incendios, vea si dicho sistema la ha activado.</li>\n<ol style=\"list-style-type: lower-alpha;padding-left:16px;\"><li>Vea si estaba seleccionado correctamente normalmente abierto/cerrado y si el sistema de alarma de incendio se activó en consecuencia.</li>\n<li>Para borrar la alarma en el FFG, vea la página 41 del  <a href=\"https://knowledge-center.solaredge.com/sites/kc/files/se_firefighter_safety_gateway_installation_guide.pdf\">manual</a></li></ol>\n<li>Si nada de lo anterior activó alarma - Desconecte botón de emergencia y sistema de alarma de incendio del FFG.</li>\n<ol style=\"list-style-type: lower-alpha;padding-left:16px;\"><li>Desconecte terminal plástico del FFG.</li>\n<li>Mida tensiones y apunte.</li>\n<ul style=\"list-style:revert;padding-left:16px;\"><li>Entre G y L1</li>\n<li>Entre G y L2</li>\n<li>Entre G y 5V</li></ul></ol>\n<li>Contacte Asistencia Técnica con los resultados y configuración del FFG.</li></ol>",
+    "type": "El inversor no produce - Modo seguridad bomberos activado",
+    "description": "Firefighter Gateway ha parado la producción del inversor."
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_DC_MINUS": {
+    "resolution": "1. Compobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan cables de CC sueltos. 2. Si los cables de CC están asegurados al bloque de terminales con tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC + esté ajustado según el manual de instalación. 3. Si los módulos FV están conectados al inversor mediante cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación. 4.  Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "type": "Temperatura crítica en el terminal de CC-",
+    "description": "El terminal CC - (CC negativo) ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción."
+  },
+  "FAN_ALERT": {
+    "profile": "Fallo ventilador",
+    "resolution": "Realizar los siguientes pasos para intentar solucionar este problema: <br/>\n1. Comprobar la conexión física del cableado <br/>\n2. Limpiar el ventilador<br/>\n3. Sustituir el ventilador<br/>\n\nSi no se consigue solucionar el problema con ninguno de estos pasos, abrir una incidencia con el <a href=\"https://www.solaredge.com/service/support/cases\">equipo de asistencia de SolarEdge </a> facilitando los detalles necesarios para procesarla."
+  },
+  "RAPID_METER_COMMUNICATION_FAULT": {
+    "description": "El Meter no está comunicando. Esta alerta se activa solo si no ha habido comunicación durante al menos 3 horas.",
+    "type": "Alerta rápida Meter sin com. ",
+    "profile": "Alerta rápida Meter sin com. ",
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n1.\tComprobar que no haya conexiones sueltas en la placa de comunicaciones del inversor. <br/>\n2.\tComprobar que no haya conexiones sueltas en el Meter. <br/>\n3.\tComprobarque el cable RS485 entre el Meter y el inversor no esté desconectado ni tenga algún daño.\n<br/>\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso suministrando la información correspondiente: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>"
+  },
+  "PID_MITIGATION_FAULT": {
+    "profile": "Error en la mitigación PID",
+    "resolution": "Contactar con Asistencia Técnica SolarEdge"
+  },
+  "RECURRING_GRID_VOLTAGE": {
+    "resolution": "<p>Realice los siguientes pasos para intentar resolver este problema:</p>\n<ol style=\"list-style:revert;padding-left:16px;\">\n  <li>Vuelva a seleccionar el código de país. Para más información, consulte el apartado «País y red» de las instrucciones de instalación del inversor.</li>\n  <li>Utilice un multímetro para comprobar que la conexión de CA al inversor mide correctamente la tensión de fase a fase, de fase a neutro y de fase a tierra.</li>\n  <li>Compruebe que el tamaño del cable de salida coincide con la distancia entre el inversor y la ubicación de la conexión a la red (consulte la <a href=\"https://www.solaredge.com/sites/default/files/application-note-recommended-wiring.pdf\">nota técnica sobre el cableado de CA.</a>). Si es necesario, utilice un cable más grande para la salida de CA.</li>\n  <li>Consulte al operador de la red eléctrica local para verificar la sobretensión de CA en la red.</li>\n  <li>Si las autoridades locales lo permiten, modifique los valores de protección de la red eléctrica. Consulte <a href=\"https://www.solaredge.com/sites/default/files/viewing_grid_protection_values.pdf\">esta nota técnica</a> para cambiar los valores de protección de la red.</li>\n</ol>\n<p>Tenga en cuenta que para ver el artículo debe iniciar sesión.</p>\n",
+    "description": "El inversor ha detectado una irregularidad recurrente en la tensión de la red. Esto afecta a la producción.",
+    "type": "Problema recurrente con la tensión de la red"
+  },
+  "DC_ISOLATION_DISRUPTION": {
+    "description": "El inversor ha detectado una fuga de corriente CC a tierra. Esto afecta a la producción.",
+    "resolution": "Consultar las<a href=\"https://www.solaredge.com/files/pdfs/application_note_isolation_fault_troubleshooting.pdf\">siguientes instrucciones</a> para intentar resolver este problema. Para ver el artículo es necesario haber iniciado sesión.",
+    "type": "Interrupción en el aislamiento de CC"
+  },
+  "SYSTEM_FAILED_TO_RETURN_TO_ON_GRID": {
+    "type": "El sistema no ha podido volver al modo conectado a red.",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li> Ejecutar un reset de potencia completo del sistema: <br/>\na. Apagar el interruptor ON/OFF del inversor. <br/>\nb. Colocar el interruptor de seguridad CC en la posición OFF. <br/>\nc. Desconectar la CA del inversor y luego volver a conectarla (reinicio de CA). <br/>\nd. Colocar el interruptor de seguridad de CC en la posición ON. <br/>\ne. Encender el interruptor ON/OFF del inversor. <br/>\nf. Esperar a que el inversor pase al modo producción y luego comprobar que la batería funciona.<br/>\n</li> \n<li> Si el problema persiste, abrir una incidencia añadiendo los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li></ol>",
+    "description": "El sistema está en modo backup y no ha sido posible la transición al modo en red."
+  },
+  "HLC_SERVER_COM_LOSS": {
+    "resolution": "<ol><li>Compruebe el cable que conecta el router Wi-Fi con el inversor.</li><li>Si el inversor utiliza una conexión inalámbrica, intente mejorar la intensidad de la señal.</li><li>Compruebe que el inversor esté encendido.</li><li>Compruebe que el inversor esté configurado con el SSID y la contraseña Wi-Fi correctos.</li></ol>Si ninguno de los pasos anteriores resuelve su problema, abra un caso con los datos pertinentes en la <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica de SolarEdge</a>",
+    "type": "Pérdida de comunicación entre el controlador local Home y el inversor",
+    "profile": "Problema de comunicación del controlador ONE",
+    "description": "Pérdida de conexión HLC con el inversor."
+  },
+  "BACKUP_UNABLE_TO_SWITCH_TO_ON_GRID": {
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li>Para ignorar este problema, cambie manualmente la interfaz de backup a estado conectado a la red siguiendo el <a href=https://www.solaredge.com/sites/default/files/backup-interface-for-service-equipment-installation-guide-na.pdf>manual de instalación</a>.</li><li> Abra una incidencia con los detalles relevantes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica SolarEdge</a>.</li></ol>\n",
+    "type": "Interfaz de backup: no su puedo cambiar a la red eléctrica",
+    "description": "Debido a un fallo interno, la interfaz de backup no pasa del backup a la red eléctrica y no hay electricidad en la casa. "
+  },
+  "UPDATED_BATTERY_INTERNAL_FAULT": {
+    "resolution": "Abra una incidencia con los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia SolarEdge</a>.",
+    "description": "Fallo interno de la batería: debe revisarlo y resolverlo el equipo de Asistencia de SolarEdge.",
+    "type": "Fallo interno de la batería "
+  },
+  "INVERTER_COMMUNICATION_FAULT": {
+    "type": "Inversor: sin comunicación",
+    "description": "El inversor no se comunica con los servidores SolarEdge. Solo hay alertas de este tipo si no se ha comunicado durante un día entero como mínimo.",
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n1.\tAsegurarse que el router esté conectado correctamente (revisar el módem, la antena y todos los conectores.) <br/>\n2.\tComprobar que los conectores relacionados con el inversor estén bien conectados (el cable RJ45 y la antena y/o kit Wi-Fi). <br/>\n3.\tSi el router de acceso a Internet fue reemplazado recientemente, comprobar que la contraseña del router o la configuración del firewall no haya sido cambiada. <br/>\n4.\tComprobar el automático de CA del inversor para asegurarse que no haya disparado (usar un polímetro digital para medir la tensión). <br/>\n5.\tRevisar la conexión RS485.<br/>\n<br/>\nSi ninguno de los anteriores pasos soluciona el problema, abrir un caso facilitando la información necesaria: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>"
+  },
+  "BACKUP_SOCKET_OPERATION_MALFUNCTION": {
+    "type": "Fallo en el funcionamiento del enchufe de backup",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">\n<li>Reiniciar el módulo del enchufe de backup:<br/>\na. Apagar el sistema moviendo el interruptor ON/OFF a la posición OFF y luego esperar 5 segundos. <br/>\nb. Mover el interruptor ON/OFF/P del inversor en la posición ON. <br/>\nc. Esperar a que el inversor entre en modo de producción y pulsar el botón negro «off grid» en la parte inferior del inversor durante 3 segundos.<br/>\n</li> \n<li>Si el problema persiste, abrir un caso proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li> \n</ol>",
+    "description": "El enchufe de backup ha dejado de funcionar. <br/>\nAtención: Durante un corte de energía, no se puede utilizar el enchufe de backup."
+  },
+  "BCM_OVER_CURRENT": {
+    "description": "Sobrecorriente en el embarrado. El sistema está funcionando con un modo de producción limitado",
+    "resolution": "Reduzca el consumo de energía en la planta para volver al modo de producción normal",
+    "type": "Sobrecorriente BCM"
+  },
+  "GRID_VOLTAGE_DISRUPTION": {
+    "resolution": "Seguir los siguientes pasos para intentar resolver este asunto: <br> <ol style=\"list-style:auto;padding-left:16px;\"> <li> Volver a configurar el país. Para más información ver la seccion \"País y Red\" del manual de instalación del inversor.</li><li>Usar un polímetro para comprobar la conexión de CA y las correctas medidas de tensión fase-fase, fase-neutro y fase-tierra.</li> <li>Verificar que la sección del cable de salida CA sea adecuada para la distancia entre el inversor y el punto de conexión con la red. <br/>\n(consultar la nota técnica <a href=\" https://www.solaredge.com/sites/default/files/application-note-recommended-wiring.pdf \">sobre cableado CA</a>).<br/>\nSi necesario aumente la sección del cableado de salida CA.</li><li>Consultar con el operador de red local para que verifique y rectifique la alta tensión CA de la red. <br/>\n5.\tSi está autorizado por parte del gestor de red puede proceder a cambiar los parámetros de protección de conexión a red. Consultar esta <a href=\"https://www.solaredge.com/sites/default/files/viewing_grid_protection_values.pdf\">nota técnica</a> para cambiar los parámetros de protección de red</li> <br>\nNota: para poder ver este articulo tiene que haber iniciado sesión. </ol>",
+    "type": "Interrupción en la tensión de la red",
+    "description": "El inversor ha detectado una irregularidad en la tensión de la red. Esto afecta a la producción."
+  },
+  "HIGH_TEMPERATURE_OPTIMIZER_OUTPUT_CONNECTOR": {
+    "resolution": "Compruebe que el inversor está funcionando con la última versión de CPU:\n<br><ol style=\"list-style: revert; padding-left: 16px;\">\n<li>Para conocer la versión de la CPU, vaya al panel principal del portal de monitorización y haga clic en la lista de equipo de la parte derecha de la pantalla. Seleccione \"inversores\" y luego \"Sn\". </li>\n<li> En la lista de inversores, pase el ratón o haga clic en el comentario para ver la versión de la CPU. Debe ser la 4.17.xxx o superior. </li>\n<li> Si la versión de la CPU es inferior a 4.19.xxx, actualice el inversor a la última versión. </li>\n<li> Para desbloquear el inversor o si necesita más instrucciones, póngase en contacto con el servicio de asistencia. </li></ol>",
+    "type": "Alta temperatura en el conector de salida del optimizador",
+    "description": "Aumento de la temperatura en el conector de salida del optimizador de potencia (lado del string)."
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_DC_MINUS": {
+    "description": "El terminal DC- de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción.",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC esté ajustado según indicado en el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abra un caso proporcionando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "type": "Temperatura crítica en el terminal de CC-"
+  },
+  "SEM_ALERT": {
+    "resolution": "Resolución de problemas para la alerta SEM",
+    "profile": "Alerta SEM",
+    "description": "Descripción de SEM"
+  },
+  "INVERTER_BELOW_THRESHOLD_SHUTDOWN": {
+    "type": "Modo \"Apagado\" (el inversor no está produciendo)",
+    "resolution": "El inversor no está produciendo energía porque está en modo Apagado.",
+    "description": "El inversor está en modo \"apagado\""
+  },
+  "VOLTAGE_MISMATCH": {
+    "type": "Diferencia de voltaje módulos",
+    "description": "El voltaje de uno o más módulos muestra una diferencia significativa. Posible fallo del diodo de derivación.",
+    "profile": "Diferencia de voltaje módulos",
+    "resolution": "Seguir los pasos siguientes para intentar resolver este problema:\n<ul>\n<li> Comprobar si el voltaje del módulo (en la pestaña Análisis del portal de monitorización) cumple con las especificaciones (hoja de datos Vmpp)</li>\n<li>Comprobar si no hay nada que bloquee físicamente 1/3 o 2/3 de los módulos afectados</li>\n<li>Si el voltaje del módulo no cumple con la hoja de datos Vmpp y nada bloquea la irradiación de su módulo, consultar con su distribuidor/fabricante de paneles sobre cómo solucionar el problema de los diodos de derivación defectuosos. </li>\n</ul>\n<br/>\nNota: SolarEdge no es responsable y no puede ayudar con los diodos de derivación que fallen. Si se ha utilizado SolarEdge Smart Modules, abra un caso en el Centro de Asistencia Solaredge proporcionando la información pertinente. \n\n<br>\nSi ninguno de los pasos anteriores soluciona el problema, abra un caso proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica SolarEdge</a>"
+  },
+  "SEM_DCS_DEVICE_ISSUE_ALERT": {
+    "resolution": "El dispositivo Controlador de cargas se utiliza para evitar sobrecarga del sistema. Cuando se mide el consumo del aparato mientras el dispositivo está en la posición de apagado, podría significar que el relé no fue capaz de apagar el aparato conectado. <br><ol style=\"list-style: revert; padding-left: 16px;\"> <li>Compruebe que el dispositivo puede funcionar manualmente accionando manualmente el {{deviceName}} en la aplicación móvil. </li><li> Intente desconectar manualmente el aparato pulsando el botón ON/OFF del aparato durante más de 3 segundos. </li><li> Si el relé sigue sin conmutar el aparato conectado, póngase en contacto con el servicio técnico de SolarEdge.</li></ol> ",
+    "description": "Se ha detectado consumo en el dispositivo cuando se encontraba en estado OFF",
+    "type": "Fallo del dispositivo DCS"
+  },
+  "SNOW_ON_SITE": {
+    "profile": "Condiciones de congelación en la planta",
+    "type": "Condiciones de congelación en la planta",
+    "description": "Es posible que la nieve cubra los módulos de esta planta. La producción puede reducirse parcial o totalmente.",
+    "resolution": "Si las condiciones de la planta coinciden con la descripción, no es necesario actuar. La producción se reanudará automáticamente cuando se derrita la nieve."
+  },
+  "INVERTER_BELOW_THRESHOLD_LIMIT": {
+    "type": "Inversor no produce - Modo límite de energía",
+    "description": "Modo Límite de energía para inversor que no está produciendo",
+    "resolution": "Para salir del modo de limitación de exportación, consulte <a href=\"https://knowledge-center.solaredge.com/sites/kc/files/feed-in_limitation_application_note.pdf\">esta nota de aplicación</a> y las instrucciones correspondientes sobre el modo de limitación.<br><br>\n\nSi ninguno de los pasos anteriores resuelve satisfactoriamente su problema, por favor <a href=\"https://www.solaredge.com/service/support/cases\">abra un caso de Soporte Técnico de SolarEdge</a> y facilite los detalles pertinentes.\n<p>Siga estos pasos para intentar solucionar el problema:</p>.\n"
+  },
+  "BATTERY_CIRCUIT_BREAKER_TRIPPED": {
+    "resolution_BATTERY": "<ol style=\"list-style:revert;padding-left:16px;\"><li> Siga estas instrucciones para apagar y volver a encender el sistema:</li><br>\n<b>Para apagarlo:</b><br>\n<ol style=\"list-style-type: lower-alpha;\">\n <li>Ponga el interruptor ON/OFF/P del inversor en OFF.</li>\n <li>Espere a que CC baje de 50 V. Espere 5 minutos o mire la tensión en SetApp o en la LCD del inversor.</li>\n <li>Apague el disyuntor y luego el interruptor de desconexión/auxiliar de la batería.</li>\n <li>Si el sistema está conectado a la interfaz StorEdge interface, desconéctela de la alimentación.</li>\n <li><li>.</li>\n <li>Apague CA del inversor.</li>\n</ol><br>\n<b>Para encenderlo:</b>\n<ol style=\"list-style-type: lower-alpha;\">\n <li>Encienda CA del inversor.</li>\n <li>Si hay unidad de desconexión, apague el interruptor de desconexión de CC.</li>\n <li>Si el sistema tiene interfaz StorEdge interface, vuelva a conectarla a la alimentación.</li>\n <li>Encienda el interruptor de desconexión/auxiliar y luego el disyuntor de la batería.</li>\n <li>Ponga el interruptor ON/OFF/P del inversor en ON.</li>\n</ol><br>\n<li> Si el disyuntor salta otra vez, apague la batería para que no se descargue y contacte con el servicio de asistencia de LG.</li><br>\n <b>Datos de contacto de LG:</b>\n<ol style=\"list-style-type: lower-alpha;\">\n <li>Datos de contacto LG para Europa: Chanhee Jung (chanheejung@lgensol.com), Taewook Kim (kim@lgensol.com):</li><ul>\n <li>N.º tel.: (EU excepto Italia): (+49) 6196 5719 660 or (+49) 1622970917</li>\n <li>N.º tel.: (Italia): (+39) 02 8239 7609</li>\n </ul>\n <li>EE. UU: Robert Melendez (rmelendez@lgensol.com), Victor Bucio (vbucio@lgensol.com)</li>\n <ul>\n <li>N.º tel.: (+1) 888 375 8044</li>\n </ul>\n <li>Australia: Orlando Kadori (okadori@lgensol.com)</li>\n <ul>\n <li>N.º tel.: (+61) 1300 178 064</li>\n </ul>\n </ol>\n<br><b>¡Importante!</b> Si no se soluciona el problema, la batería se descargará y puede llegar a vaciarse hasta ser irrecuperable en varios días.",
+    "description": "Saltó el automático de batería. ID de error de solución de energía LG: {{errorCode}} para batería {{deviceName}} ({{serialNumber}}). {{batterySN}}",
+    "resolution_SE_BATTERY": "No volver a conectar el automático. Contactar con <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a> para obtener ayuda.",
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li> Siga estas instrucciones para apagar y volver a encender el sistema:</li><br>\n<b>Para apagarlo:</b><br>\n<ol style=\"list-style-type: lower-alpha;\">\n <li>Ponga el interruptor ON/OFF/P del inversor en OFF.</li>\n <li>Espere a que CC baje de 50 V. Espere 5 minutos o mire la tensión en SetApp o en la LCD del inversor.</li>\n <li>Apague el automático y luego el interruptor de desconexión/auxiliar de la batería.</li>\n <li>Si el sistema está conectado a la interfaz StorEdge interface, desconéctela de la alimentación.</li>\n <li><li>.</li>\n <li>Apague CA del inversor.</li>\n</ol><br>\n<b>Para encenderlo:</b>\n<ol style=\"list-style-type: lower-alpha;\">\n <li>Encienda CA del inversor.</li>\n <li>Si hay unidad de desconexión, apague el interruptor de desconexión de CC.</li>\n <li>Si el sistema tiene interfaz StorEdge interface, vuelva a conectarla a la alimentación.</li>\n <li>Encienda el interruptor de desconexión/auxiliar y luego el automático de la batería.</li>\n <li>Ponga el interruptor ON/OFF/P del inversor en ON.</li>\n</ol><br>\n<li> Si el automático salta otra vez, apague la batería para que no se descargue y contacte con el servicio de asistencia de LG.</li><br>\n <b>Datos de contacto de LG:</b>\n<ol style=\"list-style-type: lower-alpha;\">\n <li>Datos de contacto LG para Europa: Chanhee Jung (chanheejung@lgensol.com), Taewook Kim (kim@lgensol.com):</li><ul>\n <li>N.º tel.: (EU excepto Italia): (+49) 6196 5719 660 or (+49) 1622970917</li>\n <li>N.º tel.: (Italia): (+39) 02 8239 7609</li>\n </ul>\n <li>EE. UU: Robert Melendez (rmelendez@lgensol.com), Victor Bucio (vbucio@lgensol.com)</li>\n <ul>\n <li>N.º tel.: (+1) 888 375 8044</li>\n </ul>\n <li>Australia: Orlando Kadori (okadori@lgensol.com)</li>\n <ul>\n <li>N.º tel.: (+61) 1300 178 064</li>\n </ul>\n </ol>\n<br><b>¡Importante!</b> Si no se soluciona el problema en los próximos días, la batería se descargará y puede llegar a vaciarse hasta ser irrecuperable.",
+    "description_BATTERY": "Saltó disyuntor batería. ID de error de solución de energía LG: {{errorCode}} para batería {{deviceName}} ({{serialNumber}}). {{batterySN}}",
+    "type": "Batería: ha saltado el automático",
+    "description_SE_BATTERY": "El interruptor automático de la batería ha disparado"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L1": {
+    "description": "El conductor L1 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Temperatura crítica en el terminal de CA (conductor L1)",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>"
+  },
+  "STRING_BELOW_THRESHOLD": {
+    "resolution": "Seguir los siguientes pasos para intentar resolver el asunto: <br/>\n1.\tComprobar que los strings CCno estén interrumpidos o dañados de alguna manera. <br/>\n2.\tComprobar que los interruptores estén cableados correctamente, verificando por ejemplo la correcta polaridad y que las conexiones sean firmes. <br/>\n3.\tComprobar que las cajas de conexión estén cableadas correctamente, verificando por ejemplo la correcta polaridad y que las conexiones sean firmes. <br/>\n4.\tLanzar el emparejamiento de los optimizadores. <br/>\n<br/>\nSi ninguno de los pasos indicados resuelve el asunto, por favor abra una incidencia facilitando los detalles necesarios: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica SolarEdge</a>",
+    "type": "El string CC no está produciendo energía",
+    "description": "Se han recibido las telemetrías del string, pero la cantidad de energía es baja"
+  },
+  "SEM_DCS_CONNECTION_ISSUE": {
+    "type": "Se ha alcanzado un RSSI bajo ",
+    "resolution": "El sistema SolarEdge utiliza dispositivos inteligentes para el uso de su ecosistema Smart Energy. Si se pierde la conexión con los dispositivos inteligentes, no podemos garantizar un funcionamiento óptimo. <br><ol style=\"list-style:revert;padding-left:16px;\"> <li> Compruebe que el dispositivo no esté físicamente obstruido </li><li>Si es posible, acérquelo a un dispositivo cercano con funcionalidad Home Network</li> <li> Como alternativa, puede instalar un dispositivo inteligente SolarEdge adicional que actúe como repetidor. </li>\n</ol>",
+    "description": "Device has a low Home Network signal that could cause poor performance of excess PV and backup operation"
+  },
+  "INSTALLATION_ISSUES": {
+    "profile": "Problemas de instalación",
+    "type": "Problemas de instalación",
+    "resolution": "This will generate an alert when there is an issue with your site installation. If possible, the system will also indicate the specific issue that was detected",
+    "description": "El sistema identificó que la instalación del sitio no estaba bien configurada. Esto podría provocar la pérdida de datos o la obtención de datos inexactos del sitio."
+  },
+  "BCM_BIT_FAILURE": {
+    "resolution": "Consulte la causa principal del error:<ol style=\"list-style:revert;padding-left:16px;\"><li>Si se pierde la comunicación con el meter, el CT o un inversor seguidor, compruebe los cables de conexión.</li><li>Si la conexión es inalámbrica, pruebe a mejorar la señal moviendo la antena.</li><li> Si necesita más ayuda, abra una incidencia con los detalles relevantes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica  SolarEdge</a></li></ol>",
+    "type": "Error BIT BCM",
+    "description": "La producción del sistema está restringida por un fallo en la prueba del BCM integrado."
+  },
+  "BATTERY_TEMPERATURE_TOO_LOW": {
+    "type": "La temperatura de la batería es demasiado baja.",
+    "description": "La temperatura de la batería es demasiado baja.",
+    "resolution": "Contactar Asistencia Técnica"
+  },
+  "BATTERY_INTERNAL_FAULT": {
+    "resolution": "Por favor abrir una incidencia indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.",
+    "description": "Fallo interno de la batería: debe resolverlo el equipo de Asistencia Técnica de SolarEdge.\nNota: Si no se soluciona el problema, la batería se descargará por si misma y la carga puede agotarse hasta el punto de no poder recuperarse.",
+    "type": "Fallo interno de la batería"
+  },
+  "INVERTER_PRODUCTION_ISSUE_POWER_LIMIT": {
+    "description": "Problema de producción - Modo límite de energía",
+    "type": "Inversor no produce - Modo limitación de potencia",
+    "resolution": "Abra una incidencia con los detalles relevantes: https://www.solaredge.com/service/support/cases SolarEdge Support. "
+  },
+  "KSTAR_BATTERY_UNDER_VOLTAGE_PROTECTION": {
+    "resolution": "Realice los siguientes pasos para intentar resolver este problema: <br> <ol style=\"list-style:revert;padding-left:16px;\"><li>Reinicie la batería.</li><li> Si no desaparece la alerta, espere 1 hora para ver si desaparece.</li><li> Si no desaparece, abra una incidencia proporcionando los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica SolarEdge</a>.</span></li></ol>",
+    "description": "La tensión de la batería supera el valor recomendado. Esto ha provocado que el sistema ha abierto el circuito de carga y no se puede cargar hasta que se solucione",
+    "type": "Protección contra baja tensión de la batería"
+  },
+  "BACKUP_FAULT": {
+    "profile": "Fallo del backup",
+    "resolution": "El backup no funciona"
+  },
+  "BCM_COMMUNICATION_FAILURE": {
+    "type": "Error de comunicación BCM",
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li>Compruebe la conectividad del inversor con el meter.</li><li>Compruebe si los cables de conexión no están desconectados o dañados.</li><li>Si se usa una conexión inalámbrica, intente mejorar la señal orientando la antena.</li><li>Si ninguno de los pasos anteriores soluciona su problema, abra una incidencia proporcionando los detalles correspondientes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica \nSolarEdge</a></li></ol>",
+    "description": "Error de comunicación con el meter de energía. Producción restringida"
+  },
+  "SEM_PRSE_TEMPERATURE_ISSUE_ALERT": {
+    "resolution": "<ol style=\"list-style: auto; padding-left: 16px;\">\nSi el dispositivo funciona a una temperatura superior a la permitida, se puede reducir su vida útil y su rendimiento <li>1. Asegurarse que el dispositivo no tiene obstrucciones. </li> <br><li>2. Asegurarse de que hay un flujo de aire suficiente. <br><li>3. No instalar en un lugar cerrado que reciba luz solar directa</li>\n</ol>",
+    "description": "device_name está registrando una temperatura ambiente alta que supera la temperatura máxima de funcionamiento, esto podría tener como resultado la degradación de la vida útil del dispositivo",
+    "type": "Se ha alcanzado una temperatura ambiente crítica en el regulador para agua caliente"
+  },
+  "BATTERY_INSTALLATION_NOT_COMPLETED": {
+    "description": "La batería no se ha asociado con el inversor y, por lo tanto, está en modo de ahorro de energía y no producirá energía. <br/>\n¡Atención! Si el problema no se resuelve, la batería se descargará automáticamente y puede agotarse por completo hasta un estado irrecuperable.",
+    "resolution": "Contactar Asistencia Técnica",
+    "type": "La batería no se ha asociado con el inversor y, por lo tanto, está en modo de ahorro de energía y no producirá energía. <br/>\n¡Atención! Si el problema no se resuelve, la batería se descargará automáticamente y puede agotarse por completo hasta un estado irrecuperable."
+  },
+  "PRODUCTION_ISSUE_ORION_INVERTER_OVER_TEMPERATURE": {
+    "type": "Problema de producción: temperatura excesiva en el inversor",
+    "resolution": "1. Comprobar que el inversor se haya instalado según el manual de instalación. \n2. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "description": "Problema de producción: temperatura excesiva en el inversor."
+  },
+  "BACKUP_INTERFACE_GRID_RELAY_FAULT_BACKUP_STATE": {
+    "description": "Funcionalidad de backup no disponible debido a un error del relé de red.",
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li>Reinicie la Interfaz de Backup con el interruptor ON/OFF.</li><li>Espere 3 minutos y vea si ha vuelto la electricidad.</li><li>Si el problema persiste, abra una incidencia con los detalles relevantes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica SolarEdge</a>.</li></ol>",
+    "type": "Interfaz de backup: fallo del relé de la red (estado de backup)"
+  },
+  "GRID": {
+    "resolution": "El inversor ha detectado irregularidades en la tensión o frecuencia de la red ",
+    "profile": "Red"
+  },
+  "INVERTER_BELOW_THRESHOLD_RCD": {
+    "resolution": "Seguir los siguientes pasos para intentar encontrarel string CC defectuoso: <br/>\n1.\tMover el interruptor ON/OFF/P del inversor a la posición OFF.  <br/>\n2.\tEsperar cinco minutos hasta que los condensadores de entrada se descarguen. <br/>\n3.\tDesconecto el automático CA. <br/>\n4.\tDesconectar las entradas de CC. <br/>\n5.\tProcedendo a coonectar cada cadena CC por separado, mover el interruptor de CA y el de ON/OFF/P del inversor a la posición ON, hasta que el error aparezca por haber conectado el string defectuoso. <br/>\n6.\tDespués de encontrar el string defectuoso, revisar que no haya cortes, daños, conectores sueltos o cualquier otro problema de conexión. <br/>\n7.\tComprobar que la caja de strings/corte en carga/combinadora no tenga fugas a tierra. <br/>\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso facilitando la información necesaria: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>",
+    "description": "El inversor ha detectado corriente de fuga alta",
+    "type": "RCD"
+  },
+  "ORION_TEMPERATURE_WARNING_ON_AC_TERMINAL_L3": {
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "type": "Advertencia de temperatura en el bloque de terminales de CA (conductor L3)",
+    "description": "Advertencia: La temperatura del conductor L3 del bloque de terminales de CA es alta."
+  },
+  "SYNERGY_TEMPERATURE_WARNING_ON_AC_TERMINAL_L3": {
+    "description": "Advertencia: La temperatura del conductor L3 del bloque de terminales de CA es alta.",
+    "type": "Advertencia de temperatura en el terminal de CA (conductor L3)",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>"
+  },
+  "SEM_PRSE_DEVICE_ISSUE": {
+    "type": "Error del dispositivo regulador para agua caliente SolarEdge Home ",
+    "description": "Se ha detectado consumo en el dispositivo cuando se encontraba en estado OFF",
+    "resolution": "El control de la carga de los aparatos se utiliza para evitar la sobrecarga del sistema. Cuando persiste el consumo del aparato mientras el dispositivo está en la posición de apagado, podría significar que el relé no pudo apagar el aparato conectado. <br><ol style=\"list-style:auto;padding-left:16px;\"> <li> Comprobar que el dispositivo pueda funcionar manualmente accionando manualmente el '{{deviceName}}' en la aplicación móvil.</li> <li>Intentar anular manualmente el dispositivo pulsando el botón ON/OFF durante < 3 segundos.</li> <li>Si el relé sigue sin activar el aparato conectado, contactar con el servicio de Asistencia Técnica SolarEdge</li></ol>"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L1_ABS": {
+    "description": "El conductor L1 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Temperatura crítica en el terminal de CA (conductor L1)",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>"
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L2_ABS": {
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "type": "Temperatura crítica en el bloque de terminales de CA (conductor L2)",
+    "description": "El conductor L2 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción."
+  },
+  "BACKUP_INTERFACE_GRID_RELAY_FAULT_ON_GRID_STATE": {
+    "resolution": "<ol style=\"list-style:revert;padding-left:16px;\"><li>Para evitar el problema, cambie manualmente la interfaz de backup a modo conectado a red, según el <a href=https://www.solaredge.com/sites/default/files/backup-interface-for-service-equipment-installation-guide-na.pdf>manual de instalación</a>.</li><li> Abra una incidencia proporcionando los detalles relevantes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica SolarEdge</a>.</li></ol>\n\n",
+    "type": "Interfaz de backup: fallo del relé de la red (estado de conexión a la red)",
+    "description": "No se pudo volver a conectar con la red por un error en el sensor del relé de la red. No se entrega la energía eléctrica a la casa. Si hay un apagón, no habrá potencia de backup."
+  },
+  "ORION_CRITICAL_TEMPERATURE_ON_DC_MINUS_ABS": {
+    "type": "Temperatura crítica en el terminal de CC-",
+    "resolution": "1. Compobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan cables de CC sueltos. 2. Si los cables de CC están asegurados al bloque de terminales con tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC + esté ajustado según el manual de instalación. 3. Si los módulos FV están conectados al inversor mediante cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación. 4.  Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "description": "El terminal CC - (CC negativo) ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción."
+  },
+  "BACKUP_INTERFACE_NO_COMM": {
+    "description": "Backup no disponible por fallo en la comunicación entre el inversor y la Interfaz de Backup. Si hay un apagón, no habrá potencia de backup.",
+    "resolution": "<ol style=\"list-style:revert;padding-left: 16px;\">\n    <li>Reinicie inversor desde monitorización o siga estas instrucciones para apagarlo y encenderlo:\n        <ol style=\"list-style:revert;\">\n            <li style=\"list-style-type: none;\">Para apagarlo:\n                <ol style=\"list-style-type: lower-alpha; padding-left:16px;\">\n                    <li>Ponga interr. del inversor ON/OFF/P en OFF.</li>\n                    <li>Espere a que CC baje de 50 V. Espere 5 minutos o mire la tensión en SetApp o en la LCD del inversor.</li>\n                    <li>Si hay unidad de desconexión, apague el interruptor de desconexión de CC.</li>\n                    <li>Apague CA del inversor.</li>\n                </ol>\n            </li>\n            <li style=\"list-style-type: none;\">Para encenderlo:                   \n                <ol style=\"list-style-type: lower-alpha; padding-left:16px;\">\n                    <li>>Encienda CA del inversor.</li>\n                    <li>Si hay unidad de desconexión, encienda el interruptor de desconexión de CC.</li>\n                    <li>Ponga interr. del inversor ON/OFF/P en ON.</li>\n                </ol>\n            </li>\n        </ol>\n    </li>\n    <li>Compruebe que la comunicación entre la Interfaz de Backup y el inversor por RS485 está de acuerdo al manual de instalación.</li>\n    <li>Si el problema persiste, abra una incidencia con los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\" target=\"_blank\">Asistencia SolarEdge</a>.</li>\n</ol>",
+    "type": "Interfaz Backup - Sin comunicación"
+  },
+  "ORION_FAN_FAILURE": {
+    "type": "Error en el ventilador del inversor",
+    "description": "El ventilador {{fanNumber}} del inversor no funciona",
+    "resolution": "Realice los siguientes pasos para intentar resolver este problema: <ol style=\"list-style:revert;padding-left:16px;\"> <li> Compruebe la conexión física del cable</li> <li> Limpie el ventilador </li><li>Cambie el ventilador</li></ol> <br>Si el problema persiste, abra una incidencia proporcionando los detalles relevantes:  <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica SolarEdge</a>."
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_DC": {
+    "resolution_MINUS": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC esté ajustado según indicado en el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abra un caso proporcionando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "resolution_PLUS_ABS": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC se han introducido correctamente en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC+ esté ajustado según el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abrir un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "description_PLUS_ABS": "El terminal DC+ de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción.",
+    "description_MINUS": "El terminal DC- de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción.",
+    "type": "Temperatura crítica en el terminal de CC",
+    "resolution_MINUS_ABS": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC esté ajustado según indicado en el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abra un caso proporcionando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "resolution_PLUS": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC se han introducido correctamente en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC+ esté ajustado según el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abrir un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "description_MINUS_ABS": "El terminal DC- de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción.",
+    "description_PLUS": "El terminal DC+ de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción."
+  },
+  "BACKUP_FAILED_AUTO_TRANSFORMER_OVER_HEATED": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\"> <li> Apaggar el sistema colocando el interruptor ON/OFF en la posición OFF y luego esperar 5 minutos.</li>\n<li> Comprobar que todas las conexiones de CA (fase, neutro y tierra) están correctamente conectadas a la red, a las cargas de backup y al autotransformador. </li>\n<li> Desconectar la alimentación de la red al inversor y comprobar que la producción de backup funciona correctamente durante al menos 15 minutos.</li>\n<li> Si el problema persiste, abrir una incidencia indicando los detalles relevantes: <a href=\"https://www.solaredge.com/service/support/cases\">SolarEdge Support</a>.</li></ol>",
+    "type": "Error en backup: sobrecalentamiento del autotransformador",
+    "description": "No hay energía de backup para la casa."
+  },
+  "INVERTER_BELOW_THRESHOLD_SHUTDOWN_CODES": {
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n1.\tRealizar el emparejamiento del inversor (puede realizarse pulsando botón derecho del ratón encima del inversor en la pestaña Layout de la plataforma de monitorización). <br/>\n2.\tUtilizar la plataforma de monitorización para encontrar el optimizador de potencia que no comunica y revisar si hay problemas de conectividad. Si todas las conexiones se han verificado, revisar el voltaje de seguridad siguiendo el <a href=\"https://www.solaredge.com/service/support/kb?mode=installer&search=KB961EN&taxonomies={%22product_type%22:[],%22article_type%22:[]}&collapse=collapse-0\"> siguiente procedimiento</a>. <br/>\n\n             Tener en cuenta que, para ver el artículo, es necesario haber iniciado sesión. <br/>\n\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso facilitando la información necesaria: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>",
+    "description": "Inverter not producing Energy Shutdown codes",
+    "type": "Inverter not producing Energy Shutdown codes"
+  },
+  "INVERTER_BELOW_THRESHOLD_GENERAL": {
+    "type": "Inversor - se ha detectado un problema de producción",
+    "resolution": "Si las condiciones meteorológicas eran buenas, revise los registros de errores y contacte con <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia Técnica de SolarEdge</a> para notificar el problema.",
+    "description": "Inversor - se ha detectado un problema de producción"
+  },
+  "INVERTER_PRODUCTION_ISSUE_LOW_TELEMETRIES": {
+    "resolution": "In case weather conditions were ok, check the error logs and contact <a href=https://www.solaredge.com/service/support/cases>SolarEdge Support</a> to report the issue",
+    "description": "The system identified production issues (low telemetries)",
+    "type": "Inverter - Production issues (Low Telemetries)"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_DC_MINUS_ABS": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC esté ajustado según indicado en el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abra un caso proporcionando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "description": "El terminal DC- de una de las unidades ha alcanzado niveles críticos de temperatura. La unidad ha parado la producción.",
+    "type": "Temperatura crítica en el terminal de CC-"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L3_ABS": {
+    "type": "Temperatura crítica en el terminal de CA (conductor L3)",
+    "description": "El conductor L3 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>"
+  },
+  "SYNERGY_TEMPERATURE_WARNING_ON_DC_MINUS": {
+    "type": "Advertencia de temperatura en el terminal DC-",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">  <li>Comprobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan hilos de CC sueltos.</li>    <li>Si los cables de CC están fijados al bloque de terminales mediante tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC esté ajustado según indicado en el manual de instalación.</li>    <li>Si los módulos FV están conectados al inversor con cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación.</li>    <li>Si el problema persiste, abra un caso proporcionando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>",
+    "description": "Advertencia: La temperatura de una de las unidades del bloque de terminales de CC es alta."
+  },
+  "BATTERY_FAULT": {
+    "resolution": "La batería no funciona",
+    "profile": "Fallo de la batería"
+  },
+  "ORION_TEMPERATURE_WARNING_ON_AC_TERMINAL_L2": {
+    "type": "Advertencia de temperatura en el bloque de terminales de CA (conductor L2)",
+    "description": "Advertencia: la temperatura del conductor L2 del bloque de terminales de CA es alta.",
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases."
+  },
+  "SITE_COMMUNICATION_FAULT": {
+    "resolution": "Seguir los siguientes pasos para intentar solucionar el problema: <br/>\n1.\tComprobar que se pueda acceder a Internet mediante el router (por ejemplo conectando un portátil y navegando a cualquier sitio web). <br/>\n2.\tAsegurarse que el router esté conectado correctamente (revisar el módem, la antena y todos los conectores). <br/>\n3.\tComprobar que los conectores relacionados con el inversor estén bien conectados (el cable RJ45 y la antena y/o kit Wi-Fi). <br/>\n4.\tSi el router de Internet fue reemplazado recientemente, comprobar que la contraseña del router o la configuración del firewall no haya sido cambiada. <br/>\n5.\tComprobar el automático de CA del inversor para asegurarse que no se haya disparado (use un polímetro digital para medir la tensión). <br/>\n<br/>\nSi ninguno de los anteriores pasos soluciona correctamente el problema, abrir un caso facilitando la información necesaria: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica SolarEdge</a>",
+    "description": "Ninguno de los inversores/dispositivos de la planta está comunicando. Solo hay alertas de este tipo si no se ha comunicado durante un día entero como mínimo.",
+    "type": "Planta: sin comunicación"
+  },
+  "ORION_PID_MITIGATION_NOT_FUNCTIONING": {
+    "type": "La mitigación PID no funciona",
+    "description": "No se puede iniciar la operación de mitigación de PID ",
+    "resolution": "Abra una incidencia con los detalles relevantes."
+  },
+  "OPTIMIZER_NOT_PRODUCING": {
+    "description": "Optimizer not producing Description",
+    "resolution": "Optimizer not producing Resolution",
+    "type": "Optimizer not producing"
+  },
+  "SEM_PRSE_CONNECTION_ISSUE_ALERT": {
+    "description": "El dispositivo regulador de agua caliente tiene una señal de Home Network baja que podría causar un mal aprovechamiento de excedentes FV y de la operación de backup",
+    "type": "Se ha alcanzado un bajo RSSI del regulador para agua caliente ",
+    "resolution": "\n<ol style=\"list-style: revert; padding-left: 16px;\">\nEl sistema SolarEdge utiliza dispositivos inteligentes para el uso de su ecosistema Smart Energy. Si se pierde la conexión con los dispositivos inteligentes, no podemos garantizar un funcionamiento óptimo.<li>Compruebe que el dispositivo no esté físicamente obstruido </li> <li>Si es posible, acérquelo a un dispositivo cercano con funcionalidad Home Network<br><li>Como alternativa, puede instalar un dispositivo inteligente SolarEdge adicional que actúe como repetidor. </li>\n</ol>"
+  },
+  "BACKUP_INTERFACE_GEN_RELAY_FAULT": {
+    "resolution": "<ol><li>Compruebe que el generador está apagado.</li><li>Reinicie la Interfaz de Backup con el interruptor ON/OFF.</li><li>Espere 3 min.</li><li>Si el problema persiste, abra una incidencia con los detalles relevantes: <a href=https://www.solaredge.com/service/support/cases>Asistencia Técnica SolarEdge</a>.</li></ol>",
+    "type": "Interfaz de backup: fallo del relé del generador",
+    "description": "No hay backup por un error en el relé del generador."
+  },
+  "SYNERGY_TEMPERATURE_WARNING_ON_AC_TERMINAL_L2": {
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>",
+    "description": "Advertencia: La temperatura del conductor L2 del bloque de terminales de CA es alta.",
+    "type": "Advertencia de temperatura en el terminal de CA (conductor L2)"
+  },
+  "ORION_PID_MITIGATION_UNDER_VOLTAGE": {
+    "type": "Mitigación PID con tensión baja",
+    "description": "La mitigación PID no puede alcanzar la tensión operativa requerida",
+    "resolution": "Abra una incidencia con los detalles relevantes."
+  },
+  "FAN_ALERT_1": {
+    "resolution": "Realizar los siguientes pasos para intentar solucionar este problema: <br/>\n\n1. Comprobar la conexión física del cableado <br/>\n\n2. Limpiar el ventilador<br/>\n\n3. Sustituir el ventilador<br/>\n\nSi no se consigue solucionar el problema con ninguno de estos pasos, abrir una incidencia con el <a href=\"https://www.solaredge.com/service/support/cases\">equipo de asistencia de SolarEdge </a> facilitando los detalles necesarios para procesarla.\n",
+    "description": "Uno de los ventiladores externos del inversor no funciona",
+    "type": "Fallo ventilador externo"
+  },
+  "SYNERGY_DC_SPD_FAILURE": {
+    "resolution": "SPD needs to be replaced",
+    "description": "SPD on the DC Synergy unit in not functioning",
+    "type": "Fallo del descargador de CC"
+  },
+  "DC_ISOLATION_SENSITIVE": {
+    "resolution": "Consulte las <a href=https://knowledge-center.solaredge.com/sites/kc/files/application_note_isolation_fault_troubleshooting.pdf>siguientes instrucciones</a> para intentar resolver este problema. Tenga en cuenta que para acceder al artículo debe iniciar sesión.",
+    "type": "Aislamiento CC - Sensible",
+    "description": "El inversor ha detectado una fuga de corriente CC a tierra."
+  },
+  "INVERTER_BELOW_THRESHOLD": {
+    "profile": "Inversor - se ha detectado un problema de producción",
+    "resolution": "Se mostrarán pasos concretos para resolver problemas con cada alerta activada, correspondientes al tipo de problema de producción detectado."
+  },
+  "ORION_TEMPERATURE_WARNING_ON_AC_TERMINAL_L1": {
+    "description": "Advertencia: La temperatura del conductor L1 del bloque de terminales de CA es alta.",
+    "resolution": "1. Comprobar que los terminales de CA estén correctamente instalados. 2. Comprobar que el par de apriete del bloque de terminales de CA está ajustado a 35 Nm. 3. Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "type": "Advertencia de temperatura en el bloque de terminales de CA (conductor L1)"
+  },
+  "PID_FAULT": {
+    "resolution": "Contactar con Asistencia Técnica SolarEdge",
+    "profile": "Fallo PID",
+    "description": "PID no funciona"
+  },
+  "SEM_PRSE_TEMPERATURE_ISSUE": {
+    "resolution": "Si el dispositivo funciona a una temperatura superior a la permitida, se puede reducir su vida útil y su rendimiento <br><ol style=\"list-style:auto;padding-left:16px;\"> <li>. Asegurarse que el dispositivo no tiene obstrucciones.</li><li>Asegurarse de que hay un flujo de aire suficiente. </li><li>No instalar en un lugar cerrado que reciba luz solar directa</li></ol>",
+    "description": "device_name está registrando una temperatura ambiente alta que supera la temperatura máxima de funcionamiento, esto podría tener como resultado la degradación de la vida útil del dispositivo",
+    "type": "Critical ambient temperature reached"
+  },
+  "ORION_TEMPERATURE_WARNING_ON_DC_MINUS": {
+    "type": "Advertencia de temperatura en el terminal DC-",
+    "resolution": "1. Compobar que los cables de CC estén correctamente insertados en el bloque de terminales y que no hayan cables de CC sueltos. 2. Si los cables de CC están asegurados al bloque de terminales con tornillos, comprobar que el par de apriete de los tornillos del bloque de terminales de CC + esté ajustado según el manual de instalación. 3. Si los módulos FV están conectados al inversor mediante cables de aluminio, comprobar que no estén oxidados. Para el tratamiento de desoxidación del aluminio, consultar el manual de instalación. 4.  Si el problema persiste, abrir una incidencia facilitando los detalles relevantes: Asistencia Técnica SolarEdge https://www.solaredge.com/service/support/cases.",
+    "description": "Advertencia: la temperatura del bloque de terminales de CC - (CC negativo) es alta"
+  },
+  "OPTIMIZER_REPLACEMENT": {
+    "resolution": "Optimizer replacement Resolution",
+    "type": "Optimizer replacement",
+    "description": "Optimizer replacement Description"
+  },
+  "RECURRING_INVERTER_PRODUCTION_DC_ISOLATION": {
+    "description": "El inversor ha detectado una fuga de corriente CC recurrente a tierra. Esto afecta a la producción.",
+    "type": "Problema recurrente de aislamiento en CC",
+    "resolution": "Consultar las<a href=\"https://www.solaredge.com/files/pdfs/application_note_isolation_fault_troubleshooting.pdf\">siguientes instrucciones</a> para intentar resolver este problema. Para ver el artículo es necesario haber iniciado sesión."
+  },
+  "SYSTEM_OVERLOADED_ALERT_TYPE": {
+    "resolution": "<ol style=\"list-style: auto; padding-left: 16px;\">\n<li>Asegurarse de que las cargas de backup no superan el máximo de potencia en el funcionamiento de backup y, si fuera necesario, desconectarlas. </li>\n<li>Restablecer la energía de backup cambiando el interruptor ON/OFF/P de cualquier inversor con un LED encendido a 0 y, a continuación, de nuevo a 1.</li>\n<li>Desconectar el suministro del cuadro principal en caso de que el sistema esté funcionando en modo de red y comprobar que la producción de backup funciona correctamente durante 15 minutos.</li>\n<li>Si el error sigue apareciendo en la pantalla de SetApp, desactivar todas las cargas de backup y restablecer la energía de backup pasando el interruptor ON/OFF/P de cualquier inversor con un LED encendido a 0 y, a continuación, de nuevo a 1.</li>\n<li>Comprobar que haya 240 V entre los terminales L1 y N de backup de CA en el inversor.</li>\n<li>Activar las cargas de backup una por una y buscar una carga que pueda causar un consumo excesivo. Mantener la desconexión y comprobar que la producción de backup funciona correctamente durante 15 minutos.</li>\n<li>Si el problema persiste, verificar que todas las conexiones de CA (fase, neutro, tierra) a la red y las cargas de backup estén conectadas correctamente. Comprobar que haya producción de backup durante 15 minutos.</li>\n<li>Si el problema persiste, abrir un caso proporcionando los detalles pertinentes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</li></ol>"
+  },
+  "ORION_PID_MITIGATION_OVER_VOLTAGE": {
+    "description": "Se ha detenido el funcionamiento de la mitigación PID debido a que la tensión de funcionamiento es demasiado alta.",
+    "type": "Mitigación PID con tensión alta",
+    "resolution": "Abra una incidencia con los detalles relevantes."
+  },
+  "DEAD_OPTIMIZER": {
+    "resolution": "Dead Optimizer Resolution",
+    "description": "Dead Optimizer Description",
+    "type": "Dead Optimizer"
+  },
+  "SYNERGY_CRITICAL_TEMPERATURE_ON_AC_TERMINAL_L2_ABS": {
+    "description": "El conductor L2 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
+    "type": "Temperatura crítica en el terminal de CA (conductor L2)",
+    "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>"
+  }
 }

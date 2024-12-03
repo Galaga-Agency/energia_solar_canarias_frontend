@@ -1,14 +1,29 @@
 import useDeviceType from "@/hooks/useDeviceType";
-import React from "react";
+import { selectTheme } from "@/store/slices/themeSlice";
+import React, { useMemo } from "react";
 import BatteryGauge from "react-battery-gauge";
+import { useSelector } from "react-redux";
 
 const BatteryIndicator = ({ soc }) => {
-  const { isMobile } = useDeviceType();
+  const { isMobile, isTablet } = useDeviceType();
+  const theme = useSelector(selectTheme);
+
+  const getBatteryColor = useMemo(() => {
+    if (soc === null || soc === undefined) return "none"; // No fill color for invalid data
+    if (soc <= 10) return "#ef4444"; // Red - Critical
+    if (soc <= 20) return "#f97316"; // Orange - Low
+    if (soc <= 40) return "#eab308"; // Yellow - Medium-Low
+    if (soc <= 60) return "#84cc16"; // Light Green - Medium
+    if (soc <= 80) return "#22c55e"; // Green - Good
+    return "#22c55e"; // Default Green
+  }, [soc]);
+
+  const showPercentage = soc !== null && soc !== undefined;
 
   return (
     <div className="flex justify-left items-center">
       <BatteryGauge
-        value={soc}
+        value={soc ?? 0}
         maxValue={100}
         animated={true}
         charging={false}
@@ -19,30 +34,34 @@ const BatteryIndicator = ({ soc }) => {
             strokeWidth: 4,
             cornerRadius: 6,
             fill: "none",
-            strokeColor: "rgb(201, 202, 202)",
+            strokeColor:
+              theme === "dark" ? " rgb(203 213 225)" : "rgb(71 85 105)",
           },
           batteryCap: {
             fill: "none",
             strokeWidth: 4,
-            strokeColor: "rgb(201, 202, 202)",
+            strokeColor:
+              theme === "dark" ? " rgb(203 213 225)" : "rgb(71 85 105)",
             cornerRadius: 2,
             capToBodyRatio: 0.4,
           },
           batteryMeter: {
-            fill: soc > 15 ? "rgb(34 197 94)" : "#f44336",
-            lowBatteryValue: 15,
-            lowBatteryFill: "#f44336",
+            fill: getBatteryColor,
+            lowBatteryValue: 20,
+            lowBatteryFill: "#f97316",
             outerGap: 1,
-            noOfCells: 5,
+            noOfCells: 10,
             interCellsGap: 1,
           },
           readingText: {
-            lightContrastColor: "rgb(201, 202, 202)",
-            darkContrastColor: "rgb(201, 202, 202)",
-            lowBatteryColor: "#f44336",
+            lightContrastColor:
+              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(161, 161, 170)",
+            darkContrastColor:
+              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(161, 161, 170)",
+            lowBatteryColor: "#ef4444",
             fontFamily: "Corbert, sans-serif",
             fontSize: 14,
-            showPercentage: true,
+            showPercentage: showPercentage,
           },
         }}
       />

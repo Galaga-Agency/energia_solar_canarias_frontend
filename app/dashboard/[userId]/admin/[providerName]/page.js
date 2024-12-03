@@ -107,6 +107,8 @@ const ProviderPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  console.log("plant from victron : ", paginatedPlants);
+
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
       <TransitionEffect />
@@ -146,6 +148,7 @@ const ProviderPage = () => {
             onFilterChange={handleFilterChange}
             isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
+            provider={providerPassed}
           />
 
           <div className="flex-grow lg:px-8">

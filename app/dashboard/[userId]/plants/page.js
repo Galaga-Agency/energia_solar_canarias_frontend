@@ -59,6 +59,8 @@ const ClientDashboardPage = ({ params }) => {
     startIndex + plantsPerPage
   );
 
+  // console.log("plant from list: ", paginatedPlants);
+
   const handleFilterChange = useCallback((filteredResults) => {
     setFilteredPlants(filteredResults);
     setCurrentPage(1);

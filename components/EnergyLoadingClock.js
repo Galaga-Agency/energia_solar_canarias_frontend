@@ -7,7 +7,7 @@ const EnergyLoadingClock = ({ duration, onComplete, isPaused }) => {
 
   useEffect(() => {
     if (isPaused) {
-      setProgress(0); // Reset clock when paused
+      setProgress(0);
       return;
     }
 
@@ -28,6 +28,21 @@ const EnergyLoadingClock = ({ duration, onComplete, isPaused }) => {
   return (
     <div className="w-10 h-10 md:absolute md:top-4 md:right-4">
       <svg className="w-full h-full">
+        {/* Gradient Definition */}
+        <defs>
+          <linearGradient
+            id="gradient-stroke"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%"
+          >
+            <stop offset="0%" stopColor="#FACC15" /> {/* Yellow */}
+            <stop offset="100%" stopColor="#22C55E" /> {/* Green */}
+          </linearGradient>
+        </defs>
+
+        {/* Background Circle */}
         <circle
           cx="50%"
           cy="50%"
@@ -36,12 +51,14 @@ const EnergyLoadingClock = ({ duration, onComplete, isPaused }) => {
           stroke="rgba(200, 200, 200, 0.5)"
           strokeWidth="4"
         />
+
+        {/* Progress Circle */}
         <circle
           cx="50%"
           cy="50%"
           r="16"
           fill="none"
-          stroke="#4CAF50"
+          stroke="url(#gradient-stroke)" // Use gradient as stroke
           strokeWidth="6"
           strokeDasharray="100"
           strokeDashoffset={`${(1 - progress / duration) * 100}`}

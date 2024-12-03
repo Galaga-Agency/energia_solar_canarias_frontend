@@ -20,6 +20,7 @@ import { IoArrowBackCircle } from "react-icons/io5";
 import { BiRefresh } from "react-icons/bi";
 import Texture from "@/components/Texture";
 import PageTransition from "@/components/PageTransition";
+import VictronEnergyPlantDetails from "@/components/PlantDetails/VictronEnergyPlantDetails";
 
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId } = params;
@@ -50,7 +51,7 @@ const PlantDetailsPage = ({ params }) => {
 
     const pathParts = window.location.pathname.toLowerCase().split("/");
     const providerInPath = pathParts.find((part) =>
-      ["solaredge", "goodwe"].includes(part)
+      ["solaredge", "goodwe", "victronenergy"].includes(part)
     );
 
     if (providerInPath) return providerInPath;
@@ -223,6 +224,8 @@ const PlantDetailsPage = ({ params }) => {
           return <GoodwePlantDetails {...props} />;
         case "solaredge":
           return <SolarEdgePlantDetails {...props} />;
+        case "victronenergy":
+          return <VictronEnergyPlantDetails {...props} />;
         default:
           return renderError();
       }

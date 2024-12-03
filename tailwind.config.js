@@ -45,7 +45,8 @@ module.exports = {
         "orbit-path-4": "orbit-path-4 3.5s linear infinite reverse",
         grid: "grid 150s linear infinite",
         textBlink: "textBlink 0.5s ease-in-out",
-        "double-blink": "doubleBlink 1s ease-in-out 1",
+        "double-blink":
+          "doubleBlink 1.2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -106,11 +107,6 @@ module.exports = {
           "10%": { opacity: "1" },
           "90%": { opacity: "1" },
           "100%": { transform: "translateX(-100%)", opacity: "0" },
-        },
-        doubleBlink: {
-          "0%, 100%": { opacity: "1" },
-          "25%, 50%": { opacity: "0.3" },
-          "75%": { opacity: "1" },
         },
         fadeIn: {
           "0%": { opacity: "0" },
@@ -210,9 +206,22 @@ module.exports = {
           },
         },
         doubleBlink: {
-          "0%, 100%": { opacity: "1" },
-          "25%, 50%": { opacity: "0.3" },
-          "75%": { opacity: "1" },
+          "0%, 100%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+          "25%": {
+            opacity: "0.3",
+            transform: "scale(1.05)",
+          },
+          "50%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+          "75%": {
+            opacity: "0.3",
+            transform: "scale(1.05)",
+          },
         },
       },
     },

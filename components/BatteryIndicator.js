@@ -28,7 +28,7 @@ const BatteryIndicator = ({ soc }) => {
   const showPercentage = soc !== null && soc !== undefined;
 
   return (
-    <div className="flex justify-left items-center">
+    <div className="flex justify-center items-center">
       <BatteryGauge
         value={soc ?? 0}
         maxValue={100}

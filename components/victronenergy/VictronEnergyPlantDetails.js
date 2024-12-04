@@ -13,6 +13,10 @@ import PageTransition from "@/components/PageTransition";
 import Loading from "@/components/ui/Loading";
 import VictronEnergyFlow from "@/components/victronenergy/VictronEnergyFlow";
 import { useTranslation } from "next-i18next";
+import Texture from "../Texture";
+import { selectTheme } from "@/store/slices/themeSlice";
+import useDeviceType from "@/hooks/useDeviceType";
+import EnergyLoadingClock from "../EnergyLoadingClock";
 
 const VictronEnergyPlantDetails = ({ plantId, userId }) => {
   const dispatch = useDispatch();
@@ -20,11 +24,18 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
   const user = useSelector(selectUser);
   const plant = useSelector(selectPlantDetails);
   const isLoadingDetails = useSelector(selectLoadingDetails);
+  const theme = useSelector(selectTheme);
+  const { isMobile } = useDeviceType();
 
   const [lastUpdated, setLastUpdated] = useState(
     new Date().toLocaleTimeString()
   );
   const [isFetching, setIsFetching] = useState(false);
+
+  const capitalizeFirstLetter = useCallback((str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }, []);
 
   const fetchRealtimeData = useCallback(async () => {
     if (!plantId || !userId || !user?.tokenIdentificador) return;
@@ -85,36 +96,107 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
   if (!plant) {
     return (
       <PageTransition>
-        <div className="h-screen flex items-center justify-center">
-          <p className="text-lg text-custom-dark-blue dark:text-custom-yellow">
-            {t("plantDataNotFound")}
-          </p>
+        <div
+          className={`min-h-screen p-6 ${
+            theme === "dark"
+              ? "dark:bg-gray-900"
+              : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
+          }`}
+        >
+          <Texture />
+          <button onClick={() => window.history.back()}>
+            <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
+          </button>
+          <div className="h-auto w-full flex flex-col justify-center items-center">
+            <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+            <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
+              {t("plantDataNotFound")}
+            </p>
+            <button
+              onClick={handleRefresh}
+              className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow hover:scale-105 transition-transform mt-4"
+              disabled={isLoadingDetails}
+            >
+              <BiRefresh
+                className={`text-2xl ${isLoading ? "animate-spin" : ""}`}
+              />
+              <span>{t("refresh")}</span>
+            </button>
+          </div>
         </div>
       </PageTransition>
     );
   }
 
+  const statusColors = useMemo(
+    () => ({
+      working: "bg-green-500",
+      disconnected: "bg-gray-500",
+    }),
+    []
+  );
+
   return (
     <PageTransition>
-      <div className="min-h-screen p-6 bg-gradient-to-b from-gray-200 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        {/* Back Button */}
-        <button onClick={() => window.history.back()}>
-          <IoArrowBackCircle className="text-4xl text-custom-dark-blue dark:text-custom-yellow mb-4" />
-        </button>
+      <div
+        className={`min-h-screen p-6 ${
+          theme === "dark"
+            ? "dark:bg-gray-900"
+            : "bg-gradient-to-b from-gray-200 to-custom-dark-gray"
+        }`}
+      >
+        <Texture />
 
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-            {plant?.data?.records?.[0]?.name || t("loading")}
-          </h1>
+        <header className="flex justify-between items-center mb-6">
+          <IoArrowBackCircle
+            className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
+            onClick={() => window.history.back()}
+          />
+          <div className="flex items-center ml-auto">
+            <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">
+              {plant?.data?.records?.[0]?.name || t("loading")}
+            </h1>
+            {/* <div
+              className={`w-8 h-8 rounded-full ml-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] ${
+                statusColors[solaredgePlant?.status] || "bg-gray-500"
+              }`}
+            /> */}
+          </div>
+        </header>
+
+        <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
+            {t("Real-Time Energy Flow")}
+          </h2>
+          {isMobile ? (
+            <div className="flex items-center gap-2 justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {t("lastUpdated")}: {lastUpdatedRef.current}
+              </span>
+              <EnergyLoadingClock
+                duration={15}
+                onComplete={fetchRealtimeData}
+                isPaused={isFetching}
+              />
+            </div>
+          ) : (
+            <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
+              <EnergyLoadingClock
+                duration={15}
+                onComplete={fetchRealtimeData}
+                isPaused={isFetching}
+              />
+              <span className="absolute top-4 right-16 max-w-36">
+                {t("lastUpdated")}: {lastUpdatedRef.current}
+              </span>
+            </div>
+          )}
+          <VictronEnergyFlow
+            energyData={energyData}
+            fetchRealtimeData={fetchRealtimeData}
+            isFetching={isFetching}
+          />
         </div>
-
-        {/* Energy Flow Section */}
-        <VictronEnergyFlow
-          energyData={energyData}
-          fetchRealtimeData={fetchRealtimeData}
-          isFetching={isFetching}
-        />
       </div>
     </PageTransition>
   );

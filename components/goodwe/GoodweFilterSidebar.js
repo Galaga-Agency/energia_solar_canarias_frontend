@@ -1,30 +1,34 @@
-"use client";
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
-import { useParams } from "next/navigation";
 
-const ProviderFilterSidebar = ({
+const GoodweFilterSidebar = ({
   plants,
   onFilterChange,
   isSidebarOpen,
   setIsSidebarOpen,
-  provider,
 }) => {
   const { t } = useTranslation();
   const [filters, setFilters] = useState({
     status: [],
     type: [],
-    organization: [],
     search: "",
     capacity: { min: 0, max: 10000 },
   });
   const { isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
+
+  // Translation keys for Goodwe plant types
+  const GOODWE_TYPES = {
+    Residential: "type_Residential",
+    Commercial: "type_Commercial",
+    "Ground Mounted": "type_Ground_Mounted",
+    "Battery Storage": "type_Battery_Storage",
+    "Optimizers & Inverters": "type_Optimizers_Inverters",
+  };
 
   const filterPlants = useCallback(
     (currentFilters) => {
@@ -43,19 +47,13 @@ const ProviderFilterSidebar = ({
 
       if (currentFilters.status.length > 0) {
         filtered = filtered.filter((plant) =>
-          currentFilters?.status?.includes(plant.status)
+          currentFilters.status.includes(plant.status)
         );
       }
 
       if (currentFilters.type.length > 0) {
         filtered = filtered.filter((plant) =>
-          currentFilters?.type?.includes(plant.type)
-        );
-      }
-
-      if (currentFilters.organization.length > 0) {
-        filtered = filtered.filter((plant) =>
-          currentFilters?.organization?.includes(plant.organization)
+          currentFilters.type.includes(plant.type)
         );
       }
 
@@ -76,11 +74,9 @@ const ProviderFilterSidebar = ({
     [plants]
   );
 
-  // Initialize filters
   useEffect(() => {
     if (plants?.length > 0 && !isInitialized) {
       setIsInitialized(true);
-      // Use setTimeout to avoid render-time setState
       setTimeout(() => {
         onFilterChange(plants);
       }, 0);
@@ -90,19 +86,25 @@ const ProviderFilterSidebar = ({
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
       setFilters((prevFilters) => {
-        const updatedFilter = prevFilters[filterType].includes(value)
-          ? prevFilters[filterType].filter((item) => item !== value)
-          : [...prevFilters[filterType], value];
+        // Create new array rather than mutating the existing one
+        let updatedFilter = [...prevFilters[filterType]];
 
+        // If value exists, remove it. If it doesn't exist, add it.
+        const index = updatedFilter.indexOf(value);
+        if (index > -1) {
+          updatedFilter = updatedFilter.filter((item) => item !== value);
+        } else {
+          updatedFilter.push(value);
+        }
+
+        // Create new filters object
         const updatedFilters = {
           ...prevFilters,
           [filterType]: updatedFilter,
         };
 
-        // Use setTimeout to avoid render-time setState
-        setTimeout(() => {
-          onFilterChange(filterPlants(updatedFilters));
-        }, 0);
+        // Apply filters immediately
+        onFilterChange(filterPlants(updatedFilters));
 
         return updatedFilters;
       });
@@ -119,7 +121,6 @@ const ProviderFilterSidebar = ({
           search: searchTerm,
         };
 
-        // Use setTimeout to avoid render-time setState
         setTimeout(() => {
           onFilterChange(filterPlants(updatedFilters));
         }, 0);
@@ -143,7 +144,6 @@ const ProviderFilterSidebar = ({
           capacity: updatedCapacity,
         };
 
-        // Use setTimeout to avoid render-time setState
         setTimeout(() => {
           onFilterChange(filterPlants(updatedFilters));
         }, 0);
@@ -220,16 +220,10 @@ const ProviderFilterSidebar = ({
           {t("type")}
         </h3>
         <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-          {[
-            "Residential",
-            "Commercial",
-            "Ground Mounted",
-            "Battery Storage",
-            "Optimizers & Inverters",
-          ].map((type) => (
+          {Object.keys(GOODWE_TYPES).map((type) => (
             <CustomCheckbox
               key={type}
-              label={t(`type_${type}`)}
+              label={t(GOODWE_TYPES[type])}
               checked={filters.type.includes(type)}
               onChange={() => handleCheckboxChange("type", type)}
             />
@@ -274,4 +268,4 @@ const ProviderFilterSidebar = ({
   );
 };
 
-export default ProviderFilterSidebar;
+export default GoodweFilterSidebar;

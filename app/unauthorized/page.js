@@ -5,7 +5,7 @@ import { FaLock } from "react-icons/fa";
 import { useTranslation } from "next-i18next";
 import TransitionEffect from "@/components/TransitionEffect";
 import Texture from "@/components/Texture";
-import PrimaryButton from "@/components/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";

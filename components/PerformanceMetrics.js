@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/Tooltip";
+} from "@/components/ui/Tooltip";
 
 const PerformanceMetrics = ({ kpi }) => {
   const { t } = useTranslation();

@@ -27,7 +27,7 @@ import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
-import Loading from "@/components/Loading";
+import Loading from "@/components/ui/Loading";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();

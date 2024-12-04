@@ -5,7 +5,7 @@ import { IoAnalyticsOutline, IoCashOutline } from "react-icons/io5";
 import { GiSpeedometer } from "react-icons/gi";
 import { FaEuroSign } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import EnergyStatisticsSkeleton from "./LoadingSkeletons/EnergyStatisticsSkeleton";
+import EnergyStatisticsSkeleton from "../loadingSkeletons/EnergyStatisticsSkeleton";
 import {
   fetchSolarEdgeOverview,
   selectOverviewLoading,

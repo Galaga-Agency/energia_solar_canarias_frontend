@@ -1,74 +1,120 @@
-"use client";
-
-import React, { useState, useCallback, useRef } from "react";
-import { useTranslation } from "next-i18next";
-import { Home, UtilityPole, ChevronRight, ChevronLeft } from "lucide-react";
-import { FaSolarPanel, FaBatteryFull } from "react-icons/fa";
-import EnergyLoadingClock from "@/components/EnergyLoadingClock";
+import React, {
+  useEffect,
+  useState,
+  memo,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import useDeviceType from "@/hooks/useDeviceType";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchGoodweRealtimeData,
+  selectLoadingDetails,
+} from "@/store/slices/plantsSlice";
+import EnergyLoadingClock from "@/components/EnergyLoadingClock";
+import { useTranslation } from "next-i18next";
+import { UtilityPole } from "lucide-react";
+import { selectTheme } from "@/store/slices/themeSlice";
+import { useParams } from "next/navigation";
+import { selectUser } from "@/store/slices/userSlice";
+import { ChevronRight, ChevronLeft } from "lucide-react";
+import { Home } from "lucide-react";
+import { FaSolarPanel } from "react-icons/fa";
+import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 
-const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
-  const { t } = useTranslation();
+const GoodweEnergyFlowDisplay = memo(() => {
   const { isMobile, isTablet } = useDeviceType();
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const [realtimeData, setRealtimeData] = useState({
+    powerflow: { load: 0, pv: 0, grid: 0, soc: 0, unit: "kW" },
+  });
+  const [error, setError] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
-  const lastUpdatedRef = useRef(new Date().toLocaleTimeString());
+  const lastUpdatedRef = useRef(new Date().toLocaleString());
+  const isLoading = useSelector(selectLoadingDetails);
+  const theme = useSelector(selectTheme);
+  const params = useParams();
+  const formattedPlantId = params?.plantId?.toString() || null;
+  const user = useSelector(selectUser);
+  const token = useMemo(() => user?.tokenIdentificador, [user]);
 
-  // Extract the relevant data from the extended array
-  const processPlantData = (data) => {
-    if (!data?.extended) return {};
+  const fetchRealtimeData = useCallback(async () => {
+    if (!formattedPlantId || !token) {
+      console.error("Plant ID or token is missing");
+      return;
+    }
 
-    const getValue = (code) => {
-      const item = data.extended.find((item) => item.code === code);
-      return item?.rawValue || item?.formattedValue || "N/A";
-    };
+    try {
+      setIsFetching(true);
+      const response = await dispatch(
+        fetchGoodweRealtimeData({ plantId: formattedPlantId, token })
+      ).unwrap();
 
-    return {
-      // Find and extract the raw values from the extended array
-      acInput: getValue("ac_in") || "0 W",
-      generator: getValue("generator") || "-",
-      soc: getValue("bs") || "N/A",
-      batteryVoltage: getValue("bv") || "N/A",
-      batteryCurrent: getValue("bc") || "N/A",
-      batteryState: getValue("bst") || "N/A",
-      solarYield: getValue("solar_yield") || "N/A",
-      load: getValue("consumption") || "N/A",
-      inverterStatus: getValue("S") || "Inverting",
-    };
-  };
+      const parsedData = {
+        powerflow: {
+          load: parseFloat(
+            response.siteCurrentPowerFlow.LOAD.currentPower.replace(/\D/g, "")
+          ),
+          pv: parseFloat(
+            response.siteCurrentPowerFlow.PV.currentPower.replace(/\D/g, "")
+          ),
+          grid: parseFloat(
+            response.siteCurrentPowerFlow.GRID.currentPower.replace(/\D/g, "")
+          ),
+          soc: response.siteCurrentPowerFlow.STORAGE?.chargeLevel || 0,
+          unit: "kW",
+        },
+      };
 
-  // Process the plant data
-  const {
-    acInput = "0 W",
-    generator = "-",
-    soc = "100.0 %",
-    batteryVoltage = "52.22 V",
-    batteryCurrent = "0.00 A",
-    batteryState = "En reposo",
-    solarYield = "100 W",
-    load = "86 W",
-    inverterStatus = "Invirtiendo",
-  } = processPlantData(plantData);
+      setRealtimeData(parsedData);
+      setError(false);
+      lastUpdatedRef.current = new Date().toLocaleString();
+      setIsFetching(false);
+      setIsBlinking(true);
+      setTimeout(() => setIsBlinking(false), 300);
+    } catch (err) {
+      console.error("Error fetching real-time data:", err);
+      setError(true);
+      setRealtimeData({
+        powerflow: { load: 0, pv: 0, grid: 0, soc: 0, unit: "kW" },
+      });
+      setIsFetching(false);
+      setIsBlinking(false);
+    }
+  }, [formattedPlantId, token, dispatch]);
 
-  const handleRealtimeUpdate = useCallback(() => {
+  useEffect(() => {
+    if (!formattedPlantId || !token) {
+      return;
+    }
+
     fetchRealtimeData();
-    lastUpdatedRef.current = new Date().toLocaleTimeString();
-    setIsBlinking(true);
-    const timer = setTimeout(() => setIsBlinking(false), 300);
-    return () => clearTimeout(timer);
-  }, [fetchRealtimeData]);
+    const interval = setInterval(fetchRealtimeData, 30000);
+    return () => clearInterval(interval);
+  }, [fetchRealtimeData, formattedPlantId, token]);
 
-  // Helper function to extract numeric value from power strings
-  const extractPowerValue = (powerString) => {
-    const match = String(powerString).match(/[\d.]+/);
-    return match ? parseFloat(match[0]) : 0;
+  const formatPowerValue = (value) => {
+    return `${parseFloat(value.replace(/\D/g, ""))}`;
   };
+
+  const {
+    load = 0,
+    pv = 0,
+    grid = 0,
+    unit = "kW",
+  } = realtimeData?.powerflow || {};
+
+  const hasFlow = useMemo(
+    () => load > 0 || pv > 0 || grid > 0,
+    [load, pv, grid]
+  );
 
   const renderFlow = useCallback(
     (fromValue, toValue, direction) => {
-      const fromPower = extractPowerValue(fromValue);
-      const toPower = extractPowerValue(toValue);
-
-      if (fromPower <= 0 || toPower <= 0) return null;
+      if (fromValue <= 0 || toValue <= 0) return null;
 
       const FlowIcon = isMobile
         ? ChevronRight
@@ -77,14 +123,33 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
         : ChevronLeft;
 
       const flowClass = isMobile
-        ? "animate-flow-right"
+        ? direction === "right"
+          ? "animate-flow-right"
+          : "animate-flow-right"
         : direction === "right"
         ? "animate-flow-right"
         : "animate-flow-left";
 
+      const intensity = Math.min(Math.max((fromValue / 10) * 100, 20), 100);
+      const glowColor =
+        theme === "dark"
+          ? `rgba(255, 213, 122, ${intensity / 100})`
+          : `rgba(0, 44, 63, ${intensity / 100})`;
+
       return (
         <div className="relative flex items-center justify-center gap-1 py-4 group">
-          <div className="absolute inset-0 h-2 top-1/2 -translate-y-1/2 rounded-full opacity-20 group-hover:opacity-40 transition-all duration-300 bg-custom-yellow/30" />
+          <div
+            className="absolute inset-0 h-2 top-1/2 -translate-y-1/2 rounded-full opacity-20 group-hover:opacity-40 transition-all duration-300"
+            style={{
+              background: `linear-gradient(${
+                direction === "right" ? "90deg" : "270deg"
+              }, 
+              transparent 0%, 
+              ${glowColor} 50%, 
+              transparent 100%)`,
+            }}
+          />
+
           <div
             className={`flex ${
               isMobile && direction === "left"
@@ -99,13 +164,16 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
               >
                 <FlowIcon
                   className={`
-                    text-custom-yellow 
+                  text-custom-yellow 
                     ${flowClass} relative z-10
                     transition-transform hover:scale-110
                   `}
                   size={isMobile ? 28 : 40}
                   strokeWidth={2.5}
-                  style={{ animationDelay: `${i * 200}ms` }}
+                  style={{
+                    animationDelay: `${i * 200}ms`,
+                    filter: `drop-shadow(0 0 ${intensity / 20}px ${glowColor})`,
+                  }}
                 />
                 <div
                   className={`
@@ -124,55 +192,49 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
         </div>
       );
     },
-    [isMobile]
+    [theme, isMobile]
   );
 
   const renderMobileLayout = () => {
     return (
       <div className="relative flex flex-col items-center">
-        <div className="w-[180px] flex flex-col items-center mb-32">
+        {/* Top Solar Panel Container */}
+        <div
+          className={`w-[180px] flex flex-col items-center ${
+            hasFlow && "mb-32"
+          } `}
+        >
           <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] font-group-hover:scale-105 transition-transform mb-2" />
+
           <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
             <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
-              {t("Cargador FV")}
+              {t("Energy Produced")}
             </span>
             <span
               className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
                 isBlinking ? "animate-double-blink" : ""
               }`}
             >
-              {solarYield}
+              {error ? "N/A" : formatPowerValue(pv)}
             </span>
           </div>
         </div>
 
+        {/* Container for bottom row with flows */}
         <div className="relative w-full max-w-[400px]">
+          {/* Flow to House (Left) */}
           <div className="absolute -top-24 left-1/4 -translate-x-1/2 w-24 h-24 flex items-center justify-center transform -rotate-[83deg]">
-            {renderFlow(solarYield, load, "left")}
+            {renderFlow(pv, load, "left")}
           </div>
 
-          <div className="flex justify-between items-end gap-4 md:gap-24 mt-6">
-            <div className="w-[180px]">
-              <div className="flex flex-col items-center">
-                <FaBatteryFull className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] group-hover:scale-105 transition-transform mb-2" />
-                <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
-                  <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
-                    {t("Batería")}
-                  </span>
-                  <span
-                    className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
-                      isBlinking ? "animate-double-blink" : ""
-                    }`}
-                  >
-                    {soc}
-                  </span>
-                  <span className="block text-xs text-slate-600 dark:text-slate-300">
-                    {batteryVoltage} | {batteryCurrent}
-                  </span>
-                </div>
-              </div>
-            </div>
+          {/* Flow to Grid (Right) */}
+          <div className="absolute -top-24 right-1/4 translate-x-1/2 w-24 h-24 flex items-center justify-center transform rotate-[83deg]">
+            {renderFlow(pv, grid, "right")}
+          </div>
 
+          {/* Bottom Icons Container */}
+          <div className="flex justify-center items-end gap-4 md:gap-24 mt-6">
+            {/* House */}
             <div className="w-[180px]">
               <div className="flex flex-col items-center">
                 <Home
@@ -182,14 +244,37 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
                 />
                 <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
                   <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
-                    {t("Cargas CA")}
+                    {t("Energy Consumed")}
                   </span>
                   <span
                     className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
                       isBlinking ? "animate-double-blink" : ""
                     }`}
                   >
-                    {load}
+                    {error ? "N/A" : formatPowerValue(load)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Grid */}
+            <div className="w-[180px]">
+              <div className="flex flex-col items-center">
+                <UtilityPole
+                  strokeWidth={2.5}
+                  size={80}
+                  className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow mb-2"
+                />
+                <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
+                  <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
+                    {t("Energy Exported")}
+                  </span>
+                  <span
+                    className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
+                      isBlinking ? "animate-double-blink" : ""
+                    }`}
+                  >
+                    {error ? "N/A" : formatPowerValue(grid)}
                   </span>
                 </div>
               </div>
@@ -200,14 +285,20 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
     );
   };
 
+  if (!formattedPlantId) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <EnergyFlowSkeleton theme={theme} />;
+  }
+
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
+      {/* Header section */}
       <div className="mb-8">
-        <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4 flex items-center gap-2">
+        <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
           {t("Real-Time Energy Flow")}
-          <span className="text-sm font-normal text-slate-600 dark:text-slate-400">
-            ({inverterStatus})
-          </span>
         </h2>
         {isMobile ? (
           <div className="flex items-center gap-2 justify-between">
@@ -216,14 +307,16 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
             </span>
             <EnergyLoadingClock
               duration={15}
-              onComplete={handleRealtimeUpdate}
+              onComplete={fetchRealtimeData}
+              isPaused={isFetching}
             />
           </div>
         ) : (
           <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
             <EnergyLoadingClock
               duration={15}
-              onComplete={handleRealtimeUpdate}
+              onComplete={fetchRealtimeData}
+              isPaused={isFetching}
             />
             <span className="absolute top-4 right-16 max-w-36">
               {t("lastUpdated")}: {lastUpdatedRef.current}
@@ -232,8 +325,10 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
         )}
       </div>
 
+      {/* Responsive Layout Switch */}
       <div className="md:hidden">{renderMobileLayout()}</div>
 
+      {/* Desktop Layout */}
       <div className="hidden md:flex flex-row justify-between items-end gap-8">
         <div className="w-1/3 relative flex flex-col items-center">
           <div className="group flex flex-col items-center gap-4 w-full">
@@ -245,19 +340,19 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
             />
             <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
               <span className="block text-sm text-slate-600 dark:text-slate-300">
-                {t("Cargas CA")}
+                {t("Energy Consumed")}
               </span>
               <span
                 className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
-                {load}
+                {error ? "N/A" : formatPowerValue(load)}
               </span>
             </div>
           </div>
           <div className="absolute -right-12 top-[20%] lg:top-[40%] -translate-y-1/2">
-            {renderFlow(solarYield, load, "left")}
+            {renderFlow(pv, load, "left")}
           </div>
         </div>
 
@@ -267,14 +362,14 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
             <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] group-hover:scale-105 transition-transform mb-2" />
             <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
               <span className="block text-sm text-slate-600 dark:text-slate-300">
-                {t("Cargador FV")}
+                {t("Energy Produced")}
               </span>
               <span
                 className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
-                {solarYield}
+                {error ? "N/A" : formatPowerValue(pv)}
               </span>
             </div>
           </div>
@@ -282,27 +377,24 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
 
         <div className="w-1/3 relative flex flex-col items-center">
           <div className="absolute -left-12 top-[20%] lg:top-[40%] -translate-y-1/2">
-            {renderFlow(solarYield, batteryCurrent, "right")}
+            {renderFlow(pv, grid, "right")}
           </div>
           <div className="group flex flex-col items-center gap-4 w-full">
             <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
-            <FaBatteryFull className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] group-hover:scale-105 transition-transform mb-2" />
+            <UtilityPole
+              size={isTablet ? 72 : 150}
+              className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
+            />
             <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
               <span className="block text-sm text-slate-600 dark:text-slate-300">
-                {t("Batería")}
+                {t("Energy Exported")}
               </span>
               <span
                 className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
-                {soc}
-              </span>
-              <span className="block text-xs text-slate-600 dark:text-slate-300 mt-1">
-                {batteryVoltage} | {batteryCurrent}
-              </span>
-              <span className="block text-xs text-slate-600 dark:text-slate-300 mt-1">
-                {batteryState}
+                {error ? "N/A" : formatPowerValue(grid)}
               </span>
             </div>
           </div>
@@ -310,6 +402,8 @@ const VictronEnergyFlow = ({ plantData, fetchRealtimeData }) => {
       </div>
     </div>
   );
-};
+});
 
-export default VictronEnergyFlow;
+GoodweEnergyFlowDisplay.displayName = "GoodweEnergyFlowDisplay";
+
+export default GoodweEnergyFlowDisplay;

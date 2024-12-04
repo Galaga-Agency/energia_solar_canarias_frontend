@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { useTranslation } from "next-i18next";
-import PrimaryButton from "@/components/PrimaryButton";
-import SecondaryButton from "@/components/SecondaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import SecondaryButton from "@/components/ui/SecondaryButton";
 import FilterInput from "@/components/FilterPlantsInput";
 import { AnimatePresence, motion } from "framer-motion";
 import Texture from "./Texture";

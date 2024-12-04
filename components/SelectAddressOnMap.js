@@ -6,8 +6,8 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
 import useGoogleMapsLoader from "../hooks/useGoogleMapsLoader";
-import PrimaryButton from "./PrimaryButton";
-import SecondaryButton from "./SecondaryButton";
+import PrimaryButton from "./ui/PrimaryButton";
+import SecondaryButton from "./ui/SecondaryButton";
 
 const mapContainerStyle = {
   height: "400px",

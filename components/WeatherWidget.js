@@ -25,7 +25,7 @@ import {
 } from "react-icons/bs";
 import { WiDayFog, WiNightAltThunderstorm } from "react-icons/wi";
 import useDeviceType from "@/hooks/useDeviceType";
-import WeatherWidgetSkeleton from "./LoadingSkeletons/WeatherWidgetSkeleton";
+import WeatherWidgetSkeleton from "./loadingSkeletons/WeatherWidgetSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const WeatherWidget = ({ plant, address, provider }) => {
@@ -39,6 +39,8 @@ const WeatherWidget = ({ plant, address, provider }) => {
   const theme = useSelector(selectTheme);
   const { isDesktop } = useDeviceType();
   const [retryCount, setRetryCount] = useState(0);
+
+  // console.log("data passed in weather widget: ", { plant, address, provider });
 
   // Fetch weather data
   const fetchWeatherData = () => {
@@ -124,7 +126,7 @@ const WeatherWidget = ({ plant, address, provider }) => {
 
   return (
     <>
-      {weatherLoading ? (
+      {weatherLoading || !plant ? (
         <WeatherWidgetSkeleton theme={theme} />
       ) : (
         <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm flex flex-col h-full">
@@ -179,7 +181,7 @@ const WeatherWidget = ({ plant, address, provider }) => {
                           fontSize: `${Math.random() * 1.5 + 0.5}rem`,
                         }}
                       >
-                        <BsCloudSun />
+                        <BsCloud />
                       </div>
                     ))}
 

@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/Tooltip";
+} from "@/components/ui/Tooltip";
 import { Info } from "lucide-react";
 import useDeviceType from "@/hooks/useDeviceType";
 

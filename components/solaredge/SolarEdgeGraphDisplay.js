@@ -22,7 +22,7 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SolarEdgeGraphDisplaySkeleton from "./LoadingSkeletons/SolarEdgeGraphDisplaySkeleton";
+import SolarEdgeGraphDisplaySkeleton from "../loadingSkeletons/SolarEdgeGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import {
@@ -30,10 +30,10 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/Tooltip";
+} from "@/components/ui/Tooltip";
 import { Info } from "lucide-react";
 import PercentageBar from "./PercentageBar";
-import PrimaryButton from "./PrimaryButton";
+import PrimaryButton from "../ui/PrimaryButton";
 
 const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const { t } = useTranslation();
@@ -174,7 +174,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
       const retryTimer = setTimeout(() => {
         setRetryCount((prev) => prev + 1);
         handleFetchGraph();
-      }, 200);
+      }, 1000);
 
       return () => clearTimeout(retryTimer);
     }

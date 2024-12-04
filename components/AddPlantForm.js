@@ -7,8 +7,8 @@ import Image from "next/image";
 import { IoLocationSharp } from "react-icons/io5";
 
 import { useTranslation } from "next-i18next";
-import PrimaryButton from "./PrimaryButton";
-import SecondaryButton from "./SecondaryButton";
+import PrimaryButton from "./ui/PrimaryButton";
+import SecondaryButton from "./ui/SecondaryButton";
 import Texture from "./Texture";
 
 const AddPlantForm = ({ onClose, isOpen }) => {

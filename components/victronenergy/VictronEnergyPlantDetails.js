@@ -10,8 +10,8 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import { IoArrowBackCircle } from "react-icons/io5";
 import PageTransition from "@/components/PageTransition";
-import Loading from "@/components/Loading";
-import VictronEnergyFlow from "@/components/VictronEnergyFlow";
+import Loading from "@/components/ui/Loading";
+import VictronEnergyFlow from "@/components/victronenergy/VictronEnergyFlow";
 import { useTranslation } from "next-i18next";
 
 const VictronEnergyPlantDetails = ({ plantId, userId }) => {

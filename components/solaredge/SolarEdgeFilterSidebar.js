@@ -1,24 +1,19 @@
-"use client";
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
-import { useParams } from "next/navigation";
 
-const ProviderFilterSidebar = ({
+const SolarEdgeFilterSidebar = ({
   plants,
   onFilterChange,
   isSidebarOpen,
   setIsSidebarOpen,
-  provider,
 }) => {
   const { t } = useTranslation();
   const [filters, setFilters] = useState({
     status: [],
     type: [],
-    organization: [],
     search: "",
     capacity: { min: 0, max: 10000 },
   });
@@ -26,90 +21,134 @@ const ProviderFilterSidebar = ({
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const filterPlants = useCallback(
-    (currentFilters) => {
-      if (!plants) return [];
+  // Translation keys for SolarEdge plant types
+  const SOLAREDGE_TYPES = {
+    "Optimizers & Inverters": "type_Optimizers and inverters",
+    "Safety & Monitoring Interface": "type_Safety and monitoring interface",
+    "Monitoring Combiner Boxes": "type_Monitoring combiner boxes",
+  };
 
-      let filtered = [...plants];
-
-      if (currentFilters.search) {
-        const searchTerm = currentFilters.search.toLowerCase();
-        filtered = filtered.filter(
-          (plant) =>
-            plant?.name?.toLowerCase().includes(searchTerm) ||
-            plant?.address?.toLowerCase().includes(searchTerm)
-        );
-      }
-
-      if (currentFilters.status.length > 0) {
-        filtered = filtered.filter((plant) =>
-          currentFilters?.status?.includes(plant.status)
-        );
-      }
-
-      if (currentFilters.type.length > 0) {
-        filtered = filtered.filter((plant) =>
-          currentFilters?.type?.includes(plant.type)
-        );
-      }
-
-      if (currentFilters.organization.length > 0) {
-        filtered = filtered.filter((plant) =>
-          currentFilters?.organization?.includes(plant.organization)
-        );
-      }
-
-      if (currentFilters.capacity.min || currentFilters.capacity.max) {
-        filtered = filtered.filter(
-          (plant) =>
-            (currentFilters.capacity.min
-              ? plant.capacity >= currentFilters.capacity.min
-              : true) &&
-            (currentFilters.capacity.max
-              ? plant.capacity <= currentFilters.capacity.max
-              : true)
-        );
-      }
-
-      return filtered;
-    },
-    [plants]
-  );
-
-  // Initialize filters
   useEffect(() => {
     if (plants?.length > 0 && !isInitialized) {
       setIsInitialized(true);
-      // Use setTimeout to avoid render-time setState
       setTimeout(() => {
         onFilterChange(plants);
       }, 0);
     }
   }, [plants, isInitialized, onFilterChange]);
 
+  const filterPlants = useCallback(
+    (currentFilters) => {
+      if (!plants) return [];
+
+      return plants.filter((plant) => {
+        // Search Filter
+        if (currentFilters.search && currentFilters.search.trim()) {
+          const searchTerm = currentFilters.search.toLowerCase().trim();
+          const name = plant.name || "";
+          const address = plant.address || "";
+
+          if (
+            !name.toLowerCase().includes(searchTerm) &&
+            !address.toLowerCase().includes(searchTerm)
+          ) {
+            return false;
+          }
+        }
+
+        // Status Filter
+        if (currentFilters.status && currentFilters.status.length > 0) {
+          const plantStatus = plant.status || "";
+          if (!currentFilters.status.includes(plantStatus)) {
+            return false;
+          }
+        }
+
+        // Type Filter
+        if (currentFilters.type && currentFilters.type.length > 0) {
+          const plantType = (plant.type || "")
+            .toLowerCase()
+            .replace(/[&\s]/g, ""); // Normalize `type`
+          const typeMatch = currentFilters.type.some(
+            (filterType) =>
+              filterType.toLowerCase().replace(/[&\s]/g, "") === plantType
+          );
+          if (!typeMatch) {
+            return false;
+          }
+        }
+
+        // Capacity Filter
+        const peakPower = plant.capacity || 0;
+        if (
+          currentFilters.capacity.min &&
+          peakPower < currentFilters.capacity.min
+        ) {
+          return false;
+        }
+        if (
+          currentFilters.capacity.max &&
+          peakPower > currentFilters.capacity.max
+        ) {
+          return false;
+        }
+
+        return true;
+      });
+    },
+    [plants]
+  );
+
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
+      console.log("Checkbox changed:", filterType, value);
+
       setFilters((prevFilters) => {
-        const updatedFilter = prevFilters[filterType].includes(value)
-          ? prevFilters[filterType].filter((item) => item !== value)
+        // For type filters, normalize the comparison
+        if (filterType === "type") {
+          const normalizedValue = value.toLowerCase().replace(/\s+/g, "");
+          const exists = prevFilters[filterType].some(
+            (v) => v.toLowerCase().replace(/\s+/g, "") === normalizedValue
+          );
+
+          const newValues = exists
+            ? prevFilters[filterType].filter(
+                (v) => v.toLowerCase().replace(/\s+/g, "") !== normalizedValue
+              )
+            : [...prevFilters[filterType], value];
+
+          const newFilters = {
+            ...prevFilters,
+            [filterType]: newValues,
+          };
+
+          const filteredResults = filterPlants(newFilters);
+          onFilterChange(filteredResults);
+
+          return newFilters;
+        }
+
+        // For other filters, keep the original logic
+        const exists = prevFilters[filterType].includes(value);
+        const newValues = exists
+          ? prevFilters[filterType].filter((v) => v !== value)
           : [...prevFilters[filterType], value];
 
-        const updatedFilters = {
+        const newFilters = {
           ...prevFilters,
-          [filterType]: updatedFilter,
+          [filterType]: newValues,
         };
 
-        // Use setTimeout to avoid render-time setState
-        setTimeout(() => {
-          onFilterChange(filterPlants(updatedFilters));
-        }, 0);
+        const filteredResults = filterPlants(newFilters);
+        onFilterChange(filteredResults);
 
-        return updatedFilters;
+        return newFilters;
       });
     },
     [filterPlants, onFilterChange]
   );
 
+  // Fix the handleSearchChange as well
   const handleSearchChange = useCallback(
     (event) => {
       const searchTerm = event.target.value;
@@ -119,35 +158,32 @@ const ProviderFilterSidebar = ({
           search: searchTerm,
         };
 
-        // Use setTimeout to avoid render-time setState
-        setTimeout(() => {
-          onFilterChange(filterPlants(updatedFilters));
-        }, 0);
-
+        // Apply filters immediately
+        onFilterChange(filterPlants(updatedFilters));
         return updatedFilters;
       });
     },
     [filterPlants, onFilterChange]
   );
 
+  // And fix handleCapacityChange
   const handleCapacityChange = useCallback(
     (type, value) => {
-      if (!value || isNaN(value)) return;
+      if (value === "" || isNaN(value)) {
+        value = type === "min" ? 0 : 10000;
+      }
+
       setFilters((prevFilters) => {
-        const updatedCapacity = {
-          ...prevFilters.capacity,
-          [type]: Number(value),
-        };
         const updatedFilters = {
           ...prevFilters,
-          capacity: updatedCapacity,
+          capacity: {
+            ...prevFilters.capacity,
+            [type]: Number(value),
+          },
         };
 
-        // Use setTimeout to avoid render-time setState
-        setTimeout(() => {
-          onFilterChange(filterPlants(updatedFilters));
-        }, 0);
-
+        // Apply filters immediately
+        onFilterChange(filterPlants(updatedFilters));
         return updatedFilters;
       });
     },
@@ -220,16 +256,10 @@ const ProviderFilterSidebar = ({
           {t("type")}
         </h3>
         <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-          {[
-            "Residential",
-            "Commercial",
-            "Ground Mounted",
-            "Battery Storage",
-            "Optimizers & Inverters",
-          ].map((type) => (
+          {Object.keys(SOLAREDGE_TYPES).map((type) => (
             <CustomCheckbox
               key={type}
-              label={t(`type_${type}`)}
+              label={t(SOLAREDGE_TYPES[type])}
               checked={filters.type.includes(type)}
               onChange={() => handleCheckboxChange("type", type)}
             />
@@ -274,4 +304,4 @@ const ProviderFilterSidebar = ({
   );
 };
 
-export default ProviderFilterSidebar;
+export default SolarEdgeFilterSidebar;

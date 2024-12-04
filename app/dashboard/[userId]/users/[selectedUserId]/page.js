@@ -12,8 +12,8 @@ import {
   selectUsersLoading,
   selectUsersError,
 } from "@/store/slices/usersListSlice";
-import PrimaryButton from "@/components/PrimaryButton";
-import SecondaryButton from "@/components/SecondaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import SecondaryButton from "@/components/ui/SecondaryButton";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import AssignPlantUser from "@/components/AssignPlantUser";
 import Image from "next/image";

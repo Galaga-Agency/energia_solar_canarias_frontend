@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/navigation";
-import PrimaryButton from "@/components/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { sendPasswordResetEmail } from "@/services/shared-api";
 import TransitionEffect from "@/components/TransitionEffect";
 import { motion } from "framer-motion";

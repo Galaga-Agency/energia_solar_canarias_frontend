@@ -9,11 +9,11 @@ import React, {
   useCallback,
 } from "react";
 import { useTranslation } from "next-i18next";
-import CustomCheckbox from "@/components/CustomCheckbox";
+import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
-import PrimaryButton from "./PrimaryButton";
-import SecondaryButton from "./SecondaryButton";
+import PrimaryButton from "./ui/PrimaryButton";
+import SecondaryButton from "./ui/SecondaryButton";
 
 const STATUS_OPTIONS = ["working", "error", "waiting", "disconnected"];
 const TYPE_OPTIONS = [

@@ -11,7 +11,7 @@ import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import { Building2, Tag, Info } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
-import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
+import SolarEdgeEnergyFlowDisplay from "@/components/solaredge/SolarEdgeEnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
@@ -23,16 +23,15 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/Tooltip";
+} from "@/components/ui/Tooltip";
 import WeatherWidget from "../WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
-import PlantDetailsSkeleton from "../LoadingSkeletons/PlantDetailsSkeleton";
-import SolarEdgeGraphDisplay from "../SolarEdgeGraphDisplay";
-import Loading from "../Loading";
-import EnergyStatisticsSkeleton from "../LoadingSkeletons/EnergyStatisticsSkeleton";
-import EnvironmentalBenefits from "../EnvironmentalBenefits";
+import PlantDetailsSkeleton from "../loadingSkeletons/PlantDetailsSkeleton";
+import SolarEdgeGraphDisplay from "./SolarEdgeGraphDisplay";
+import EnergyStatisticsSkeleton from "../loadingSkeletons/EnergyStatisticsSkeleton";
+import EnvironmentalBenefits from "./EnvironmentalBenefits";
 import BatteryIndicator from "../BatteryIndicator";
-import EnergyStatistics from "../EnergyStatistics";
+import EnergyStatistics from "./EnergyStatistics";
 import { IoFlashOutline } from "react-icons/io5";
 
 const SolarEdgePlantDetails = React.memo(
@@ -216,13 +215,11 @@ const SolarEdgePlantDetails = React.memo(
             </div>
           </header>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {solaredgePlant && (
-              <WeatherWidget
-                plant={solaredgePlant}
-                address={formattedAddress}
-                provider={solaredgePlant?.organization}
-              />
-            )}
+            <WeatherWidget
+              plant={solaredgePlant}
+              address={formattedAddress}
+              provider={solaredgePlant?.organization}
+            />
 
             {/* Plant Details */}
             {isLoading ? (
@@ -313,7 +310,7 @@ const SolarEdgePlantDetails = React.memo(
           </div>
 
           {/* Energy Flow */}
-          <EnergyFlowDisplay provider={solaredgePlant?.organization} />
+          <SolarEdgeEnergyFlowDisplay provider={solaredgePlant?.organization} />
 
           <div className="flex flex-col xl:flex-row xl:gap-6 w-full">
             {/* Energetic Statistics */}
@@ -358,8 +355,8 @@ const SolarEdgePlantDetails = React.memo(
               ) : (
                 <EnvironmentalBenefits
                   t={t}
-                  plantId={solaredgePlant.id}
-                  provider={solaredgePlant.organization}
+                  plantId={solaredgePlant?.id}
+                  provider={solaredgePlant?.organization}
                   batteryLevel={batteryLevel}
                 />
               )}
@@ -367,7 +364,7 @@ const SolarEdgePlantDetails = React.memo(
           </div>
 
           <SolarEdgeGraphDisplay
-            plantId={solaredgePlant.id}
+            plantId={solaredgePlant?.id}
             title={t("plantAnalytics")}
           />
         </div>

@@ -9,9 +9,8 @@ import React, {
 import useDeviceType from "@/hooks/useDeviceType";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchGoodweRealtimeData,
   fetchSolarEdgeRealtimeData,
-  selectRealtimeLoading,
+  selectLoadingDetails,
 } from "@/store/slices/plantsSlice";
 import EnergyLoadingClock from "@/components/EnergyLoadingClock";
 import { useTranslation } from "next-i18next";
@@ -19,13 +18,12 @@ import { UtilityPole } from "lucide-react";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSolarPanel } from "@fortawesome/free-solid-svg-icons";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Home } from "lucide-react";
 import { FaSolarPanel } from "react-icons/fa";
+import EnergyFlowSkeleton from "../loadingSkeletons/EnergyFlowSkeleton";
 
-const EnergyFlowDisplay = memo(({ provider }) => {
+const SolarEdgeEnergyFlowDisplay = memo(() => {
   const { isMobile, isTablet } = useDeviceType();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -36,7 +34,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const lastUpdatedRef = useRef(new Date().toLocaleString());
-  const isLoading = useSelector(selectRealtimeLoading);
+  const isLoading = useSelector(selectLoadingDetails);
   const theme = useSelector(selectTheme);
   const params = useParams();
   const formattedPlantId = params?.plantId?.toString() || null;
@@ -51,60 +49,19 @@ const EnergyFlowDisplay = memo(({ provider }) => {
 
     try {
       setIsFetching(true);
+      const response = await dispatch(
+        fetchSolarEdgeRealtimeData({ plantId: formattedPlantId, token })
+      ).unwrap();
 
-      let response;
-      let parsedData = {
-        powerflow: { load: 0, pv: 0, grid: 0, soc: 0, unit: "kW" },
+      const parsedData = {
+        powerflow: {
+          load: response.siteCurrentPowerFlow.LOAD.currentPower,
+          pv: response.siteCurrentPowerFlow.PV.currentPower,
+          grid: response.siteCurrentPowerFlow.GRID.currentPower,
+          soc: response.siteCurrentPowerFlow.STORAGE?.chargeLevel || 0,
+          unit: response.siteCurrentPowerFlow.unit,
+        },
       };
-
-      switch (provider) {
-        case "goodwe":
-          response = await dispatch(
-            fetchGoodweRealtimeData({ plantId: formattedPlantId, token })
-          ).unwrap();
-
-          parsedData = {
-            powerflow: {
-              load: parseFloat(
-                response.siteCurrentPowerFlow.LOAD.currentPower.replace(
-                  /\D/g,
-                  ""
-                )
-              ),
-              pv: parseFloat(
-                response.siteCurrentPowerFlow.PV.currentPower.replace(/\D/g, "")
-              ),
-              grid: parseFloat(
-                response.siteCurrentPowerFlow.GRID.currentPower.replace(
-                  /\D/g,
-                  ""
-                )
-              ),
-              soc: response.siteCurrentPowerFlow.STORAGE?.chargeLevel || 0,
-              unit: "kW",
-            },
-          };
-          break;
-
-        case "solaredge":
-          response = await dispatch(
-            fetchSolarEdgeRealtimeData({ plantId: formattedPlantId, token })
-          ).unwrap();
-
-          parsedData = {
-            powerflow: {
-              load: response.siteCurrentPowerFlow.LOAD.currentPower,
-              pv: response.siteCurrentPowerFlow.PV.currentPower,
-              grid: response.siteCurrentPowerFlow.GRID.currentPower,
-              soc: response.siteCurrentPowerFlow.STORAGE?.chargeLevel || 0,
-              unit: response.siteCurrentPowerFlow.unit,
-            },
-          };
-          break;
-
-        default:
-          throw new Error("Unsupported provider");
-      }
 
       setRealtimeData(parsedData);
       setError(false);
@@ -121,7 +78,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
       setIsFetching(false);
       setIsBlinking(false);
     }
-  }, [formattedPlantId, token, dispatch, provider]);
+  }, [formattedPlantId, token, dispatch]);
 
   useEffect(() => {
     if (!formattedPlantId || !token) {
@@ -134,11 +91,7 @@ const EnergyFlowDisplay = memo(({ provider }) => {
   }, [fetchRealtimeData, formattedPlantId, token]);
 
   const formatPowerValue = (value, unit) => {
-    if (provider === "goodwe") {
-      return `${parseFloat(value.replace(/\D/g, ""))}`;
-    } else {
-      return `${value.toFixed(2)} ${unit}`;
-    }
+    return `${value.toFixed(2)} ${unit}`;
   };
 
   const {
@@ -330,6 +283,10 @@ const EnergyFlowDisplay = memo(({ provider }) => {
     return null;
   }
 
+  if (isLoading) {
+    return <EnergyFlowSkeleton theme={theme} />;
+  }
+
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
       {/* Header section */}
@@ -441,6 +398,6 @@ const EnergyFlowDisplay = memo(({ provider }) => {
   );
 });
 
-EnergyFlowDisplay.displayName = "EnergyFlowDisplay";
+SolarEdgeEnergyFlowDisplay.displayName = "SolarEdgeEnergyFlowDisplay";
 
-export default EnergyFlowDisplay;
+export default SolarEdgeEnergyFlowDisplay;

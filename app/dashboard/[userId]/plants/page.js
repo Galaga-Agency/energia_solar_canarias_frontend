@@ -16,7 +16,7 @@ import {
 import { selectTheme } from "@/store/slices/themeSlice";
 import ThemeToggle from "@/components/ThemeToggle";
 import SortMenu from "@/components/SortPlantsMenu";
-import Pagination from "@/components/Pagination";
+import Pagination from "@/components/ui/Pagination";
 import PlantCard from "@/components/PlantCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { FaMapMarkedAlt } from "react-icons/fa";
@@ -29,7 +29,7 @@ import PlantStatuses from "@/components/PlantStatuses";
 import FilterSidebar from "@/components/FilterSidebar";
 import usePlantSort from "@/hooks/usePlantSort";
 import useDeviceType from "@/hooks/useDeviceType";
-import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
+import PlantListSkeleton from "@/components/loadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "react-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 

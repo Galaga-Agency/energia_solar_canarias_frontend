@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import PrimaryButton from "./PrimaryButton";
+import PrimaryButton from "./ui/PrimaryButton";
 import { useTranslation } from "next-i18next";
-import Loading from "./Loading";
+import Loading from "./ui/Loading";
 
 const ResultContent = ({
   isSubmitting,

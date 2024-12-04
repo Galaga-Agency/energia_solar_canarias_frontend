@@ -16,7 +16,7 @@ import {
   Cell,
 } from "recharts";
 import { BiRefresh } from "react-icons/bi";
-import Loading from "./Loading";
+import Loading from "@/components/ui/Loading";
 import { useTranslation } from "react-i18next";
 import {
   fetchGoodweGraphData,
@@ -27,7 +27,7 @@ import {
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import GoodweGraphDisplaySkeleton from "./LoadingSkeletons/GoodweGraphDisplaySkeleton";
+import GoodweGraphDisplaySkeleton from "@/components/loadingSkeletons/GoodweGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];

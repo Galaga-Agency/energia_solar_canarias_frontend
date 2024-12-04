@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/Tooltip";
+} from "@/components/ui/Tooltip";
 import { Info } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
@@ -21,7 +21,7 @@ import {
   selectLoadingBenefits,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
-import EnvironmentalBenefitsSkeleton from "@/components/LoadingSkeletons/EnvironmentalBenefitsSkeleton";
+import EnvironmentalBenefitsSkeleton from "@/components/loadingSkeletons/EnvironmentalBenefitsSkeleton";
 
 const EnvironmentalBenefits = ({ t, plantId, provider, batteryLevel }) => {
   const theme = useSelector(selectTheme);

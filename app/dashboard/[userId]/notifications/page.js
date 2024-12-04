@@ -18,7 +18,7 @@ import Texture from "@/components/Texture";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
-import PrimaryButton from "@/components/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useRouter } from "next/navigation";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";

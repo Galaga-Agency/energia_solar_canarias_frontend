@@ -1,9 +1,9 @@
 import React from "react";
 import { useTranslation } from "next-i18next";
-import PrimaryButton from "./PrimaryButton";
-import SecondaryButton from "./SecondaryButton";
+import PrimaryButton from "./ui/PrimaryButton";
+import SecondaryButton from "./ui/SecondaryButton";
 import useLocalStorageState from "use-local-storage-state";
-import CustomRadio from "./CustomRadio";
+import CustomRadio from "./ui/CustomRadio";
 
 const MetricsConfigCard = () => {
   const { t } = useTranslation();

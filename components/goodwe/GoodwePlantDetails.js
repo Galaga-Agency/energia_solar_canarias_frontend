@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
   IoArrowBackCircle,
@@ -25,12 +25,10 @@ import {
 import { RiBattery2ChargeLine } from "react-icons/ri";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
-import EnergyFlowDisplay from "@/components/EnergyFlowDisplay";
+import GoodweEnergyFlowDisplay from "@/components/goodwe/GoodweEnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
-  selectLoadingAny,
-  selectLoadingDetails,
   selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
@@ -39,17 +37,15 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/Tooltip";
-import GoodweGraphDisplay from "@/components/GoodweGraphDisplay";
+} from "@/components/ui/Tooltip";
+import GoodweGraphDisplay from "@/components/goodwe/GoodweGraphDisplay";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "../WeatherWidget";
-import ImageCarousel from "../ImageCarousel";
-import WeatherWidgetSkeleton from "../LoadingSkeletons/WeatherWidgetSkeleton";
 import { selectUser } from "@/store/slices/userSlice";
-import PerformanceMetricsSkeleton from "../LoadingSkeletons/PerformanceMetricsSkeleton";
-import PlantDetailsSkeleton from "../LoadingSkeletons/PlantDetailsSkeleton";
-import EnergyStatisticsSkeleton from "../LoadingSkeletons/EnergyStatisticsSkeleton";
-import Loading from "../Loading";
+import PerformanceMetricsSkeleton from "../loadingSkeletons/PerformanceMetricsSkeleton";
+import PlantDetailsSkeleton from "../loadingSkeletons/PlantDetailsSkeleton";
+import EnergyStatisticsSkeleton from "../loadingSkeletons/EnergyStatisticsSkeleton";
+import Loading from "../ui/Loading";
 
 const GoodwePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -287,7 +283,7 @@ const GoodwePlantDetails = React.memo(
           </div>
 
           {/* Energy Flow */}
-          <EnergyFlowDisplay
+          <GoodweEnergyFlowDisplay
             plantId={plantId}
             token={token}
             provider={goodwePlant?.info?.org_name}

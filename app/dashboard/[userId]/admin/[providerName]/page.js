@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useRouter } from "next/navigation";
 import BottomNavbar from "@/components/BottomNavbar";
@@ -16,14 +16,14 @@ import {
 import { selectTheme } from "@/store/slices/themeSlice";
 import ThemeToggle from "@/components/ThemeToggle";
 import SortMenu from "@/components/SortPlantsMenu";
-import Pagination from "@/components/Pagination";
+import SolarEdgeSortMenu from "@/components/solaredge/SolarEdgeSortMenu";
+import GoodweSortMenu from "@/components/goodwe/GoodweSortMenu";
+import Pagination from "@/components/ui/Pagination";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
-import Image from "next/image";
-import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
-import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
+import PlantListSkeleton from "@/components/loadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "next-i18next";
 import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
@@ -31,6 +31,8 @@ import ProviderFilterSidebar from "@/components/ProviderFilterSidebar";
 import { providers } from "@/data/providers";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { IoArrowBackCircle } from "react-icons/io5";
+import SolarEdgeFilterSidebar from "@/components/solaredge/SolarEdgeFilterSidebar";
+import GoodweFilterSidebar from "@/components/goodwe/GoodweFilterSidebar";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -54,6 +56,7 @@ const ProviderPage = () => {
     startIndex,
     startIndex + plantsPerPage
   );
+
   const router = useRouter();
   const params = useParams();
   const providerPassed = params?.providerName.toLowerCase();
@@ -87,27 +90,105 @@ const ProviderPage = () => {
     }
   }, [plants, loading, provider, providerPassed]);
 
-  const handleFilterChange = (newFilteredPlants) => {
-    setFilteredPlants(newFilteredPlants);
+  const handleFilterChange = useCallback((newFilteredPlants) => {
+    console.log("New filtered plants:", newFilteredPlants);
+    setFilteredPlants([...newFilteredPlants]);
     setCurrentPage(1);
-  };
+  }, []);
 
   const handleSortChange = (criteria, order) => {
     const sorted = [...filteredPlants].sort((a, b) => {
-      if (order === "asc") {
-        return a[criteria] > b[criteria] ? 1 : -1;
-      } else {
-        return a[criteria] < b[criteria] ? 1 : -1;
+      let valueA, valueB;
+
+      switch (providerPassed) {
+        case "solaredge": {
+          // Remove 'details.' prefix since properties are at root level
+          const property = criteria.replace("details.", "");
+
+          // Handle nested location properties
+          if (property.startsWith("location.")) {
+            const locationProp = property.split(".")[1];
+            valueA = a.location?.[locationProp];
+            valueB = b.location?.[locationProp];
+          } else {
+            // For non-location properties
+            valueA = a[property];
+            valueB = b[property];
+          }
+
+          // Handle different data types for SolarEdge
+          if (property === "installation_date") {
+            return order === "asc"
+              ? new Date(valueA) - new Date(valueB)
+              : new Date(valueB) - new Date(valueA);
+          }
+          break;
+        }
+
+        case "goodwe":
+          valueA = a[criteria];
+          valueB = b[criteria];
+          break;
+
+        default:
+          valueA = a[criteria];
+          valueB = b[criteria];
       }
+
+      // Common comparison logic for all providers
+      if (typeof valueA === "string") {
+        return order === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      }
+
+      return order === "asc"
+        ? (valueA ?? 0) - (valueB ?? 0)
+        : (valueB ?? 0) - (valueA ?? 0);
     });
+
     setFilteredPlants(sorted);
+  };
+
+  const renderSortMenu = () => {
+    switch (providerPassed) {
+      case "solaredge":
+        return <SolarEdgeSortMenu onSortChange={handleSortChange} />;
+      case "goodwe":
+        return <GoodweSortMenu onSortChange={handleSortChange} />;
+      default:
+        return <SortMenu onSortChange={handleSortChange} />;
+    }
+  };
+
+  const renderFilterSidebar = () => {
+    switch (providerPassed) {
+      case "solaredge":
+        return (
+          <SolarEdgeFilterSidebar
+            plants={allPlants}
+            onFilterChange={handleFilterChange}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        );
+      case "goodwe":
+        return (
+          <GoodweFilterSidebar
+            plants={allPlants}
+            onFilterChange={handleFilterChange}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  console.log("plant from victron : ", paginatedPlants);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
@@ -143,13 +224,7 @@ const ProviderPage = () => {
           </button>
 
           {/* Sidebar */}
-          <ProviderFilterSidebar
-            plants={allPlants}
-            onFilterChange={handleFilterChange}
-            isSidebarOpen={isSidebarOpen}
-            setIsSidebarOpen={setIsSidebarOpen}
-            provider={providerPassed}
-          />
+          {renderFilterSidebar()}
 
           <div className="flex-grow lg:px-8">
             <div className="mb-4 text-lg text-custom-dark-blue dark:text-custom-yellow">
@@ -160,9 +235,7 @@ const ProviderPage = () => {
 
             <div className="flex flex-col md:flex-row md:justify-between z-30">
               <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
-                <div className="flex-grow">
-                  <SortMenu onSortChange={handleSortChange} />
-                </div>
+                <div className="flex-grow">{renderSortMenu()}</div>
                 <button
                   onClick={() => setIsMapOpen(true)}
                   className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex items-center justify-center button-shadow"

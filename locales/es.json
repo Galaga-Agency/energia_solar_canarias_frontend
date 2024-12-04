@@ -1358,5 +1358,50 @@
     "description": "El conductor L2 del bloque de terminales de CA ha alcanzado niveles de temperatura críticos. El inversor ha parado la producción.",
     "type": "Temperatura crítica en el terminal de CA (conductor L2)",
     "resolution": "<ol style=\"list-style:auto;padding-left:16px;\">   <li>Comprobar que los terminales de CA estén instalados correctamente.</li>    <li>Comprobar que el par de apriete del bloque de terminales de CA esté ajustado a 21 Nm.</li>    <li>Si el problema persiste, abra un caso indicando los detalles correspondientes: <a href=\"https://www.solaredge.com/service/support/cases\">Asistencia técnica de SolarEdge</a>.</span></li></ol>"
-  }
+  },
+  "energyFlow": {
+    "systemTitle": "Sistema de Energía Solar",
+    "systemDescription": "Monitorización del flujo de energía en tiempo real",
+    "tooltips": {
+      "overview": "Este panel muestra el flujo de energía en tiempo real entre los paneles solares, la batería, su hogar y la red eléctrica",
+      "homeConsumption": "La cantidad total de energía que su hogar está utilizando en este momento, incluyendo electrodomésticos, iluminación y otros dispositivos",
+      "gridInput": "Energía que está siendo tomada de la red eléctrica cuando la producción solar no es suficiente para cubrir el consumo",
+      "batteryStatus": "La batería almacena el exceso de energía solar para su uso posterior cuando no hay sol",
+      "solarProduction": "La cantidad de energía que sus paneles solares están generando en este momento",
+      "backupGenerator": "Sistema de generación auxiliar que puede proporcionar energía cuando tanto la solar como la red no están disponibles",
+      "flowToHome": "Energía fluyendo para alimentar sus electrodomésticos y dispositivos",
+      "flowToGrid": "Exceso de energía siendo exportada a la red eléctrica",
+      "systemState": "Indica si el sistema está funcionando correctamente y convirtiendo energía solar en electricidad utilizable"
+    },
+    "labels": {
+      "homeConsumption": "Consumo del Hogar",
+      "gridInput": "Entrada de Red",
+      "batteryStatus": "Estado de Batería",
+      "solarProduction": "Producción Solar",
+      "backupGenerator": "Generador de Respaldo",
+      "installation": "Instalación",
+      "systemStatus": "Estado del Sistema",
+      "lastUpdate": "Última Actualización",
+      "voltage": "Tensión",
+      "current": "Corriente",
+      "state": "Estado",
+      "extControl": "Control Externo"
+    }
+  },
+  "sortByCountry": "Ordenar por País",
+  "sortByState": "Ordenar por Estado",
+  "sortByCity": "Ordenar por Ciudad",
+  "sortByAddress": "Ordenar por Dirección",
+  "sortByZip": "Ordenar por Código Postal",
+  "sortByPeakPower": "Ordenar por Potencia Máxima",
+  "sortByInstallationDate": "Ordenar por Fecha de Instalación",
+  "sortByAlerts": "Ordenar por Número de Alertas",
+  "sortByAlertSeverity": "Ordenar por Severidad de Alertas",
+  "sortByLastUpdate": "Ordenar por Última Actualización",
+  "type_Optimizers and inverters": "Optimizadores e inversores",
+  "type_Safety and monitoring interface": "Interfaz de seguridad y monitorización",
+  "type_Monitoring combiner boxes": "Cajas combinadoras de monitorización",
+  "type_Ground_Mounted": "Montado en Suelo",
+  "type_Battery_Storage": "Almacenamiento de Batería",
+  "type_Optimizers_Inverters": "Optimizadores e Inversores"
 }

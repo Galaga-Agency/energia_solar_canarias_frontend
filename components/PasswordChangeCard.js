@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useTranslation } from "next-i18next";
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
-import PrimaryButton from "./PrimaryButton";
+import PrimaryButton from "./ui/PrimaryButton";
 
 const PasswordChangeCard = ({ onChangePassword }) => {
   const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import React from "react";
 import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 
-const UserListSkeleton = ({ theme, rows }) => {
+const UsersListSkeleton = ({ theme, rows }) => {
   return (
     <div className="my-12 overflow-hidden">
       <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
@@ -35,4 +35,4 @@ const UserListSkeleton = ({ theme, rows }) => {
   );
 };
 
-export default UserListSkeleton;
+export default UsersListSkeleton;

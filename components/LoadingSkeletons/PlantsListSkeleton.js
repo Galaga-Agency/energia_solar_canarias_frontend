@@ -2,8 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 
-const PlantListSkeleton = ({ theme, rows }) => {
-  // Fetch isAdmin state from Redux userSlice
+const PlantsListSkeleton = ({ theme, rows }) => {
   const isAdmin = useSelector((state) => state.user.isAdmin);
 
   return (
@@ -71,4 +70,4 @@ const PlantListSkeleton = ({ theme, rows }) => {
   );
 };
 
-export default PlantListSkeleton;
+export default PlantsListSkeleton;

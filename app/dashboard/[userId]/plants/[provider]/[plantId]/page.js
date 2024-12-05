@@ -21,7 +21,6 @@ import { BiRefresh } from "react-icons/bi";
 import Texture from "@/components/Texture";
 import PageTransition from "@/components/PageTransition";
 import VictronEnergyPlantDetails from "@/components/victronenergy/VictronEnergyPlantDetails";
-import { useRouter } from "next/router";
 
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId } = params;

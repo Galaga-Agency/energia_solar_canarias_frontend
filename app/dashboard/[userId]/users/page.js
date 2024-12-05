@@ -13,7 +13,7 @@ import SortUserMenu from "@/components/SortUserMenu";
 import UserFilterInput from "@/components/UserFilterInput";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
-import UserListSkeleton from "@/components/loadingSkeletons/UserListSkeleton";
+import UsersListSkeleton from "@/components/loadingSkeletons/UsersListSkeleton";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import useUserFilter from "@/hooks/useUserFilter";
@@ -113,7 +113,7 @@ const UsersTab = () => {
   // Loading state handling
   const renderLoading = () => (
     <div className="h-full w-full flex justify-center items-center">
-      <UserListSkeleton theme={theme} rows={usersPerPage} />
+      <UsersListSkeleton theme={theme} rows={usersPerPage} />
     </div>
   );
 

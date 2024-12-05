@@ -2,7 +2,7 @@ import React from "react";
 import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 import useDeviceType from "@/hooks/useDeviceType";
 
-const WeatherWidgetSkeleton = ({ theme }) => {
+const WeatherSkeleton = ({ theme }) => {
   const { isDesktop } = useDeviceType();
 
   return (
@@ -63,4 +63,4 @@ const WeatherWidgetSkeleton = ({ theme }) => {
   );
 };
 
-export default WeatherWidgetSkeleton;
+export default WeatherSkeleton;

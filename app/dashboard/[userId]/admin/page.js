@@ -26,7 +26,7 @@ import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
-import PlantListSkeleton from "@/components/loadingSkeletons/PlantListSkeleton";
+import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton.js";
 import { useTranslation } from "next-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import InfoModal from "@/components/InfoModal";
@@ -223,7 +223,7 @@ const AdminDashboard = () => {
 
                 {loading || isModalOpen ? (
                   <div className="py-8">
-                    <PlantListSkeleton theme={theme} rows={plantsPerPage} />
+                    <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
                   </div>
                 ) : paginatedPlants.length > 0 ? (
                   <div className="py-8">

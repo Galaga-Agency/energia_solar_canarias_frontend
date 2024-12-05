@@ -1,7 +1,6 @@
-// /components/InfoModal.js
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import PrimaryButton from "./ui/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useTranslation } from "next-i18next";
 
 const InfoModal = ({ isOpen, onClose, onConfirm }) => {

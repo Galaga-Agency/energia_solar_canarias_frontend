@@ -2,9 +2,8 @@
 
 import { useTranslation } from "next-i18next";
 import useLocalStorageState from "use-local-storage-state";
-import SecondaryButton from "./ui/SecondaryButton";
-import PrimaryButton from "./ui/PrimaryButton";
-import CustomCheckbox from "./ui/CustomCheckbox";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import CustomCheckbox from "@/components/ui/CustomCheckbox";
 
 const NotificationsCard = () => {
   const { t } = useTranslation();

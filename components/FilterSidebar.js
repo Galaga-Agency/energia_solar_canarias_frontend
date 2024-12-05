@@ -12,8 +12,8 @@ import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
-import PrimaryButton from "./ui/PrimaryButton";
-import SecondaryButton from "./ui/SecondaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import SecondaryButton from "@/components/ui/SecondaryButton";
 
 const STATUS_OPTIONS = ["working", "error", "waiting", "disconnected"];
 const TYPE_OPTIONS = [

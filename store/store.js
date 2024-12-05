@@ -3,10 +3,10 @@ import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import userReducer from "@/store/slices/userSlice";
 import plantsReducer from "@/store/slices/plantsSlice";
-import notificationsReducer from "./slices/notificationsSlice";
-import themeReducer from "./slices/themeSlice";
-import usersListReducer from "./slices/usersListSlice";
-import providersReducer from "./slices/providersSlice";
+import notificationsReducer from "@/store/slices/notificationsSlice";
+import themeReducer from "@/store/slices/themeSlice";
+import usersListReducer from "@/store/slices/usersListSlice";
+import providersReducer from "@/store/slices/providersSlice";
 
 // Transform to clean sensitive/volatile data before persisting
 const cleanDataTransform = createTransform(

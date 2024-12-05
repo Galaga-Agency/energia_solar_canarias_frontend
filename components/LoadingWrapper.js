@@ -1,5 +1,6 @@
 "use client";
-import Loading from "./ui/Loading";
+
+import Loading from "@/components/ui/Loading";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 

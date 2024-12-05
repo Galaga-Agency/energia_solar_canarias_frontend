@@ -12,10 +12,10 @@ import {
   selectIsAdmin,
 } from "@/store/slices/userSlice";
 import useAuth from "@/hooks/useAuth";
-import PrimaryButton from "./ui/PrimaryButton";
-import FormFace from "./ui/FormFace";
-import ResultContent from "./ResultContent";
-import FormInput from "./ui/FormInput";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import FormFace from "@/components/ui/FormFace";
+import ResultContent from "@/components/ResultContent";
+import FormInput from "@/components/ui/FormInput";
 import { useForm } from "react-hook-form";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 

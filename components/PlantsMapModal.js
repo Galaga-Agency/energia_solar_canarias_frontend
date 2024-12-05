@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
-import PlantDetailsModal from "./PlantDetailsModal";
+import PlantDetailsModal from "@/components/PlantDetailsModal";
 import { useTranslation } from "next-i18next";
 import useGeocode from "@/hooks/useGeocode";
 import useGoogleMapsLoader from "@/hooks/useGoogleMapsLoader";

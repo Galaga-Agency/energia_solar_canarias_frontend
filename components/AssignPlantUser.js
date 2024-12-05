@@ -6,7 +6,7 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import FilterInput from "@/components/FilterPlantsInput";
 import { AnimatePresence, motion } from "framer-motion";
-import Texture from "./Texture";
+import Texture from "@/components/Texture";
 import { FiPlus } from "react-icons/fi";
 
 const AssignPlantUser = ({ isOpen, onClose, userId, plants }) => {

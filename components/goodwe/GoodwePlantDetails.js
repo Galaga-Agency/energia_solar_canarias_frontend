@@ -25,7 +25,7 @@ import {
 import { RiBattery2ChargeLine } from "react-icons/ri";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
-import GoodweEnergyFlowDisplay from "@/components/Goodwe/GoodweEnergyFlowDisplay";
+import GoodweEnergyFlowDisplay from "@/components/goodwe/GoodweEnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
@@ -38,13 +38,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
-import GoodweGraphDisplay from "@/components/Goodwe/GoodweGraphDisplay";
+import GoodweGraphDisplay from "@/components/goodwe/GoodweGraphDisplay";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
-import PerformanceMetricsSkeleton from "@/components/LoadingSkeletons/PerformanceMetricsSkeleton";
-import PlantDetailsSkeleton from "@/components/LoadingSkeletons/PlantDetailsSkeleton";
-import EnergyStatisticsSkeleton from "@/components/LoadingSkeletons/EnergyStatisticsSkeleton";
+import PerformanceMetricsSkeleton from "@/components/loadingSkeletons/PerformanceMetricsSkeleton";
+import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
+import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import Loading from "@/components/ui/Loading";
 
 const GoodwePlantDetails = React.memo(

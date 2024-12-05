@@ -29,7 +29,7 @@ import PlantStatuses from "@/components/PlantStatuses";
 import FilterSidebar from "@/components/FilterSidebar";
 import usePlantSort from "@/hooks/usePlantSort";
 import useDeviceType from "@/hooks/useDeviceType";
-import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
+import PlantListSkeleton from "@/components/loadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "react-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 

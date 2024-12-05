@@ -11,8 +11,8 @@ import {
   selectDetailsError,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
-import GoodwePlantDetails from "@/components/Goodwe/GoodwePlantDetails";
-import SolarEdgePlantDetails from "@/components/Solaredge/SolarEdgePlantDetails";
+import GoodwePlantDetails from "@/components/goodwe/GoodwePlantDetails";
+import SolarEdgePlantDetails from "@/components/solaredge/SolarEdgePlantDetails";
 import Loading from "@/components/ui/Loading";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
@@ -20,7 +20,7 @@ import { IoArrowBackCircle } from "react-icons/io5";
 import { BiRefresh } from "react-icons/bi";
 import Texture from "@/components/Texture";
 import PageTransition from "@/components/PageTransition";
-import VictronEnergyPlantDetails from "@/components/Victronenergy/VictronEnergyPlantDetails";
+import VictronEnergyPlantDetails from "@/components/victronenergy/VictronEnergyPlantDetails";
 import { useRouter } from "next/router";
 
 const PlantDetailsPage = ({ params }) => {

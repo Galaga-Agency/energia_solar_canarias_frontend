@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "next-i18next";
 import { FaQuestionCircle } from "react-icons/fa";
-import StatusModal from "./StatusModal";
+import StatusModal from "@/components/StatusModal";
 
 const statusColors = {
   working: "bg-green-500",

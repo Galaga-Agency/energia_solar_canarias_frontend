@@ -25,7 +25,7 @@ import {
 } from "react-icons/bs";
 import { WiDayFog, WiNightAltThunderstorm } from "react-icons/wi";
 import useDeviceType from "@/hooks/useDeviceType";
-import WeatherWidgetSkeleton from "@/components/LoadingSkeletons/WeatherWidgetSkeleton";
+import WeatherWidgetSkeleton from "@/components/loadingSkeletons/WeatherWidgetSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const WeatherWidget = ({ plant, address, provider }) => {
@@ -64,7 +64,7 @@ const WeatherWidget = ({ plant, address, provider }) => {
   // Initial fetch
   useEffect(() => {
     if (retryCount === 0) fetchWeatherData();
-  }, [address, token, provider, retryCount, fetchWeatherData]);
+  }, [address, token, provider, retryCount]);
 
   // Retry logic
   useEffect(() => {
@@ -77,7 +77,7 @@ const WeatherWidget = ({ plant, address, provider }) => {
 
       return () => clearTimeout(retryTimeout);
     }
-  }, [weatherError, retryCount, fetchWeatherData]);
+  }, [weatherError, retryCount]);
 
   // Reset retry count when dependencies change
   useEffect(() => {

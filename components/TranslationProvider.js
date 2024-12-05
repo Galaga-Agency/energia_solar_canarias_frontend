@@ -5,7 +5,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import enTranslation from "@/locales/en.json";
 import esTranslation from "@/locales/es.json";
-import Loading from "./ui/Loading";
+import Loading from "@/components/ui/Loading";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 

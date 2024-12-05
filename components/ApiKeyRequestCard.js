@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useTranslation } from "next-i18next";
-import PrimaryButton from "./ui/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";

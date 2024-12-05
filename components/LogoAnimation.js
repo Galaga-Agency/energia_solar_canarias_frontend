@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import logoLight from "@/public/assets/logos/ENERGIA SOLAR CANARIAS - NEGRO.png";
 import logoDark from "@/public/assets/logos/ENERGIA SOLAR CANARIAS - BLANCO.png";
-import TransitionEffect from "./TransitionEffect";
-import AuthenticationForm from "./AuthenticationForm";
+import TransitionEffect from "@/components/TransitionEffect";
+import AuthenticationForm from "@/components/AuthenticationForm";
 import useDeviceType from "@/hooks/useDeviceType";
-import RetroGrid from "./RetroGrid";
+import RetroGrid from "@/components/RetroGrid";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 

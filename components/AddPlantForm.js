@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus } from "react-icons/fi";
 import { useForm } from "react-hook-form";
-import SelectAddressOnMap from "./SelectAddressOnMap";
+import SelectAddressOnMap from "@/components/SelectAddressOnMap";
 import Image from "next/image";
 import { IoLocationSharp } from "react-icons/io5";
 
 import { useTranslation } from "next-i18next";
-import PrimaryButton from "./ui/PrimaryButton";
-import SecondaryButton from "./ui/SecondaryButton";
-import Texture from "./Texture";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import SecondaryButton from "@/components/ui/SecondaryButton";
+import Texture from "@/components/Texture";
 
 const AddPlantForm = ({ onClose, isOpen }) => {
   const { t } = useTranslation();

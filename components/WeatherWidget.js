@@ -25,7 +25,7 @@ import {
 } from "react-icons/bs";
 import { WiDayFog, WiNightAltThunderstorm } from "react-icons/wi";
 import useDeviceType from "@/hooks/useDeviceType";
-import WeatherWidgetSkeleton from "@/components/loadingSkeletons/WeatherWidgetSkeleton";
+import WeatherWidgetSkeleton from "@/components/LoadingSkeletons/WeatherWidgetSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const WeatherWidget = ({ plant, address, provider }) => {

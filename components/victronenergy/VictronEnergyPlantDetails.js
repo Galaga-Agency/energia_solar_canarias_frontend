@@ -11,7 +11,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import { IoArrowBackCircle } from "react-icons/io5";
 import PageTransition from "@/components/PageTransition";
 import Loading from "@/components/ui/Loading";
-import VictronEnergyFlow from "@/components/victronenergy/VictronEnergyFlow";
+import VictronEnergyFlow from "@/components/Victronenergy/VictronEnergyFlow";
 import { useTranslation } from "next-i18next";
 import Texture from "@/components/Texture";
 import { selectTheme } from "@/store/slices/themeSlice";

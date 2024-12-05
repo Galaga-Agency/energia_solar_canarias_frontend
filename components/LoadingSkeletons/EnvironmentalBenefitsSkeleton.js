@@ -1,5 +1,5 @@
 import React from "react";
-import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
+import CustomSkeleton from "@/components/LoadingSkeletons/Skeleton";
 import useDeviceType from "@/hooks/useDeviceType";
 
 const EnvironmentalBenefitsSkeleton = ({ theme, batteryLevel }) => {

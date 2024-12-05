@@ -11,7 +11,7 @@ import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import { Building2, Tag, Info } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
-import SolarEdgeEnergyFlowDisplay from "@/components/solaredge/SolarEdgeEnergyFlowDisplay";
+import SolarEdgeEnergyFlowDisplay from "@/components/Solaredge/SolarEdgeEnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/Tooltip";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
-import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
+import PlantDetailsSkeleton from "@/components/LoadingSkeletons/PlantDetailsSkeleton";
 import SolarEdgeGraphDisplay from "./SolarEdgeGraphDisplay";
-import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
+import EnergyStatisticsSkeleton from "@/components/LoadingSkeletons/EnergyStatisticsSkeleton";
 import EnvironmentalBenefits from "./EnvironmentalBenefits";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import EnergyStatistics from "./EnergyStatistics";

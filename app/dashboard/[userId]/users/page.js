@@ -13,7 +13,7 @@ import SortUserMenu from "@/components/SortUserMenu";
 import UserFilterInput from "@/components/UserFilterInput";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
-import UserListSkeleton from "@/components/loadingSkeletons/UserListSkeleton";
+import UserListSkeleton from "@/components/LoadingSkeletons/UserListSkeleton";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import useUserFilter from "@/hooks/useUserFilter";

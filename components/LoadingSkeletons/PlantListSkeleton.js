@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
+import CustomSkeleton from "@/components/LoadingSkeletons/Skeleton";
 
 const PlantListSkeleton = ({ theme, rows }) => {
   // Fetch isAdmin state from Redux userSlice

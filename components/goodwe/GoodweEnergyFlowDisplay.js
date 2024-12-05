@@ -21,7 +21,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Home } from "lucide-react";
 import { FaSolarPanel } from "react-icons/fa";
-import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
+import EnergyFlowSkeleton from "@/components/LoadingSkeletons/EnergyFlowSkeleton";
 
 const GoodweEnergyFlowDisplay = memo(() => {
   const { isMobile, isTablet } = useDeviceType();

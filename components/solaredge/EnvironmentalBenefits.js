@@ -21,7 +21,7 @@ import {
   selectLoadingBenefits,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
-import EnvironmentalBenefitsSkeleton from "@/components/loadingSkeletons/EnvironmentalBenefitsSkeleton";
+import EnvironmentalBenefitsSkeleton from "@/components/LoadingSkeletons/EnvironmentalBenefitsSkeleton";
 
 const EnvironmentalBenefits = ({ t, plantId, provider, batteryLevel }) => {
   const theme = useSelector(selectTheme);

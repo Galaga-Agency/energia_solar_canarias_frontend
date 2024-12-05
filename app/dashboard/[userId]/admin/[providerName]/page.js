@@ -16,24 +16,24 @@ import {
 import { selectTheme } from "@/store/slices/themeSlice";
 import ThemeToggle from "@/components/ThemeToggle";
 import SortMenu from "@/components/SortPlantsMenu";
-import SolarEdgeSortMenu from "@/components/solaredge/SolarEdgeSortMenu";
-import GoodweSortMenu from "@/components/goodwe/GoodweSortMenu";
+import SolarEdgeSortMenu from "@/components/Solaredge/SolarEdgeSortMenu";
+import GoodweSortMenu from "@/components/Goodwe/GoodweSortMenu";
 import Pagination from "@/components/ui/Pagination";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
-import PlantListSkeleton from "@/components/loadingSkeletons/PlantListSkeleton";
+import PlantListSkeleton from "@/components/LoadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "next-i18next";
 import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
 import { providers } from "@/data/providers";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { IoArrowBackCircle } from "react-icons/io5";
-import SolarEdgeFilterSidebar from "@/components/solaredge/SolarEdgeFilterSidebar";
-import GoodweFilterSidebar from "@/components/goodwe/GoodweFilterSidebar";
-import VictronFilterSidebar from "@/components/victronenergy/VictronFilterSidebar";
-import VictronSortMenu from "@/components/victronenergy/VictronSortMenu";
+import SolarEdgeFilterSidebar from "@/components/Solaredge/SolarEdgeFilterSidebar";
+import GoodweFilterSidebar from "@/components/Goodwe/GoodweFilterSidebar";
+import VictronFilterSidebar from "@/components/Victronenergy/VictronFilterSidebar";
+import VictronSortMenu from "@/components/Victronenergy/VictronSortMenu";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);

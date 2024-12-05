@@ -27,7 +27,7 @@ import {
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import GoodweGraphDisplaySkeleton from "@/components/loadingSkeletons/GoodweGraphDisplaySkeleton";
+import GoodweGraphDisplaySkeleton from "@/components/LoadingSkeletons/GoodweGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];

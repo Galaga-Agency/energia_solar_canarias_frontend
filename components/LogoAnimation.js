@@ -3,18 +3,21 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import logo from "@/public/assets/img/logo.webp";
+import logoLight from "@/public/assets/logos/ENERGIA SOLAR CANARIAS - NEGRO.png";
+import logoDark from "@/public/assets/logos/ENERGIA SOLAR CANARIAS - BLANCO.png";
 import TransitionEffect from "./TransitionEffect";
 import AuthenticationForm from "./AuthenticationForm";
 import useDeviceType from "@/hooks/useDeviceType";
 import RetroGrid from "./RetroGrid";
+import { useSelector } from "react-redux";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);
   const [showLogo, setShowLogo] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const { isMobile, isTablet } = useDeviceType();
-
+  const theme = useSelector(selectTheme);
   const initialLogoSize = isMobile ? 350 : isTablet ? 500 : 350;
   const finalLogoSize = isMobile ? 150 : isTablet ? 200 : 200;
 
@@ -65,13 +68,13 @@ const LogoAnimation = () => {
             className="z-40 fixed"
           >
             <Image
-              src={logo}
+              src={theme === "light" ? logoLight : logoDark}
               alt="Logo"
-              width={initialLogoSize} // Set width according to initial size
-              height={initialLogoSize} // Set height according to initial size
-              className="object-contain w-full h-auto" // Ensure logo maintains aspect ratio
+              width={initialLogoSize}
+              height={initialLogoSize}
+              className="object-contain w-full h-auto"
               priority
-              sizes="(max-width: 768px) 150px, (max-width: 1024px) 200px, 250px" // Add sizes prop
+              sizes="(max-width: 768px) 150px, (max-width: 1024px) 200px, 250px"
             />
           </motion.div>
         )}

@@ -17,6 +17,7 @@ import Texture from "../Texture";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import EnergyLoadingClock from "../EnergyLoadingClock";
+import WeatherWidget from "../WeatherWidget";
 
 const VictronEnergyPlantDetails = ({ plantId, userId }) => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
   const isLoadingDetails = useSelector(selectLoadingDetails);
   const theme = useSelector(selectTheme);
   const { isMobile } = useDeviceType();
+  const hasCoordinates = false;
 
   const [lastUpdated, setLastUpdated] = useState(
     new Date().toLocaleTimeString()
@@ -164,14 +166,18 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
           </div>
         </header>
 
-        <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg">
+        <section className="mb-6">
+          <WeatherWidget />
+        </section>
+
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg">
           <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
             {t("Real-Time Energy Flow")}
           </h2>
           {isMobile ? (
             <div className="flex items-center gap-2 justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                {t("lastUpdated")}: {lastUpdatedRef.current}
+                {t("lastUpdated")}: {"blablabla"}
               </span>
               <EnergyLoadingClock
                 duration={15}
@@ -187,7 +193,7 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
                 isPaused={isFetching}
               />
               <span className="absolute top-4 right-16 max-w-36">
-                {t("lastUpdated")}: {lastUpdatedRef.current}
+                {t("lastUpdated")}: {"blablabla"}
               </span>
             </div>
           )}
@@ -196,7 +202,7 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
             fetchRealtimeData={fetchRealtimeData}
             isFetching={isFetching}
           />
-        </div>
+        </section>
       </div>
     </PageTransition>
   );

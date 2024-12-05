@@ -207,7 +207,7 @@ const SolarEdgeFilterSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`fixed z-50 top-0 left-0 h-screen xl:h-auto transform transition-all duration-300 ease-in-out ${
+      className={`overflow-auto pb-16 fixed z-50 top-0 left-0 h-screen xl:h-auto transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
@@ -289,7 +289,7 @@ const SolarEdgeFilterSidebar = ({
         </div>
       </div>
 
-      <div className="xl:hidden flex justify-center mt-4">
+      {/* <div className="xl:hidden flex justify-center mt-4">
         <button
           onClick={() => {
             onFilterChange(filterPlants(filters));
@@ -299,7 +299,7 @@ const SolarEdgeFilterSidebar = ({
         >
           {t("applyFilters")}
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

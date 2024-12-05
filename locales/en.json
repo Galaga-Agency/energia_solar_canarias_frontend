@@ -497,7 +497,7 @@
   "sortByZip": "Sort by Zip Code",
   "sortByPeakPower": "Sort by Peak Power",
   "sortByInstallationDate": "Sort by Installation Date",
-  "sortByAlerts": "Sort by Number of Alerts",
+  "sortByAlerts": "Sort by Amount of Alerts",
   "sortByAlertSeverity": "Sort by Alert Severity",
   "sortByLastUpdate": "Sort by Last Update",
   "type_Optimizers and inverters": "Optimizers and inverters",
@@ -505,5 +505,17 @@
   "type_Monitoring combiner boxes": "Monitoring combiner boxes",
   "type_Ground_Mounted": "Ground Mounted",
   "type_Battery_Storage": "Battery Storage",
-  "type_Optimizers_Inverters": "Optimizers & Inverters"
+  "type_Optimizers_Inverters": "Optimizers & Inverters",
+  "type_Solar": "Solar",
+  "type_Generator": "Generator",
+  "type_Battery": "Battery",
+  "type_Grid": "Grid",
+  "min": "Min",
+  "max": "Max",
+  "installationDateMin": "Select a minimum installation date",
+  "installationDateMax": "Select a maximum installation date",
+  "from": "From",
+  "to": "To",
+  "clickToSeeAllPlants": "Click to see all plants",
+  "more": "More →"
 }

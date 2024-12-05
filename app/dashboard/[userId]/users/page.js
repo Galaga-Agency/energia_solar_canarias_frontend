@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
-import { IoTrashOutline } from "react-icons/io5";
+import { IoArrowBackCircle, IoTrashOutline } from "react-icons/io5";
 import { AiOutlineEdit } from "react-icons/ai";
 import Pagination from "@/components/ui/Pagination";
 import Texture from "@/components/Texture";
@@ -27,6 +27,8 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
+import { FaUserAltSlash } from "react-icons/fa";
+import { BiRefresh } from "react-icons/bi";
 
 const UsersTab = () => {
   const { t } = useTranslation();
@@ -38,8 +40,9 @@ const UsersTab = () => {
   const isLoading = useSelector(selectUsersLoading);
   const error = useSelector(selectUsersError);
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = users?.length;
+  const usersPerPage = 10; // Set a fixed number for pagination
   const { isMobile, isDesktop } = useDeviceType();
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -85,6 +88,132 @@ const UsersTab = () => {
       .join(" ");
   };
 
+  const handleRefresh = () => {
+    setShowError(false);
+    dispatch(fetchUsers(currentUser.tokenIdentificador));
+  };
+
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+    }
+  }, [error]);
+
+  // Error state handling
+  const renderError = () => (
+    <div className="min-h-screen p-6 w-auto">
+      <div className="h-auto w-full flex flex-col justify-center items-center">
+        <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
+        <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
+          {t("noUsersFound")}
+        </p>
+      </div>
+    </div>
+  );
+
+  // Loading state handling
+  const renderLoading = () => (
+    <div className="h-full w-full flex justify-center items-center">
+      <UserListSkeleton theme={theme} rows={usersPerPage} />
+    </div>
+  );
+
+  // Users list or no users found
+  const renderUsers = () => {
+    if (!paginatedUsers?.length) {
+      return (
+        <div className="h-full w-full flex justify-center items-center">
+          <FaUserAltSlash />
+          <p className="text-lg text-custom-dark-blue dark:text-custom-yellow mt-24">
+            {t("noUsersFound")}
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="my-12 overflow-hidden">
+        <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
+          <thead>
+            <tr className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300">
+              <th className="py-3 px-4 lg:pl-12 lg:pr-4 text-left text-custom-dark-blue dark:text-custom-yellow">
+                {t("userName")}
+              </th>
+              {isDesktop && <th></th>}
+              {!isMobile && (
+                <th className="py-3 px-4 lg:pr-12 lg:pl-4 text-left text-custom-dark-blue dark:text-custom-yellow">
+                  {t("userEmail")}
+                </th>
+              )}
+              {isDesktop && (
+                <th className="py-3 px-8 text-left text-custom-dark-blue dark:text-custom-yellow">
+                  {t("lastLogin")}
+                </th>
+              )}
+              <th className="py-3 px-6 text-right text-custom-dark-blue dark:text-custom-yellow"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedUsers.map((userItem) => (
+              <tr
+                key={userItem.usuario_id}
+                className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300 cursor-pointer"
+                onClick={() => handleUserClick(userItem.usuario_id)}
+              >
+                <td className="py-3 px-4 lg:pl-12 lg:pr-2 text-lg text-custom-dark-blue dark:text-custom-yellow flex items-center gap-4 mr-4">
+                  <Image
+                    src={userItem.imagen || "/assets/default-profile.png"}
+                    alt={`${userItem.usuario_nombre}'s profile`}
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                  />
+                  {toPascalCase(userItem.usuario_nombre)}{" "}
+                  {toPascalCase(userItem.apellido)}
+                </td>
+                {isDesktop && (
+                  <td className="text-left">
+                    {userItem.clase === "admin" ? (
+                      <span className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-light-gray dark:text-custom-dark-blue mx-6 px-2 py-1 rounded-3xl text-sm font-bold">
+                        admin
+                      </span>
+                    ) : null}
+                  </td>
+                )}
+                {!isMobile && (
+                  <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow overflow-hidden whitespace-nowrap text-ellipsis">
+                    {userItem.email}
+                  </td>
+                )}
+                {isDesktop && (
+                  <td className="py-3 px-8 text-lg text-custom-dark-blue dark:text-custom-yellow">
+                    {isNaN(new Date(userItem.lastLogin)) ? (
+                      <span className="ml-10">/</span>
+                    ) : (
+                      new Date(userItem.lastLogin).toLocaleDateString()
+                    )}
+                  </td>
+                )}
+                <td className="relative py-3 px-4 text-center text-2xl text-custom-dark-blue dark:text-custom-yellow flex items-center justify-center gap-4">
+                  <AiOutlineEdit className=" absolute cursor-pointer hover:text-blue-500 -translate-y-[40%] right-12 lg:right-24" />
+                  <IoTrashOutline className="absolute cursor-pointer hover:text-red-500 -translate-y-[40%] right-4 lg:right-12" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            className="mt-4"
+          />
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <TransitionEffect />
@@ -110,93 +239,11 @@ const UsersTab = () => {
         <UserFilterInput onFilterChange={filterUsers} />
         <SortUserMenu onSortChange={sortUsers} />
 
-        {isLoading ? (
-          <UserListSkeleton theme={theme} rows={usersPerPage} />
-        ) : paginatedUsers?.length > 0 ? (
-          <div className="my-12 overflow-hidden">
-            <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
-              <thead>
-                <tr className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300">
-                  <th className="py-3 px-4 lg:pl-12 lg:pr-4 text-left text-custom-dark-blue dark:text-custom-yellow">
-                    {t("userName")}
-                  </th>
-                  {isDesktop && <th></th>}
-                  {!isMobile && (
-                    <th className="py-3 px-4 lg:pr-12 lg:pl-4 text-left text-custom-dark-blue dark:text-custom-yellow">
-                      {t("userEmail")}
-                    </th>
-                  )}
-                  {isDesktop && (
-                    <th className="py-3 px-8 text-left text-custom-dark-blue dark:text-custom-yellow">
-                      {t("lastLogin")}
-                    </th>
-                  )}
-                  <th className="py-3 px-6 text-right text-custom-dark-blue dark:text-custom-yellow"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedUsers.map((userItem) => (
-                  <tr
-                    key={userItem.usuario_id}
-                    className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300 cursor-pointer"
-                    onClick={() => handleUserClick(userItem.usuario_id)}
-                  >
-                    <td className="py-3 px-4 lg:pl-12 lg:pr-2 text-lg text-custom-dark-blue dark:text-custom-yellow flex items-center gap-4 mr-4">
-                      <Image
-                        src={userItem.imagen || "/assets/default-profile.png"}
-                        alt={`${userItem.usuario_nombre}'s profile`}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
-                      {toPascalCase(userItem.usuario_nombre)}{" "}
-                      {toPascalCase(userItem.apellido)}
-                    </td>
-                    {isDesktop && (
-                      <td className="text-left">
-                        {userItem.clase === "admin" ? (
-                          <span className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-light-gray dark:text-custom-dark-blue mx-6 px-2 py-1 rounded-3xl text-sm font-bold">
-                            admin
-                          </span>
-                        ) : null}
-                      </td>
-                    )}
-                    {!isMobile && (
-                      <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow overflow-hidden whitespace-nowrap text-ellipsis">
-                        {userItem.email}
-                      </td>
-                    )}
-                    {isDesktop && (
-                      <td className="py-3 px-8 text-lg text-custom-dark-blue dark:text-custom-yellow">
-                        {isNaN(new Date(userItem.lastLogin)) ? (
-                          <span className="ml-10">/</span>
-                        ) : (
-                          new Date(userItem.lastLogin).toLocaleDateString()
-                        )}
-                      </td>
-                    )}
-                    <td className="relative py-3 px-4 text-center text-2xl text-custom-dark-blue dark:text-custom-yellow flex items-center justify-center gap-4">
-                      <AiOutlineEdit className=" absolute cursor-pointer hover:text-blue-500 -translate-y-[40%] right-12 lg:right-24" />
-                      <IoTrashOutline className="absolute cursor-pointer hover:text-red-500 -translate-y-[40%] right-4 lg:right-12" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                className="mt-4"
-              />
-            )}
-          </div>
-        ) : (
-          <p className="text-lg text-custom-dark-blue dark:text-custom-yellow">
-            {t("noUsersFound")}
-          </p>
-        )}
+        {isLoading
+          ? renderLoading()
+          : showError
+          ? renderError()
+          : renderUsers()}
       </div>
       <BottomNavbar
         userId={currentUser && currentUser.id}

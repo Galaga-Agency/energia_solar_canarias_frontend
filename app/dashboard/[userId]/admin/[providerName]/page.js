@@ -33,6 +33,8 @@ import PlantsMapModal from "@/components/PlantsMapModal";
 import { IoArrowBackCircle } from "react-icons/io5";
 import SolarEdgeFilterSidebar from "@/components/solaredge/SolarEdgeFilterSidebar";
 import GoodweFilterSidebar from "@/components/goodwe/GoodweFilterSidebar";
+import VictronFilterSidebar from "@/components/victronenergy/VictronFilterSidebar";
+import VictronSortMenu from "@/components/victronenergy/VictronSortMenu";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -156,6 +158,8 @@ const ProviderPage = () => {
         return <SolarEdgeSortMenu onSortChange={handleSortChange} />;
       case "goodwe":
         return <GoodweSortMenu onSortChange={handleSortChange} />;
+      case "victronenergy":
+        return <VictronSortMenu onSortChange={handleSortChange} />;
       default:
         return <SortMenu onSortChange={handleSortChange} />;
     }
@@ -181,6 +185,15 @@ const ProviderPage = () => {
             setIsSidebarOpen={setIsSidebarOpen}
           />
         );
+      case "victronenergy":
+        return (
+          <VictronFilterSidebar
+            plants={allPlants}
+            onFilterChange={handleFilterChange}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        );
       default:
         return null;
     }
@@ -190,15 +203,18 @@ const ProviderPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  console.log("plants: ", plants);
+
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
       <TransitionEffect />
-      <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+      <div className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]">
         <ThemeToggle />
         <LanguageSelector />
       </div>
+
       <Texture />
-      <div className="relative h-auto z-10 p-8">
+      <div className="relative h-auto z-10 p-6 md:p-8">
         <div className="flex items-center mb-10 md:mb-2 z-10">
           <button onClick={() => window.history.back()}>
             <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
@@ -243,7 +259,7 @@ const ProviderPage = () => {
                   <FaMapMarkedAlt className="text-2xl" />
                 </button>
               </div>
-              <PlantStatuses />
+              {providerPassed !== "victronenergy" && <PlantStatuses />}
             </div>
 
             {loading || isModalOpen ? (

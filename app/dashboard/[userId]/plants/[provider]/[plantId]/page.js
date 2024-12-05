@@ -21,24 +21,46 @@ import { BiRefresh } from "react-icons/bi";
 import Texture from "@/components/Texture";
 import PageTransition from "@/components/PageTransition";
 import VictronEnergyPlantDetails from "@/components/victronenergy/VictronEnergyPlantDetails";
+import { useRouter } from "next/router";
 
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId } = params;
   const dispatch = useDispatch();
   const { t } = useTranslation();
-
   const user = useSelector(selectUser);
   const plantsList = useSelector(selectPlants);
   const detailedPlant = useSelector(selectPlantDetails);
   const isLoadingDetails = useSelector(selectLoadingDetails);
   const detailsError = useSelector(selectDetailsError);
-
   const [showLoading, setShowLoading] = useState(false);
   const [shouldShowError, setShouldShowError] = useState(false);
   const hasFetched = useRef(false);
-
   const normalizedPlantId = useMemo(() => plantId?.toString(), [plantId]);
   const userToken = useMemo(() => user?.tokenIdentificador, [user]);
+  // const [coordinates, setCoordinates] = useState({
+  //   latitude: null,
+  //   longitude: null,
+  // });
+  // const router = useRouter();
+
+  // useEffect(() => {
+  //   if (router?.query?.latitude && router?.query?.longitude) {
+  //     setCoordinates({
+  //       latitude: router?.query?.latitude,
+  //       longitude: router?.query?.longitude,
+  //     });
+  //   }
+  // }, [router.query]);
+
+  // const { latitude, longitude } = coordinates;
+
+  // console.log("coordinates: ", coordinates);
+
+  // useEffect(() => {
+  //   if (latitude && longitude) {
+  //     console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+  //   }
+  // }, [latitude, longitude]);
 
   const listViewPlant = useMemo(
     () =>

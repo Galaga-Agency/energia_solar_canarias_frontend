@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-amplify/adapter-nextjs": "^0.0.2-next.a1ea0f2.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -19,6 +20,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@shadcn/ui": "^0.0.4",
     "autoprefixer": "^10.4.20",
+    "aws-amplify": "^6.0.1-next.a1ea0f2.0",
     "axios": "^1.7.7",
     "chart.js": "^4.4.5",
     "class-variance-authority": "^0.7.0",

@@ -1,5 +1,5 @@
 import React from "react";
-import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
+import CustomSkeleton from "@/components/tempfolder/Skeleton";
 import useDeviceType from "@/hooks/useDeviceType";
 
 const WeatherSkeleton = ({ theme }) => {

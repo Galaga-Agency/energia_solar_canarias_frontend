@@ -1,5 +1,5 @@
 import React from "react";
-import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
+import CustomSkeleton from "@/components/tempfolder/Skeleton";
 
 const GoodweGraphDisplaySkeleton = ({ theme }) => {
   return (

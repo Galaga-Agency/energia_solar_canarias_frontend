@@ -22,7 +22,7 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SolarEdgeGraphDisplaySkeleton from "@/components/loadingSkeletons/SolarEdgeGraphDisplaySkeleton";
+import SolarEdgeGraphDisplaySkeleton from "@/components/tempfolder/SolarEdgeGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import {

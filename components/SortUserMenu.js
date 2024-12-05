@@ -25,7 +25,7 @@ const SortUserMenu = ({ onSortChange }) => {
 
   useEffect(() => {
     onSortChange(selectedOption);
-  }, []);
+  }, [onSortChange, selectedOption]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

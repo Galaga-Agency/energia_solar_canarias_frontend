@@ -208,7 +208,7 @@ const PlantDetailsPage = ({ params }) => {
         </div>
       </div>
     ),
-    [detailsError, handleRefresh, showLoading, t]
+    [handleRefresh, showLoading, t]
   );
 
   const renderContent = useMemo(() => {

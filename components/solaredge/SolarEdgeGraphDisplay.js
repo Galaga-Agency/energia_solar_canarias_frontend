@@ -22,7 +22,7 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SolarEdgeGraphDisplaySkeleton from "../loadingSkeletons/SolarEdgeGraphDisplaySkeleton";
+import SolarEdgeGraphDisplaySkeleton from "@/components/loadingSkeletons/SolarEdgeGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import {
@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/Tooltip";
 import { Info } from "lucide-react";
 import PercentageBar from "./PercentageBar";
-import PrimaryButton from "../ui/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 
 const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const { t } = useTranslation();

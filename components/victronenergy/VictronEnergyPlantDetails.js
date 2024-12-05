@@ -13,11 +13,13 @@ import PageTransition from "@/components/PageTransition";
 import Loading from "@/components/ui/Loading";
 import VictronEnergyFlow from "@/components/victronenergy/VictronEnergyFlow";
 import { useTranslation } from "next-i18next";
-import Texture from "../Texture";
+import Texture from "@/components/Texture";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import EnergyLoadingClock from "../EnergyLoadingClock";
-import WeatherWidget from "../WeatherWidget";
+import EnergyLoadingClock from "@/components/EnergyLoadingClock";
+import WeatherWidget from "@/components/WeatherWidget";
+import { PiSolarPanelFill } from "react-icons/pi";
+import { BiRefresh } from "react-icons/bi";
 
 const VictronEnergyPlantDetails = ({ plantId, userId }) => {
   const dispatch = useDispatch();
@@ -120,7 +122,7 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
               disabled={isLoadingDetails}
             >
               <BiRefresh
-                className={`text-2xl ${isLoading ? "animate-spin" : ""}`}
+                className={`text-2xl ${isLoadingDetails ? "animate-spin" : ""}`}
               />
               <span>{t("refresh")}</span>
             </button>
@@ -130,13 +132,13 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
     );
   }
 
-  const statusColors = useMemo(
-    () => ({
-      working: "bg-green-500",
-      disconnected: "bg-gray-500",
-    }),
-    []
-  );
+  // const statusColors = useMemo(
+  //   () => ({
+  //     working: "bg-green-500",
+  //     disconnected: "bg-gray-500",
+  //   }),
+  //   []
+  // );
 
   return (
     <PageTransition>

@@ -5,7 +5,7 @@ import { IoAnalyticsOutline, IoCashOutline } from "react-icons/io5";
 import { GiSpeedometer } from "react-icons/gi";
 import { FaEuroSign } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import EnergyStatisticsSkeleton from "../loadingSkeletons/EnergyStatisticsSkeleton";
+import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import {
   fetchSolarEdgeOverview,
   selectOverviewLoading,
@@ -30,7 +30,7 @@ const EnergyStatistics = ({ plant, t, theme, token }) => {
     if (plant?.id) {
       dispatch(fetchSolarEdgeOverview({ plantId: plant.id, token }));
     }
-  }, []);
+  }, [dispatch, plant?.id, token]);
 
   if (overviewLoading) {
     return <EnergyStatisticsSkeleton theme={theme} />;

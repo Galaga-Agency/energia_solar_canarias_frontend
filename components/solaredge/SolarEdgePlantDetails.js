@@ -24,13 +24,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
-import WeatherWidget from "../WeatherWidget";
+import WeatherWidget from "@/components/WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
-import PlantDetailsSkeleton from "../loadingSkeletons/PlantDetailsSkeleton";
+import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
 import SolarEdgeGraphDisplay from "./SolarEdgeGraphDisplay";
-import EnergyStatisticsSkeleton from "../loadingSkeletons/EnergyStatisticsSkeleton";
+import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import EnvironmentalBenefits from "./EnvironmentalBenefits";
-import BatteryIndicator from "../BatteryIndicator";
+import BatteryIndicator from "@/components/BatteryIndicator";
 import EnergyStatistics from "./EnergyStatistics";
 import { IoFlashOutline } from "react-icons/io5";
 
@@ -103,7 +103,7 @@ const SolarEdgePlantDetails = React.memo(
         if (!org) return t("organizationNotAvailable");
         return capitalizeFirstLetter(org);
       },
-      [capitalizeFirstLetter]
+      [capitalizeFirstLetter, t]
     );
 
     const formattedAddress = useMemo(() => {

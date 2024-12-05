@@ -5,9 +5,9 @@ import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
-import useGoogleMapsLoader from "../hooks/useGoogleMapsLoader";
-import PrimaryButton from "./ui/PrimaryButton";
-import SecondaryButton from "./ui/SecondaryButton";
+import useGoogleMapsLoader from "@/hooks/useGoogleMapsLoader";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import SecondaryButton from "@/components/ui/SecondaryButton";
 
 const mapContainerStyle = {
   height: "400px",

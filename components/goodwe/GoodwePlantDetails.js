@@ -40,12 +40,12 @@ import {
 } from "@/components/ui/Tooltip";
 import GoodweGraphDisplay from "@/components/goodwe/GoodweGraphDisplay";
 import useDeviceType from "@/hooks/useDeviceType";
-import WeatherWidget from "../WeatherWidget";
+import WeatherWidget from "@/components/WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
-import PerformanceMetricsSkeleton from "../loadingSkeletons/PerformanceMetricsSkeleton";
-import PlantDetailsSkeleton from "../loadingSkeletons/PlantDetailsSkeleton";
-import EnergyStatisticsSkeleton from "../loadingSkeletons/EnergyStatisticsSkeleton";
-import Loading from "../ui/Loading";
+import PerformanceMetricsSkeleton from "@/components/loadingSkeletons/PerformanceMetricsSkeleton";
+import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
+import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
+import Loading from "@/components/ui/Loading";
 
 const GoodwePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {

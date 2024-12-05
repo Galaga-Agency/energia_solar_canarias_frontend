@@ -139,7 +139,7 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
           },
         ];
     }
-  }, [t]);
+  }, [t, chartIndexId]);
 
   const expectedMetrics = useMemo(
     () => getExpectedMetrics(),

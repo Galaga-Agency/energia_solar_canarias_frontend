@@ -1,4 +1,5 @@
 import withPWAInit from "next-pwa";
+import path from "path";
 
 const cacheFirstOptions = {
   cacheableResponse: {

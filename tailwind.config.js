@@ -13,6 +13,7 @@ module.exports = {
         secondary: ['"Corbert"', "sans-serif"],
       },
       animation: {
+        shimmer: "shimmer 2s infinite",
         "rise-sun": "riseSun 4s ease-in-out infinite",
         "rain-drop": "rainDrop 1.5s ease-in-out infinite",
         "snow-fall": "snowFall 3s linear infinite",
@@ -66,6 +67,9 @@ module.exports = {
         "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },
       keyframes: {
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
         riseSun: {
           "0%": { transform: "translateY(50px) scale(0.8)", opacity: "0" },
           "50%": { transform: "translateY(0) scale(1.2)", opacity: "0.8" },
@@ -223,6 +227,9 @@ module.exports = {
             transform: "scale(1.05)",
           },
         },
+      },
+      perspective: {
+        1000: "1000px",
       },
     },
   },

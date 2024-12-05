@@ -27,7 +27,6 @@ import PlantListSkeleton from "@/components/loadingSkeletons/PlantListSkeleton";
 import { useTranslation } from "next-i18next";
 import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
-import ProviderFilterSidebar from "@/components/ProviderFilterSidebar";
 import { providers } from "@/data/providers";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { IoArrowBackCircle } from "react-icons/io5";

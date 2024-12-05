@@ -28,7 +28,6 @@ import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import { FaUserAltSlash } from "react-icons/fa";
-import { BiRefresh } from "react-icons/bi";
 
 const UsersTab = () => {
   const { t } = useTranslation();

@@ -64,7 +64,7 @@ const WeatherWidget = ({ plant, address, provider }) => {
   // Initial fetch
   useEffect(() => {
     if (retryCount === 0) fetchWeatherData();
-  }, [address, token, provider, retryCount]);
+  }, [address, token, provider, retryCount, fetchWeatherData]);
 
   // Retry logic
   useEffect(() => {
@@ -77,7 +77,7 @@ const WeatherWidget = ({ plant, address, provider }) => {
 
       return () => clearTimeout(retryTimeout);
     }
-  }, [weatherError, retryCount]);
+  }, [weatherError, retryCount, fetchWeatherData]);
 
   // Reset retry count when dependencies change
   useEffect(() => {

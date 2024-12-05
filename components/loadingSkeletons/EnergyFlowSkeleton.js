@@ -1,5 +1,5 @@
 import React from "react";
-import CustomSkeleton from "@/components/tempfolder/Skeleton";
+import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 
 const EnergyFlowSkeleton = ({ theme }) => {
   const renderMobileLayout = () => (

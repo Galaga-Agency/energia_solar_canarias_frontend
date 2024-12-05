@@ -42,9 +42,9 @@ import GoodweGraphDisplay from "@/components/goodwe/GoodweGraphDisplay";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
-import PerformanceMetricsSkeleton from "@/components/tempfolder/PerformanceMetricsSkeleton";
-import PlantDetailsSkeleton from "@/components/tempfolder/PlantDetailsSkeleton";
-import EnergyStatisticsSkeleton from "@/components/tempfolder/EnergyStatisticsSkeleton";
+import PerformanceMetricsSkeleton from "@/components/loadingSkeletons/PerformanceMetricsSkeleton";
+import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
+import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import Loading from "@/components/ui/Loading";
 
 const GoodwePlantDetails = React.memo(

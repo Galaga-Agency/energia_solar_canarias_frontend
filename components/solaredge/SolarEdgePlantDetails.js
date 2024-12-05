@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/Tooltip";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectUser } from "@/store/slices/userSlice";
-import PlantDetailsSkeleton from "@/components/tempfolder/PlantDetailsSkeleton";
+import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
 import SolarEdgeGraphDisplay from "@/components/solaredge/SolarEdgeGraphDisplay";
-import EnergyStatisticsSkeleton from "@/components/tempfolder/EnergyStatisticsSkeleton";
+import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import EnvironmentalBenefits from "@/components/solaredge/EnvironmentalBenefits";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import EnergyStatistics from "@/components/solaredge/EnergyStatistics";

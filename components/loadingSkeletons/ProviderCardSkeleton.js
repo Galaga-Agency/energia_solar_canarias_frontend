@@ -1,4 +1,4 @@
-import CustomSkeleton from "@/components/tempfolder/Skeleton";
+import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 
 const ProviderCardSkeleton = ({ theme }) => {
   return (

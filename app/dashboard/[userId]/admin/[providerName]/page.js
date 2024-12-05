@@ -23,7 +23,7 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
-import PlantsListSkeleton from "@/components/tempfolder/PlantsListSkeleton.js";
+import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton.js";
 import { useTranslation } from "next-i18next";
 import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";

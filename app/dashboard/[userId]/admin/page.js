@@ -26,7 +26,7 @@ import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
-import PlantsListSkeleton from "@/components/tempfolder/PlantsListSkeleton.js";
+import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton.js";
 import { useTranslation } from "next-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import InfoModal from "@/components/InfoModal";

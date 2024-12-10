@@ -150,7 +150,7 @@ const ClientDashboardPage = ({ params }) => {
               <PlantStatuses />
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <input
                 type="text"
                 value={searchTerm}
@@ -158,7 +158,7 @@ const ClientDashboardPage = ({ params }) => {
                 placeholder={t("search")}
                 className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow"
               />
-            </div>
+            </div> */}
 
             {loading ? (
               <PlantsListSkeleton theme={theme} rows={plantsPerPage} />

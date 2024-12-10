@@ -1,9 +1,6 @@
-"use client";
-
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchPlantDetails,
   selectPlantDetails,
   selectLoadingDetails,
 } from "@/store/slices/plantsSlice";
@@ -16,12 +13,12 @@ import { useTranslation } from "next-i18next";
 import Texture from "@/components/Texture";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import EnergyLoadingClock from "@/components/EnergyLoadingClock";
 import WeatherWidget from "@/components/WeatherWidget";
 import { PiSolarPanelFill } from "react-icons/pi";
-import { BiRefresh } from "react-icons/bi";
+import { useParams } from "next/navigation";
+import TankData from "./TankData";
 
-const VictronEnergyPlantDetails = ({ plantId, userId }) => {
+const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const user = useSelector(selectUser);
@@ -29,63 +26,47 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
   const isLoadingDetails = useSelector(selectLoadingDetails);
   const theme = useSelector(selectTheme);
   const { isMobile } = useDeviceType();
-  const hasCoordinates = false;
-
-  const [lastUpdated, setLastUpdated] = useState(
-    new Date().toLocaleTimeString()
+  const [latitude, setLatitude] = useState();
+  const [longitude, setLongitude] = useState();
+  const [hasCoordinates, setHasCoordinates] = useState(false);
+  const params = useParams();
+  const plantId = params.plantId;
+  const [loadTime] = useState(
+    new Date().toLocaleString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
   );
-  const [isFetching, setIsFetching] = useState(false);
-
-  const capitalizeFirstLetter = useCallback((str) => {
-    if (!str) return str;
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }, []);
-
-  const fetchRealtimeData = useCallback(async () => {
-    if (!plantId || !userId || !user?.tokenIdentificador) return;
-
-    try {
-      setIsFetching(true);
-      await dispatch(
-        fetchPlantDetails({
-          plantId,
-          userId,
-          provider: "victronenergy",
-          token: user.tokenIdentificador,
-        })
-      ).unwrap();
-      setLastUpdated(new Date().toLocaleTimeString());
-    } catch (err) {
-      console.error("Error fetching plant details:", err);
-    } finally {
-      setIsFetching(false);
-    }
-  }, [dispatch, plantId, userId, user?.tokenIdentificador]);
 
   useEffect(() => {
-    fetchRealtimeData();
-    const intervalId = setInterval(fetchRealtimeData, 15000);
-    return () => clearInterval(intervalId);
-  }, [fetchRealtimeData]);
+    if (latitude && longitude) {
+      setHasCoordinates(true);
+    }
+  }, [latitude, longitude]);
 
-  const energyData = useMemo(() => {
-    if (!plant) return {};
-    const extended = plant?.data?.records?.[0]?.extended || [];
-    const findAttribute = (code) =>
-      extended.find((attr) => attr.code === code)?.formattedValue || "N/A";
-
-    return {
-      acInput: findAttribute("ac_input"),
-      generator: findAttribute("generator"),
-      soc: findAttribute("bs"),
-      batteryVoltage: findAttribute("bv"),
-      batteryCurrent: findAttribute("bc"),
-      temperature: findAttribute("temperature"),
-      solarYield: findAttribute("solar_yield"),
-      load: findAttribute("consumption"),
-      inverterStatus: findAttribute("inverter_status"),
-    };
+  // Extract latitude and longitude from plant data
+  useEffect(() => {
+    if (plant) {
+      const extended = plant?.data?.records?.[0]?.extended || [];
+      setLatitude(extended.find((attr) => attr.code === "lt")?.rawValue);
+      setLongitude(extended.find((attr) => attr.code === "lg")?.rawValue);
+    }
   }, [plant]);
+
+  const tankData = {
+    tc: plant?.data?.records?.[0]?.extended?.find((item) => item.code === "tc"),
+    tf: plant?.data?.records?.[0]?.extended?.find((item) => item.code === "tf"),
+    tl: plant?.data?.records?.[0]?.extended?.find((item) => item.code === "tl"),
+    tr: plant?.data?.records?.[0]?.extended?.find((item) => item.code === "tr"),
+    tst: plant?.data?.records?.[0]?.extended?.find(
+      (item) => item.code === "tst"
+    ),
+  };
 
   if (isLoadingDetails && !plant) {
     return (
@@ -116,29 +97,11 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
             <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
               {t("plantDataNotFound")}
             </p>
-            <button
-              onClick={handleRefresh}
-              className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow hover:scale-105 transition-transform mt-4"
-              disabled={isLoadingDetails}
-            >
-              <BiRefresh
-                className={`text-2xl ${isLoadingDetails ? "animate-spin" : ""}`}
-              />
-              <span>{t("refresh")}</span>
-            </button>
           </div>
         </div>
       </PageTransition>
     );
   }
-
-  // const statusColors = useMemo(
-  //   () => ({
-  //     working: "bg-green-500",
-  //     disconnected: "bg-gray-500",
-  //   }),
-  //   []
-  // );
 
   return (
     <PageTransition>
@@ -150,7 +113,6 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
         }`}
       >
         <Texture />
-
         <header className="flex justify-between items-center mb-6">
           <IoArrowBackCircle
             className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
@@ -160,49 +122,40 @@ const VictronEnergyPlantDetails = ({ plantId, userId }) => {
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">
               {plant?.data?.records?.[0]?.name || t("loading")}
             </h1>
-            {/* <div
-              className={`w-8 h-8 rounded-full ml-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] ${
-                statusColors[solaredgePlant?.status] || "bg-gray-500"
-              }`}
-            /> */}
           </div>
         </header>
+        <div className="flex flex-col gap-6 md:gap-0 md:flex-row md:space-x-6">
+          {hasCoordinates && (
+            <WeatherWidget
+              lat={latitude}
+              lng={longitude}
+              token={user?.tokenIdentificador}
+              provider="victronenergy"
+            />
+          )}
+          {tankData &&
+            !["tc", "tf", "tl", "tr", "tst"].every(
+              (key) => tankData[key] === undefined
+            ) && (
+              <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg ">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
+                    {t("Fuel Tank Status")}
+                  </h2>
+                </div>
 
-        <section className="mb-6">
-          <WeatherWidget />
-        </section>
+                <TankData tankData={tankData} />
+              </section>
+            )}
+        </div>
 
-        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg">
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg my-6">
           <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
             {t("Real-Time Energy Flow")}
           </h2>
-          {isMobile ? (
-            <div className="flex items-center gap-2 justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {t("lastUpdated")}: {"blablabla"}
-              </span>
-              <EnergyLoadingClock
-                duration={15}
-                onComplete={fetchRealtimeData}
-                isPaused={isFetching}
-              />
-            </div>
-          ) : (
-            <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
-              <EnergyLoadingClock
-                duration={15}
-                onComplete={fetchRealtimeData}
-                isPaused={isFetching}
-              />
-              <span className="absolute top-4 right-16 max-w-36">
-                {t("lastUpdated")}: {"blablabla"}
-              </span>
-            </div>
-          )}
           <VictronEnergyFlow
-            energyData={energyData}
-            fetchRealtimeData={fetchRealtimeData}
-            isFetching={isFetching}
+            plantId={plantId}
+            token={user?.tokenIdentificador}
           />
         </section>
       </div>

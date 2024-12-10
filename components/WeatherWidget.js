@@ -9,6 +9,7 @@ import {
   selectWeatherLoading,
   selectWeatherError,
   fetchSolarEdgeWeatherData,
+  fetchVictronEnergyWeatherData,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import {
@@ -28,7 +29,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import WeatherSkeleton from "@/components/loadingSkeletons/WeatherSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
-const WeatherWidget = ({ plant, address, provider }) => {
+const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
   const dispatch = useDispatch();
   const weatherData = useSelector(selectWeatherData);
   const weatherLoading = useSelector(selectWeatherLoading);
@@ -40,21 +41,32 @@ const WeatherWidget = ({ plant, address, provider }) => {
   const { isDesktop } = useDeviceType();
   const [retryCount, setRetryCount] = useState(0);
 
-  // console.log("data passed in weather widget: ", { plant, address, provider });
-
-  // Fetch weather data
   const fetchWeatherData = () => {
-    if (!address || !token || !provider) {
+    // Log the data to verify
+    // console.log("Data being passed:", { lat, lng, token, provider });
+
+    // Ensure required data is present for VictronEnergy (lat, lng, token) or Goodwe/SolarEdge (address, provider, token)
+    if (
+      (provider === "victronenergy" && (!lat || !lng || !token)) ||
+      (provider !== "victronenergy" && (!address || !provider || !token))
+    ) {
       console.warn("Missing required data. Waiting for user data...");
       return;
     }
 
+    // Switch on the provider to handle the different API requirements
     switch (provider.toLowerCase()) {
       case "goodwe":
+        // For Goodwe, pass address, provider, and token
         dispatch(fetchGoodweWeatherData({ name: address, token }));
         break;
       case "solaredge":
+        // For SolarEdge, pass address, provider, and token
         dispatch(fetchSolarEdgeWeatherData({ name: address, token }));
+        break;
+      case "victronenergy":
+        // For Victron Energy, pass lat, lng, and token
+        dispatch(fetchVictronEnergyWeatherData({ lat, lng, token }));
         break;
       default:
         console.warn(`Unsupported provider: ${provider}`);
@@ -126,10 +138,10 @@ const WeatherWidget = ({ plant, address, provider }) => {
 
   return (
     <>
-      {weatherLoading || !plant ? (
+      {weatherLoading ? (
         <WeatherSkeleton theme={theme} />
       ) : (
-        <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm flex flex-col h-full">
+        <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm flex flex-col h-full flex-1">
           <h2 className="text-xl font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
             {t("weatherForecast")}
           </h2>
@@ -150,7 +162,6 @@ const WeatherWidget = ({ plant, address, provider }) => {
             <div className="flex flex-1 flex-col">
               {/* Today's Weather */}
               <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex items-center justify-between flex-1 relative group overflow-hidden">
-                {/* Weather-based background animation container */}
                 <div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">
                   {/* Gradient background */}
                   <div
@@ -162,70 +173,6 @@ const WeatherWidget = ({ plant, address, provider }) => {
                           : "linear-gradient(45deg, rgba(0, 44, 63, 0.1), rgba(255, 213, 122, 0.2))",
                     }}
                   />
-
-                  {/* Weather-specific animations */}
-                  {[0, 1, 2].includes(weatherData?.daily?.weather_code?.[0]) &&
-                    // Sunny weather
-                    Array.from({ length: 8 }).map((_, i) => (
-                      <div
-                        key={`sun-particle-${i}`}
-                        className={`absolute ${
-                          theme === "dark"
-                            ? "text-custom-yellow"
-                            : "text-custom-dark-blue"
-                        } opacity-0 group-hover:opacity-10 animate-float`}
-                        style={{
-                          top: `${Math.random() * 100}%`,
-                          left: `${Math.random() * 100}%`,
-                          animationDelay: `${Math.random() * 3}s`,
-                          fontSize: `${Math.random() * 1.5 + 0.5}rem`,
-                        }}
-                      >
-                        <BsCloud />
-                      </div>
-                    ))}
-
-                  {[51, 53, 55, 61, 63, 65, 80, 81, 82].includes(
-                    weatherData?.daily?.weather_code?.[0]
-                  ) &&
-                    // Rain
-                    Array.from({ length: 20 }).map((_, i) => (
-                      <div
-                        key={`rain-drop-${i}`}
-                        className={`absolute w-[1px] h-[10px] ${
-                          theme === "dark"
-                            ? "bg-custom-yellow/30"
-                            : "bg-custom-dark-blue/30"
-                        } opacity-0 group-hover:opacity-50 animate-drop-smooth`}
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          animationDelay: `${Math.random() * 2}s`,
-                          animationDuration: "1s",
-                        }}
-                      />
-                    ))}
-
-                  {[71, 73, 75, 77, 85, 86].includes(
-                    weatherData?.daily?.weather_code?.[0]
-                  ) &&
-                    // Snow
-                    Array.from({ length: 15 }).map((_, i) => (
-                      <div
-                        key={`snowflake-${i}`}
-                        className={`absolute ${
-                          theme === "dark"
-                            ? "text-custom-yellow"
-                            : "text-custom-dark-blue"
-                        } opacity-0 group-hover:opacity-20 animate-fall`}
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          animationDelay: `${Math.random() * 3}s`,
-                          fontSize: "0.5rem",
-                        }}
-                      >
-                        ❄
-                      </div>
-                    ))}
                 </div>
 
                 <div className="flex relative z-10">

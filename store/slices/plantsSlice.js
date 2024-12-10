@@ -20,6 +20,11 @@ import {
   fetchSolarEdgeRealtimeDataAPI,
   fetchSolarEdgeWeatherDataAPI,
 } from "@/services/solardedge-api";
+import {
+  fetchVictronEnergyGraphDataAPI,
+  fetchVictronEnergyRealtimeDataAPI,
+  fetchVictronEnergyWeatherDataAPI,
+} from "@/services/victronenergy-api";
 
 // Thunks
 export const fetchPlants = createAsyncThunk(
@@ -217,6 +222,64 @@ export const fetchSolarEdgeOverview = createAsyncThunk(
     try {
       const data = await fetchSolarEdgeOverviewAPI({ plantId, token });
       return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// victron energy
+
+export const fetchVictronEnergyWeatherData = createAsyncThunk(
+  "plants/fetchVictronEnergyWeatherData",
+  async ({ lat, lng, token }, { rejectWithValue }) => {
+    try {
+      const weatherData = await fetchVictronEnergyWeatherDataAPI({
+        lat,
+        lng,
+        token,
+      });
+      // console.log("redux weatherData: ", weatherData);
+      return weatherData;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchVictronEnergyGraphData = createAsyncThunk(
+  "plants/fetchVictronEnergyGraphData",
+  async (
+    { plantId, interval, type, fechaInicio, fechaFin, token },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetchVictronEnergyGraphDataAPI({
+        plantId,
+        interval,
+        type,
+        fechaInicio,
+        fechaFin,
+        token,
+      });
+      console.log("Graph Data:", response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchVictronEnergyRealtimeData = createAsyncThunk(
+  "plants/fetchVictronEnergyRealtimeData",
+  async ({ plantId, token }, { rejectWithValue }) => {
+    try {
+      const response = await fetchVictronEnergyRealtimeDataAPI({
+        plantId,
+        token,
+      });
+      console.log("Real-Time Data:", response);
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -441,6 +504,52 @@ const plantsSlice = createSlice({
       .addCase(fetchSolarEdgeOverview.rejected, (state, action) => {
         state.overviewLoading = false;
         state.overviewError = action.payload;
+      })
+
+      // Victron Energy
+      .addCase(fetchVictronEnergyWeatherData.pending, (state) => {
+        state.weatherLoading = true;
+        state.weatherError = null;
+      })
+      .addCase(fetchVictronEnergyWeatherData.fulfilled, (state, action) => {
+        state.weatherLoading = false;
+        state.weatherData = action.payload;
+        state.weatherError = null;
+      })
+      .addCase(fetchVictronEnergyWeatherData.rejected, (state, action) => {
+        state.weatherLoading = false;
+        state.weatherData = null;
+        state.weatherError = action.payload || "Failed to fetch weather data";
+      })
+      .addCase(fetchVictronEnergyGraphData.pending, (state) => {
+        state.graphLoading = true;
+        state.graphError = null;
+      })
+      .addCase(fetchVictronEnergyGraphData.fulfilled, (state, action) => {
+        state.graphLoading = false;
+        state.graphData = action.payload;
+        state.graphError = null;
+      })
+      .addCase(fetchVictronEnergyGraphData.rejected, (state, action) => {
+        state.graphLoading = false;
+        state.graphData = null;
+        state.graphError = action.payload || "Failed to fetch graph data";
+      })
+
+      .addCase(fetchVictronEnergyRealtimeData.pending, (state) => {
+        state.realtimeLoading = true;
+        state.realtimeError = null;
+      })
+      .addCase(fetchVictronEnergyRealtimeData.fulfilled, (state, action) => {
+        state.realtimeLoading = false;
+        state.realtimeData = action.payload;
+        state.realtimeError = null;
+      })
+      .addCase(fetchVictronEnergyRealtimeData.rejected, (state, action) => {
+        state.realtimeLoading = false;
+        state.realtimeData = null;
+        state.realtimeError =
+          action.payload || "Failed to fetch real-time data";
       });
   },
 });

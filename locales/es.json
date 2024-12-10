@@ -1415,5 +1415,52 @@
   "from": "Desde",
   "to": "Hasta",
   "clickToSeeAllPlants": "Haz clic para ver todas las plantas",
-  "more": "Más →"
+  "more": "Más →",
+  "victronEnergyFlow": {
+    "acInput": {
+      "title": "Entrada AC",
+      "tooltip": "Esta es la potencia proveniente de la red hacia el sistema. Se utiliza para alimentar el sistema cuando la energía solar es insuficiente.",
+      "state": {
+        "inverting": "Invirtiendo"
+      }
+    },
+    "generator": {
+      "title": "Generador",
+      "tooltip": "El generador proporciona energía cuando la energía solar no está disponible o durante los períodos de alta demanda. Es la fuente de energía de respaldo."
+    },
+    "battery": {
+      "title": "Batería",
+      "tooltip": "La batería almacena la energía producida por los paneles solares para su uso cuando no hay luz solar. Ayuda a proporcionar energía cuando la demanda excede la producción solar.",
+      "voltage": "Voltaje",
+      "current": "Corriente",
+      "temperature": "Temperatura"
+    },
+    "inverter": {
+      "title": "Inversor",
+      "tooltip": "El inversor convierte la corriente continua (CC) de los paneles solares o la batería en corriente alterna (CA) que usan los electrodomésticos.",
+      "state": {
+        "inverting": "Invirtiendo"
+      }
+    },
+    "solarYield": {
+      "title": "Potencia Solar Total",
+      "tooltip": "La cantidad total de energía producida por los paneles solares. Muestra cuánta energía está generando tu sistema solar."
+    },
+    "loads": {
+      "title": "Cargas",
+      "tooltip": "El consumo total de energía de todas las cargas conectadas. Muestra cuánta energía están utilizando tus dispositivos."
+    },
+    "pvCharger": {
+      "title": "Cargador PV",
+      "tooltip": "La potencia del cargador fotovoltaico, que convierte la energía solar en energía CC para cargar la batería."
+    },
+    "mppt": {
+      "title": "MPPT",
+      "tooltip": "El MPPT (Seguimiento del Punto de Máxima Potencia) es una tecnología utilizada para extraer la máxima potencia posible de los paneles solares ajustando constantemente el punto de operación."
+    }
+  },
+  "tankCapacity": "Capacidad del Tanque",
+  "tankFluidType": "Tipo de Líquido del Tanque",
+  "tankLevel": "Nivel del Tanque",
+  "tankRemainingFluid": "Líquido Restante del Tanque"
 }

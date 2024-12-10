@@ -517,5 +517,46 @@
   "from": "From",
   "to": "To",
   "clickToSeeAllPlants": "Click to see all plants",
-  "more": "More →"
+  "more": "More →",
+  "victronEnergyFlow": {
+    "acInput": {
+      "title": "AC Input",
+      "tooltip": "This is the power coming from the grid into the system. It is used to power the system when solar power is insufficient."
+    },
+    "generator": {
+      "title": "Generator",
+      "tooltip": "The generator provides power when solar energy is unavailable or during times of high demand. This is the backup power source."
+    },
+    "battery": {
+      "title": "Battery",
+      "tooltip": "The battery stores energy produced by solar panels for use when there is no sunlight. It helps provide energy when demand exceeds solar production.",
+      "voltage": "Voltage",
+      "current": "Current",
+      "temperature": "Temperature"
+    },
+    "inverter": {
+      "title": "Inverter",
+      "tooltip": "The inverter converts DC (direct current) from the solar panels or battery into AC (alternating current) used by home appliances."
+    },
+    "solarYield": {
+      "title": "Total Solar Power",
+      "tooltip": "The total amount of power produced by the solar panels. This shows how much energy your solar system is generating."
+    },
+    "loads": {
+      "title": "Loads",
+      "tooltip": "The total power consumption of all connected loads. This shows how much power is being used by your devices."
+    },
+    "pvCharger": {
+      "title": "PV Charger",
+      "tooltip": "The power of the photovoltaic charger, which converts solar energy into DC power to charge the battery."
+    },
+    "mppt": {
+      "title": "MPPT",
+      "tooltip": "MPPT (Maximum Power Point Tracking) is a technology used to extract the maximum possible power from the solar panels by constantly adjusting the operating point."
+    }
+  },
+  "tankCapacity": "Tank Capacity",
+  "tankFluidType": "Tank Fluid Type",
+  "tankLevel": "Tank Level",
+  "tankRemainingFluid": "Tank Remaining Fluid"
 }

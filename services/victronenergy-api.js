@@ -43,6 +43,14 @@ export const fetchVictronEnergyGraphDataAPI = async ({
   token,
 }) => {
   try {
+    console.log("Fetching with body --->", {
+      plantId,
+      interval,
+      type,
+      fechaInicio,
+      fechaFin,
+      token,
+    });
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=victronenergy`,
       {
@@ -59,7 +67,6 @@ export const fetchVictronEnergyGraphDataAPI = async ({
           type,
           fechaInicio,
           fechaFin,
-          proveedor: "victronenergy",
         }),
       }
     );
@@ -103,7 +110,7 @@ export const fetchVictronEnergyRealtimeDataAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
-    console.log("Real-Time Data Response:", data);
+    // console.log("Real-Time Data Response:", data);
     return data?.data;
   } catch (error) {
     console.error("Real-Time data fetch error:", error);

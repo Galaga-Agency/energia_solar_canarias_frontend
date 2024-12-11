@@ -54,6 +54,7 @@
     "react-transition-group": "^4.4.5",
     "recharts": "^2.13.3",
     "redux-persist": "^6.0.0",
+    "shadcn-ui": "^0.9.4",
     "sharp": "^0.33.5",
     "swiper": "^11.1.14",
     "tailwind-merge": "^2.5.4",

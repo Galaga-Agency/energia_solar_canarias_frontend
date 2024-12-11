@@ -17,6 +17,7 @@ import WeatherWidget from "@/components/WeatherWidget";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useParams } from "next/navigation";
 import TankData from "./TankData";
+import VictronEnergyGraph from "./VictronEnergyGraph";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
@@ -118,13 +119,16 @@ const VictronEnergyPlantDetails = () => {
             className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
             onClick={() => window.history.back()}
           />
-          <div className="flex items-center ml-auto">
+          <div className="flex flex-col items-end  ml-auto">
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">
               {plant?.data?.records?.[0]?.name || t("loading")}
             </h1>
+            <span className="text-sm text-gray-600 dark:text-gray-400 pr-1">
+              {t("Local Time")}: {plant?.data?.records?.[0]?.current_time || ""}
+            </span>
           </div>
         </header>
-        <div className="flex flex-col gap-6 md:gap-0 md:flex-row md:space-x-6">
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 w-full">
           {hasCoordinates && (
             <WeatherWidget
               lat={latitude}
@@ -137,7 +141,11 @@ const VictronEnergyPlantDetails = () => {
             !["tc", "tf", "tl", "tr", "tst"].every(
               (key) => tankData[key] === undefined
             ) && (
-              <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg ">
+              <section
+                className={`flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg ${
+                  !hasCoordinates && "flex flex-col mx-auto"
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
                     {t("Fuel Tank Status")}
@@ -157,6 +165,10 @@ const VictronEnergyPlantDetails = () => {
             plantId={plantId}
             token={user?.tokenIdentificador}
           />
+        </section>
+
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg my-6">
+          <VictronEnergyGraph plantId={plantId} title={t("plantAnalytics")} />
         </section>
       </div>
     </PageTransition>

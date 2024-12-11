@@ -9,6 +9,8 @@ export const fetchSolarEdgeGraphDataAPI = async ({
   fechaFin,
   token,
 }) => {
+  console.log("Token used for API call:", token);
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=solaredge`,

@@ -278,7 +278,7 @@ export const fetchVictronEnergyRealtimeData = createAsyncThunk(
         plantId,
         token,
       });
-      console.log("Real-Time Data:", response);
+      // console.log("Real-Time Data:", response);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -438,7 +438,7 @@ const plantsSlice = createSlice({
         state.weatherError = action.payload || "Failed to fetch weather data";
       })
       .addCase(fetchGoodweRealtimeData.pending, (state) => {
-        console.log("Fetching real-time data: pending...");
+        // console.log("Fetching real-time data: pending...");
         state.realtimeLoading = true;
         state.realtimeError = null;
       })

@@ -34,6 +34,7 @@ import {
 import { Info } from "lucide-react";
 import PercentageBar from "@/components/solaredge/PercentageBar";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import { useDataFetchWithRetry } from "@/hooks/useDataFetchWithRetry"; // Import your custom hook
 
 const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const { t } = useTranslation();
@@ -45,8 +46,6 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   const [customRange, setCustomRange] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [retryCount, setRetryCount] = useState(0);
-  const [hasEmptyCurves, setHasEmptyCurves] = useState(false);
 
   // Redux selectors
   const graphData = useSelector(selectGraphData);
@@ -128,31 +127,34 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     }
   }, [range, customRange, calculateStartDate]);
 
-  const handleFetchGraph = useCallback(async () => {
-    try {
-      if (plantId && token) {
-        await dispatch(
-          fetchSolarEdgeGraphData({
-            plantId,
-            dia:
-              range === "DAY"
-                ? "QUARTER_OF_AN_HOUR"
-                : range === "YEAR"
-                ? "MONTH"
-                : "DAY",
-            fechaInicio: formatDate(
-              customRange ? startDate : calculateStartDate()
-            ),
-            fechaFin: formatDate(customRange ? endDate : new Date()),
-            token,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching graph data:", error.message);
-    }
+  const {
+    handleFetch,
+    isLoading: retryLoading,
+    hasEmptyData,
+  } = useDataFetchWithRetry({
+    fetchAction: fetchSolarEdgeGraphData,
+    clearAction: clearGraphData,
+    data: graphData,
+    validateData: (data) => Boolean(data),
+    maxRetries: 3,
+    retryDelay: 1000,
+  });
+
+  useEffect(() => {
+    handleFetch({
+      plantId,
+      dia:
+        range === "DAY"
+          ? "QUARTER_OF_AN_HOUR"
+          : range === "YEAR"
+          ? "MONTH"
+          : "DAY",
+      fechaInicio: formatDate(customRange ? startDate : calculateStartDate()),
+      fechaFin: formatDate(customRange ? endDate : new Date()),
+      token,
+    });
   }, [
-    dispatch,
+    handleFetch,
     plantId,
     range,
     customRange,
@@ -162,29 +164,6 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     token,
   ]);
 
-  useEffect(() => {
-    handleFetchGraph();
-    return () => {
-      dispatch(clearGraphData());
-    };
-  }, [handleFetchGraph, dispatch]);
-
-  useEffect(() => {
-    if (hasEmptyCurves && retryCount < 8) {
-      const retryTimer = setTimeout(() => {
-        setRetryCount((prev) => prev + 1);
-        handleFetchGraph();
-      }, 1000);
-
-      return () => clearTimeout(retryTimer);
-    }
-  }, [hasEmptyCurves, retryCount, handleFetchGraph]);
-
-  useEffect(() => {
-    setRetryCount(0);
-    setHasEmptyCurves(false);
-  }, [range, startDate, endDate]);
-
   const transformedData = useMemo(() => {
     if (!graphData || isLoading) return [];
 
@@ -192,8 +171,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
       (key) => Array.isArray(graphData[key]) && graphData[key].length === 0
     );
 
-    if (hasEmptyArray && retryCount < 3) {
-      setHasEmptyCurves(true);
+    if (hasEmptyArray && retryLoading) {
       return [];
     }
 
@@ -207,11 +185,10 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
       }
     });
 
-    setHasEmptyCurves(false);
     return Object.values(mergedData).sort(
       (a, b) => new Date(a.date) - new Date(b.date)
     );
-  }, [graphData, isLoading, retryCount]);
+  }, [graphData, isLoading, retryLoading]);
 
   const filteredData = useMemo(() => {
     if (!transformedData.length) return [];
@@ -220,17 +197,10 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     switch (range) {
       case "DAY": {
         const past24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        return transformedData
-          .filter((item) => {
-            const itemDate = new Date(item.date);
-            return itemDate >= past24h && itemDate <= now;
-          })
-          .filter((item, index, array) => {
-            const currentHour = new Date(item.date).getHours();
-            const previousHour =
-              index > 0 ? new Date(array[index - 1].date).getHours() : -1;
-            return currentHour !== previousHour;
-          });
+        return transformedData.filter((item) => {
+          const itemDate = new Date(item.date);
+          return itemDate >= past24h && itemDate <= now;
+        });
       }
       case "WEEK": {
         const past7Days = new Date(now);
@@ -311,6 +281,32 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     }
   };
 
+  const handleButtonClick = () => {
+    // Ensure that the token is retrieved before calling the fetch
+    const token = user?.tokenIdentificador;
+    console.log("Token before fetch:", token); // Log the token to ensure it's available
+
+    // If the token is missing, prevent the fetch from happening
+    if (!token) {
+      console.error("Token is missing! Cannot fetch data.");
+      return;
+    }
+
+    // Trigger the handleFetch function
+    handleFetch({
+      plantId,
+      dia:
+        range === "DAY"
+          ? "QUARTER_OF_AN_HOUR"
+          : range === "YEAR"
+          ? "MONTH"
+          : "DAY",
+      fechaInicio: formatDate(customRange ? startDate : calculateStartDate()),
+      fechaFin: formatDate(customRange ? endDate : new Date()),
+      token, // Pass token here
+    });
+  };
+
   const renderTooltip = useCallback(
     (name) => {
       return (
@@ -362,15 +358,13 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
             {title}
           </h2>
           <button
-            onClick={handleFetchGraph}
-            disabled={isLoading || (hasEmptyCurves && retryCount < 3)}
+            onClick={handleButtonClick}
+            disabled={isLoading || hasEmptyData}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
           >
             <BiRefresh
               className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                isLoading || (hasEmptyCurves && retryCount < 3)
-                  ? "animate-spin"
-                  : ""
+                isLoading || hasEmptyData ? "animate-spin" : ""
               }`}
             />
           </button>
@@ -426,16 +420,14 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
         </div>
       </div>
 
-      {isLoading || (hasEmptyCurves && retryCount < 3) ? (
+      {isLoading || hasEmptyData ? (
         <SolarEdgeGraphDisplaySkeleton theme={theme} />
       ) : filteredData.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 gap-4">
           <p className="text-lg text-gray-500 dark:text-gray-400">
             {t("noDataAvailable")}
           </p>
-          <PrimaryButton onClick={handleFetchGraph}>
-            {t("tryAgain")}
-          </PrimaryButton>
+          <PrimaryButton onClick={handleFetch}>{t("tryAgain")}</PrimaryButton>
         </div>
       ) : (
         <>

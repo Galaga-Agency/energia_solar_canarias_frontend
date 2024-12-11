@@ -26,7 +26,7 @@ import VictronEnergyFlowSkeleton from "../loadingSkeletons/VictronEnergyFlowSkel
 import useDeviceType from "@/hooks/useDeviceType";
 import EnergyLoadingClock from "../EnergyLoadingClock";
 import { GiElectric } from "react-icons/gi";
-import { IoSunnySharp } from "react-icons/io5";
+import { IoSunnyOutline, IoSunnySharp } from "react-icons/io5";
 import Image from "next/image";
 
 const VictronEnergyFlow = () => {
@@ -42,7 +42,6 @@ const VictronEnergyFlow = () => {
   const isComponentLoading = useSelector(selectLoadingDetails);
   const { isMobile } = useDeviceType();
   const lastUpdatedRef = useRef(new Date().toLocaleString());
-  const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleString());
   const [isBlinking, setIsBlinking] = useState(false);
 
   const processRecords = (records) => {
@@ -226,9 +225,9 @@ const VictronEnergyFlow = () => {
       const processedData = processRecords(result?.records);
       if (processedData) {
         setEnergyData(processedData);
-        setLastUpdated(new Date().toLocaleString());
+        lastUpdatedRef.current = new Date().toLocaleString();
         setIsBlinking(true);
-        setTimeout(() => setIsBlinking(false), 500);
+        setTimeout(() => setIsBlinking(false), 300);
       }
     } catch (err) {
       console.error("Error fetching real-time data:", err);
@@ -248,7 +247,7 @@ const VictronEnergyFlow = () => {
     return <VictronEnergyFlowSkeleton theme={theme} />;
   }
 
-  console.log("Real-Time Data Response:", energyData);
+  // console.log("Real-Time Data Response:", energyData);
 
   return (
     <>
@@ -279,7 +278,7 @@ const VictronEnergyFlow = () => {
         {/* Left Column */}
         <div className="flex flex-col gap-8">
           <EnergyBlock
-            isBlinking
+            isBlinking={isBlinking}
             title={t("victronEnergyFlow.acInput.title")}
             value={
               energyData?.fromToGrid !== undefined
@@ -293,7 +292,7 @@ const VictronEnergyFlow = () => {
 
           {/* Generator Block */}
           <EnergyBlock
-            isBlinking
+            isBlinking={isBlinking}
             title={t("victronEnergyFlow.generator.title")}
             value={
               energyData?.generator?.power !== undefined
@@ -353,13 +352,19 @@ const VictronEnergyFlow = () => {
               </div>
               <div className="text-center mt-28">
                 <h3 className="text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                  {energyData?.battery.state === "Idle"
-                    ? t("victronEnergyFlow.battery.idle")
-                    : energyData?.battery.state === "Charging"
-                    ? t("victronEnergyFlow.battery.charging")
-                    : energyData?.battery.state === "Discharging"
-                    ? t("victronEnergyFlow.battery.discharging")
-                    : energyData?.battery.state}
+                  {(() => {
+                    const state = energyData?.battery.state?.toLowerCase();
+                    switch (state) {
+                      case "idle":
+                        return t("victronEnergyFlow.battery.idle");
+                      case "charging":
+                        return t("victronEnergyFlow.battery.charging");
+                      case "discharging":
+                        return t("victronEnergyFlow.battery.discharging");
+                      default:
+                        return energyData?.battery.state || "-";
+                    }
+                  })()}
                 </h3>
               </div>
             </div>
@@ -377,7 +382,11 @@ const VictronEnergyFlow = () => {
                   <span className="text-gray-600 dark:text-gray-400">
                     {label}
                   </span>
-                  <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
+                  <span
+                    className={`font-medium text-custom-dark-blue dark:text-custom-yellow ${
+                      isBlinking && "animate-double-blink"
+                    }`}
+                  >
                     {index === 0 && (
                       <>
                         {energyData?.battery.voltage
@@ -409,7 +418,7 @@ const VictronEnergyFlow = () => {
         {/* Center Column */}
         <div className="flex flex-col gap-8">
           <EnergyBlock
-            isBlinking
+            isBlinking={isBlinking}
             title="Inversor FV"
             value={energyData?.inverter.totalPower}
             unit={
@@ -486,11 +495,11 @@ const VictronEnergyFlow = () => {
           </div>
 
           <EnergyBlock
-            isBlinking
+            isBlinking={isBlinking}
             title="Potencia solar total"
             value={energyData?.solarYield}
             unit={typeof energyData?.solarYield === "number" ? "W" : ""}
-            icon={IoSunnySharp}
+            icon={IoSunnyOutline}
             tooltip={t("victronEnergyFlow.solarYield.tooltip")}
           />
         </div>
@@ -498,7 +507,7 @@ const VictronEnergyFlow = () => {
         {/* Right Column */}
         <div className="flex flex-col gap-8">
           <EnergyBlock
-            isBlinking
+            isBlinking={isBlinking}
             title={t("victronEnergyFlow.loads.title")}
             value={energyData?.loads?.totalPower || "-"}
             unit={energyData?.loads?.totalPower > 0 ? "W" : ""}
@@ -530,7 +539,7 @@ const VictronEnergyFlow = () => {
           />
 
           <EnergyBlock
-            isBlinking
+            isBlinking={isBlinking}
             title="Cargador PV"
             value={energyData?.pvCharger?.power}
             unit="W"
@@ -548,13 +557,25 @@ const VictronEnergyFlow = () => {
                         MPPT-{id}
                       </span>
                       <div className="flex gap-4">
-                        <span className="text-gray-600 dark:text-gray-400">
+                        <span
+                          className={`text-gray-600 dark:text-gray-400 ${
+                            isBlinking && "animate-double-blink"
+                          }`}
+                        >
                           {data.voltage}V
                         </span>
-                        <span className="text-gray-600 dark:text-gray-400">
+                        <span
+                          className={`text-gray-600 dark:text-gray-400 ${
+                            isBlinking && "animate-double-blink"
+                          }`}
+                        >
                           {data.current}A
                         </span>
-                        <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
+                        <span
+                          className={`font-medium text-custom-dark-blue dark:text-custom-yellow ${
+                            isBlinking && "animate-double-blink"
+                          }`}
+                        >
                           {data.power}W
                         </span>
                       </div>

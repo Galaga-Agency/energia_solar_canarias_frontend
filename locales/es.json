@@ -1418,7 +1418,7 @@
   "more": "Más →",
   "victronEnergyFlow": {
     "acInput": {
-      "title": "Entrada AC",
+      "title": "Entrada de CA",
       "tooltip": "Esta es la potencia proveniente de la red hacia el sistema. Se utiliza para alimentar el sistema cuando la energía solar es insuficiente.",
       "state": {
         "inverting": "Invirtiendo"
@@ -1433,7 +1433,10 @@
       "tooltip": "La batería almacena la energía producida por los paneles solares para su uso cuando no hay luz solar. Ayuda a proporcionar energía cuando la demanda excede la producción solar.",
       "voltage": "Voltaje",
       "current": "Corriente",
-      "temperature": "Temperatura"
+      "temperature": "Temperatura",
+      "idle": "En reposo",
+      "charging": "Cargando",
+      "discharging": "Descargando"
     },
     "inverter": {
       "title": "Inversor",
@@ -1447,11 +1450,11 @@
       "tooltip": "La cantidad total de energía producida por los paneles solares. Muestra cuánta energía está generando tu sistema solar."
     },
     "loads": {
-      "title": "Cargas",
+      "title": "Cargas CA",
       "tooltip": "El consumo total de energía de todas las cargas conectadas. Muestra cuánta energía están utilizando tus dispositivos."
     },
     "pvCharger": {
-      "title": "Cargador PV",
+      "title": "Cargador FV",
       "tooltip": "La potencia del cargador fotovoltaico, que convierte la energía solar en energía CC para cargar la batería."
     },
     "mppt": {
@@ -1462,5 +1465,6 @@
   "tankCapacity": "Capacidad del Tanque",
   "tankFluidType": "Tipo de Líquido del Tanque",
   "tankLevel": "Nivel del Tanque",
-  "tankRemainingFluid": "Líquido Restante del Tanque"
+  "tankRemainingFluid": "Líquido Restante del Tanque",
+  "Local Time": "Hora Local"
 }

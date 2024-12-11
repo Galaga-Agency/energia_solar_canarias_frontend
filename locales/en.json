@@ -532,7 +532,10 @@
       "tooltip": "The battery stores energy produced by solar panels for use when there is no sunlight. It helps provide energy when demand exceeds solar production.",
       "voltage": "Voltage",
       "current": "Current",
-      "temperature": "Temperature"
+      "temperature": "Temperature",
+      "idle": "Idle",
+      "charging": "Charging",
+      "discharging": "Discharging"
     },
     "inverter": {
       "title": "Inverter",
@@ -558,5 +561,6 @@
   "tankCapacity": "Tank Capacity",
   "tankFluidType": "Tank Fluid Type",
   "tankLevel": "Tank Level",
-  "tankRemainingFluid": "Tank Remaining Fluid"
+  "tankRemainingFluid": "Tank Remaining Fluid",
+  "Local Time": "Local Time"
 }

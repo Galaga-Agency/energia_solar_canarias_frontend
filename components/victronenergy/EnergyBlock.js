@@ -47,7 +47,11 @@ const EnergyBlock = ({
           <h3 className="text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
             {title}
           </h3>
-          <p className="text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-blue-700 dark:from-custom-yellow dark:to-yellow-500 bg-clip-text text-transparent">
+          <p
+            className={`text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-blue-700 dark:from-custom-yellow dark:to-yellow-500 bg-clip-text text-transparent ${
+              isBlinking && "animate-double-blink"
+            }`}
+          >
             {value !== null ? `${value} ${unit}` : "-"}
           </p>
         </div>

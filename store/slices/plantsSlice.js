@@ -58,7 +58,7 @@ export const fetchPlantDetails = createAsyncThunk(
         provider,
       });
       if (!plantDetails) throw new Error("Plant details not found");
-      console.log("plant details in redux: ", plantDetails);
+      // console.log("plant details in redux: ", plantDetails);
       return plantDetails;
     } catch (error) {
       console.error("Fetch plant details error:", error);
@@ -249,20 +249,20 @@ export const fetchVictronEnergyWeatherData = createAsyncThunk(
 
 export const fetchVictronEnergyGraphData = createAsyncThunk(
   "plants/fetchVictronEnergyGraphData",
-  async (
-    { plantId, interval, type, fechaInicio, fechaFin, token },
-    { rejectWithValue }
-  ) => {
+  async ({ id, interval, type, start, end, token }, { rejectWithValue }) => {
+    if (!token) {
+      return rejectWithValue("No authentication token available");
+    }
+
     try {
       const response = await fetchVictronEnergyGraphDataAPI({
-        plantId,
+        plantId: id,
         interval,
         type,
-        fechaInicio,
-        fechaFin,
+        fechaInicio: start,
+        fechaFin: end,
         token,
       });
-      console.log("Graph Data:", response);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);

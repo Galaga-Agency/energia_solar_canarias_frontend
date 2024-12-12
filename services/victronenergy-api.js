@@ -43,7 +43,7 @@ export const fetchVictronEnergyGraphDataAPI = async ({
   token,
 }) => {
   try {
-    console.log("Fetching with body --->", {
+    console.log("API call with params:", {
       plantId,
       interval,
       type,

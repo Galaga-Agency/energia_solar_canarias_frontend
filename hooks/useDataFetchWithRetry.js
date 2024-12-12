@@ -13,27 +13,55 @@ export const useDataFetchWithRetry = ({
   const dispatch = useDispatch();
   const [retryCount, setRetryCount] = useState(0);
   const [hasEmptyData, setHasEmptyData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFetch = useCallback(
-    async (...args) => {
+    async (params) => {
+      if (!token) {
+        console.error("Token is missing:", token);
+        throw new Error("No authentication token available");
+      }
+
+      setIsLoading(true);
+
       try {
-        await dispatch(fetchAction(...args, token));
+        // Create a complete params object with token
+        const completeParams = {
+          ...params,
+          token,
+        };
+
+        console.log("Fetching with complete params:", completeParams);
+
+        const result = await dispatch(fetchAction(completeParams)).unwrap();
+        console.log("Fetch result:", result);
+
+        if (!validateData(result)) {
+          setHasEmptyData(true);
+          throw new Error("Invalid or empty data received");
+        }
+
+        setHasEmptyData(false);
+        setIsLoading(false);
+        return result;
       } catch (error) {
         console.error("Error fetching data:", error);
         setHasEmptyData(true);
+        setIsLoading(false);
+        throw error;
       }
     },
-    [dispatch, fetchAction]
+    [dispatch, fetchAction, token, validateData]
   );
 
-  // Check data and trigger retries if needed
+  // Retry mechanism
   useEffect(() => {
     if (!data || !validateData(data)) {
       if (retryCount < maxRetries) {
         setHasEmptyData(true);
         const retryTimer = setTimeout(() => {
+          console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
           setRetryCount((prev) => prev + 1);
-          handleFetch();
         }, retryDelay);
 
         return () => clearTimeout(retryTimer);
@@ -42,7 +70,7 @@ export const useDataFetchWithRetry = ({
       setHasEmptyData(false);
       setRetryCount(0);
     }
-  }, [data, retryCount, maxRetries, handleFetch, retryDelay, validateData]);
+  }, [data, retryCount, maxRetries, retryDelay, validateData]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -55,7 +83,7 @@ export const useDataFetchWithRetry = ({
 
   return {
     handleFetch,
-    isLoading: hasEmptyData && retryCount < maxRetries,
+    isLoading,
     retryCount,
     hasEmptyData,
   };

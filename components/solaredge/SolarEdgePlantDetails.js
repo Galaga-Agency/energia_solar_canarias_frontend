@@ -33,6 +33,177 @@ import EnvironmentalBenefits from "@/components/solaredge/EnvironmentalBenefits"
 import BatteryIndicator from "@/components/BatteryIndicator";
 import EnergyStatistics from "@/components/solaredge/EnergyStatistics";
 import { IoFlashOutline } from "react-icons/io5";
+import SolarEdgeEquipmentDetails from "./SolarEdgeEquipmentDetails";
+import AlertsOverview from "./AlertsOverview";
+import EnergyComparisonChart from "./EnergyComparisonChart";
+
+const equipmentData = {
+  inversores: [
+    {
+      name: "SE10K",
+      count: 3,
+      items: [
+        {
+          serialNumber: "7B052213-B5",
+          productCode: "SE10K-RWS48BEN4",
+          communication: "RS485",
+          dsp1: "1.20.1648",
+          dsp2: "2.20.1307",
+          dsp3: "NA",
+          cpuVersion: "4.19.39",
+        },
+        {
+          serialNumber: "7E043030-E2",
+          productCode: "SE10K-RWS48BEN4",
+          communication: "RS485",
+          dsp1: "1.20.1648",
+          dsp2: "2.20.1307",
+          dsp3: "NA",
+          cpuVersion: "4.19.39",
+        },
+        {
+          serialNumber: "7E043EDB-9B",
+          productCode: "SE10K-RWS48BEN4",
+          communication: "RS485",
+          dsp1: "1.20.1648",
+          dsp2: "2.20.1307",
+          dsp3: "NA",
+          cpuVersion: "4.19.39",
+        },
+      ],
+    },
+  ],
+  optimizadores: [
+    {
+      model: "P401",
+      count: 60,
+      items: [],
+    },
+    {
+      model: "S500",
+      count: 23,
+      items: [],
+    },
+  ],
+  almacenamiento: [
+    {
+      model: "48V_LG",
+      capacity: "9.8KWh",
+      count: 1,
+      items: [],
+    },
+    {
+      model: "48V_BYD",
+      capacity: "24KWh",
+      count: 1,
+      items: [],
+    },
+  ],
+  meters: [
+    {
+      name: "Export Import",
+      count: 1,
+      items: [
+        {
+          serialNumber: "5064337",
+          type: "Export-Import Meter",
+          firmware: "3.0021",
+        },
+      ],
+    },
+  ],
+};
+
+const mockAlerts = [
+  {
+    id: 1,
+    severity: 5,
+    message: "Problema recurrente con la tensión de la red",
+    type: "networkVoltage",
+    component: "Inverter 2",
+    date: "2024-12-10T10:20:00",
+    status: "Abiertas",
+    category: "Configuración instalación",
+    serialNumber: "7E043030-E2",
+  },
+  {
+    id: 2,
+    severity: 4,
+    message: "Interrupción en la tensión de la red",
+    type: "networkInterruption",
+    component: "Inverter 1",
+    date: "2024-11-28T14:40:00",
+    status: "Abierta (silenciada)",
+    category: "Configuración instalación",
+    serialNumber: "7E043EDB-9B",
+  },
+  {
+    id: 3,
+    severity: 4,
+    message: "Interrupción en la tensión de la red",
+    type: "networkInterruption",
+    component: "Inverter 1",
+    date: "2024-11-22T11:40:00",
+    status: "Cerrada",
+    category: "Configuración instalación",
+    serialNumber: "7B052213-B5",
+  },
+  {
+    id: 4,
+    severity: 3,
+    message: "Fluctuación en la generación de energía",
+    type: "generationFluctuation",
+    component: "Inverter 3",
+    date: "2024-12-08T09:30:00",
+    status: "Abiertas",
+    category: "Monitoreo de rendimiento",
+    serialNumber: "8D014111-B4",
+  },
+  {
+    id: 5,
+    severity: 2,
+    message: "Advertencia de desconexión de comunicación",
+    type: "communicationIssue",
+    component: "Inverter 4",
+    date: "2024-12-01T16:00:00",
+    status: "Cerrada",
+    category: "Mantenimiento",
+    serialNumber: "3C023111-D3",
+  },
+  {
+    id: 6,
+    severity: 3,
+    message: "Baja eficiencia de los paneles solares",
+    type: "panelEfficiency",
+    component: "Inverter 5",
+    date: "2024-12-05T12:50:00",
+    status: "Abierta",
+    category: "Monitoreo de rendimiento",
+    serialNumber: "7D043322-F1",
+  },
+  {
+    id: 7,
+    severity: 5,
+    message: "Fallo crítico en el inversor principal",
+    type: "criticalFailure",
+    component: "Inverter 1",
+    date: "2024-12-12T13:20:00",
+    status: "Abierta",
+    category: "Mantenimiento",
+    serialNumber: "5B032221-C4",
+  },
+  {
+    id: 8,
+    severity: 2,
+    message: "Baja radiación solar detectada",
+    type: "solarRadiation",
+    component: "Inverter 2",
+    date: "2024-12-13T07:10:00",
+    status: "Cerrada",
+    category: "Monitoreo ambiental",
+    serialNumber: "9F041112-F5",
+  },
+];
 
 const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -47,6 +218,8 @@ const SolarEdgePlantDetails = React.memo(
       if (!plant?.data?.details) return null;
       return plant.data.details;
     }, [plant]);
+
+    console.log("Solaredge plant details: ", solaredgePlant);
 
     const batteryLevel =
       solaredgePlant?.siteCurrentPowerFlow?.STORAGE?.chargeLevel;
@@ -201,7 +374,10 @@ const SolarEdgePlantDetails = React.memo(
           <header className="flex justify-between items-center mb-6">
             <IoArrowBackCircle
               className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
-              onClick={() => window.history.back()}
+              onClick={(e) => {
+                e.stopPropagation();
+                window.history.back();
+              }}
             />
             <div className="flex items-center ml-auto">
               <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -312,6 +488,11 @@ const SolarEdgePlantDetails = React.memo(
           {/* Energy Flow */}
           <SolarEdgeEnergyFlowDisplay provider={solaredgePlant?.organization} />
 
+          <section className="flex flex-col mb-6 md:flex-row gap-6 w-full">
+            <SolarEdgeEquipmentDetails equipmentData={equipmentData} t={t} />
+            <AlertsOverview alerts={mockAlerts} />
+          </section>
+
           <div className="flex flex-col xl:flex-row xl:gap-6 w-full">
             {/* Energetic Statistics */}
             <EnergyStatistics
@@ -366,6 +547,11 @@ const SolarEdgePlantDetails = React.memo(
           <SolarEdgeGraphDisplay
             plantId={solaredgePlant?.id}
             title={t("plantAnalytics")}
+          />
+          <EnergyComparisonChart
+            plantId={solaredgePlant?.id}
+            installationDate={solaredgePlant?.installationDate}
+            token={token}
           />
         </div>
       </PageTransition>

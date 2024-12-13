@@ -15,6 +15,7 @@ import {
   fetchGoodweWeatherDataAPI,
 } from "@/services/goodwe-api";
 import {
+  fetchSolarEdgeComparisonGraphAPI,
   fetchSolarEdgeGraphDataAPI,
   fetchSolarEdgeOverviewAPI,
   fetchSolarEdgeRealtimeDataAPI,
@@ -170,7 +171,7 @@ export const fetchSolarEdgeGraphData = createAsyncThunk(
   ) => {
     try {
       const response = await fetchSolarEdgeGraphDataAPI({
-        plantId,
+        id: plantId,
         dia,
         fechaFin,
         fechaInicio,
@@ -222,6 +223,23 @@ export const fetchSolarEdgeOverview = createAsyncThunk(
     try {
       const data = await fetchSolarEdgeOverviewAPI({ plantId, token });
       return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchSolarEdgeComparisonGraph = createAsyncThunk(
+  "plants/fetchSolarEdgeComparisonGraph",
+  async ({ plantId, timeUnit, date, token }, { rejectWithValue }) => {
+    try {
+      const response = await fetchSolarEdgeComparisonGraphAPI({
+        plantId,
+        timeUnit,
+        date,
+        token,
+      });
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -311,6 +329,9 @@ const initialState = {
   overview: null,
   overviewLoading: false,
   overviewError: null,
+  comparisonData: null,
+  comparisonLoading: false,
+  comparisonError: null,
 };
 
 const plantsSlice = createSlice({
@@ -505,6 +526,18 @@ const plantsSlice = createSlice({
         state.overviewLoading = false;
         state.overviewError = action.payload;
       })
+      .addCase(fetchSolarEdgeComparisonGraph.pending, (state) => {
+        state.comparisonLoading = true;
+        state.comparisonError = null;
+      })
+      .addCase(fetchSolarEdgeComparisonGraph.fulfilled, (state, action) => {
+        state.comparisonLoading = false;
+        state.comparisonData = action.payload;
+      })
+      .addCase(fetchSolarEdgeComparisonGraph.rejected, (state, action) => {
+        state.comparisonLoading = false;
+        state.comparisonError = action.payload;
+      })
 
       // Victron Energy
       .addCase(fetchVictronEnergyWeatherData.pending, (state) => {
@@ -617,6 +650,10 @@ export const selectLoadingBenefits = (state) => state.plants.loadingBenefits;
 export const selectErrorBenefits = (state) => state.plants.errorBenefits;
 export const selectPlantOverview = (state) => state.plants.overview;
 export const selectOverviewLoading = (state) => state.plants.overviewLoading;
+export const selectComparisonData = (state) => state.plants.comparisonData;
+export const selectComparisonLoading = (state) =>
+  state.plants.comparisonLoading;
+export const selectComparisonError = (state) => state.plants.comparisonError;
 
 export const {
   clearPlants,

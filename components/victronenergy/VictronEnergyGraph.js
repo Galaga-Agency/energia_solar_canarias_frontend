@@ -95,7 +95,7 @@ const VictronEnergyGraph = ({ plantId }) => {
   const [forecastData, setForecastData] = useState(null);
   const [isForecastLoading, setIsForecastLoading] = useState(false);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
-  const [currentRange, setCurrentRange] = useState({ type: "last3Hours" });
+  const [currentRange, setCurrentRange] = useState({ type: "today" });
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [authError, setAuthError] = useState(false);
 
@@ -111,7 +111,7 @@ const VictronEnergyGraph = ({ plantId }) => {
   }, []);
 
   const canShowForecast = useCallback((rangeType) => {
-    return ["today", "thisWeek", "thisMonth", "thisYear"].includes(rangeType);
+    return ["today"].includes(rangeType);
   }, []);
 
   const {
@@ -173,13 +173,16 @@ const VictronEnergyGraph = ({ plantId }) => {
         case "last6months":
           return { interval: "months", type: "live_feed" };
         case "today":
-        case "thisWeek":
-        case "thisMonth":
-        case "thisYear":
           return {
-            interval: rangeType === "today" ? "hours" : "days",
+            interval: "hours",
             type: showForecast ? "forecast" : "live_feed",
           };
+        case "thisWeek":
+          return { interval: "days", type: "live_feed" };
+        case "thisMonth":
+          return { interval: "days", type: "live_feed" };
+        case "thisYear":
+          return { interval: "months", type: "live_feed" };
         case "last12months":
           return { interval: "months", type: "live_feed" };
         case "yesterday":
@@ -218,10 +221,7 @@ const VictronEnergyGraph = ({ plantId }) => {
       currentHour.setMinutes(0, 0, 0);
 
       // For ranges that can have forecasts
-      if (
-        showForecast &&
-        ["today", "thisWeek", "thisMonth", "thisYear"].includes(range.type)
-      ) {
+      if (showForecast && ["today"].includes(range.type)) {
         switch (range.type) {
           case "today": {
             return {
@@ -637,7 +637,7 @@ const VictronEnergyGraph = ({ plantId }) => {
           className="px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto ml-auto"
           onClick={() => setIsDateModalOpen(true)}
         >
-          {currentRange.type}
+          {t(currentRange.type)}
         </button>
       </div>
 
@@ -721,6 +721,38 @@ const VictronEnergyGraph = ({ plantId }) => {
                   verticalAlign="top"
                   height={36}
                   className="text-custom-dark-blue dark:text-custom-light-gray"
+                  payload={
+                    showForecast && currentRange.type === "today"
+                      ? [
+                          {
+                            value: t("Solar previsto"),
+                            type: "line",
+                            color: COLORS.solarPredicted,
+                          },
+                          {
+                            value: t("Consumo previsto"),
+                            type: "line",
+                            color: COLORS.consumptionPredicted,
+                          },
+                        ]
+                      : [
+                          {
+                            value: t("Consumo"),
+                            type: "line",
+                            color: COLORS.consumption,
+                          },
+                          {
+                            value: t("Solar"),
+                            type: "line",
+                            color: COLORS.solar,
+                          },
+                          {
+                            value: t("Batería"),
+                            type: "line",
+                            color: COLORS.battery,
+                          },
+                        ]
+                  }
                 />
 
                 <Line

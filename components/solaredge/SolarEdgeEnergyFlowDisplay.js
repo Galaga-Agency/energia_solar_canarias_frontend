@@ -55,11 +55,11 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
 
       const parsedData = {
         powerflow: {
-          load: response.siteCurrentPowerFlow.LOAD.currentPower,
-          pv: response.siteCurrentPowerFlow.PV.currentPower,
-          grid: response.siteCurrentPowerFlow.GRID.currentPower,
-          soc: response.siteCurrentPowerFlow.STORAGE?.chargeLevel || 0,
-          unit: response.siteCurrentPowerFlow.unit,
+          load: response.siteCurrentPowerFlow?.LOAD?.currentPower ?? 0,
+          pv: response.siteCurrentPowerFlow?.PV?.currentPower ?? 0,
+          grid: response.siteCurrentPowerFlow?.GRID?.currentPower ?? 0,
+          soc: response.siteCurrentPowerFlow?.STORAGE?.chargeLevel ?? 0,
+          unit: response.siteCurrentPowerFlow?.unit ?? "kW",
         },
       };
 

@@ -34,28 +34,29 @@ import {
 import { Info } from "lucide-react";
 import PercentageBar from "@/components/solaredge/PercentageBar";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import { useDataFetchWithRetry } from "@/hooks/useDataFetchWithRetry"; // Import your custom hook
+import { useParams } from "next/navigation";
 
-const SolarEdgeGraphDisplay = ({ plantId, title }) => {
+const SolarEdgeGraphDisplay = ({ title }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isMobile } = useDeviceType();
-
-  // State for date range and retries
   const [range, setRange] = useState("DAY");
   const [customRange, setCustomRange] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-
-  // Redux selectors
+  const [retryCount, setRetryCount] = useState(0);
+  const [hasEmptyData, setHasEmptyData] = useState(false);
+  const maxRetries = 3;
+  const retryDelay = 1000;
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
   const token = user?.tokenIdentificador;
   const theme = useSelector(selectTheme);
+  const params = useParams();
+  const plantId = params?.plantId;
 
-  // Define only the curves we want to show
   const VISIBLE_CURVES = [
     {
       dataKey: "selfConsumption",
@@ -127,22 +128,90 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     }
   }, [range, customRange, calculateStartDate]);
 
-  const {
+  const handleFetch = useCallback(
+    async (params) => {
+      try {
+        console.log("Fetching with params:", params);
+        await dispatch(
+          fetchSolarEdgeGraphData({
+            plantId: params.id,
+            dia: params.dia,
+            fechaInicio: params.fechaInicio,
+            fechaFin: params.fechaFin,
+            token: params.token,
+          })
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setHasEmptyData(true);
+      }
+    },
+    [dispatch]
+  );
+
+  // Update validateData function
+  useEffect(() => {
+    const validateData = (data) => {
+      if (!data) return false;
+
+      // Check if we have the required arrays with data
+      const requiredArrays = [
+        "consumption",
+        "export",
+        "import",
+        "selfConsumption",
+        "solarProduction",
+      ];
+      return requiredArrays.every(
+        (key) => Array.isArray(data[key]) && data[key].length > 0
+      );
+    };
+
+    const isDataValid = validateData(graphData);
+    console.log("Validation check:", { graphData, isDataValid });
+
+    if (!isDataValid) {
+      if (retryCount < maxRetries) {
+        setHasEmptyData(true);
+        const retryTimer = setTimeout(() => {
+          setRetryCount((prev) => prev + 1);
+          handleFetch({
+            id: plantId,
+            dia:
+              range === "DAY"
+                ? "QUARTER_OF_AN_HOUR"
+                : range === "YEAR"
+                ? "MONTH"
+                : "DAY",
+            fechaInicio: formatDate(
+              customRange ? startDate : calculateStartDate()
+            ),
+            fechaFin: formatDate(customRange ? endDate : new Date()),
+            token,
+          });
+        }, retryDelay);
+        return () => clearTimeout(retryTimer);
+      }
+    } else {
+      setHasEmptyData(false);
+      setRetryCount(0);
+    }
+  }, [
+    graphData,
+    retryCount,
     handleFetch,
-    isLoading: retryLoading,
-    hasEmptyData,
-  } = useDataFetchWithRetry({
-    fetchAction: fetchSolarEdgeGraphData,
-    clearAction: clearGraphData,
-    data: graphData,
-    validateData: (data) => Boolean(data),
-    maxRetries: 3,
-    retryDelay: 1000,
-  });
+    plantId,
+    range,
+    customRange,
+    startDate,
+    endDate,
+    token,
+    calculateStartDate,
+  ]);
 
   useEffect(() => {
     handleFetch({
-      plantId,
+      id: plantId,
       dia:
         range === "DAY"
           ? "QUARTER_OF_AN_HOUR"
@@ -164,19 +233,25 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     token,
   ]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearGraphData());
+    };
+  }, [dispatch]);
+
   const transformedData = useMemo(() => {
     if (!graphData || isLoading) return [];
 
-    const hasEmptyArray = Object.keys(graphData).some(
-      (key) => Array.isArray(graphData[key]) && graphData[key].length === 0
-    );
-
-    if (hasEmptyArray && retryLoading) {
-      return [];
-    }
-
     const mergedData = {};
-    Object.keys(graphData).forEach((key) => {
+    const dataKeys = [
+      "consumption",
+      "export",
+      "import",
+      "selfConsumption",
+      "solarProduction",
+    ];
+
+    dataKeys.forEach((key) => {
       if (Array.isArray(graphData[key])) {
         graphData[key].forEach(({ date, value }) => {
           if (!mergedData[date]) mergedData[date] = { date };
@@ -188,7 +263,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
     return Object.values(mergedData).sort(
       (a, b) => new Date(a.date) - new Date(b.date)
     );
-  }, [graphData, isLoading, retryLoading]);
+  }, [graphData, isLoading]);
 
   const filteredData = useMemo(() => {
     if (!transformedData.length) return [];
@@ -282,19 +357,13 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
   };
 
   const handleButtonClick = () => {
-    // Ensure that the token is retrieved before calling the fetch
-    const token = user?.tokenIdentificador;
-    console.log("Token before fetch:", token); // Log the token to ensure it's available
-
-    // If the token is missing, prevent the fetch from happening
     if (!token) {
       console.error("Token is missing! Cannot fetch data.");
       return;
     }
 
-    // Trigger the handleFetch function
     handleFetch({
-      plantId,
+      id: plantId,
       dia:
         range === "DAY"
           ? "QUARTER_OF_AN_HOUR"
@@ -303,7 +372,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
           : "DAY",
       fechaInicio: formatDate(customRange ? startDate : calculateStartDate()),
       fechaFin: formatDate(customRange ? endDate : new Date()),
-      token, // Pass token here
+      token,
     });
   };
 
@@ -359,12 +428,12 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
           </h2>
           <button
             onClick={handleButtonClick}
-            disabled={isLoading || hasEmptyData}
+            disabled={isLoading}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
           >
             <BiRefresh
               className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                isLoading || hasEmptyData ? "animate-spin" : ""
+                isLoading ? "animate-spin" : ""
               }`}
             />
           </button>
@@ -386,7 +455,6 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
             <option value="CICLO">{t("billingCycle")}</option>
             <option value="CUSTOM">{t("custom")}</option>
           </select>
-
           {customRange && (
             <div className="flex flex-col md:flex-row gap-4">
               <DatePicker
@@ -420,14 +488,16 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
         </div>
       </div>
 
-      {isLoading || hasEmptyData ? (
+      {isLoading ? (
         <SolarEdgeGraphDisplaySkeleton theme={theme} />
       ) : filteredData.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 gap-4">
           <p className="text-lg text-gray-500 dark:text-gray-400">
             {t("noDataAvailable")}
           </p>
-          <PrimaryButton onClick={handleFetch}>{t("tryAgain")}</PrimaryButton>
+          <PrimaryButton onClick={handleButtonClick}>
+            {t("tryAgain")}
+          </PrimaryButton>
         </div>
       ) : (
         <>
@@ -435,8 +505,8 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
           <div className="mb-6 flex flex-col gap-6">
             <PercentageBar
               title={t("Producción del Sistema")}
-              value1={graphData.totalSelfConsumption}
-              value2={graphData.totalExport}
+              value1={graphData?.totalSelfConsumption}
+              value2={graphData?.totalExport}
               label1={t("Autoconsumo")}
               label2={t("Exportada")}
               color1="#4CAF50"
@@ -444,8 +514,8 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
             />
             <PercentageBar
               title={t("Consumo")}
-              value1={graphData.totalSelfConsumption}
-              value2={graphData.totalImport}
+              value1={graphData?.totalSelfConsumption}
+              value2={graphData?.totalImport}
               label1={t("Autoconsumo")}
               label2={t("Importada")}
               color1="#4CAF50"
@@ -464,7 +534,7 @@ const SolarEdgeGraphDisplay = ({ plantId, title }) => {
                 bottom: 10,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
               <XAxis
                 dataKey="date"
                 tickFormatter={formatXAxis}

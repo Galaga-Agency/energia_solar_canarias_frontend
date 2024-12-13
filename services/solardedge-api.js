@@ -3,13 +3,18 @@ const USUARIO = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const fetchSolarEdgeGraphDataAPI = async ({
-  plantId,
+  id,
   dia,
   fechaInicio,
   fechaFin,
   token,
 }) => {
-  console.log("Token used for API call:", token);
+  // console.log("Token used for API call:", {
+  //   id,
+  //   dia,
+  //   fechaInicio,
+  //   fechaFin,
+  // });
 
   try {
     const response = await fetch(
@@ -23,7 +28,7 @@ export const fetchSolarEdgeGraphDataAPI = async ({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          id: plantId,
+          id,
           dia,
           fechaInicio,
           fechaFin,
@@ -147,6 +152,54 @@ export const fetchSolarEdgeOverviewAPI = async ({ plantId, token }) => {
     return data.data;
   } catch (error) {
     console.error("Error fetching SolarEdge overview:", error);
+    throw error;
+  }
+};
+
+export const fetchSolarEdgeComparisonGraphAPI = async ({
+  plantId,
+  timeUnit,
+  date,
+  token,
+}) => {
+  console.log("passed in api call: ", {
+    plantId,
+    timeUnit,
+    date,
+    token,
+  });
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/grafica/comparacion/${plantId}?proveedor=solaredge`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          timeUnit,
+          date,
+        }),
+      }
+    );
+
+    const clonedResponse = response.clone();
+
+    if (!response.ok) {
+      const errorData = await clonedResponse.json().catch(() => ({}));
+      console.error("Error Response:", errorData);
+      throw new Error(errorData.message || "Failed to fetch comparison data");
+    }
+
+    const data = await response.json();
+    console.log("Comparison Data Response:", data);
+
+    return data?.data;
+  } catch (error) {
+    console.error("Error fetching SolarEdge comparison data:", error);
     throw error;
   }
 };

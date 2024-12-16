@@ -74,7 +74,6 @@ const AlertsModal = ({ isOpen, onClose, alerts: initialAlerts = [] }) => {
   );
 
   useEffect(() => {
-    console.log("===== FILTER DEBUG =====");
     let result = [...initialAlerts];
 
     if (filters.severity.length > 0) {
@@ -91,11 +90,11 @@ const AlertsModal = ({ isOpen, onClose, alerts: initialAlerts = [] }) => {
         [FILTER_KEYS.STATUS.CLOSED_MUTED]: ["Cerrada (silenciada)"],
       };
 
-      console.log("Filtering by status:", {
-        currentFilter: filters.status,
-        matchingStatuses: statusMatches[filters.status],
-        currentAlertStatuses: result.map((a) => a.status),
-      });
+      // console.log("Filtering by status:", {
+      //   currentFilter: filters.status,
+      //   matchingStatuses: statusMatches[filters.status],
+      //   currentAlertStatuses: result.map((a) => a.status),
+      // });
 
       result = result.filter((alert) =>
         statusMatches[filters.status]?.includes(alert.status)
@@ -233,7 +232,7 @@ const AlertsModal = ({ isOpen, onClose, alerts: initialAlerts = [] }) => {
                 <div className="relative">
                   <button
                     onClick={() => setShowDatePicker(!showDatePicker)}
-                    className="font-secondary text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
+                    className="font-secondary dark:border dark:border-gray-200/50 text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
                   >
                     <span>
                       {filters.date

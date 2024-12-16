@@ -56,10 +56,10 @@ const ActionDropdown = ({ selectedCount }) => {
   };
 
   return (
-    <div className="relative inline-block text-left z-50" ref={dropdownRef}>
+    <div className="relative inline-block text-left z-50 " ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="h-full w-max font-secondary text-md flex items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
+        className="h-full dark:border dark:border-gray-200/50 w-max font-secondary text-md flex items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
       >
         <span className="mr-2 font-secondary text-md">
           {t("actions")} ({selectedCount})

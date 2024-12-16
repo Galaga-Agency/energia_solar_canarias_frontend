@@ -20,11 +20,11 @@ const CustomSelect = ({ value, onChange, options, label, className }) => {
       {/* Dropdown Button */}
       <button
         onClick={handleToggle}
-        className="h-full w-max font-secondary text-md flex items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
+        className="h-full w-max font-secondary text-md flex items-center text-sm dark:border dark:border-gray-200/50 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
       >
         <span className="mr-2">{t(label)}</span>
         <span className="ml-auto">{value}</span>
-        <BsChevronDown className="ml-2" />
+        <BsChevronDown className="ml-2 mt-1 " />
       </button>
 
       {/* Dropdown Menu */}
@@ -34,7 +34,7 @@ const CustomSelect = ({ value, onChange, options, label, className }) => {
             <div
               key={option.value}
               onClick={() => handleSelect(option.value)}
-              className="px-4 py-2 font-secondary cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-4 py-2 font-secondary cursor-pointer text-gray-700 dark:text-gray-200 hover:text-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               {/* Translate the option label */}
               {t(option.label)}

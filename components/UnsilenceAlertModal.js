@@ -13,7 +13,7 @@ const UnsilenceAlertModal = ({ onClose }) => {
   }, [onClose]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96 text-center">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-auto text-center">
       <h2 className="text-xl font-bold mb-4 text-green-500">
         {t("unsilenceAlertsSuccess")}
       </h2>

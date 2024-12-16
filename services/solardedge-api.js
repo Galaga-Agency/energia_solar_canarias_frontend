@@ -45,7 +45,7 @@ export const fetchSolarEdgeGraphDataAPI = async ({
     }
 
     const data = await response.json();
-    console.log("Graph Data Response:", data);
+    console.log("Graph Data Response:", data.data);
 
     return data?.data;
   } catch (error) {
@@ -148,7 +148,7 @@ export const fetchSolarEdgeOverviewAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
-    console.log("Overview data response:", data);
+    // console.log("Overview data response:", data);
     return data.data;
   } catch (error) {
     console.error("Error fetching SolarEdge overview:", error);
@@ -162,17 +162,11 @@ export const fetchSolarEdgeComparisonGraphAPI = async ({
   date,
   token,
 }) => {
-  console.log("passed in api call: ", {
-    plantId,
-    timeUnit,
-    date,
-    token,
-  });
   try {
     const response = await fetch(
       `${API_BASE_URL}/plant/grafica/comparacion/${plantId}?proveedor=solaredge`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           usuario: USUARIO,
@@ -186,20 +180,44 @@ export const fetchSolarEdgeComparisonGraphAPI = async ({
       }
     );
 
-    const clonedResponse = response.clone();
-
     if (!response.ok) {
-      const errorData = await clonedResponse.json().catch(() => ({}));
-      console.error("Error Response:", errorData);
+      const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || "Failed to fetch comparison data");
     }
 
     const data = await response.json();
-    console.log("Comparison Data Response:", data);
-
     return data?.data;
   } catch (error) {
     console.error("Error fetching SolarEdge comparison data:", error);
+    throw error;
+  }
+};
+
+export const fetchSolarEdgeInventoryAPI = async ({ plantId, token }) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/inventario/${plantId}?proveedor=solaredge`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to fetch inventory data");
+    }
+
+    const data = await response.json();
+    console.log("data ----------------------> ", data);
+    return data?.data?.Inventory;
+  } catch (error) {
+    console.error("Error fetching SolarEdge inventory:", error);
     throw error;
   }
 };

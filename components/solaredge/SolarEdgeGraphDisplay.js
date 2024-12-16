@@ -10,7 +10,7 @@ import {
   Legend,
   Line,
 } from "recharts";
-import { BiRefresh } from "react-icons/bi";
+import { BiDotsVerticalRounded, BiRefresh } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 import {
   fetchSolarEdgeGraphData,
@@ -35,6 +35,9 @@ import { Info } from "lucide-react";
 import PercentageBar from "@/components/solaredge/PercentageBar";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useParams } from "next/navigation";
+import ExportModal from "../ExportModal";
+import useCSVExport from "@/hooks/useCSVExport";
+import CustomSelect from "../ui/CustomSelect";
 
 const SolarEdgeGraphDisplay = ({ title }) => {
   const { t } = useTranslation();
@@ -47,7 +50,7 @@ const SolarEdgeGraphDisplay = ({ title }) => {
   const [retryCount, setRetryCount] = useState(0);
   const [hasEmptyData, setHasEmptyData] = useState(false);
   const maxRetries = 3;
-  const retryDelay = 1000;
+  const retryDelay = Math.floor(Math.random() * 500) + 500;
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
@@ -56,6 +59,8 @@ const SolarEdgeGraphDisplay = ({ title }) => {
   const theme = useSelector(selectTheme);
   const params = useParams();
   const plantId = params?.plantId;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { downloadCSV } = useCSVExport();
 
   const VISIBLE_CURVES = [
     {
@@ -131,7 +136,6 @@ const SolarEdgeGraphDisplay = ({ title }) => {
   const handleFetch = useCallback(
     async (params) => {
       try {
-        console.log("Fetching with params:", params);
         await dispatch(
           fetchSolarEdgeGraphData({
             plantId: params.id,
@@ -168,7 +172,6 @@ const SolarEdgeGraphDisplay = ({ title }) => {
     };
 
     const isDataValid = validateData(graphData);
-    console.log("Validation check:", { graphData, isDataValid });
 
     if (!isDataValid) {
       if (retryCount < maxRetries) {
@@ -419,75 +422,106 @@ const SolarEdgeGraphDisplay = ({ title }) => {
     [renderTooltip]
   );
 
+  // console.log("filteredData: ", filteredData);
+
+  const handleExportCSV = () => {
+    // Transform the data into the desired format
+    const exportData = filteredData.map((item) => ({
+      "Hora de medición": item.date,
+      "Producción (W)": item.solarProduction || 0,
+      "A la red (W)": item.export || 0,
+      "Consumo (W)": item.consumption || 0,
+      "De la red (W)": item.import || 0,
+      "De Solar (W)": item.selfConsumption || 0,
+    }));
+
+    downloadCSV(exportData, "solar_edge_data.csv");
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
-            {title}
-          </h2>
-          <button
-            onClick={handleButtonClick}
-            disabled={isLoading}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
-          >
-            <BiRefresh
-              className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                isLoading ? "animate-spin" : ""
-              }`}
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 mb-6">
+        {/* Title and Controls Row */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+              {title}
+            </h2>
+            <button
+              onClick={handleButtonClick}
+              disabled={isLoading}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
+            >
+              <BiRefresh
+                className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
+                  isLoading ? "animate-spin" : ""
+                }`}
+              />
+            </button>
+          </div>
+          <div className="flex items-center gap-4">
+            <CustomSelect
+              value={t(range.toLowerCase())} // Pass the translated current value
+              onChange={(value) => {
+                setRange(value);
+                setCustomRange(value === "CUSTOM");
+              }}
+              label="" // Remove the label since we just want to show the value
+              options={[
+                { value: "DAY", label: "day" },
+                { value: "WEEK", label: "week" },
+                { value: "MONTH", label: "month" },
+                { value: "YEAR", label: "year" },
+                { value: "CICLO", label: "billingCycle" },
+                { value: "CUSTOM", label: "custom" },
+              ]}
+              className="text-sm" // Match the text size with the rest of the UI
             />
-          </button>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          <select
-            value={range}
-            onChange={(e) => {
-              setRange(e.target.value);
-              setCustomRange(e.target.value === "CUSTOM");
-            }}
-            className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
-          >
-            <option value="DAY">{t("day")}</option>
-            <option value="WEEK">{t("week")}</option>
-            <option value="MONTH">{t("month")}</option>
-            <option value="YEAR">{t("year")}</option>
-            <option value="CICLO">{t("billingCycle")}</option>
-            <option value="CUSTOM">{t("custom")}</option>
-          </select>
-          {customRange && (
-            <div className="flex flex-col md:flex-row gap-4">
-              <DatePicker
-                selected={startDate}
-                onChange={setStartDate}
-                selectsStart
-                startDate={startDate}
-                endDate={endDate}
-                maxDate={endDate}
-                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full"
-                placeholderText={t("startDate")}
-                dateFormat="dd/MM/yyyy"
-                dropdownMode="select"
-                openToDate={new Date()}
-              />
-              <DatePicker
-                selected={endDate}
-                onChange={setEndDate}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-                maxDate={new Date()}
-                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full"
-                placeholderText={t("endDate")}
-                dateFormat="dd/MM/yyyy"
-                dropdownMode="select"
-              />
-            </div>
-          )}
-        </div>
+        {/* Date Picker Row */}
+        {customRange && (
+          <div className="flex flex-col md:flex-row gap-4">
+            <DatePicker
+              selected={startDate}
+              onChange={setStartDate}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={endDate}
+              className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full"
+              placeholderText={t("startDate")}
+              dateFormat="dd/MM/yyyy"
+              dropdownMode="select"
+              openToDate={new Date()}
+            />
+            <DatePicker
+              selected={endDate}
+              onChange={setEndDate}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              maxDate={new Date()}
+              className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full"
+              placeholderText={t("endDate")}
+              dateFormat="dd/MM/yyyy"
+              dropdownMode="select"
+            />
+          </div>
+        )}
       </div>
 
+      {/* Content Section */}
       {isLoading ? (
         <SolarEdgeGraphDisplaySkeleton theme={theme} />
       ) : filteredData.length === 0 ? (
@@ -570,6 +604,18 @@ const SolarEdgeGraphDisplay = ({ title }) => {
             </ComposedChart>
           </ResponsiveContainer>
         </>
+      )}
+
+      {/* Export Modal */}
+      {isModalOpen && (
+        <ExportModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onExport={handleExportCSV}
+          t={t}
+          isLoading={isLoading}
+          hasData={filteredData?.length > 0}
+        />
       )}
     </div>
   );

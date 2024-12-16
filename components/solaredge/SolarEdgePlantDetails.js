@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
 import WeatherWidget from "@/components/WeatherWidget";
-import { selectUser } from "@/store/slices/userSlice";
+import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
 import SolarEdgeGraphDisplay from "@/components/solaredge/SolarEdgeGraphDisplay";
 import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
@@ -213,13 +213,14 @@ const SolarEdgePlantDetails = React.memo(
     const user = useSelector(selectUser);
     const token = useMemo(() => user?.tokenIdentificador, [user]);
     const { t } = useTranslation();
+    const isAdmin = useSelector(selectIsAdmin);
 
     const solaredgePlant = useMemo(() => {
       if (!plant?.data?.details) return null;
       return plant.data.details;
     }, [plant]);
 
-    console.log("Solaredge plant details: ", solaredgePlant);
+    // console.log("Solaredge plant details: ", solaredgePlant);
 
     const batteryLevel =
       solaredgePlant?.siteCurrentPowerFlow?.STORAGE?.chargeLevel;
@@ -376,7 +377,9 @@ const SolarEdgePlantDetails = React.memo(
               className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
               onClick={(e) => {
                 e.stopPropagation();
-                window.history.back();
+                window.location.href = isAdmin
+                  ? `/dashboard/${user.id}/admin/solaredge`
+                  : `/dashboard/${user.id}/plants`;
               }}
             />
             <div className="flex items-center ml-auto">
@@ -489,7 +492,11 @@ const SolarEdgePlantDetails = React.memo(
           <SolarEdgeEnergyFlowDisplay provider={solaredgePlant?.organization} />
 
           <section className="flex flex-col mb-6 md:flex-row gap-6 w-full">
-            <SolarEdgeEquipmentDetails equipmentData={equipmentData} t={t} />
+            <SolarEdgeEquipmentDetails
+              plantId={solaredgePlant?.id}
+              token={token}
+              t={t}
+            />
             <AlertsOverview alerts={mockAlerts} />
           </section>
 

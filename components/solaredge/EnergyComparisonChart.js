@@ -1,4 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { BiDotsVerticalRounded, BiRefresh } from "react-icons/bi";
 import {
   BarChart,
   Bar,
@@ -9,131 +12,303 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
+import {
+  Tooltip as TooltipUI,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/Tooltip";
 import {
   fetchSolarEdgeComparisonGraph,
   selectComparisonData,
+  selectComparisonError,
   selectComparisonLoading,
 } from "@/store/slices/plantsSlice";
+import { selectTheme } from "@/store/slices/themeSlice";
+import useDeviceType from "@/hooks/useDeviceType";
+import EnergyComparisonChartSkeleton from "@/components/loadingSkeletons/EnergyComparisonChartSkeleton";
+import useCSVExport from "@/hooks/useCSVExport";
+import PrimaryButton from "../ui/PrimaryButton";
+import SecondaryButton from "../ui/SecondaryButton";
+import ExportModal from "../ExportModal";
 
-const COLORS = {
-  2020: "#1976D2",
-  2021: "#E91E63",
-  2022: "#FFC107",
-  2023: "#4CAF50",
-  2024: "#00BCD4",
-};
-
-const monthNames = [
-  "Ene",
-  "Feb",
-  "Mar",
-  "Abr",
-  "May",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dic",
-];
+const COLORS = ["#2196F3", "#4CAF50", "#FFEB3B", "#FF5722"];
 
 const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { isMobile } = useDeviceType();
   const comparisonData = useSelector(selectComparisonData);
   const isLoading = useSelector(selectComparisonLoading);
+  const theme = useSelector(selectTheme);
+  const [timeUnit, setTimeUnit] = useState("MONTH");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { downloadCSV } = useCSVExport();
+  const comparisonError = useSelector(selectComparisonError);
 
-  console.log("EnergyComparisonChart mounted with:", {
-    plantId,
-    installationDate,
-    hasToken: !!token,
-  });
+  const monthNames = useMemo(
+    () => [
+      t("monthsUnits.jan"),
+      t("monthsUnits.feb"),
+      t("monthsUnits.mar"),
+      t("monthsUnits.apr"),
+      t("monthsUnits.may"),
+      t("monthsUnits.jun"),
+      t("monthsUnits.jul"),
+      t("monthsUnits.aug"),
+      t("monthsUnits.sep"),
+      t("monthsUnits.oct"),
+      t("monthsUnits.nov"),
+      t("monthsUnits.dec"),
+    ],
+    [t]
+  );
 
   useEffect(() => {
-    if (plantId && installationDate) {
-      const formattedDate = new Date(installationDate)
-        .toISOString()
-        .split("T")[0];
-      console.log("Dispatching with formatted date:", formattedDate);
-
+    if (plantId && installationDate && token) {
+      const formattedDate = new Date(installationDate).getFullYear();
       dispatch(
         fetchSolarEdgeComparisonGraph({
           plantId,
-          timeUnit: "MONTH",
-          date: formattedDate, // Send formatted date
+          timeUnit,
+          date: `${formattedDate}-01-01`,
           token,
         })
       );
-    } else {
-      console.log("Missing required props for comparison chart:", {
-        plantId,
-        installationDate,
-      });
     }
-  }, [dispatch, plantId, installationDate, token]);
+  }, [dispatch, plantId, installationDate, token, timeUnit]);
 
-  if (isLoading) {
-    return (
-      <div className="h-96 flex items-center justify-center">
-        <p className="text-gray-500">{t("loading")}</p>
-      </div>
-    );
-  }
+  const handleRefresh = () => {
+    if (plantId && installationDate && token) {
+      const formattedDate = new Date(installationDate).getFullYear();
+      dispatch(
+        fetchSolarEdgeComparisonGraph({
+          plantId,
+          timeUnit,
+          date: `${formattedDate}-01-01`,
+          token,
+        })
+      );
+    }
+  };
 
-  if (!comparisonData) {
-    return null;
-  }
-
-  // Transform data for the chart
-  const transformedData = monthNames.map((month, idx) => {
-    const monthData = { name: month };
-
-    // Get all available years from the data
-    const years = Array.from(
-      new Set(comparisonData.map((item) => new Date(item.date).getFullYear()))
-    ).sort();
-
-    // Add data for each year
-    years.forEach((year) => {
-      const monthValue = comparisonData.find((item) => {
-        const date = new Date(item.date);
-        return date.getMonth() === idx && date.getFullYear() === year;
+  const transformedData = useMemo(() => {
+    if (!comparisonData || !Array.isArray(comparisonData)) return [];
+    if (timeUnit === "MONTH") {
+      return monthNames.map((month, index) => {
+        const monthData = { name: month };
+        comparisonData.forEach((item) => {
+          const year = new Date(item.date).getFullYear();
+          if (new Date(item.date).getMonth() === index) {
+            monthData[year] = item.value || 0;
+          }
+        });
+        return monthData;
       });
-      monthData[year] = monthValue?.value || 0;
-    });
+    } else if (timeUnit === "YEAR") {
+      const years = {};
+      comparisonData.forEach((item) => {
+        const year = new Date(item.date).getFullYear();
+        if (!years[year]) years[year] = { name: year, total: 0 };
+        years[year].total += item.value || 0;
+      });
+      return Object.values(years).map((yearData) => ({
+        ...yearData,
+        name: `${yearData.name}`,
+      }));
+    }
+    return [];
+  }, [comparisonData, timeUnit, monthNames]);
 
-    return monthData;
-  });
+  const getMinWidth = () => {
+    if (!transformedData[0]) return 600;
+    const numberOfBars = Object.keys(transformedData[0]).length - 1; // subtract 1 for 'name' key
+    return Math.max(600, numberOfBars * 100); // Adjust 100 to your preferred bar spacing
+  };
+
+  const getBarSize = () => {
+    if (timeUnit === "YEAR") return isMobile ? 30 : 50;
+    return isMobile ? 10 : 15;
+  };
+
+  const handleExportCSV = () => {
+    downloadCSV(comparisonData, "energy_comparison_data.csv");
+    setIsModalOpen(false);
+  };
+
+  const renderTooltip = useCallback(
+    (name) => {
+      return (
+        <TooltipProvider>
+          <TooltipUI>
+            <TooltipContent side="top">
+              <p className="text-sm">{t(`tooltips.${name}`)}</p>
+            </TooltipContent>
+          </TooltipUI>
+        </TooltipProvider>
+      );
+    },
+    [t]
+  );
+
+  const customLegendRenderer = useCallback(
+    (props) => {
+      const { payload } = props;
+      if (!payload) return null;
+
+      return (
+        <div className="flex flex-wrap justify-center gap-4 mt-4">
+          {payload.map((entry, index) => (
+            <div key={`item-${index}`} className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-sm"
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="text-sm text-custom-dark-blue dark:text-custom-light-gray">
+                {entry.value}
+              </span>
+              {renderTooltip(entry.value.toLowerCase())}
+            </div>
+          ))}
+        </div>
+      );
+    },
+    [renderTooltip]
+  );
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mt-6">
-      <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-6">
-        {t("energyComparison")}
-      </h2>
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={transformedData}>
-          <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
-          <XAxis dataKey="name" />
-          <YAxis
-            label={{
-              value: "MWh",
-              angle: -90,
-              position: "insideLeft",
-              offset: 5,
-            }}
-          />
-          <Tooltip
-            formatter={(value) => [`${(value / 1000).toFixed(2)} MWh`, ""]}
-          />
-          <Legend />
-          {Object.keys(COLORS).map((year) => (
-            <Bar key={year} dataKey={year} fill={COLORS[year]} name={year} />
-          ))}
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="flex justify-between items-center mb-6 gap-4">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+            {t("energyComparison")}
+          </h2>
+          <button
+            onClick={handleRefresh}
+            disabled={isLoading}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
+          >
+            <BiRefresh
+              className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
+                isLoading ? "animate-spin" : ""
+              }`}
+            />
+          </button>
+        </div>
+
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+        </button>
+      </div>
+
+      <div className="flex mb-6 justify-center md:justify-start">
+        <button
+          onClick={() => setTimeUnit("MONTH")}
+          className={`py-2 px-4 w-24 rounded-l-lg text-sm font-secondary font-semibold transition-all ${
+            timeUnit === "MONTH"
+              ? "bg-custom-dark-blue dark:bg-custom-yellow text-custom-yellow dark:text-custom-dark-blue shadow-md"
+              : "bg-slate-50 dark:bg-slate-700/50 dark:text-custom-yellow text-custom-dark-blue"
+          }`}
+        >
+          {t("months")}
+        </button>
+
+        <button
+          onClick={() => setTimeUnit("YEAR")}
+          className={`py-2 px-4 w-24 rounded-r-lg text-sm font-secondary font-semibold transition-all ${
+            timeUnit === "YEAR"
+              ? "bg-custom-dark-blue dark:bg-custom-yellow text-custom-yellow dark:text-custom-dark-blue shadow-md"
+              : "bg-slate-50 dark:bg-slate-700/50 dark:text-custom-yellow text-custom-dark-blue"
+          }`}
+        >
+          {t("years")}
+        </button>
+      </div>
+
+      {isLoading ? (
+        <EnergyComparisonChartSkeleton theme={theme} />
+      ) : !transformedData.length || comparisonError ? (
+        <div className="flex flex-col items-center justify-center p-8 gap-4">
+          <p className="text-lg text-gray-500 dark:text-gray-400">
+            {t("noDataAvailable")}
+          </p>
+          <PrimaryButton onClick={handleRefresh}>{t("tryAgain")}</PrimaryButton>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <div style={{ minWidth: `${getMinWidth()}px` }}>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                data={transformedData}
+                margin={{
+                  top: 10,
+                  right: 30,
+                  left: 30,
+                  bottom: 10,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis
+                  tickFormatter={(value) => {
+                    if (value >= 1000000)
+                      return `${(value / 1000000).toFixed(0)}M`;
+                    if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
+                    return value;
+                  }}
+                  tick={{ fontSize: 12 }}
+                  label={{
+                    value:
+                      timeUnit === "MONTH" ? t("units.kwh") : t("units.mwh"),
+                    angle: -90,
+                    position: "insideLeft",
+                    offset: 5,
+                  }}
+                />
+
+                <Tooltip
+                  formatter={(value) => {
+                    if (value >= 1000000)
+                      return [`${(value / 1000000).toFixed(1)} MWh`];
+                    if (value >= 1000)
+                      return [`${(value / 1000).toFixed(1)} KWh`];
+                    return [`${value} Wh`];
+                  }}
+                />
+
+                {timeUnit === "MONTH" && (
+                  <Legend content={customLegendRenderer} />
+                )}
+                {Object.keys(transformedData[0] || {}).map((key, index) =>
+                  key !== "name" ? (
+                    <Bar
+                      key={key}
+                      dataKey={key}
+                      radius={[10, 10, 0, 0]}
+                      fill={COLORS[index % COLORS.length]}
+                      barSize={getBarSize()}
+                    />
+                  ) : null
+                )}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {isModalOpen && (
+        <ExportModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onExport={handleExportCSV}
+          t={t}
+          isLoading={isLoading}
+          hasData={comparisonData?.length > 0}
+        />
+      )}
     </div>
   );
 };

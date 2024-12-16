@@ -1,25 +1,35 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import SecondaryButton from "./ui/SecondaryButton";
+import PrimaryButton from "./ui/PrimaryButton";
 
-const CloseAlertModal = ({ onClose }) => {
+const CloseAlertModal = ({ onClose, onSave }) => {
   const { t } = useTranslation();
 
+  const handleClose = (e) => {
+    e.stopPropagation();
+    onClose();
+  };
+
+  const handleSave = (e) => {
+    e.stopPropagation();
+    onSave();
+    onClose();
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96">
-      <h2 className="text-xl font-bold mb-4 text-red-600">
-        {t("closeAlerts")}
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-auto lg:max-w-96">
+      <h2 className="text-xl font-bold mb-4 text-red-500">
+        {t("areYouSureCloseAlerts")}
       </h2>
-      <p>{t("closeAlertDesc")}</p>
-      <div className="flex justify-between gap-4 mt-4">
-        <button
-          onClick={onClose}
-          className="bg-gray-500 text-white p-2 rounded-lg"
-        >
-          {t("cancel")}
-        </button>
-        <button className="bg-blue-500 text-white p-2 rounded-lg">
-          {t("confirm")}
-        </button>
+
+      <p className="text-gray-700 dark:text-gray-300 mb-6">
+        {t("closeAlertsWarning")}
+      </p>
+
+      <div className="flex justify-between gap-4">
+        <SecondaryButton onClick={handleClose}>{t("no")}</SecondaryButton>
+        <PrimaryButton onClick={handleSave}>{t("yes")}</PrimaryButton>
       </div>
     </div>
   );

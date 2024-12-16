@@ -17,6 +17,7 @@ import {
 import {
   fetchSolarEdgeComparisonGraphAPI,
   fetchSolarEdgeGraphDataAPI,
+  fetchSolarEdgeInventoryAPI,
   fetchSolarEdgeOverviewAPI,
   fetchSolarEdgeRealtimeDataAPI,
   fetchSolarEdgeWeatherDataAPI,
@@ -231,8 +232,9 @@ export const fetchSolarEdgeOverview = createAsyncThunk(
 
 export const fetchSolarEdgeComparisonGraph = createAsyncThunk(
   "plants/fetchSolarEdgeComparisonGraph",
-  async ({ plantId, timeUnit, date, token }, { rejectWithValue }) => {
+  async ({ plantId, timeUnit, date, token }, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(clearSolarEdgeComparisonGraph());
       const response = await fetchSolarEdgeComparisonGraphAPI({
         plantId,
         timeUnit,
@@ -240,6 +242,18 @@ export const fetchSolarEdgeComparisonGraph = createAsyncThunk(
         token,
       });
       return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchSolarEdgeInventory = createAsyncThunk(
+  "plants/fetchSolarEdgeInventory",
+  async ({ plantId, token }, { rejectWithValue }) => {
+    try {
+      const data = await fetchSolarEdgeInventoryAPI({ plantId, token });
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -332,6 +346,9 @@ const initialState = {
   comparisonData: null,
   comparisonLoading: false,
   comparisonError: null,
+  inventory: null,
+  inventoryLoading: false,
+  inventoryError: null,
 };
 
 const plantsSlice = createSlice({
@@ -352,6 +369,10 @@ const plantsSlice = createSlice({
       state.graphError = null;
       state.graphLoading = false;
       state.currentGraphRequest = null;
+    },
+    clearSolarEdgeComparisonGraph: (state) => {
+      state.comparisonData = null;
+      state.comparisonError = null;
     },
     clearRealtimeData: (state) => {
       state.realtimeData = null;
@@ -529,6 +550,7 @@ const plantsSlice = createSlice({
       .addCase(fetchSolarEdgeComparisonGraph.pending, (state) => {
         state.comparisonLoading = true;
         state.comparisonError = null;
+        state.comparisonData = null;
       })
       .addCase(fetchSolarEdgeComparisonGraph.fulfilled, (state, action) => {
         state.comparisonLoading = false;
@@ -537,6 +559,18 @@ const plantsSlice = createSlice({
       .addCase(fetchSolarEdgeComparisonGraph.rejected, (state, action) => {
         state.comparisonLoading = false;
         state.comparisonError = action.payload;
+      })
+      .addCase(fetchSolarEdgeInventory.pending, (state) => {
+        state.inventoryLoading = true;
+        state.inventoryError = null;
+      })
+      .addCase(fetchSolarEdgeInventory.fulfilled, (state, action) => {
+        state.inventoryLoading = false;
+        state.inventory = action.payload;
+      })
+      .addCase(fetchSolarEdgeInventory.rejected, (state, action) => {
+        state.inventoryLoading = false;
+        state.inventoryError = action.payload;
       })
 
       // Victron Energy
@@ -654,6 +688,9 @@ export const selectComparisonData = (state) => state.plants.comparisonData;
 export const selectComparisonLoading = (state) =>
   state.plants.comparisonLoading;
 export const selectComparisonError = (state) => state.plants.comparisonError;
+export const selectInventory = (state) => state.plants.inventory;
+export const selectInventoryLoading = (state) => state.plants.inventoryLoading;
+export const selectInventoryError = (state) => state.plants.inventoryError;
 
 export const {
   clearPlants,
@@ -661,6 +698,7 @@ export const {
   setCurrentProvider,
   clearGraphData,
   clearRealtimeData,
+  clearSolarEdgeComparisonGraph,
 } = plantsSlice.actions;
 
 export default plantsSlice.reducer;

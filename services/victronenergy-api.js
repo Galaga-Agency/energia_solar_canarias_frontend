@@ -79,7 +79,7 @@ export const fetchVictronEnergyGraphDataAPI = async ({
     }
 
     const data = await response.json();
-    console.log("Graph Data Response:", data);
+    // console.log("Graph Data Response:", data);
     return data?.data;
   } catch (error) {
     console.error("Graph data fetch error:", error);

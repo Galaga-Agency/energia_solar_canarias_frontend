@@ -1,24 +1,86 @@
-import React from "react";
-import { ChevronDown, Info } from "lucide-react";
+import React, { useEffect } from "react";
+import {
+  ChevronDown,
+  Info,
+  Battery,
+  Gauge,
+  Router,
+  Cpu,
+  Radio,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchSolarEdgeInventory,
+  selectInventory,
+  selectInventoryLoading,
+  selectInventoryError,
+} from "@/store/slices/plantsSlice";
+import { useParams } from "next/navigation";
+import { selectTheme } from "@/store/slices/themeSlice";
+import EquipmentDetailsSkeleton from "../loadingSkeletons/EquipmentDetailsSkeleton";
 
-const SolarEdgeEquipmentDetails = ({ equipmentData, t }) => {
+const SolarEdgeEquipmentDetails = ({ token, t }) => {
+  const dispatch = useDispatch();
   const [openSections, setOpenSections] = React.useState({});
   const contentRefs = React.useRef({});
+  const params = useParams();
+  const plantId = params.plantId;
+  const inventory = useSelector(selectInventory);
+  const isLoading = useSelector(selectInventoryLoading);
+  const error = useSelector(selectInventoryError);
+  const theme = useSelector(selectTheme);
 
-  if (!equipmentData) return null;
+  useEffect(() => {
+    if (plantId && token) {
+      dispatch(fetchSolarEdgeInventory({ plantId, token }));
+    }
+  }, [dispatch, plantId, token]);
 
-  const sections = Object.entries(equipmentData).map(([sectionKey, items]) => ({
-    key: sectionKey,
-    title: sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1),
-    count: items.reduce((acc, item) => acc + (item.count || 0), 0),
-    items,
-  }));
+  const getEquipmentIcon = (type) => {
+    switch (type.toLowerCase()) {
+      case "batteries":
+        return (
+          <Battery className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+        );
+      case "meters":
+        return (
+          <Gauge className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+        );
+      case "gateways":
+        return (
+          <Router className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+        );
+      case "inverters":
+        return (
+          <Cpu className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+        );
+      case "sensors":
+        return (
+          <Radio className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (isLoading) {
+    return <EquipmentDetailsSkeleton theme={theme} />;
+  }
+
+  const sections = Object.entries(inventory || {})
+    .filter(([_, items]) => Array.isArray(items) && items.length > 0)
+    .map(([sectionKey, items]) => ({
+      key: sectionKey,
+      title: sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1),
+      count: items.length,
+      items,
+    }));
 
   const renderItem = (item, isNested = false) => {
     const info = Object.entries(item)
@@ -26,7 +88,7 @@ const SolarEdgeEquipmentDetails = ({ equipmentData, t }) => {
         ([key]) =>
           !["name", "model", "serialNumber", "items", "count"].includes(key)
       )
-      .map(([key, value]) => `${key}: ${value}`)
+      .map(([key, value]) => `${t(key)}: ${value}`) // Translate each key
       .join(", ");
 
     return (
@@ -43,20 +105,30 @@ const SolarEdgeEquipmentDetails = ({ equipmentData, t }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Info className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <Info className="h-4 w-4 text-gray-500 dark:text-gray-400 cursor-pointer" />
                 </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p className="text-sm">{info}</p>
+                <TooltipContent
+                  side="right"
+                  className="dark:bg-gray-800 bg-white shadow-lg rounded-md p-3 text-sm max-w-xs"
+                >
+                  <ul className="list-none m-0 p-0 space-y-1">
+                    {info.split(", ").map((detail, idx) => (
+                      <li
+                        key={idx}
+                        className="text-gray-700 dark:text-gray-300"
+                      >
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
         </div>
-        {item.count ? (
-          <span className="text-gray-900 dark:text-gray-100 font-medium">
-            ({item.count})
-          </span>
-        ) : null}
+        <span className="text-gray-900 dark:text-gray-100 font-medium">
+          {item.SN && `SN: ${item.SN}`}
+        </span>
       </div>
     );
   };
@@ -83,47 +155,54 @@ const SolarEdgeEquipmentDetails = ({ equipmentData, t }) => {
         {t("equipment")}
       </h2>
 
-      {sections.map(({ key, title, count, items }) => (
-        <div
-          key={key}
-          className="border-b border-gray-200 dark:border-gray-700 last:border-0"
-        >
-          <button
-            onClick={() =>
-              setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))
-            }
-            className="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors duration-200 group"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-custom-dark-blue dark:text-custom-yellow font-medium">
-                {title}
-              </span>
-              {count > 0 && (
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  ({count})
-                </span>
-              )}
-            </div>
-            <ChevronDown
-              className={`h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-300 ease-in-out transform group-hover:text-custom-dark-blue dark:group-hover:text-custom-yellow ${
-                openSections[key] ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
+      {sections.length > 0 ? (
+        sections.map(({ key, title, count, items }) => (
           <div
-            ref={(el) => (contentRefs.current[key] = el)}
-            className={`overflow-hidden transition-all duration-300 ease-in-out`}
-            style={{
-              maxHeight: openSections[key]
-                ? contentRefs.current[key]?.scrollHeight + "px"
-                : "0",
-            }}
+            key={key}
+            className="border-b border-gray-200 dark:border-gray-700 last:border-0"
           >
-            <div className="pb-2">{renderItems(items)}</div>
+            <button
+              onClick={() =>
+                setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))
+              }
+              className="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors duration-200 group"
+            >
+              <div className="flex items-center gap-3">
+                {getEquipmentIcon(key)}
+                <span className="text-custom-dark-blue dark:text-custom-yellow font-medium">
+                  {title}
+                </span>
+                {count > 0 && (
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    ({count})
+                  </span>
+                )}
+              </div>
+              <ChevronDown
+                className={`h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-300 ease-in-out transform group-hover:text-custom-dark-blue dark:group-hover:text-custom-yellow ${
+                  openSections[key] ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            <div
+              ref={(el) => (contentRefs.current[key] = el)}
+              className={`overflow-hidden transition-all duration-300 ease-in-out`}
+              style={{
+                maxHeight: openSections[key]
+                  ? contentRefs.current[key]?.scrollHeight + "px"
+                  : "0",
+              }}
+            >
+              <div className="pb-2">{renderItems(items)}</div>
+            </div>
           </div>
+        ))
+      ) : (
+        <div className="p-4 text-gray-500 dark:text-gray-400">
+          {t("noEquipmentFound")}
         </div>
-      ))}
+      )}
     </div>
   );
 };

@@ -1564,8 +1564,6 @@
   "noEquipmentFound": "No se encontró equipamiento",
   "errorLoadingEquipment": "Error al cargar el equipamiento",
   "details": "Detalles",
-  "batteries": "Baterías",
-  "meters": "Contadores",
   "gateways": "Puertas de enlace",
   "inverters": "Inversores",
   "sensors": "Sensores",
@@ -1579,5 +1577,12 @@
   "connectedSolaredgeDeviceSN": "SN del dispositivo SolarEdge conectado",
   "communicationMethod": "Método de comunicación",
   "cpuVersion": "Versión de CPU",
-  "connectedOptimizers": "Optimizadores conectados"
+  "connectedOptimizers": "Optimizadores conectados",
+  "potenciaPlanta": "Potencia Planta",
+  "optimizers": "Optimizadores",
+  "batteries": "Almacenamiento",
+  "meters": "Meters",
+  "environmentalBenefitsCalculation": "El impacto positivo de la planta en el medio ambiente se calcula multiplicando la producción de energía del sistema con CO2 y millas calculadas por el promedio de factores de cálculo de vehículos de pasajeros de gasolina suministrado por la EPA estadounidense y los estándares locales.",
+  "seeCompleteCalculation": "Pulsar aquí para ver el cálculo completo",
+  "moreInfo": "Más Información"
 }

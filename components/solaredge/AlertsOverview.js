@@ -27,55 +27,74 @@ const AlertsOverview = ({ alerts }) => {
       }
       return acc;
     }, [])
-    .slice(0, 3);
+    .slice(0, 5);
+
+  const getSeverityColor = (severity) => {
+    if (severity <= 3) {
+      return "bg-yellow-500 dark:bg-yellow-500/80";
+    } else if (severity <= 5) {
+      return "bg-orange-500 dark:bg-orange-500/80";
+    }
+    return "bg-red-500 dark:bg-red-500/80";
+  };
 
   return (
     <>
-      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg backdrop-blur-sm shadow-lg">
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-4">
-            <FiAlertCircle className="text-red-500 text-xl" />
-            <h2 className="text-lg font-medium text-custom-dark-blue dark:text-custom-yellow">
-              {t("alertsTitle")} ({alerts.length})
-            </h2>
+      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md">
+            <FiAlertCircle className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
           </div>
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+            {t("alertsTitle")}
+            <span className="text-slate-500 dark:text-slate-400 text-sm ml-2">
+              ({alerts.length})
+            </span>
+          </h2>
+        </div>
 
-          <div className="space-y-3">
-            {recentAlerts.map((alert, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border-b py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-800/50"
-              >
+        <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg shadow-md overflow-hidden">
+          {recentAlerts.map((alert, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center p-4 hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300 border-b border-slate-200 dark:border-slate-600/50 last:border-0"
+            >
+              <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-4 h-4 rounded-full bg-${
-                      alert.severity <= 3
-                        ? "yellow"
-                        : alert.severity <= 5
-                        ? "orange"
-                        : "red"
-                    }-500`}
+                    className={`w-3 h-3 rounded-full ${getSeverityColor(
+                      alert.severity
+                    )} shadow-sm`}
                   />
-                  <span className="text-sm text-gray-900 dark:text-gray-100">
+                  <span className="text-slate-700 dark:text-slate-200">
                     {alert.message}
                   </span>
                 </div>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {format(new Date(alert.firstOccurrence), "dd/MM/yyyy HH:mm", {
-                    locale: es,
-                  })}
-                </span>
+                {alert.occurrences > 1 && (
+                  <span className="text-sm px-2 py-1 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300">
+                    x{alert.occurrences}
+                  </span>
+                )}
               </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="mt-4 text-md font-secondary text-custom-dark-blue dark:text-custom-yellow hover:underline"
-          >
-            {t("viewAll")}
-          </button>
+              <span className="text-sm text-slate-500 dark:text-slate-400 ml-4">
+                {format(new Date(alert.firstOccurrence), "dd/MM/yyyy HH:mm", {
+                  locale: es,
+                })}
+              </span>
+            </div>
+          ))}
         </div>
+
+        {alerts.length > 5 && (
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="font-secondary text-custom-dark-blue dark:text-custom-yellow hover:bg-slate-100 dark:hover:bg-slate-700/50 px-4 py-2 rounded-lg transition-colors duration-300"
+            >
+              {t("viewAll")}
+            </button>
+          </div>
+        )}
       </div>
 
       <AlertsModal

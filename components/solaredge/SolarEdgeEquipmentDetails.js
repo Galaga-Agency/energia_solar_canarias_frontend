@@ -1,13 +1,5 @@
-import React, { useEffect } from "react";
-import {
-  ChevronDown,
-  Info,
-  Battery,
-  Gauge,
-  Router,
-  Cpu,
-  Radio,
-} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ChevronDown, Info, Battery, Gauge, Cpu, Wrench } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -19,22 +11,18 @@ import {
   fetchSolarEdgeInventory,
   selectInventory,
   selectInventoryLoading,
-  selectInventoryError,
 } from "@/store/slices/plantsSlice";
 import { useParams } from "next/navigation";
-import { selectTheme } from "@/store/slices/themeSlice";
 import EquipmentDetailsSkeleton from "../loadingSkeletons/EquipmentDetailsSkeleton";
 
 const SolarEdgeEquipmentDetails = ({ token, t }) => {
   const dispatch = useDispatch();
-  const [openSections, setOpenSections] = React.useState({});
-  const contentRefs = React.useRef({});
   const params = useParams();
   const plantId = params.plantId;
+
   const inventory = useSelector(selectInventory);
   const isLoading = useSelector(selectInventoryLoading);
-  const error = useSelector(selectInventoryError);
-  const theme = useSelector(selectTheme);
+  const [activeSection, setActiveSection] = useState(null);
 
   useEffect(() => {
     if (plantId && token) {
@@ -42,167 +30,187 @@ const SolarEdgeEquipmentDetails = ({ token, t }) => {
     }
   }, [dispatch, plantId, token]);
 
+  const toggleSection = (key) => {
+    setActiveSection(activeSection === key ? null : key);
+  };
+
   const getEquipmentIcon = (type) => {
-    switch (type.toLowerCase()) {
+    const iconClass = "text-custom-dark-blue dark:text-custom-yellow text-xl";
+    switch (type) {
       case "batteries":
-        return (
-          <Battery className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-        );
+        return <Battery className={iconClass} />;
       case "meters":
-        return (
-          <Gauge className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-        );
-      case "gateways":
-        return (
-          <Router className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-        );
+        return <Gauge className={iconClass} />;
       case "inverters":
-        return (
-          <Cpu className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-        );
-      case "sensors":
-        return (
-          <Radio className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-        );
+        return <Cpu className={iconClass} />;
+      case "optimizers":
+        return <Wrench className={iconClass} />;
       default:
         return null;
     }
   };
 
-  if (isLoading) {
-    return <EquipmentDetailsSkeleton theme={theme} />;
-  }
-
-  const sections = Object.entries(inventory || {})
-    .filter(([_, items]) => Array.isArray(items) && items.length > 0)
-    .map(([sectionKey, items]) => ({
-      key: sectionKey,
-      title: sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1),
-      count: items.length,
-      items,
-    }));
-
-  const renderItem = (item, isNested = false) => {
-    const info = Object.entries(item)
-      .filter(
-        ([key]) =>
-          !["name", "model", "serialNumber", "items", "count"].includes(key)
-      )
-      .map(([key, value]) => `${t(key)}: ${value}`) // Translate each key
-      .join(", ");
-
-    return (
-      <div
-        className={`flex items-center justify-between py-2 ${
-          isNested ? "pl-8" : "px-4"
-        } hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors duration-200`}
-      >
-        <div className="flex items-center gap-2">
-          <span className="text-gray-700 dark:text-gray-300">
-            {item.name || item.model || item.serialNumber}
-          </span>
-          {info && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-4 w-4 text-gray-500 dark:text-gray-400 cursor-pointer" />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  className="dark:bg-gray-800 bg-white shadow-lg rounded-md p-3 text-sm max-w-xs"
-                >
-                  <ul className="list-none m-0 p-0 space-y-1">
-                    {info.split(", ").map((detail, idx) => (
-                      <li
-                        key={idx}
-                        className="text-gray-700 dark:text-gray-300"
-                      >
-                        {detail}
-                      </li>
-                    ))}
-                  </ul>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-        <span className="text-gray-900 dark:text-gray-100 font-medium">
-          {item.SN && `SN: ${item.SN}`}
-        </span>
-      </div>
-    );
-  };
-
-  const renderItems = (items, parentKey = "") => (
-    <>
-      {items.map((item, index) => {
-        const key = `${parentKey}-${index}`;
-        return (
-          <React.Fragment key={key}>
-            {renderItem(item)}
-            {item.items?.length > 0 && (
-              <div className="pl-4">{renderItems(item.items, key)}</div>
-            )}
-          </React.Fragment>
-        );
-      })}
-    </>
+  const renderTooltip = (item) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
+        </TooltipTrigger>
+        <TooltipContent className="bg-slate-800 text-white p-3 rounded-lg shadow-xl">
+          {Object.entries(item)
+            .filter(([key]) => key !== "name")
+            .map(([key, value]) => (
+              <div key={key} className="text-sm">
+                <strong className="text-custom-yellow">{t(key)}:</strong>{" "}
+                <span className="text-slate-200">{value}</span>
+              </div>
+            ))}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 
+  const invertersByModel = inventory?.inverters?.reduce((acc, inv) => {
+    const model = inv.model || "Unknown";
+    if (!acc[model]) acc[model] = [];
+    acc[model].push(inv);
+    return acc;
+  }, {});
+
+  const optimizers = {};
+  inventory?.inverters?.forEach((inv) => {
+    const model = inv.model || "Unknown";
+    if (!optimizers[model]) optimizers[model] = 0;
+    optimizers[model] += inv.connectedOptimizers || 0;
+  });
+
+  const batteries = inventory?.batteries?.map((bat) => ({
+    name: `${bat.manufacturer}, ${bat.nameplateCapacity / 1000}KWh`,
+    count: 1,
+  }));
+
+  const meters = Array.from(
+    new Map(
+      inventory?.meters
+        ?.filter((m) => m.form === "physical")
+        .map((m) => [m.SN, m])
+    ).values()
+  );
+
+  const sections = [
+    {
+      key: "inverters",
+      title: t("Inversores"),
+      count: inventory?.inverters?.length || 0,
+      items: Object.entries(invertersByModel || {}).map(
+        ([model, inverters]) => ({
+          name: `${model} (${inverters.length})`,
+          subItems: inverters.map((inv) => ({
+            name: inv.SN,
+            details: inv,
+          })),
+        })
+      ),
+    },
+    {
+      key: "optimizers",
+      title: t("Optimizadores"),
+      count: Object.values(optimizers).reduce((acc, count) => acc + count, 0),
+      items: Object.entries(optimizers).map(([model, count]) => ({
+        name: `${model} (${count})`,
+      })),
+    },
+    {
+      key: "batteries",
+      title: t("Almacenamiento"),
+      count: batteries?.length || 0,
+      items: batteries,
+    },
+    {
+      key: "meters",
+      title: t("Meters"),
+      count: meters.length,
+      items: meters.map((meter) => ({
+        name: meter.name,
+        SN: meter.SN,
+      })),
+    },
+  ];
+
+  if (isLoading) return <EquipmentDetailsSkeleton />;
+
   return (
-    <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg backdrop-blur-sm shadow-lg">
-      <h2 className="text-xl p-4 text-custom-dark-blue dark:text-custom-yellow border-b border-gray-200 dark:border-gray-700">
+    <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
+      <h2 className="text-xl mb-6 text-custom-dark-blue dark:text-custom-yellow">
         {t("equipment")}
       </h2>
 
-      {sections.length > 0 ? (
-        sections.map(({ key, title, count, items }) => (
+      <div className="space-y-4">
+        {sections.map(({ key, title, count, items }) => (
           <div
             key={key}
-            className="border-b border-gray-200 dark:border-gray-700 last:border-0"
+            className="bg-slate-50 dark:bg-slate-700/50 rounded-lg shadow-md overflow-hidden"
           >
             <button
-              onClick={() =>
-                setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))
-              }
-              className="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors duration-200 group"
+              onClick={() => toggleSection(key)}
+              className="w-full flex justify-between items-center p-4 hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300"
             >
               <div className="flex items-center gap-3">
-                {getEquipmentIcon(key)}
-                <span className="text-custom-dark-blue dark:text-custom-yellow font-medium">
-                  {title}
+                <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md">
+                  {getEquipmentIcon(key)}
+                </div>
+                <span className="text-slate-700 dark:text-slate-200 font-medium">
+                  {title}{" "}
+                  <span className="text-slate-500 dark:text-slate-400 text-sm">{`(${count})`}</span>
                 </span>
-                {count > 0 && (
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    ({count})
-                  </span>
-                )}
               </div>
               <ChevronDown
-                className={`h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-300 ease-in-out transform group-hover:text-custom-dark-blue dark:group-hover:text-custom-yellow ${
-                  openSections[key] ? "rotate-180" : ""
+                className={`w-5 h-5 text-slate-400 dark:text-slate-300 transition-transform duration-200 ${
+                  activeSection === key ? "-rotate-180" : ""
                 }`}
               />
             </button>
 
             <div
-              ref={(el) => (contentRefs.current[key] = el)}
-              className={`overflow-hidden transition-all duration-300 ease-in-out`}
-              style={{
-                maxHeight: openSections[key]
-                  ? contentRefs.current[key]?.scrollHeight + "px"
-                  : "0",
-              }}
+              className={`grid transition-all duration-200 ease-out ${
+                activeSection === key ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+              }`}
             >
-              <div className="pb-2">{renderItems(items)}</div>
+              <div className="overflow-hidden">
+                <div className="space-y-2 p-4 bg-slate-100/50 dark:bg-slate-800/50">
+                  {items.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white/70 dark:bg-slate-700/70 p-4 rounded-lg hover:bg-white dark:hover:bg-slate-600/70 transition-colors duration-300"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-800 dark:text-slate-200 font-medium">
+                          {item.name || item.model}
+                        </span>
+                        {item.SN && (
+                          <span className="text-sm text-slate-500 dark:text-slate-400">{`SN: ${item.SN}`}</span>
+                        )}
+                      </div>
+                      {item.subItems && (
+                        <div className="mt-3 space-y-2">
+                          {item.subItems.map((sub, sIdx) => (
+                            <div
+                              key={sIdx}
+                              className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"
+                            >
+                              {sub.name} {renderTooltip(sub.details)}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        ))
-      ) : (
-        <div className="p-4 text-gray-500 dark:text-gray-400">
-          {t("noEquipmentFound")}
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };

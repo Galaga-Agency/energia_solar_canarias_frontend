@@ -98,7 +98,7 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
 
   const getWeatherIcon = (code, isToday = false) => {
     const sizeClass = isToday
-      ? "text-8xl mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
+      ? "text-8xl drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
       : "text-4xl drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]";
     const commonClass = `${sizeClass} text-custom-dark-blue dark:text-custom-yellow`;
 
@@ -179,7 +179,7 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
                   <p className="text-xl text-left text-slate-600 dark:text-slate-300">
                     {t("today")}
                   </p>
-                  <div className="flex justify-center">
+                  <div className="flex justify-center h-full items-center">
                     {getWeatherIcon(
                       weatherData?.daily?.weather_code?.[0],
                       true

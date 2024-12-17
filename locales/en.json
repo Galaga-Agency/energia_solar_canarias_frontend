@@ -659,10 +659,8 @@
   "noEquipmentFound": "No equipment found",
   "errorLoadingEquipment": "Error loading equipment",
   "details": "Details",
-  "batteries": "Batteries",
-  "meters": "Meters",
+  "batteries": "Storage",
   "gateways": "Gateways",
-  "inverters": "Inverters",
   "sensors": "Sensors",
   "firmware": "Firmware Version",
   "manufacturer": "Manufacturer",
@@ -674,5 +672,12 @@
   "connectedSolaredgeDeviceSN": "Connected SolarEdge Device SN",
   "communicationMethod": "Communication Method",
   "cpuVersion": "CPU Version",
-  "connectedOptimizers": "Connected Optimizers"
+  "connectedOptimizers": "Connected Optimizers",
+  "potenciaPlanta": "Plant Power Analytics",
+  "inverters": "Inverters",
+  "optimizers": "Optimizers",
+  "meters": "Meters",
+  "environmentalBenefitsCalculation": "The positive impact of the plant on the environment is calculated by multiplying the system's energy production with CO2 and miles calculated by the average of gasoline passenger vehicle calculation factors provided by the US EPA and local standards.",
+  "seeCompleteCalculation": "Click here to see complete calculation",
+  "moreInfo": "More Information"
 }

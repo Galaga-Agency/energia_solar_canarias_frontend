@@ -48,8 +48,34 @@ const EnvironmentalBenefits = ({ t, plantId, provider, batteryLevel }) => {
         batteryLevel > 0 ? "xl:min-w-[40vw]" : "xl:min-w-[calc(50vw-36px)]"
       } `}
     >
-      <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
+      <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow flex items-center gap-2">
         {t("environmentalBenefits")}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info
+                className="mb-1 h-5 w-5 text-custom-dark-blue dark:text-custom-yellow cursor-pointer hover:text-opacity-80 transition"
+                aria-label={t("moreInfo")}
+              />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[300px] bg-slate-800 text-white p-3 rounded-lg shadow-xl">
+              <p className="text-sm mb-2">
+                {t("environmentalBenefitsCalculation", {
+                  defaultValue:
+                    "El impacto positivo de la planta en el medio ambiente se calcula multiplicando la producción de energía del sistema con CO2 y millas calculadas por el promedio de factores de cálculo de vehículos de pasajeros de gasolina suministrado por la EPA estadounidense y los estándares locales.",
+                })}
+              </p>
+              <a
+                href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references#miles"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-custom-yellow hover:text-custom-yellow/80 text-sm underline"
+              >
+                {t("seeCompleteCalculation")}
+              </a>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </h2>
       <div className="flex flex-col justify-around gap-8 sm:gap-12">
         {/* CO2 Emissions Saved */}
@@ -81,7 +107,7 @@ const EnvironmentalBenefits = ({ t, plantId, provider, batteryLevel }) => {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Info
-                        className="h-4 w-4 mr-2 mt-1 text-custom-dark-blue dark:text-custom-yellow text-xl cursor-pointer hover:text-opacity-80 transition"
+                        className="font-secondary h-4 w-4 mr-2 mt-1 text-custom-dark-blue dark:text-custom-yellow text-xl cursor-pointer hover:text-opacity-80 transition"
                         aria-label={t("moreInfo")}
                       />
                     </TooltipTrigger>

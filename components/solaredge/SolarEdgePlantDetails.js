@@ -37,83 +37,6 @@ import SolarEdgeEquipmentDetails from "./SolarEdgeEquipmentDetails";
 import AlertsOverview from "./AlertsOverview";
 import EnergyComparisonChart from "./EnergyComparisonChart";
 
-const equipmentData = {
-  inversores: [
-    {
-      name: "SE10K",
-      count: 3,
-      items: [
-        {
-          serialNumber: "7B052213-B5",
-          productCode: "SE10K-RWS48BEN4",
-          communication: "RS485",
-          dsp1: "1.20.1648",
-          dsp2: "2.20.1307",
-          dsp3: "NA",
-          cpuVersion: "4.19.39",
-        },
-        {
-          serialNumber: "7E043030-E2",
-          productCode: "SE10K-RWS48BEN4",
-          communication: "RS485",
-          dsp1: "1.20.1648",
-          dsp2: "2.20.1307",
-          dsp3: "NA",
-          cpuVersion: "4.19.39",
-        },
-        {
-          serialNumber: "7E043EDB-9B",
-          productCode: "SE10K-RWS48BEN4",
-          communication: "RS485",
-          dsp1: "1.20.1648",
-          dsp2: "2.20.1307",
-          dsp3: "NA",
-          cpuVersion: "4.19.39",
-        },
-      ],
-    },
-  ],
-  optimizadores: [
-    {
-      model: "P401",
-      count: 60,
-      items: [],
-    },
-    {
-      model: "S500",
-      count: 23,
-      items: [],
-    },
-  ],
-  almacenamiento: [
-    {
-      model: "48V_LG",
-      capacity: "9.8KWh",
-      count: 1,
-      items: [],
-    },
-    {
-      model: "48V_BYD",
-      capacity: "24KWh",
-      count: 1,
-      items: [],
-    },
-  ],
-  meters: [
-    {
-      name: "Export Import",
-      count: 1,
-      items: [
-        {
-          serialNumber: "5064337",
-          type: "Export-Import Meter",
-          firmware: "3.0021",
-        },
-      ],
-    },
-  ],
-};
-
 const mockAlerts = [
   {
     id: 1,
@@ -553,7 +476,7 @@ const SolarEdgePlantDetails = React.memo(
 
           <SolarEdgeGraphDisplay
             plantId={solaredgePlant?.id}
-            title={t("plantAnalytics")}
+            title={t("potenciaPlanta")}
           />
           <EnergyComparisonChart
             plantId={solaredgePlant?.id}

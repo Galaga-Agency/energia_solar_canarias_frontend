@@ -38,7 +38,7 @@ const TooltipContent = React.forwardRef(
         flip // Flips to the other side if there's not enough space
         onPointerEnter={(e) => e.preventDefault()} // Prevent tooltip from opening during hover
         className={cn(
-          "absolute z-[9999] rounded-lg bg-white dark:bg-gray-800 px-4 py-3 text-sm text-custom-dark-blue dark:text-custom-light-gray shadow-lg max-w-xs w-max",
+          "font-secondary absolute z-[9999] rounded-lg bg-white dark:bg-gray-800 px-4 py-3 text-sm text-custom-dark-blue dark:text-custom-light-gray shadow-lg max-w-xs w-max",
           "animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           className

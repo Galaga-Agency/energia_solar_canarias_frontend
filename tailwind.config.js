@@ -13,6 +13,8 @@ module.exports = {
         secondary: ['"Corbert"', "sans-serif"],
       },
       animation: {
+        slideDown: "slideDown 600ms ease-in-out",
+        slideUp: "slideUp 600ms ease-in-out",
         shimmer: "shimmer 2s infinite",
         "rise-sun": "riseSun 4s ease-in-out infinite",
         "rain-drop": "rainDrop 1.5s ease-in-out infinite",
@@ -67,6 +69,10 @@ module.exports = {
         "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
       },
       keyframes: {
+        slideUp: {
+          "0%": { transform: "scaleY(1)" },
+          "100%": { transform: "scaleY(0)" },
+        },
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
@@ -137,6 +143,10 @@ module.exports = {
         drop: {
           "0%": { transform: "translateY(-100%)", opacity: "1" },
           "100%": { transform: "translateY(100%)", opacity: "0" },
+        },
+        slideDown: {
+          "0%": { maxHeight: "0", opacity: "0" },
+          "100%": { maxHeight: "500px", opacity: "1" },
         },
         leafFall: {
           "0%": {

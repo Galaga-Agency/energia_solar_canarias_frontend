@@ -422,6 +422,16 @@ const SolarEdgeGraphDisplay = ({ title }) => {
     [renderTooltip]
   );
 
+  const isEmptyOrZeroData = useMemo(() => {
+    if (!transformedData.length) return true;
+
+    return transformedData.every((dataPoint) =>
+      VISIBLE_CURVES.every(
+        (curve) => !dataPoint[curve.dataKey] || dataPoint[curve.dataKey] === 0
+      )
+    );
+  }, [transformedData, VISIBLE_CURVES]);
+
   // console.log("filteredData: ", filteredData);
 
   const handleExportCSV = () => {
@@ -524,12 +534,14 @@ const SolarEdgeGraphDisplay = ({ title }) => {
       {/* Content Section */}
       {isLoading ? (
         <SolarEdgeGraphDisplaySkeleton theme={theme} />
-      ) : filteredData.length === 0 ? (
+      ) : isEmptyOrZeroData ? (
         <div className="flex flex-col items-center justify-center p-8 gap-4">
           <p className="text-lg text-gray-500 dark:text-gray-400">
             {t("noDataAvailable")}
           </p>
-          <PrimaryButton onClick={handleButtonClick}>
+          <PrimaryButton
+            onClick={() => handleFetch({ id: plantId, dia: range, token })}
+          >
             {t("tryAgain")}
           </PrimaryButton>
         </div>

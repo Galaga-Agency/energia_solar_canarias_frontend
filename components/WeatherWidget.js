@@ -56,7 +56,7 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
 
     // Switch on the provider to handle the different API requirements
     switch (provider.toLowerCase()) {
-      case "goodwe":
+      case "goodwe" || "ENERGIA Y CALOR SOLAR DEL ATLANTICO SL":
         // For Goodwe, pass address, provider, and token
         dispatch(fetchGoodweWeatherData({ name: address, token }));
         break;

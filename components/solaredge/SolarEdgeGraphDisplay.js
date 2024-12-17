@@ -61,6 +61,7 @@ const SolarEdgeGraphDisplay = ({ title }) => {
   const plantId = params?.plantId;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { downloadCSV } = useCSVExport();
+  const [lastUpdateTime, setLastUpdateTime] = useState(null);
 
   const VISIBLE_CURVES = [
     {
@@ -132,6 +133,12 @@ const SolarEdgeGraphDisplay = ({ title }) => {
       setEndDate(new Date());
     }
   }, [range, customRange, calculateStartDate]);
+
+  useEffect(() => {
+    if (graphData?.overview?.lastUpdateTime) {
+      setLastUpdateTime(graphData.overview.lastUpdateTime);
+    }
+  }, [graphData]);
 
   const handleFetch = useCallback(
     async (params) => {
@@ -470,6 +477,23 @@ const SolarEdgeGraphDisplay = ({ title }) => {
                 }`}
               />
             </button>
+            {lastUpdateTime && (
+              <TooltipProvider>
+                <TooltipUI>
+                  <TooltipTrigger>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {t("lastUpdate")}:{" "}
+                      {new Date(lastUpdateTime).toLocaleDateString()}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-sm">
+                      {new Date(lastUpdateTime).toLocaleString()}
+                    </p>
+                  </TooltipContent>
+                </TooltipUI>
+              </TooltipProvider>
+            )}
           </div>
           <div className="flex items-center gap-4">
             <CustomSelect

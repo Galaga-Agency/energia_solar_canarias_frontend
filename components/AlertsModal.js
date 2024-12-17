@@ -179,36 +179,39 @@ const AlertsModal = ({ isOpen, onClose, alerts: initialAlerts = [] }) => {
 
             {/* Filters Section */}
             <div className="p-6 space-y-6">
-              <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-4 rounded-md shadow-sm">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center bg-green-500 text-white">
-                  ✓
+              {/* Severity Buttons */}
+              <div className="overflow-x-auto">
+                <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-4 rounded-md shadow-sm min-w-max">
+                  <div className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center bg-green-500 text-white">
+                    ✓
+                  </div>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => (
+                    <button
+                      key={level}
+                      className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center ${
+                        filters.severity.includes(level)
+                          ? "ring-2 ring-yellow-400"
+                          : "opacity-50 hover:opacity-100"
+                      } ${
+                        level <= 3
+                          ? "bg-yellow-500"
+                          : level <= 6
+                          ? "bg-orange-500"
+                          : "bg-red-500"
+                      } text-white`}
+                      onClick={() => {
+                        setFilters((prev) => ({
+                          ...prev,
+                          severity: prev.severity.includes(level)
+                            ? prev.severity.filter((s) => s !== level)
+                            : [...prev.severity, level],
+                        }));
+                      }}
+                    >
+                      {level}
+                    </button>
+                  ))}
                 </div>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => (
-                  <button
-                    key={level}
-                    className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      filters.severity.includes(level)
-                        ? "ring-2 ring-yellow-400"
-                        : "opacity-50 hover:opacity-100"
-                    } ${
-                      level <= 3
-                        ? "bg-yellow-500"
-                        : level <= 6
-                        ? "bg-orange-500"
-                        : "bg-red-500"
-                    } text-white`}
-                    onClick={() => {
-                      setFilters((prev) => ({
-                        ...prev,
-                        severity: prev.severity.includes(level)
-                          ? prev.severity.filter((s) => s !== level)
-                          : [...prev.severity, level],
-                      }));
-                    }}
-                  >
-                    {level}
-                  </button>
-                ))}
               </div>
 
               <div className="flex flex-col lg:flex-row gap-6">

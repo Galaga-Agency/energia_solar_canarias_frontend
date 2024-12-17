@@ -21,7 +21,7 @@ const formatLargeNumber = (value) => {
   return value.toFixed(2);
 };
 
-const EnergyStatistics = ({ plant, t, theme, token }) => {
+const EnergyStatistics = ({ plant, t, theme, token, batteryLevel }) => {
   const dispatch = useDispatch();
   const overviewData = useSelector(selectPlantOverview);
   const overviewLoading = useSelector(selectOverviewLoading);
@@ -76,7 +76,11 @@ const EnergyStatistics = ({ plant, t, theme, token }) => {
   ];
 
   return (
-    <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg">
+    <section
+      className={`flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg ${
+        batteryLevel > 0 ? "xl:min-w-[40vw]" : "xl:min-w-[calc(50%-36px)]"
+      }`}
+    >
       <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
         {t("energyStatistics")}
       </h2>

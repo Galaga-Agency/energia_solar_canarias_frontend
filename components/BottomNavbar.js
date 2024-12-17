@@ -19,7 +19,7 @@ const BottomNavbar = ({ userId }) => {
   const icons = [
     {
       icon: <PiSolarPanelFill className="text-2xl" />,
-      label: t("Dashboard"),
+      label: t("plants"),
       path: isAdmin
         ? "/dashboard/[userId]/admin"
         : "/dashboard/[userId]/plants",

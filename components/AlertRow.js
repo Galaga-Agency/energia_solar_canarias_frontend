@@ -14,22 +14,29 @@ const AlertRow = ({ alert, checked, onCheck }) => {
 
   return (
     <tr className="group border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 hover:backdrop-blur-lg hover:bg-opacity-60 hover:bg-gray-200 dark:hover:bg-gray-700">
-      <td className="p-3">
-        <CustomCheckbox checked={checked} onChange={handleCheckboxChange} />
+      <td className="w-8 p-3">
+        <div className="flex justify-center items-center w-full">
+          <CustomCheckbox checked={checked} onChange={handleCheckboxChange} />
+        </div>
       </td>
       <td className="p-3">
-        <AlertIcon level={alert.severity} />
+        <div className="flex justify-center items-center w-full">
+          <AlertIcon level={alert.severity} />
+        </div>
       </td>
-      <td className="p-3">{alert.message}</td>
-      <td className="p-3">{alert.component}</td>
-      <td className="p-3">
-        {format(new Date(alert.date), "dd/MM/yyyy HH:mm", {
-          locale: es,
-        })}
+      <td className="p-3 text-left whitespace-normal w-auto leading-snug max-h-[5.5rem] overflow-hidden">
+        {t(alert.message)}
       </td>
-      <td className="p-3">{alert.status}</td>
-      <td className="p-3">{alert.category}</td>
-      <td className="p-3">{alert.serialNumber}</td>
+
+      <td className="p-3 text-center">{t(alert.component)}</td>
+      <td className="p-3 text-center whitespace-nowrap">
+        {format(new Date(alert.date), "dd/MM/yyyy HH:mm", { locale: es })}
+      </td>
+      <td className="p-3 text-center">{t(alert.status)}</td>
+      <td className="p-3 text-center">{t(alert.category)}</td>
+      <td className="p-3 text-center font-mono whitespace-nowrap">
+        {alert.serialNumber}
+      </td>
     </tr>
   );
 };

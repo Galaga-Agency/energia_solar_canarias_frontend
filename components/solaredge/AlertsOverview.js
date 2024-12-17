@@ -4,10 +4,12 @@ import AlertsModal from "@/components/AlertsModal";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const AlertsOverview = ({ alerts }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
+  const { isTablet } = useDeviceType();
 
   // Get recent unique alerts for the overview
   const recentAlerts = alerts
@@ -27,7 +29,7 @@ const AlertsOverview = ({ alerts }) => {
       }
       return acc;
     }, [])
-    .slice(0, 5);
+    .slice(0, isTablet ? 3 : 5);
 
   const getSeverityColor = (severity) => {
     if (severity <= 3) {
@@ -62,11 +64,11 @@ const AlertsOverview = ({ alerts }) => {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-3 h-3 rounded-full ${getSeverityColor(
+                    className={`min-w-3 w-3 h-3 rounded-full flex-shrink-0 ${getSeverityColor(
                       alert.severity
                     )} shadow-sm`}
                   />
-                  <span className="text-slate-700 dark:text-slate-200">
+                  <span className="text-slate-700 dark:text-slate-200 flex-1">
                     {alert.message}
                   </span>
                 </div>
@@ -85,7 +87,7 @@ const AlertsOverview = ({ alerts }) => {
           ))}
         </div>
 
-        {alerts.length > 5 && (
+        {alerts.length > (isTablet ? 3 : 5) && (
           <div className="mt-4 flex justify-center">
             <button
               onClick={() => setIsModalOpen(true)}

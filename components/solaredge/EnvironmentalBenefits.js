@@ -45,7 +45,7 @@ const EnvironmentalBenefits = ({ t, plantId, provider, batteryLevel }) => {
   return (
     <section
       className={`flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 md:pb-8 mb-6 backdrop-blur-sm shadow-lg ${
-        batteryLevel > 0 ? "xl:min-w-[40vw]" : "xl:min-w-[calc(50vw-36px)]"
+        batteryLevel > 0 ? "xl:w-[40vw]" : "xl:w-[calc(50%-36px)]"
       } `}
     >
       <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow flex items-center gap-2">

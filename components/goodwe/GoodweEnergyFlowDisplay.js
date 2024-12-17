@@ -55,15 +55,33 @@ const GoodweEnergyFlowDisplay = memo(() => {
 
       const parsedData = {
         powerflow: {
-          load: parseFloat(
-            response.siteCurrentPowerFlow.LOAD.currentPower.replace(/\D/g, "")
-          ),
-          pv: parseFloat(
-            response.siteCurrentPowerFlow.PV.currentPower.replace(/\D/g, "")
-          ),
-          grid: parseFloat(
-            response.siteCurrentPowerFlow.GRID.currentPower.replace(/\D/g, "")
-          ),
+          load:
+            typeof response.siteCurrentPowerFlow.LOAD.currentPower === "string"
+              ? parseFloat(
+                  response.siteCurrentPowerFlow.LOAD.currentPower.replace(
+                    /\D/g,
+                    ""
+                  )
+                )
+              : response.siteCurrentPowerFlow.LOAD.currentPower || 0,
+          pv:
+            typeof response.siteCurrentPowerFlow.PV.currentPower === "string"
+              ? parseFloat(
+                  response.siteCurrentPowerFlow.PV.currentPower.replace(
+                    /\D/g,
+                    ""
+                  )
+                )
+              : response.siteCurrentPowerFlow.PV.currentPower || 0,
+          grid:
+            typeof response.siteCurrentPowerFlow.GRID.currentPower === "string"
+              ? parseFloat(
+                  response.siteCurrentPowerFlow.GRID.currentPower.replace(
+                    /\D/g,
+                    ""
+                  )
+                )
+              : response.siteCurrentPowerFlow.GRID.currentPower || 0,
           soc: response.siteCurrentPowerFlow.STORAGE?.chargeLevel || 0,
           unit: "kW",
         },
@@ -97,7 +115,10 @@ const GoodweEnergyFlowDisplay = memo(() => {
   }, [fetchRealtimeData, formattedPlantId, token]);
 
   const formatPowerValue = (value) => {
-    return `${parseFloat(value.replace(/\D/g, ""))}`;
+    if (typeof value === "string") {
+      return parseFloat(value.replace(/\D/g, "")) || 0;
+    }
+    return value || 0;
   };
 
   const {

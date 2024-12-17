@@ -102,38 +102,35 @@ const SolarEdgeEquipmentDetails = ({ token, t }) => {
       key: "inverters",
       title: t("Inversores"),
       count: inventory?.inverters?.length || 0,
-      items: Object.entries(invertersByModel || {}).map(
-        ([model, inverters]) => ({
+      items:
+        Object.entries(invertersByModel || {}).map(([model, inverters]) => ({
           name: `${model} (${inverters.length})`,
           subItems: inverters.map((inv) => ({
             name: inv.SN,
             details: inv,
           })),
-        })
-      ),
+        })) || [],
     },
     {
       key: "optimizers",
       title: t("Optimizadores"),
       count: Object.values(optimizers).reduce((acc, count) => acc + count, 0),
-      items: Object.entries(optimizers).map(([model, count]) => ({
-        name: `${model} (${count})`,
-      })),
+      items:
+        Object.entries(optimizers || {}).map(([model, count]) => ({
+          name: `${model} (${count})`,
+        })) || [],
     },
     {
       key: "batteries",
       title: t("Almacenamiento"),
       count: batteries?.length || 0,
-      items: batteries,
+      items: batteries || [],
     },
     {
       key: "meters",
       title: t("Meters"),
-      count: meters.length,
-      items: meters.map((meter) => ({
-        name: meter.name,
-        SN: meter.SN,
-      })),
+      count: meters?.length || 0,
+      items: meters || [],
     },
   ];
 
@@ -146,7 +143,7 @@ const SolarEdgeEquipmentDetails = ({ token, t }) => {
       </h2>
 
       <div className="space-y-4">
-        {sections.map(({ key, title, count, items }) => (
+        {sections?.map(({ key, title, count, items }) => (
           <div
             key={key}
             className="bg-slate-50 dark:bg-slate-700/50 rounded-lg shadow-md overflow-hidden"
@@ -178,7 +175,7 @@ const SolarEdgeEquipmentDetails = ({ token, t }) => {
             >
               <div className="overflow-hidden">
                 <div className="space-y-2 p-4 bg-slate-100/50 dark:bg-slate-800/50">
-                  {items.map((item, idx) => (
+                  {items?.map((item, idx) => (
                     <div
                       key={idx}
                       className="bg-white/70 dark:bg-slate-700/70 p-4 rounded-lg hover:bg-white dark:hover:bg-slate-600/70 transition-colors duration-300"

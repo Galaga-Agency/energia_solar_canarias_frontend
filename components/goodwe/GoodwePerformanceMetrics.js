@@ -9,6 +9,7 @@ import {
 import PerformanceMetricsSkeleton from "@/components/loadingSkeletons/PerformanceMetricsSkeleton";
 import { useSelector } from "react-redux";
 import { selectLoadingDetails } from "@/store/slices/plantsSlice";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const GoodwePerformanceMetrics = ({
   theme,
@@ -19,6 +20,7 @@ const GoodwePerformanceMetrics = ({
   getYieldIcon,
 }) => {
   const isLoading = useSelector(selectLoadingDetails);
+  const { isSmallDesktop } = useDeviceType();
 
   const metrics = [
     {
@@ -90,7 +92,11 @@ const GoodwePerformanceMetrics = ({
                 </TooltipProvider>
               </p>
             </div>
-            <p className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-8">
+            <p
+              className={`text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow  ${
+                isSmallDesktop ? "mb-0" : "mb-8"
+              }`}
+            >
               {value}
             </p>
           </div>

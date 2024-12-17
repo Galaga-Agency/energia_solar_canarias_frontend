@@ -45,7 +45,7 @@ export const fetchSolarEdgeGraphDataAPI = async ({
     }
 
     const data = await response.json();
-    console.log("Graph Data Response:", data.data);
+    // console.log("Graph Data Response:", data.data);
 
     return data?.data;
   } catch (error) {
@@ -214,7 +214,7 @@ export const fetchSolarEdgeInventoryAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
-    console.log("data ----------------------> ", data);
+    // console.log("data ----------------------> ", data);
     return data?.data?.Inventory;
   } catch (error) {
     console.error("Error fetching SolarEdge inventory:", error);
@@ -229,8 +229,14 @@ export const fetchBatteryChargingStateAPI = async ({
   token,
 }) => {
   try {
+    console.log("Attempting battery fetch with params:", {
+      plantId,
+      fechaInicio: startDate,
+      fechaFin: endDate,
+    });
+
     const response = await fetch(
-      `${API_BASE_URL}/plant/battery/state/${plantId}?proveedor=solaredge`,
+      `${API_BASE_URL}/plant/grafica/bateria/${plantId}?proveedor=solaredge`,
       {
         method: "POST",
         headers: {
@@ -239,21 +245,56 @@ export const fetchBatteryChargingStateAPI = async ({
           apiKey: API_KEY,
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ startDate, endDate }),
+        body: JSON.stringify({
+          fechaInicio: startDate,
+          fechaFin: endDate,
+        }),
       }
     );
 
-    const clonedResponse = response.clone();
+    let result = await response.text();
 
-    if (!response.ok) {
-      const errorData = await clonedResponse.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || "Failed to fetch battery charging state"
-      );
+    try {
+      // Find the first complete JSON object by matching braces
+      let depth = 0;
+      let firstJsonEnd = -1;
+
+      for (let i = 0; i < result.length; i++) {
+        if (result[i] === "{") depth++;
+        if (result[i] === "}") {
+          depth--;
+          if (depth === 0) {
+            firstJsonEnd = i + 1;
+            break;
+          }
+        }
+      }
+
+      // Extract just the first complete JSON object
+      const firstJson = result.slice(0, firstJsonEnd);
+      console.log("Extracted JSON length:", firstJson.length);
+
+      const data = JSON.parse(firstJson);
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to fetch battery charging state"
+        );
+      }
+
+      console.log("Successfully parsed battery data:", {
+        batteriesCount: data?.storageData?.batteryCount,
+        telemetriesCount: data?.storageData?.batteries?.[0]?.telemetryCount,
+      });
+
+      return data;
+    } catch (parseError) {
+      console.error("Parse error details:", {
+        errorMessage: parseError.message,
+        position: parseError.message.match(/position (\d+)/)?.[1],
+      });
+      throw new Error("Failed to parse battery data response");
     }
-
-    const data = await response.json();
-    return data?.data;
   } catch (error) {
     console.error("Error fetching battery charging state:", error);
     throw error;

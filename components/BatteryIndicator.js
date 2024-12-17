@@ -5,7 +5,7 @@ import BatteryGauge from "react-battery-gauge";
 import { useSelector } from "react-redux";
 
 const BatteryIndicator = ({ soc }) => {
-  const { isMobile, isTablet } = useDeviceType();
+  const { isMobile, isTablet, isSmallDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
 
   const getBatteryColor = useMemo(() => {
@@ -35,7 +35,7 @@ const BatteryIndicator = ({ soc }) => {
         animated={true}
         charging={false}
         size={130}
-        orientation={isMobile ? "horizontal" : "vertical"}
+        orientation={isMobile || isSmallDesktop ? "horizontal" : "vertical"}
         customization={{
           batteryBody: {
             strokeWidth: 4,

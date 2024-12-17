@@ -43,7 +43,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const user = useSelector(selectUser);
   const isAdmin = useSelector(selectIsAdmin);
   const { t } = useTranslation();
-  const { isMobile, isTablet } = useDeviceType();
+  const { isMobile, isTablet, isSmallDesktop } = useDeviceType();
 
   const token = useMemo(() => user?.tokenIdentificador, [user]);
   const goodwePlant = useMemo(
@@ -270,7 +270,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           provider={goodwePlant?.info?.org_name}
         />
 
-        <div className="flex flex-col xl:flex-row xl:gap-6">
+        <div className="flex flex-col 2xl:flex-row 2xl:gap-6">
           {isLoading ? (
             <EnergyStatisticsSkeleton theme={theme} />
           ) : (
@@ -283,28 +283,27 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
             />
           )}
 
-          {isTablet ? (
+          {isTablet || isSmallDesktop ? (
             <div className="flex gap-6">
-              {goodwePlant?.soc?.[0]?.power > 0 && (
-                <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-                  <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                    <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-                      <IoFlashOutline className="text-3xl md:text-4xl" />
-                    </div>
-                    <BatteryIndicator soc={goodwePlant?.soc[0].power} />
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                          <Info className="h-4 w-4" />
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom" className="max-w-xs">
-                          <p>{t("batteryTooltipContent")}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
+                <div className="flex 2xl:flex-col items-center justify-center flex-1 gap-4">
+                  <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
+                    <IoFlashOutline className="text-3xl md:text-4xl" />
                   </div>
+                  <BatteryIndicator soc={goodwePlant?.soc[0].power} />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+                        <Info className="h-4 w-4" />
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-xs">
+                        <p>{t("batteryTooltipContent")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
-              )}
+              </div>
+
               <GoodwePerformanceMetrics
                 isLoading={isLoading}
                 theme={theme}

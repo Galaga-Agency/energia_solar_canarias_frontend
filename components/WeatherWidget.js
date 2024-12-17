@@ -38,7 +38,7 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
   const user = useSelector(selectUser);
   const token = useMemo(() => user?.tokenIdentificador, [user]);
   const theme = useSelector(selectTheme);
-  const { isDesktop } = useDeviceType();
+  const { isDesktop, isSmallDesktop } = useDeviceType();
   const [retryCount, setRetryCount] = useState(0);
 
   const fetchWeatherData = () => {
@@ -205,7 +205,7 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
               {/* Forecast */}
               <div className="flex-1 grid grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
                 {weatherData?.daily?.time
-                  ?.slice(1, !isDesktop ? 3 : 4)
+                  ?.slice(1, isDesktop ? 4 : isSmallDesktop ? 4 : 3)
                   .map((date, index) => (
                     <div
                       key={index}

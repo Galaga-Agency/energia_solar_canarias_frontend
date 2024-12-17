@@ -18,6 +18,10 @@ import {
   selectGraphLoading,
   selectGraphError,
   clearGraphData,
+  selectBatteryChargingState,
+  selectBatteryChargingLoading,
+  selectBatteryChargingError,
+  fetchBatteryChargingState,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import DatePicker from "react-datepicker";
@@ -41,19 +45,6 @@ import CustomSelect from "../ui/CustomSelect";
 import BatteryChargingGraph from "./BatteryChargingGraph";
 
 const SolarEdgeGraphDisplay = ({ title, token }) => {
-  // Battery Charging State Mock Data
-  const batteryChargingMockData = useMemo(
-    () => [
-      { date: "2024-12-17 00:00", batteryState: 20 },
-      { date: "2024-12-17 05:45", batteryState: 22.4 },
-      { date: "2024-12-17 12:00", batteryState: 50 },
-      { date: "2024-12-17 13:30", batteryState: 65 },
-      { date: "2024-12-17 14:45", batteryState: 80 },
-      { date: "2024-12-17 18:00", batteryState: 100 },
-    ],
-    []
-  );
-
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isMobile } = useDeviceType();
@@ -75,21 +66,9 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { downloadCSV } = useCSVExport();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
-  const batteryGraphStartDate = useMemo(
-    () => batteryChargingMockData[0]?.date || null,
-    [batteryChargingMockData]
-  );
-  const batteryGraphEndDate = useMemo(() => new Date().toISOString(), []);
-  const [batteryData, setBatteryData] = useState(batteryChargingMockData);
-
-  const handleBatteryDataFetch = useCallback(() => {
-    console.log("Fetching Battery Charging State...");
-    setBatteryData(batteryChargingMockData); // Replace with API call when ready
-  }, [batteryChargingMockData]);
-
-  useEffect(() => {
-    handleBatteryDataFetch();
-  }, [handleBatteryDataFetch]);
+  const batteryData = useSelector(selectBatteryChargingState);
+  const batteryLoading = useSelector(selectBatteryChargingLoading);
+  const batteryError = useSelector(selectBatteryChargingError);
 
   const VISIBLE_CURVES = [
     {
@@ -161,6 +140,35 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
       setEndDate(new Date());
     }
   }, [range, customRange, calculateStartDate]);
+
+  useEffect(() => {
+    if (plantId && token) {
+      // Get last 24 hours
+      const now = new Date();
+      const startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
+
+      // Format dates with hours to ensure we get a full day's data
+      const formatDateWithTime = (date) => {
+        return date.toISOString().split(".")[0].replace("T", " ");
+      };
+
+      console.log("Dispatching battery fetch with:", {
+        plantId,
+        startDate: formatDateWithTime(startDate),
+        endDate: formatDateWithTime(now),
+        token,
+      });
+
+      dispatch(
+        fetchBatteryChargingState({
+          plantId,
+          startDate: formatDateWithTime(startDate),
+          endDate: formatDateWithTime(now),
+          token,
+        })
+      );
+    }
+  }, [plantId, token, dispatch]);
 
   useEffect(() => {
     if (graphData?.overview?.lastUpdateTime) {
@@ -743,15 +751,11 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
             </div>
           </div>
 
-          {batteryData && (
-            <BatteryChargingGraph
-              plantId={plantId}
-              token={token}
-              data={batteryData}
-              startDate={batteryGraphStartDate}
-              endDate={batteryGraphEndDate}
-            />
-          )}
+          <BatteryChargingGraph
+            batteryData={batteryData}
+            isLoading={batteryLoading}
+            theme={theme}
+          />
         </>
       )}
 

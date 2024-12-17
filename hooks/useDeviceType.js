@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 
-const useDeviceType = (mobileBreakpoint = 767, tabletBreakpoint = 1024) => {
+const useDeviceType = (
+  mobileBreakpoint = 767, // sm
+  tabletBreakpoint = 1024, // md
+  smallDesktopBreakpoint = 1536 // 2xl
+) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  const [isSmallDesktop, setIsSmallDesktop] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [isLandscape, setIsLandscape] = useState(false);
 
@@ -13,7 +18,10 @@ const useDeviceType = (mobileBreakpoint = 767, tabletBreakpoint = 1024) => {
 
       setIsMobile(width <= mobileBreakpoint);
       setIsTablet(width > mobileBreakpoint && width <= tabletBreakpoint);
-      setIsDesktop(width > tabletBreakpoint);
+      setIsSmallDesktop(
+        width > tabletBreakpoint && width <= smallDesktopBreakpoint
+      );
+      setIsDesktop(width > smallDesktopBreakpoint);
 
       const landscape = width > height;
       setIsLandscape(landscape);
@@ -28,9 +36,9 @@ const useDeviceType = (mobileBreakpoint = 767, tabletBreakpoint = 1024) => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
     };
-  }, [mobileBreakpoint, tabletBreakpoint]);
+  }, [mobileBreakpoint, tabletBreakpoint, smallDesktopBreakpoint]);
 
-  return { isMobile, isTablet, isDesktop, isLandscape };
+  return { isMobile, isTablet, isSmallDesktop, isDesktop, isLandscape };
 };
 
 export default useDeviceType;

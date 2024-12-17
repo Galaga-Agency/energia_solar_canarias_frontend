@@ -202,7 +202,7 @@ const ProviderPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  console.log("plants: ", plants);
+  // console.log("plants: ", plants);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
@@ -215,7 +215,12 @@ const ProviderPage = () => {
       <Texture />
       <div className="relative h-auto z-10 p-6 md:p-8">
         <div className="flex items-center mb-10 md:mb-2 z-10">
-          <button onClick={() => window.history.back()}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              window.location.href = `/dashboard/${user.id}/admin`;
+            }}
+          >
             <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
           </button>
           <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue max-w-[60vw]">

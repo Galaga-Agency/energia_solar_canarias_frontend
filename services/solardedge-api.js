@@ -221,3 +221,41 @@ export const fetchSolarEdgeInventoryAPI = async ({ plantId, token }) => {
     throw error;
   }
 };
+
+export const fetchBatteryChargingStateAPI = async ({
+  plantId,
+  startDate,
+  endDate,
+  token,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/battery/state/${plantId}?proveedor=solaredge`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ startDate, endDate }),
+      }
+    );
+
+    const clonedResponse = response.clone();
+
+    if (!response.ok) {
+      const errorData = await clonedResponse.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || "Failed to fetch battery charging state"
+      );
+    }
+
+    const data = await response.json();
+    return data?.data;
+  } catch (error) {
+    console.error("Error fetching battery charging state:", error);
+    throw error;
+  }
+};

@@ -679,5 +679,8 @@
   "meters": "Meters",
   "environmentalBenefitsCalculation": "The positive impact of the plant on the environment is calculated by multiplying the system's energy production with CO2 and miles calculated by the average of gasoline passenger vehicle calculation factors provided by the US EPA and local standards.",
   "seeCompleteCalculation": "Click here to see complete calculation",
-  "moreInfo": "More Information"
+  "moreInfo": "More Information",
+  "noDataTooltip": "No data was found for the selected range: {{range}}.",
+  "batteryState": "Battery State",
+  "batteryChargingState": "Battery Charging State"
 }

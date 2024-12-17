@@ -1584,5 +1584,8 @@
   "meters": "Meters",
   "environmentalBenefitsCalculation": "El impacto positivo de la planta en el medio ambiente se calcula multiplicando la producción de energía del sistema con CO2 y millas calculadas por el promedio de factores de cálculo de vehículos de pasajeros de gasolina suministrado por la EPA estadounidense y los estándares locales.",
   "seeCompleteCalculation": "Pulsar aquí para ver el cálculo completo",
-  "moreInfo": "Más Información"
+  "moreInfo": "Más Información",
+  "noDataTooltip": "No se encontraron datos para el rango seleccionado: {{range}}.",
+  "batteryState": "Estado de la Batería",
+  "batteryChargingState": "Estado de Carga"
 }

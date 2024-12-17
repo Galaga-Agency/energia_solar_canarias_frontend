@@ -38,8 +38,22 @@ import { useParams } from "next/navigation";
 import ExportModal from "../ExportModal";
 import useCSVExport from "@/hooks/useCSVExport";
 import CustomSelect from "../ui/CustomSelect";
+import BatteryChargingGraph from "./BatteryChargingGraph";
 
-const SolarEdgeGraphDisplay = ({ title }) => {
+const SolarEdgeGraphDisplay = ({ title, token }) => {
+  // Battery Charging State Mock Data
+  const batteryChargingMockData = useMemo(
+    () => [
+      { date: "2024-12-17 00:00", batteryState: 20 },
+      { date: "2024-12-17 05:45", batteryState: 22.4 },
+      { date: "2024-12-17 12:00", batteryState: 50 },
+      { date: "2024-12-17 13:30", batteryState: 65 },
+      { date: "2024-12-17 14:45", batteryState: 80 },
+      { date: "2024-12-17 18:00", batteryState: 100 },
+    ],
+    []
+  );
+
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isMobile } = useDeviceType();
@@ -55,13 +69,27 @@ const SolarEdgeGraphDisplay = ({ title }) => {
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
-  const token = user?.tokenIdentificador;
   const theme = useSelector(selectTheme);
   const params = useParams();
   const plantId = params?.plantId;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { downloadCSV } = useCSVExport();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
+  const batteryGraphStartDate = useMemo(
+    () => batteryChargingMockData[0]?.date || null,
+    [batteryChargingMockData]
+  );
+  const batteryGraphEndDate = useMemo(() => new Date().toISOString(), []);
+  const [batteryData, setBatteryData] = useState(batteryChargingMockData);
+
+  const handleBatteryDataFetch = useCallback(() => {
+    console.log("Fetching Battery Charging State...");
+    setBatteryData(batteryChargingMockData); // Replace with API call when ready
+  }, [batteryChargingMockData]);
+
+  useEffect(() => {
+    handleBatteryDataFetch();
+  }, [handleBatteryDataFetch]);
 
   const VISIBLE_CURVES = [
     {
@@ -442,7 +470,7 @@ const SolarEdgeGraphDisplay = ({ title }) => {
   // console.log("filteredData: ", filteredData);
 
   const handleExportCSV = () => {
-    // Transform the data into the desired format
+    // Transform the SolarEdge graph data into the desired format
     const exportData = filteredData.map((item) => ({
       "Hora de medición": item.date,
       "Producción (W)": item.solarProduction || 0,
@@ -452,7 +480,17 @@ const SolarEdgeGraphDisplay = ({ title }) => {
       "De Solar (W)": item.selfConsumption || 0,
     }));
 
-    downloadCSV(exportData, "solar_edge_data.csv");
+    // Add Battery Charging Data to the CSV (mockData or real data)
+    const batteryData = batteryChargingMockData.map((item) => ({
+      "Hora de medición": item.date,
+      "Estado de Carga (%)": item.batteryState,
+    }));
+
+    // Combine both datasets for export
+    const combinedData = [...exportData, ...batteryData];
+
+    // Download the combined data as CSV
+    downloadCSV(combinedData, "solar_edge_and_battery_data.csv");
     setIsModalOpen(false);
   };
 
@@ -559,15 +597,76 @@ const SolarEdgeGraphDisplay = ({ title }) => {
       {isLoading ? (
         <SolarEdgeGraphDisplaySkeleton theme={theme} />
       ) : isEmptyOrZeroData ? (
-        <div className="flex flex-col items-center justify-center p-8 gap-4">
-          <p className="text-lg text-gray-500 dark:text-gray-400">
-            {t("noDataAvailable")}
-          </p>
-          <PrimaryButton
-            onClick={() => handleFetch({ id: plantId, dia: range, token })}
-          >
-            {t("tryAgain")}
-          </PrimaryButton>
+        <div>
+          {/* No Data Available Message */}
+          <div className="flex items-center justify-center pb-4 px-8 gap-4">
+            <p className="text-lg text-gray-500 dark:text-gray-400">
+              {t("noDataAvailable")}
+            </p>
+            <TooltipProvider>
+              <TooltipUI>
+                <TooltipTrigger asChild>
+                  <div className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 cursor-pointer">
+                    <Info className="h-5 w-5 text-gray-500 dark:text-gray-300" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p className="text-sm text-gray-700 dark:text-gray-200">
+                    {t("noDataTooltip", {
+                      range: t(range.toLowerCase()), // Translates the selected range
+                    })}
+                  </p>
+                </TooltipContent>
+              </TooltipUI>
+            </TooltipProvider>
+          </div>
+
+          {/* Empty Graph */}
+          <div className="overflow-x-auto">
+            <div style={{ minWidth: "600px" }}>
+              <ResponsiveContainer width="100%" height={400}>
+                <ComposedChart
+                  data={[{ date: "", selfConsumption: 0 }]} // Mock empty data
+                  margin={{
+                    left: 5,
+                    right: isMobile ? -25 : 15,
+                    top: 10,
+                    bottom: 10,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fill: "#ccc" }} // Greyed out axis
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    tick={{ fill: "#ccc" }} // Greyed out axis
+                    label={{
+                      value: "kW",
+                      angle: -90,
+                      position: "insideLeft",
+                      offset: 5,
+                    }}
+                  />
+                  <Tooltip content={() => null} /> {/* Empty tooltip */}
+                  <Legend content={customLegendRenderer} />
+                  {/* Empty line without data */}
+                  {VISIBLE_CURVES.map((curve) => (
+                    <Line
+                      key={curve.dataKey}
+                      type="monotone"
+                      dataKey={curve.dataKey}
+                      stroke={curve.color}
+                      name={curve.name}
+                      dot={false}
+                      strokeWidth={0} // Hide lines
+                    />
+                  ))}
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       ) : (
         <>
@@ -594,51 +693,65 @@ const SolarEdgeGraphDisplay = ({ title }) => {
           </div>
 
           {/* Graph */}
-          <ResponsiveContainer width="100%" height={400}>
-            <ComposedChart
-              data={filteredData}
-              margin={{
-                left: isMobile ? -15 : 15,
-                right: isMobile ? -25 : 15,
-                top: 10,
-                bottom: 10,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
-              <XAxis
-                dataKey="date"
-                tickFormatter={formatXAxis}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                label={{
-                  value: "kW",
-                  angle: -90,
-                  position: "insideLeft",
-                  offset: 5,
-                }}
-              />
-              <Tooltip
-                labelFormatter={formatXAxis}
-                formatter={(value, name) => [
-                  `${Number(value).toFixed(2)} kW`,
-                  t(name),
-                ]}
-              />
-              <Legend content={customLegendRenderer} />
-              {VISIBLE_CURVES.map((curve) => (
-                <Line
-                  key={curve.dataKey}
-                  type="monotone"
-                  dataKey={curve.dataKey}
-                  stroke={curve.color}
-                  name={curve.name}
-                  dot={false}
-                  strokeWidth={2}
-                />
-              ))}
-            </ComposedChart>
-          </ResponsiveContainer>
+          <div className="overflow-x-auto">
+            <div style={{ minWidth: "600px" }}>
+              <ResponsiveContainer width="100%" height={400}>
+                <ComposedChart
+                  data={filteredData}
+                  margin={{
+                    left: 5,
+                    right: isMobile ? -25 : 15,
+                    top: 10,
+                    bottom: 10,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={formatXAxis}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    label={{
+                      value: "kW",
+                      angle: -90,
+                      position: "insideLeft",
+                      offset: 5,
+                    }}
+                  />
+                  <Tooltip
+                    labelFormatter={formatXAxis}
+                    formatter={(value, name) => [
+                      `${Number(value).toFixed(2)} kW`,
+                      t(name),
+                    ]}
+                  />
+                  <Legend content={customLegendRenderer} />
+                  {VISIBLE_CURVES.map((curve) => (
+                    <Line
+                      key={curve.dataKey}
+                      type="monotone"
+                      dataKey={curve.dataKey}
+                      stroke={curve.color}
+                      name={curve.name}
+                      dot={false}
+                      strokeWidth={2}
+                    />
+                  ))}
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {batteryData && (
+            <BatteryChargingGraph
+              plantId={plantId}
+              token={token}
+              data={batteryData}
+              startDate={batteryGraphStartDate}
+              endDate={batteryGraphEndDate}
+            />
+          )}
         </>
       )}
 

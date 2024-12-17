@@ -30,7 +30,13 @@ import useDeviceType from "@/hooks/useDeviceType";
 import GoodweGraphDisplaySkeleton from "@/components/loadingSkeletons/GoodweGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
-const COLORS = ["#03bbd6", "#ffa726", "#4CC7B3", "#8cc44d", "#ff6384"];
+const COLORS = {
+  selfConsumption: "#4CAF50", // Green
+  consumption: "#F44336", // Red
+  solarProduction: "#FFEB3B", // Yellow
+  export: "#FF5722", // Orange
+  import: "#2196F3", // Blue
+};
 
 const GoodweGraphDisplay = ({ plantId, title }) => {
   const { t } = useTranslation();
@@ -94,23 +100,35 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
     switch (chartIndexId) {
       case "estadisticas sobre energia":
         return [
-          { name: t("PV+BAT"), valueKey: "selfUseOfPv", color: COLORS[0] },
-          { name: t("Red"), valueKey: "consumptionOfLoad", color: COLORS[1] },
-          { name: t("Interno"), valueKey: "in_House", color: COLORS[2] },
-          { name: t("Alimentar"), valueKey: "buy", color: COLORS[3] },
+          {
+            name: t("PV+BAT"),
+            valueKey: "selfUseOfPv",
+            color: COLORS.selfConsumption,
+          },
+          {
+            name: t("Red"),
+            valueKey: "consumptionOfLoad",
+            color: COLORS.consumption,
+          },
+          {
+            name: t("Interno"),
+            valueKey: "in_House",
+            color: COLORS.selfConsumption,
+          },
+          { name: t("Alimentar"), valueKey: "buy", color: COLORS.export },
         ];
       case "generacion de energia y ingresos":
         return [
           {
             name: "PVGeneration",
             label: t("energy") + " (kWh)",
-            color: "#03bbd6",
+            color: COLORS.solarProduction,
             isBar: true,
           },
           {
             name: "Income",
             label: t("income") + " (EUR)",
-            color: "#8cc44d",
+            color: COLORS.selfConsumption,
             isBar: false,
           },
         ];
@@ -119,13 +137,13 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
           {
             name: "SelfUse",
             label: t("selfUse") + " (kWh)",
-            color: "#8cc44d",
+            color: COLORS.selfConsumption,
             isBar: true,
           },
           {
             name: "SelfUseRatio",
             label: t("selfUseRatio") + " (%)",
-            color: "#4CC7B3",
+            color: COLORS.import,
             isBar: false,
           },
         ];
@@ -134,7 +152,7 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
           {
             name: "ContributionIndex",
             label: t("contributionIndex"),
-            color: "#03bbd6",
+            color: COLORS.export,
             isBar: true,
           },
         ];

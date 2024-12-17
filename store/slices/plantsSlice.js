@@ -15,6 +15,7 @@ import {
   fetchGoodweWeatherDataAPI,
 } from "@/services/goodwe-api";
 import {
+  fetchBatteryChargingStateAPI,
   fetchSolarEdgeComparisonGraphAPI,
   fetchSolarEdgeGraphDataAPI,
   fetchSolarEdgeInventoryAPI,
@@ -260,6 +261,23 @@ export const fetchSolarEdgeInventory = createAsyncThunk(
   }
 );
 
+export const fetchBatteryChargingState = createAsyncThunk(
+  "plants/fetchBatteryChargingState",
+  async ({ plantId, startDate, endDate, token }, { rejectWithValue }) => {
+    try {
+      const data = await fetchBatteryChargingStateAPI({
+        plantId,
+        startDate,
+        endDate,
+        token,
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // victron energy
 
 export const fetchVictronEnergyWeatherData = createAsyncThunk(
@@ -349,6 +367,9 @@ const initialState = {
   inventory: null,
   inventoryLoading: false,
   inventoryError: null,
+  batteryChargingState: null,
+  batteryChargingLoading: false,
+  batteryChargingError: null,
 };
 
 const plantsSlice = createSlice({
@@ -572,6 +593,18 @@ const plantsSlice = createSlice({
         state.inventoryLoading = false;
         state.inventoryError = action.payload;
       })
+      .addCase(fetchBatteryChargingState.pending, (state) => {
+        state.batteryChargingLoading = true;
+        state.batteryChargingError = null;
+      })
+      .addCase(fetchBatteryChargingState.fulfilled, (state, action) => {
+        state.batteryChargingLoading = false;
+        state.batteryChargingState = action.payload;
+      })
+      .addCase(fetchBatteryChargingState.rejected, (state, action) => {
+        state.batteryChargingLoading = false;
+        state.batteryChargingError = action.payload;
+      })
 
       // Victron Energy
       .addCase(fetchVictronEnergyWeatherData.pending, (state) => {
@@ -691,6 +724,12 @@ export const selectComparisonError = (state) => state.plants.comparisonError;
 export const selectInventory = (state) => state.plants.inventory;
 export const selectInventoryLoading = (state) => state.plants.inventoryLoading;
 export const selectInventoryError = (state) => state.plants.inventoryError;
+export const selectBatteryChargingState = (state) =>
+  state.plants.batteryChargingState;
+export const selectBatteryChargingLoading = (state) =>
+  state.plants.batteryChargingLoading;
+export const selectBatteryChargingError = (state) =>
+  state.plants.batteryChargingError;
 
 export const {
   clearPlants,

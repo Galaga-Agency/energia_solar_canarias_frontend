@@ -36,6 +36,8 @@ import { IoFlashOutline } from "react-icons/io5";
 import SolarEdgeEquipmentDetails from "./SolarEdgeEquipmentDetails";
 import AlertsOverview from "./AlertsOverview";
 import EnergyComparisonChart from "./EnergyComparisonChart";
+import useDeviceType from "@/hooks/useDeviceType";
+import BatteryChargingGraph from "./BatteryChargingGraph";
 
 const mockAlerts = [
   {
@@ -137,6 +139,7 @@ const SolarEdgePlantDetails = React.memo(
     const token = useMemo(() => user?.tokenIdentificador, [user]);
     const { t } = useTranslation();
     const isAdmin = useSelector(selectIsAdmin);
+    const { isTablet } = useDeviceType();
 
     const solaredgePlant = useMemo(() => {
       if (!plant?.data?.details) return null;
@@ -434,48 +437,93 @@ const SolarEdgePlantDetails = React.memo(
               batteryLevel={batteryLevel}
             />
 
-            {batteryLevel > 0 && (
-              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-                <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                  {/* Cool Energy Icon */}
-                  <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-                    <IoFlashOutline className="text-3xl md:text-4xl" />
+            {isTablet ? (
+              <div className="flex gap-6">
+                {batteryLevel > 0 && (
+                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
+                    <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
+                      {/* Cool Energy Icon */}
+                      <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
+                        <IoFlashOutline className="text-3xl md:text-4xl" />
+                      </div>
+
+                      {/* Battery Gauge */}
+                      <BatteryIndicator soc={batteryLevel} />
+
+                      {/* Tooltip */}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+                            <Info className="h-4 w-4" />
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-xs">
+                            <p>{t("batteryTooltipContent")}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </div>
+                )}
 
-                  {/* Battery Gauge */}
-                  <BatteryIndicator soc={batteryLevel} />
-
-                  {/* Tooltip */}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                        <Info className="h-4 w-4" />
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="max-w-xs">
-                        <p>{t("batteryTooltipContent")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+                {/* Environmental Benefits */}
+                {isLoading ? (
+                  <EnergyStatisticsSkeleton theme={theme} />
+                ) : (
+                  <EnvironmentalBenefits
+                    t={t}
+                    plantId={solaredgePlant?.id}
+                    provider={solaredgePlant?.organization}
+                    batteryLevel={batteryLevel}
+                  />
+                )}
               </div>
-            )}
-
-            {/* Environmental Benefits */}
-            {isLoading ? (
-              <EnergyStatisticsSkeleton theme={theme} />
             ) : (
-              <EnvironmentalBenefits
-                t={t}
-                plantId={solaredgePlant?.id}
-                provider={solaredgePlant?.organization}
-                batteryLevel={batteryLevel}
-              />
+              <>
+                {batteryLevel > 0 && (
+                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
+                    <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
+                      {/* Cool Energy Icon */}
+                      <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
+                        <IoFlashOutline className="text-3xl md:text-4xl" />
+                      </div>
+
+                      {/* Battery Gauge */}
+                      <BatteryIndicator soc={batteryLevel} />
+
+                      {/* Tooltip */}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+                            <Info className="h-4 w-4" />
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-xs">
+                            <p>{t("batteryTooltipContent")}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </div>
+                )}
+
+                {/* Environmental Benefits */}
+                {isLoading ? (
+                  <EnergyStatisticsSkeleton theme={theme} />
+                ) : (
+                  <EnvironmentalBenefits
+                    t={t}
+                    plantId={solaredgePlant?.id}
+                    provider={solaredgePlant?.organization}
+                    batteryLevel={batteryLevel}
+                  />
+                )}
+              </>
             )}
           </div>
 
           <SolarEdgeGraphDisplay
             plantId={solaredgePlant?.id}
             title={t("potenciaPlanta")}
+            token={token}
           />
           <EnergyComparisonChart
             plantId={solaredgePlant?.id}

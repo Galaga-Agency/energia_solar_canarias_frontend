@@ -35,7 +35,7 @@ const BatteryIndicator = ({ soc }) => {
         animated={true}
         charging={false}
         size={130}
-        orientation={isMobile || isSmallDesktop ? "horizontal" : "vertical"}
+        orientation={isMobile ? "horizontal" : "vertical"}
         customization={{
           batteryBody: {
             strokeWidth: 4,

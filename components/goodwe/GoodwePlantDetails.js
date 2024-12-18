@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
@@ -17,6 +17,8 @@ import GoodweEnergyFlowDisplay from "@/components/goodwe/GoodweEnergyFlowDisplay
 import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
+  selectLoadingBenefits,
+  selectLoadingDetails,
   selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
@@ -38,22 +40,25 @@ import GoodwePerformanceMetrics from "./GoodwePerformanceMetrics";
 
 const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
-  const isLoading = useSelector(selectRealtimeLoading);
+  const isLoading = useSelector(selectLoadingDetails);
   const error = useSelector(selectDetailsError);
   const user = useSelector(selectUser);
   const isAdmin = useSelector(selectIsAdmin);
   const { t } = useTranslation();
   const { isMobile, isTablet, isSmallDesktop } = useDeviceType();
+  const [todayPVGeneration, setTodayPVGeneration] = useState(null);
 
   const token = useMemo(() => user?.tokenIdentificador, [user]);
   const goodwePlant = useMemo(
     () => plant?.data?.data || {},
     [plant?.data?.data]
   );
+
   const plantId = useMemo(
     () => goodwePlant?.info?.powerstation_id,
     [goodwePlant]
   );
+
   const formattedAddress = useMemo(() => {
     if (!goodwePlant?.location) return "";
     return `${goodwePlant.location.city}, ${goodwePlant.location.country}`;
@@ -89,6 +94,11 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
     }
     const formattedNumber = parseFloat(value).toFixed(2);
     return `${formattedNumber} ${unit}`;
+  };
+
+  const handleValueUpdate = (value) => {
+    // console.log("Today's PV Generation from child:", value);
+    setTodayPVGeneration(value);
   };
 
   console.log("goodwePlant: ", goodwePlant);
@@ -270,88 +280,53 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           provider={goodwePlant?.info?.org_name}
         />
 
-        <div className="flex flex-col 2xl:flex-row 2xl:gap-6">
-          {isLoading ? (
-            <EnergyStatisticsSkeleton theme={theme} />
-          ) : (
-            <GoodweEnergyStatistics
-              goodwePlant={goodwePlant}
-              t={t}
-              theme={theme}
-              formatValueWithDecimals={formatValueWithDecimals}
-              batteryLevel={goodwePlant?.soc?.[0]?.power}
-            />
-          )}
+        {isLoading ? (
+          <EnergyStatisticsSkeleton theme={theme} />
+        ) : (
+          <GoodweEnergyStatistics
+            goodwePlant={goodwePlant}
+            t={t}
+            theme={theme}
+            formatValueWithDecimals={formatValueWithDecimals}
+            batteryLevel={goodwePlant?.soc?.[0]?.power}
+            todayPVGeneration={todayPVGeneration}
+          />
+        )}
 
-          {isTablet || isSmallDesktop ? (
-            <div className="flex gap-6">
-              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-                <div className="flex 2xl:flex-col items-center justify-center flex-1 gap-4">
-                  <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-                    <IoFlashOutline className="text-3xl md:text-4xl" />
-                  </div>
-                  <BatteryIndicator soc={goodwePlant?.soc[0].power} />
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                        <Info className="h-4 w-4" />
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="max-w-xs">
-                        <p>{t("batteryTooltipContent")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </div>
-
-              <GoodwePerformanceMetrics
-                isLoading={isLoading}
-                theme={theme}
-                goodwePlant={goodwePlant}
-                t={t}
-                isMobile={isMobile}
-                getYieldColor={getYieldColor}
-                getYieldIcon={getYieldIcon}
-              />
+        <div className="flex flex-col md:flex-row gap-6 ">
+          <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex md:flex-col items-center justify-center gap-4 md:mb-6">
+            <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
+              <IoFlashOutline className="text-3xl md:text-4xl" />
             </div>
-          ) : (
-            <>
-              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-                <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                  <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-                    <IoFlashOutline className="text-3xl md:text-4xl" />
-                  </div>
-                  <BatteryIndicator soc={goodwePlant?.soc[0].power} />
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                        <Info className="h-4 w-4" />
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="max-w-xs">
-                        <p>{t("batteryTooltipContent")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </div>
+            <BatteryIndicator soc={goodwePlant?.soc[0]?.power || 0} />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
+                  <Info className="h-4 w-4" />
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  <p>{t("batteryTooltipContent")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
-              <GoodwePerformanceMetrics
-                isLoading={isLoading}
-                theme={theme}
-                goodwePlant={goodwePlant}
-                t={t}
-                isMobile={isMobile}
-                getYieldColor={getYieldColor}
-                getYieldIcon={getYieldIcon}
-              />
-            </>
-          )}
+          <GoodwePerformanceMetrics
+            isLoading={isLoading}
+            theme={theme}
+            goodwePlant={goodwePlant}
+            t={t}
+            isMobile={isMobile}
+            getYieldColor={getYieldColor}
+            getYieldIcon={getYieldIcon}
+          />
         </div>
 
         <section className="mb-6">
           <GoodweGraphDisplay
             plantId={goodwePlant?.info?.powerstation_id}
             title={t("plantAnalytics")}
+            onValueUpdate={handleValueUpdate}
           />
         </section>
       </div>

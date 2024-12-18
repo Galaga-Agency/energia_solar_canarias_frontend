@@ -231,12 +231,12 @@ export const fetchBatteryChargingStateAPI = async ({
   const MAX_RETRIES = 5;
   let attempts = 0;
 
-  console.log("body passed: ", {
-    plantId,
-    startDate,
-    endDate,
-    token,
-  });
+  // console.log("body passed: ", {
+  //   plantId,
+  //   startDate,
+  //   endDate,
+  //   token,
+  // });
 
   while (attempts < MAX_RETRIES) {
     try {
@@ -271,7 +271,7 @@ export const fetchBatteryChargingStateAPI = async ({
       }
 
       const data = await response.json();
-      console.log("API Response:", data);
+      // console.log("API Response:", data);
       return data.data;
     } catch (error) {
       console.error("Error fetching battery charging state:", error);

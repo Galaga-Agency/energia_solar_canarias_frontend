@@ -38,7 +38,7 @@ const COLORS = {
   import: "#2196F3", // Blue
 };
 
-const GoodweGraphDisplay = ({ plantId, title }) => {
+const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [range, setRange] = useState("dia");
@@ -54,17 +54,32 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
   const { isMobile, isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
 
-  const handleFetchGraph = useCallback(() => {
+  const handleFetchGraph = useCallback(async () => {
     if (plantId && user?.tokenIdentificador) {
-      dispatch(
-        fetchGoodweGraphData({
-          id: plantId,
-          date: currentDate,
-          range,
-          chartIndexId,
-          token: user.tokenIdentificador,
-        })
-      );
+      try {
+        const response = await dispatch(
+          fetchGoodweGraphData({
+            id: plantId,
+            date: currentDate,
+            range,
+            chartIndexId,
+            token: user.tokenIdentificador,
+          })
+        ).unwrap();
+
+        // Extract today's generation (last value in the xy array)
+        const lines = response?.data?.data?.lines || [];
+        const todayPV = lines.length > 0 ? lines[0].xy.slice(-1)[0]?.y : null;
+
+        // console.log("Today's PV Generation:", todayPV);
+
+        // Notify parent with the value
+        if (onValueUpdate && todayPV !== null) {
+          onValueUpdate(todayPV);
+        }
+      } catch (error) {
+        console.error("Error fetching graph data:", error);
+      }
     }
   }, [
     dispatch,
@@ -73,7 +88,10 @@ const GoodweGraphDisplay = ({ plantId, title }) => {
     range,
     chartIndexId,
     user?.tokenIdentificador,
+    onValueUpdate,
   ]);
+
+  // console.log("graphData -----------> ", graphData);
 
   useEffect(() => {
     const shouldFetchData =

@@ -316,6 +316,8 @@
   "type": "Tipo",
   "type_Residential": "Residencial",
   "type_Commercial": "Comercial",
+  "type_Industrial": "Industrial",
+  "type_Commercial rooftop": "Tejado Comercial",
   "type_Ground Mounted": "Montado en el suelo",
   "type_Battery Storage": "Almacenamiento de batería",
   "type_Optimizers & Inverters": "Optimizadores e inversores",
@@ -1589,5 +1591,6 @@
   "batteryState": "Estado de la Batería",
   "batteryChargingState": "Estado de Carga",
   "date": "Fecha",
-  "time": "Hora"
+  "time": "Hora",
+  "todayGenerationTooltip": "La cantidad total de energía solar generada hoy."
 }

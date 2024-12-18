@@ -1,5 +1,9 @@
 import React from "react";
-import { IoFlashSharp, IoSpeedometerOutline } from "react-icons/io5";
+import {
+  IoFlashSharp,
+  IoSpeedometerOutline,
+  IoTimeOutline,
+} from "react-icons/io5";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { RiBattery2ChargeLine } from "react-icons/ri";
 import { BsCalendarMonth } from "react-icons/bs";
@@ -17,6 +21,7 @@ const GoodweEnergyStatistics = ({
   theme,
   formatValueWithDecimals,
   batteryLevel,
+  todayPVGeneration,
 }) => {
   const stats = [
     {
@@ -41,6 +46,12 @@ const GoodweEnergyStatistics = ({
       tooltip: t("batteryCapacityTooltip"),
     },
     {
+      icon: IoTimeOutline,
+      title: t("todayGeneration"),
+      value: formatValueWithDecimals(todayPVGeneration || 0, "kW"),
+      tooltip: t("todayGenerationTooltip"),
+    },
+    {
       icon: BsCalendarMonth,
       title: t("monthlyGeneration"),
       value: formatValueWithDecimals(
@@ -59,14 +70,14 @@ const GoodweEnergyStatistics = ({
 
   return (
     <section
-      className={`flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 md:pb-8 mb-6 backdrop-blur-sm shadow-lg ${
+      className={`bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 md:pb-8 mb-6 backdrop-blur-sm shadow-lg ${
         batteryLevel ? "xl:min-w-[40vw]" : "xl:min-w-[calc(50%-36px)]"
       }`}
     >
       <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
         {t("energyStatistics")}
       </h2>
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {stats.map(({ icon: Icon, title, value, tooltip }, index) => (
           <div
             key={index}

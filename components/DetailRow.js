@@ -77,7 +77,7 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
           </TooltipProvider>
         )}
       </div>
-      <div className="text-right max-w-[70%] overflow-hidden">
+      <div className="text-right max-w-[50%] overflow-hidden">
         {renderValue()}
       </div>
     </div>

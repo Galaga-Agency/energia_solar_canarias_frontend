@@ -93,9 +93,7 @@ const GoodwePerformanceMetrics = ({
               </p>
             </div>
             <p
-              className={`text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow  ${
-                isSmallDesktop ? "mb-0" : "mb-8"
-              }`}
+              className={`text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-8`}
             >
               {value}
             </p>

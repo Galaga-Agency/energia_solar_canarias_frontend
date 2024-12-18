@@ -19,7 +19,7 @@ const Texture = () => {
   const scale = getScale();
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none">
+    <div className="fixed inset-0 w-full h-full pointer-events-none">
       <svg
         id="patternId"
         width="100%"

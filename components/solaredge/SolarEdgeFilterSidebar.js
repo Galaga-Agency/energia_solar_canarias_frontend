@@ -23,9 +23,8 @@ const SolarEdgeFilterSidebar = ({
 
   // Translation keys for SolarEdge plant types
   const SOLAREDGE_TYPES = {
-    "Optimizers & Inverters": "type_Optimizers and inverters",
-    "Safety & Monitoring Interface": "type_Safety and monitoring interface",
-    "Monitoring Combiner Boxes": "type_Monitoring combiner boxes",
+    RESIDENCIAL: "type_Residential",
+    INDUSTRIAL: "type_Industrial",
   };
 
   useEffect(() => {

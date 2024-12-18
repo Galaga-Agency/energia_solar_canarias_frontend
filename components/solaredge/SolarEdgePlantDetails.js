@@ -146,7 +146,7 @@ const SolarEdgePlantDetails = React.memo(
       return plant.data.details;
     }, [plant]);
 
-    // console.log("Solaredge plant details: ", solaredgePlant);
+    console.log("Solaredge plant details: ", solaredgePlant);
 
     const batteryLevel =
       solaredgePlant?.siteCurrentPowerFlow?.STORAGE?.chargeLevel;

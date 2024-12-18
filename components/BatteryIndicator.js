@@ -1,4 +1,5 @@
 import useDeviceType from "@/hooks/useDeviceType";
+import { selectPlantDetails } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import React, { useMemo } from "react";
 import BatteryGauge from "react-battery-gauge";
@@ -7,6 +8,12 @@ import { useSelector } from "react-redux";
 const BatteryIndicator = ({ soc }) => {
   const { isMobile, isTablet, isSmallDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
+  const currentPlant = useSelector(selectPlantDetails);
+  const isGoodwe = () =>
+    currentPlant?.data?.data?.org_name ===
+      "ENERGIA Y CALOR SOLAR DEL ATLANTICO SL" || "goodwe";
+
+  // console.log("currentPlant", currentPlant);
 
   const getBatteryColor = useMemo(() => {
     if (soc === null || soc === undefined) return "none";

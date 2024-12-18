@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchGoodweRealtimeData,
   selectLoadingDetails,
+  selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import EnergyLoadingClock from "@/components/EnergyLoadingClock";
 import { useTranslation } from "next-i18next";
@@ -21,7 +22,6 @@ import { selectUser } from "@/store/slices/userSlice";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Home } from "lucide-react";
 import { FaSolarPanel } from "react-icons/fa";
-import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 
 const GoodweEnergyFlowDisplay = memo(() => {
   const { isMobile, isTablet } = useDeviceType();
@@ -34,7 +34,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
   const [isFetching, setIsFetching] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const lastUpdatedRef = useRef(new Date().toLocaleString());
-  const isLoading = useSelector(selectLoadingDetails);
+  const isLoading = useSelector(selectRealtimeLoading);
   const theme = useSelector(selectTheme);
   const params = useParams();
   const formattedPlantId = params?.plantId?.toString() || null;
@@ -53,41 +53,20 @@ const GoodweEnergyFlowDisplay = memo(() => {
         fetchGoodweRealtimeData({ plantId: formattedPlantId, token })
       ).unwrap();
 
-      const parsedData = {
-        powerflow: {
-          load:
-            typeof response.siteCurrentPowerFlow.LOAD.currentPower === "string"
-              ? parseFloat(
-                  response.siteCurrentPowerFlow.LOAD.currentPower.replace(
-                    /\D/g,
-                    ""
-                  )
-                )
-              : response.siteCurrentPowerFlow.LOAD.currentPower || 0,
-          pv:
-            typeof response.siteCurrentPowerFlow.PV.currentPower === "string"
-              ? parseFloat(
-                  response.siteCurrentPowerFlow.PV.currentPower.replace(
-                    /\D/g,
-                    ""
-                  )
-                )
-              : response.siteCurrentPowerFlow.PV.currentPower || 0,
-          grid:
-            typeof response.siteCurrentPowerFlow.GRID.currentPower === "string"
-              ? parseFloat(
-                  response.siteCurrentPowerFlow.GRID.currentPower.replace(
-                    /\D/g,
-                    ""
-                  )
-                )
-              : response.siteCurrentPowerFlow.GRID.currentPower || 0,
-          soc: response.siteCurrentPowerFlow.STORAGE?.chargeLevel || 0,
-          unit: "kW",
-        },
-      };
+      // Access the correct path in the response
+      const powerflowData = response.data.powerflow;
 
-      setRealtimeData(parsedData);
+      // Set the data directly without parsing
+      setRealtimeData({
+        powerflow: {
+          load: powerflowData.load || "0W",
+          pv: powerflowData.pv || "0W",
+          grid: powerflowData.grid || "0W",
+          soc: powerflowData.soc || "0%",
+          unit: powerflowData.unit || "",
+        },
+      });
+
       setError(false);
       lastUpdatedRef.current = new Date().toLocaleString();
       setIsFetching(false);
@@ -97,7 +76,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
       console.error("Error fetching real-time data:", err);
       setError(true);
       setRealtimeData({
-        powerflow: { load: 0, pv: 0, grid: 0, soc: 0, unit: "kW" },
+        powerflow: { load: "0W", pv: "0W", grid: "0W", soc: "0%", unit: "" },
       });
       setIsFetching(false);
       setIsBlinking(false);
@@ -113,13 +92,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
     const interval = setInterval(fetchRealtimeData, 30000);
     return () => clearInterval(interval);
   }, [fetchRealtimeData, formattedPlantId, token]);
-
-  const formatPowerValue = (value) => {
-    if (typeof value === "string") {
-      return parseFloat(value.replace(/\D/g, "")) || 0;
-    }
-    return value || 0;
-  };
 
   const {
     load = 0,
@@ -236,7 +208,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
                 isBlinking ? "animate-double-blink" : ""
               }`}
             >
-              {error ? "N/A" : formatPowerValue(pv)}
+              {error ? "N/A" : pv}
             </span>
           </div>
         </div>
@@ -272,7 +244,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
                       isBlinking ? "animate-double-blink" : ""
                     }`}
                   >
-                    {error ? "N/A" : formatPowerValue(load)}
+                    {error ? "N/A" : load}
                   </span>
                 </div>
               </div>
@@ -295,7 +267,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
                       isBlinking ? "animate-double-blink" : ""
                     }`}
                   >
-                    {error ? "N/A" : formatPowerValue(grid)}
+                    {error ? "N/A" : grid}
                   </span>
                 </div>
               </div>
@@ -308,10 +280,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
 
   if (!formattedPlantId) {
     return null;
-  }
-
-  if (isLoading) {
-    return <EnergyFlowSkeleton theme={theme} />;
   }
 
   return (
@@ -368,7 +336,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
-                {error ? "N/A" : formatPowerValue(load)}
+                {error ? "N/A" : load}
               </span>
             </div>
           </div>
@@ -390,7 +358,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
-                {error ? "N/A" : formatPowerValue(pv)}
+                {error ? "N/A" : pv}
               </span>
             </div>
           </div>
@@ -415,7 +383,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
-                {error ? "N/A" : formatPowerValue(grid)}
+                {error ? "N/A" : grid}
               </span>
             </div>
           </div>

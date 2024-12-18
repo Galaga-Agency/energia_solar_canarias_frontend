@@ -73,7 +73,7 @@ const BatteryChargingGraph = ({ token, plantId }) => {
   const processedData = useMemo(() => {
     const telemetries = batteryData?.storageData?.batteries?.[0]?.telemetries;
 
-    console.log("Raw telemetries:", telemetries);
+    // console.log("Raw telemetries:", telemetries);
 
     if (!telemetries || !telemetries.length) return [];
 
@@ -212,19 +212,15 @@ const BatteryChargingGraph = ({ token, plantId }) => {
                     payload[0].payload;
                   return (
                     <div
-                      className={`p-3 rounded-md shadow-md ${
-                        theme === "dark"
-                          ? "bg-gray-800 text-gray-200 border-gray-700"
-                          : "bg-white text-gray-800 border-gray-300"
-                      }`}
+                      className={`p-3 bg-white dark:bg-gray-800 border rounded shadow-md`}
                     >
-                      <p className="font-semibold">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
                         {t("date")}: {date}
                       </p>
-                      <p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
                         {t("time")}: {time}
                       </p>
-                      <p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
                         {t("batteryState")}: {batteryPercentageState}%
                       </p>
                     </div>

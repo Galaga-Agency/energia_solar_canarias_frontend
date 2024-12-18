@@ -1,7 +1,7 @@
 import React from "react";
 import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 
-const SolarEdgeGraphDisplaySkeleton = ({ theme }) => {
+const SolarEdgeEnergyFlowGraphSkeleton = ({ theme }) => {
   const PercentageBarSkeleton = () => (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 backdrop-blur-sm shadow-lg">
       {/* Title Skeleton */}
@@ -61,4 +61,4 @@ const SolarEdgeGraphDisplaySkeleton = ({ theme }) => {
   );
 };
 
-export default SolarEdgeGraphDisplaySkeleton;
+export default SolarEdgeEnergyFlowGraphSkeleton;

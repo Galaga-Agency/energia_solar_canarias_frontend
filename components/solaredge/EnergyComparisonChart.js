@@ -31,6 +31,7 @@ import useCSVExport from "@/hooks/useCSVExport";
 import PrimaryButton from "../ui/PrimaryButton";
 import SecondaryButton from "../ui/SecondaryButton";
 import ExportModal from "../ExportModal";
+import { Info } from "lucide-react";
 
 const COLORS = ["#2196F3", "#4CAF50", "#FFEB3B", "#FF5722"];
 
@@ -242,8 +243,8 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
               <TooltipProvider>
                 <TooltipUI>
                   <TooltipTrigger asChild>
-                    <div className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 cursor-pointer">
-                      <BiRefresh className="h-5 w-5 text-gray-500 dark:text-gray-300" />
+                    <div className="p-2 rounded-full bg-gray-200/50 dark:bg-gray-700 cursor-pointer">
+                      <Info className="h-5 w-5 text-gray-500 dark:text-gray-300" />
                     </div>
                   </TooltipTrigger>
                   <TooltipContent side="top">
@@ -271,7 +272,11 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
                     bottom: 10,
                   }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
+                    opacity={theme === "dark" ? 0.5 : 1}
+                  />
                   <XAxis dataKey="name" tick={{ fill: "#ccc" }} />
                   <YAxis
                     dataKey="value" // Ensure a static dataKey exists
@@ -312,7 +317,11 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
                   bottom: 10,
                 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
+                  opacity={theme === "dark" ? 0.5 : 1}
+                />
                 <XAxis dataKey="name" />
                 <YAxis
                   tickFormatter={(value) => {
@@ -332,12 +341,35 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
                 />
 
                 <Tooltip
-                  formatter={(value) => {
-                    if (value >= 1000000)
-                      return [`${(value / 1000000).toFixed(1)} MWh`];
-                    if (value >= 1000)
-                      return [`${(value / 1000).toFixed(1)} KWh`];
-                    return [`${value} Wh`];
+                  content={({ payload, label }) => {
+                    if (!payload || !payload.length) return null;
+                    return (
+                      <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                          {label}
+                        </p>
+                        {payload.map((entry, index) => (
+                          <div
+                            key={`tooltip-${index}`}
+                            className="flex justify-between gap-4"
+                          >
+                            <span
+                              className="text-sm text-gray-700 dark:text-gray-300"
+                              style={{ color: entry.color }}
+                            >
+                              {entry.name}:
+                            </span>
+                            <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                              {entry.value >= 1000000
+                                ? `${(entry.value / 1000000).toFixed(1)} MWh`
+                                : entry.value >= 1000
+                                ? `${(entry.value / 1000).toFixed(1)} KWh`
+                                : `${entry.value} Wh`}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
                   }}
                 />
 

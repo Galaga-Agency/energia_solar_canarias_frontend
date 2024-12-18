@@ -228,75 +228,55 @@ export const fetchBatteryChargingStateAPI = async ({
   endDate,
   token,
 }) => {
-  try {
-    console.log("Attempting battery fetch with params:", {
-      plantId,
-      fechaInicio: startDate,
-      fechaFin: endDate,
-    });
+  const MAX_RETRIES = 5;
+  let attempts = 0;
 
-    const response = await fetch(
-      `${API_BASE_URL}/plant/grafica/bateria/${plantId}?proveedor=solaredge`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          usuario: USUARIO,
-          apiKey: API_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          fechaInicio: startDate,
-          fechaFin: endDate,
-        }),
-      }
-    );
+  console.log("body passed: ", {
+    plantId,
+    startDate,
+    endDate,
+    token,
+  });
 
-    let result = await response.text();
-
+  while (attempts < MAX_RETRIES) {
     try {
-      // Find the first complete JSON object by matching braces
-      let depth = 0;
-      let firstJsonEnd = -1;
-
-      for (let i = 0; i < result.length; i++) {
-        if (result[i] === "{") depth++;
-        if (result[i] === "}") {
-          depth--;
-          if (depth === 0) {
-            firstJsonEnd = i + 1;
-            break;
-          }
+      const response = await fetch(
+        `${API_BASE_URL}/plant/grafica/bateria/${plantId}?proveedor=solaredge`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            usuario: USUARIO,
+            apiKey: API_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            fechaInicio: startDate,
+            fechaFin: endDate,
+          }),
         }
+      );
+
+      if (response.status === 429) {
+        const retryAfter = response.headers.get("Retry-After") || 2 ** attempts;
+        console.warn(`Rate limited. Retrying after ${retryAfter} seconds...`);
+        await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+        attempts++;
+        continue;
       }
-
-      // Extract just the first complete JSON object
-      const firstJson = result.slice(0, firstJsonEnd);
-      console.log("Extracted JSON length:", firstJson.length);
-
-      const data = JSON.parse(firstJson);
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to fetch battery charging state"
-        );
+        const textResponse = await response.text();
+        throw new Error(`Error: ${response.status} - ${textResponse}`);
       }
 
-      console.log("Successfully parsed battery data:", {
-        batteriesCount: data?.storageData?.batteryCount,
-        telemetriesCount: data?.storageData?.batteries?.[0]?.telemetryCount,
-      });
-
-      return data;
-    } catch (parseError) {
-      console.error("Parse error details:", {
-        errorMessage: parseError.message,
-        position: parseError.message.match(/position (\d+)/)?.[1],
-      });
-      throw new Error("Failed to parse battery data response");
+      const data = await response.json();
+      console.log("API Response:", data);
+      return data.data;
+    } catch (error) {
+      console.error("Error fetching battery charging state:", error);
+      if (attempts >= MAX_RETRIES - 1) throw error;
+      attempts++;
     }
-  } catch (error) {
-    console.error("Error fetching battery charging state:", error);
-    throw error;
   }
 };

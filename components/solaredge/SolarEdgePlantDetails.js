@@ -27,7 +27,7 @@ import {
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
-import SolarEdgeGraphDisplay from "@/components/solaredge/SolarEdgeGraphDisplay";
+import SolarEdgeEnergyFlowGraph from "@/components/solaredge/SolarEdgeEnergyFlowGraph";
 import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import EnvironmentalBenefits from "@/components/solaredge/EnvironmentalBenefits";
 import BatteryIndicator from "@/components/BatteryIndicator";
@@ -437,94 +437,59 @@ const SolarEdgePlantDetails = React.memo(
               batteryLevel={batteryLevel}
             />
 
-            {isTablet ? (
-              <div className="flex gap-6">
-                {batteryLevel > 0 && (
-                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-                    <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                      {/* Cool Energy Icon */}
-                      <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-                        <IoFlashOutline className="text-3xl md:text-4xl" />
-                      </div>
-
-                      {/* Battery Gauge */}
-                      <BatteryIndicator soc={batteryLevel} />
-
-                      {/* Tooltip */}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                            <Info className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom" className="max-w-xs">
-                            <p>{t("batteryTooltipContent")}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </div>
-                )}
-
-                {/* Environmental Benefits */}
-                {isLoading ? (
-                  <EnergyStatisticsSkeleton theme={theme} />
-                ) : (
-                  <EnvironmentalBenefits
-                    t={t}
-                    plantId={solaredgePlant?.id}
-                    provider={solaredgePlant?.organization}
-                    batteryLevel={batteryLevel}
-                  />
-                )}
-              </div>
+            {/* Environmental Benefits */}
+            {isLoading ? (
+              <EnergyStatisticsSkeleton theme={theme} />
             ) : (
-              <>
-                {batteryLevel > 0 && (
-                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-                    <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                      {/* Cool Energy Icon */}
-                      <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-                        <IoFlashOutline className="text-3xl md:text-4xl" />
-                      </div>
-
-                      {/* Battery Gauge */}
-                      <BatteryIndicator soc={batteryLevel} />
-
-                      {/* Tooltip */}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                            <Info className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom" className="max-w-xs">
-                            <p>{t("batteryTooltipContent")}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </div>
-                )}
-
-                {/* Environmental Benefits */}
-                {isLoading ? (
-                  <EnergyStatisticsSkeleton theme={theme} />
-                ) : (
-                  <EnvironmentalBenefits
-                    t={t}
-                    plantId={solaredgePlant?.id}
-                    provider={solaredgePlant?.organization}
-                    batteryLevel={batteryLevel}
-                  />
-                )}
-              </>
+              <EnvironmentalBenefits
+                t={t}
+                plantId={solaredgePlant?.id}
+                provider={solaredgePlant?.organization}
+                batteryLevel={batteryLevel}
+              />
             )}
           </div>
 
-          <SolarEdgeGraphDisplay
+          <SolarEdgeEnergyFlowGraph
             plantId={solaredgePlant?.id}
             title={t("potenciaPlanta")}
             token={token}
           />
+
+          <section className="flex flex-col md:flex-row gap-6 mt-6 w-full">
+            <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
+              <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
+                {/* Cool Energy Icon */}
+                <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
+                  <IoFlashOutline className="text-3xl md:text-4xl" />
+                </div>
+
+                {/* Battery Gauge */}
+                <BatteryIndicator soc={batteryLevel} />
+
+                {/* Tooltip */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+                      <Info className="h-4 w-4" />
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs">
+                      <p>{t("batteryTooltipContent")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+
+            {/* Battery Graph */}
+            <div className="flex-1 min-w-[300px]">
+              <BatteryChargingGraph
+                plantId={solaredgePlant?.id}
+                token={token}
+              />
+            </div>
+          </section>
+
           <EnergyComparisonChart
             plantId={solaredgePlant?.id}
             installationDate={solaredgePlant?.installationDate}

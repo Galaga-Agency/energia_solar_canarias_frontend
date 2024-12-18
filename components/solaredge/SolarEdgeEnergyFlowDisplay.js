@@ -101,10 +101,9 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
     unit = "kW",
   } = realtimeData?.powerflow || {};
 
-  const hasFlow = useMemo(
-    () => load > 0 || pv > 0 || grid > 0,
-    [load, pv, grid]
-  );
+  // console.log("realtimeData: ", realtimeData);
+
+  const hasFlow = useMemo(() => load > 0, [load]);
 
   const renderFlow = useCallback(
     (fromValue, toValue, direction) => {
@@ -195,7 +194,7 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
         {/* Top Solar Panel Container */}
         <div
           className={`w-[180px] flex flex-col items-center ${
-            hasFlow && "mb-32"
+            pv > 0 ? "mb-32" : ""
           } `}
         >
           <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] font-group-hover:scale-105 transition-transform mb-2" />

@@ -1587,5 +1587,7 @@
   "moreInfo": "Más Información",
   "noDataTooltip": "No se encontraron datos para el rango seleccionado: {{range}}.",
   "batteryState": "Estado de la Batería",
-  "batteryChargingState": "Estado de Carga"
+  "batteryChargingState": "Estado de Carga",
+  "date": "Fecha",
+  "time": "Hora"
 }

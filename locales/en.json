@@ -682,5 +682,7 @@
   "moreInfo": "More Information",
   "noDataTooltip": "No data was found for the selected range: {{range}}.",
   "batteryState": "Battery State",
-  "batteryChargingState": "Battery Charging State"
+  "batteryChargingState": "Battery Charging State",
+  "date": "Date",
+  "time": "Time"
 }

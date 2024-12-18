@@ -273,7 +273,8 @@ export const fetchBatteryChargingState = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.error("Error fetching battery charging state:", error);
+      return rejectWithValue(error.message || "Failed to fetch battery data.");
     }
   }
 );

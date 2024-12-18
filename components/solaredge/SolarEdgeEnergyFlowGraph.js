@@ -26,7 +26,7 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SolarEdgeGraphDisplaySkeleton from "@/components/loadingSkeletons/SolarEdgeGraphDisplaySkeleton";
+import SolarEdgeEnergyFlowGraphSkeleton from "@/components/loadingSkeletons/SolarEdgeEnergyFlowGraphSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import {
@@ -42,9 +42,8 @@ import { useParams } from "next/navigation";
 import ExportModal from "../ExportModal";
 import useCSVExport from "@/hooks/useCSVExport";
 import CustomSelect from "../ui/CustomSelect";
-import BatteryChargingGraph from "./BatteryChargingGraph";
 
-const SolarEdgeGraphDisplay = ({ title, token }) => {
+const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isMobile } = useDeviceType();
@@ -66,9 +65,6 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { downloadCSV } = useCSVExport();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
-  const batteryData = useSelector(selectBatteryChargingState);
-  const batteryLoading = useSelector(selectBatteryChargingLoading);
-  const batteryError = useSelector(selectBatteryChargingError);
 
   const VISIBLE_CURVES = [
     {
@@ -140,35 +136,6 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
       setEndDate(new Date());
     }
   }, [range, customRange, calculateStartDate]);
-
-  useEffect(() => {
-    if (plantId && token) {
-      // Get last 24 hours
-      const now = new Date();
-      const startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
-
-      // Format dates with hours to ensure we get a full day's data
-      const formatDateWithTime = (date) => {
-        return date.toISOString().split(".")[0].replace("T", " ");
-      };
-
-      console.log("Dispatching battery fetch with:", {
-        plantId,
-        startDate: formatDateWithTime(startDate),
-        endDate: formatDateWithTime(now),
-        token,
-      });
-
-      dispatch(
-        fetchBatteryChargingState({
-          plantId,
-          startDate: formatDateWithTime(startDate),
-          endDate: formatDateWithTime(now),
-          token,
-        })
-      );
-    }
-  }, [plantId, token, dispatch]);
 
   useEffect(() => {
     if (graphData?.overview?.lastUpdateTime) {
@@ -478,7 +445,6 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
   // console.log("filteredData: ", filteredData);
 
   const handleExportCSV = () => {
-    // Transform the SolarEdge graph data into the desired format
     const exportData = filteredData.map((item) => ({
       "Hora de medición": item.date,
       "Producción (W)": item.solarProduction || 0,
@@ -488,17 +454,8 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
       "De Solar (W)": item.selfConsumption || 0,
     }));
 
-    // Add Battery Charging Data to the CSV (mockData or real data)
-    const batteryData = batteryChargingMockData.map((item) => ({
-      "Hora de medición": item.date,
-      "Estado de Carga (%)": item.batteryState,
-    }));
-
-    // Combine both datasets for export
-    const combinedData = [...exportData, ...batteryData];
-
     // Download the combined data as CSV
-    downloadCSV(combinedData, "solar_edge_and_battery_data.csv");
+    downloadCSV(exportData, "solaredge_data.csv");
     setIsModalOpen(false);
   };
 
@@ -507,38 +464,39 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
       {/* Header Section */}
       <div className="flex flex-col gap-4 mb-6">
         {/* Title and Controls Row */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex items-center gap-4">
-            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
-              {title}
-            </h2>
-            <button
-              onClick={handleButtonClick}
-              disabled={isLoading}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
-            >
-              <BiRefresh
-                className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                  isLoading ? "animate-spin" : ""
-                }`}
-              />
-            </button>
+        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-start md:items-center">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-4 items-center">
+                <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+                  {title}
+                </h2>
+                <button
+                  onClick={handleButtonClick}
+                  disabled={isLoading}
+                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
+                >
+                  <BiRefresh
+                    className={`text-2xl text-custom-dark-blue dark:text-custom-yellow mb-1 ${
+                      isLoading ? "animate-spin" : ""
+                    }`}
+                  />
+                </button>
+              </div>
+              {isMobile && (
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+                </button>
+              )}
+            </div>
             {lastUpdateTime && (
-              <TooltipProvider>
-                <TooltipUI>
-                  <TooltipTrigger>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {t("lastUpdate")}:{" "}
-                      {new Date(lastUpdateTime).toLocaleDateString()}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    <p className="text-sm">
-                      {new Date(lastUpdateTime).toLocaleString()}
-                    </p>
-                  </TooltipContent>
-                </TooltipUI>
-              </TooltipProvider>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {t("lastUpdate")}:{" "}
+                {new Date(lastUpdateTime).toLocaleDateString()}
+              </span>
             )}
           </div>
           <div className="flex items-center gap-4">
@@ -559,12 +517,14 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
               ]}
               className="text-sm" // Match the text size with the rest of the UI
             />
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
-            </button>
+            {!isMobile && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -603,7 +563,7 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
 
       {/* Content Section */}
       {isLoading ? (
-        <SolarEdgeGraphDisplaySkeleton theme={theme} />
+        <SolarEdgeEnergyFlowGraphSkeleton theme={theme} />
       ) : isEmptyOrZeroData ? (
         <div>
           {/* No Data Available Message */}
@@ -642,7 +602,11 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
                     bottom: 10,
                   }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
+                    opacity={theme === "dark" ? 0.5 : 1}
+                  />
                   <XAxis
                     dataKey="date"
                     tick={{ fill: "#ccc" }} // Greyed out axis
@@ -713,7 +677,11 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
                     bottom: 10,
                   }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
+                    opacity={theme === "dark" ? 0.5 : 1}
+                  />
                   <XAxis
                     dataKey="date"
                     tickFormatter={formatXAxis}
@@ -728,12 +696,38 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
                     }}
                   />
                   <Tooltip
-                    labelFormatter={formatXAxis}
-                    formatter={(value, name) => [
-                      `${Number(value).toFixed(2)} kW`,
-                      t(name),
-                    ]}
+                    content={({ payload, label }) => {
+                      if (!payload || !payload.length) return null;
+                      return (
+                        <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                            {label}
+                          </p>
+                          {payload.map((entry, index) => (
+                            <div
+                              key={`tooltip-${index}`}
+                              className="flex justify-between gap-4"
+                            >
+                              <span
+                                className="text-sm text-gray-700 dark:text-gray-300"
+                                style={{ color: entry.color }}
+                              >
+                                {entry.name}:
+                              </span>
+                              <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                                {entry.value >= 1000000
+                                  ? `${(entry.value / 1000000).toFixed(1)} MWh`
+                                  : entry.value >= 1000
+                                  ? `${(entry.value / 1000).toFixed(1)} KWh`
+                                  : `${entry.value} Wh`}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }}
                   />
+
                   <Legend content={customLegendRenderer} />
                   {VISIBLE_CURVES.map((curve) => (
                     <Line
@@ -750,12 +744,6 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
               </ResponsiveContainer>
             </div>
           </div>
-
-          <BatteryChargingGraph
-            batteryData={batteryData}
-            isLoading={batteryLoading}
-            theme={theme}
-          />
         </>
       )}
 
@@ -774,4 +762,4 @@ const SolarEdgeGraphDisplay = ({ title, token }) => {
   );
 };
 
-export default SolarEdgeGraphDisplay;
+export default SolarEdgeEnergyFlowGraph;

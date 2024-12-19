@@ -61,7 +61,7 @@ const GoodwePerformanceMetrics = ({
   }
 
   return (
-    <section className="flex-1 xl:min-w-[40vw] bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm 2xl:mb-6">
+    <section className="flex-1 xl:min-w-[40vw] bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm mb-6">
       <h2 className="text-xl mb-6 text-custom-dark-blue dark:text-custom-yellow">
         {t("performanceMetrics")}
       </h2>

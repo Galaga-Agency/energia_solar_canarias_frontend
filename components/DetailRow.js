@@ -17,43 +17,14 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
     }
     if (typeof Icon === "function") {
       return (
-        <Icon className="text-2xl text-custom-dark-blue dark:text-custom-yellow shrink-0" />
+        <Icon className="text-2xl text-custom-dark-blue dark:text-custom-light-gray shrink-0" />
       );
     }
     return null;
   };
 
-  const formatValue = (text) => {
-    if (typeof text !== "string" || !isMobile) return text; // Only format on mobile
-
-    return text
-      .split(" ") // Split the value into words
-      .map((word) => {
-        if (word.length > 11) {
-          const firstPart = word.slice(0, 11);
-          const restPart = word.slice(11);
-          return `${firstPart}-\n${restPart}`;
-        }
-        return word;
-      })
-      .join(" "); // Rejoin the formatted words
-  };
-
-  const renderValue = () => {
-    const formattedValue = formatValue(value);
-
-    return (
-      <span
-        className="text-right text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow whitespace-pre-wrap break-words"
-        title={value}
-      >
-        {formattedValue}
-      </span>
-    );
-  };
-
   return (
-    <div className="flex items-center justify-between gap-2 w-full max-w-full overflow-hidden">
+    <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-1 xl:gap-2 w-full max-w-full overflow-hidden">
       <div className="flex items-center gap-2 overflow-hidden">
         {renderIcon()}
         <strong className="text-lg dark:text-custom-light-gray text-wrap overflow-hidden text-ellipsis">
@@ -77,8 +48,8 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
           </TooltipProvider>
         )}
       </div>
-      <div className="text-right max-w-[50%] overflow-hidden">
-        {renderValue()}
+      <div className="text-left xl:text-right xl:max-w-[50%] overflow-hidden text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ml-4">
+        {value}
       </div>
     </div>
   );

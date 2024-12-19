@@ -236,12 +236,12 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
 
       case "indice de contribucion":
         if (lineName === "Consumption")
-          return theme === "dark" ? "#FFD57B" : "#9CA3AF";
+          return theme === "dark" ? "#AD936A" : "#9CA3AF";
         if (lineName === "Buy") return theme === "dark" ? "#BDBFC0" : "#FFD57B";
         if (lineName === "ContributionRatio")
-          return theme === "dark" ? "#AD936A" : "#AD936A";
+          return theme === "dark" ? "#FFD57B" : "#AD936A";
         if (lineName === "SelfUse")
-          return theme === "dark" ? "#657880" : "#0B2738";
+          return theme === "dark" ? "#BDBFC0" : "#0B2738";
         break;
 
       default:
@@ -258,9 +258,9 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
     const sanitizedLineName = lineName.replace("PCurve_Power_", ""); // Remove prefix
     const colorMap = {
       PV: theme === "dark" ? "#FFD57B" : "#BDBFC0",
-      Battery: theme === "dark" ? "#A48D67" : "#0B2738",
+      Battery: theme === "dark" ? "#BDBFC0" : "#0B2738",
       Meter: theme === "dark" ? "#657880" : "#FFD57B",
-      Load: theme === "dark" ? "#BDBFC0" : "#9CA3AF",
+      Load: theme === "dark" ? "#A48D67" : "#9CA3AF",
       SOC: theme === "dark" ? "#9CA3AF" : "#AD936A",
     };
 

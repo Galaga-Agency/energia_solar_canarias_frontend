@@ -547,7 +547,7 @@ const plantsSlice = createSlice({
       })
       .addCase(fetchGoodweEquipmentDetails.fulfilled, (state, action) => {
         state.equipmentLoading = false;
-        state.equipmentDetails = action.payload.inverters;
+        state.equipmentDetails = action.payload;
         state.equipmentError = null;
       })
       .addCase(fetchGoodweEquipmentDetails.rejected, (state, action) => {

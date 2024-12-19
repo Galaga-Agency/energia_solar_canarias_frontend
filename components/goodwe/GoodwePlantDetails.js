@@ -265,7 +265,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
                   label={t("typeOfPlant")}
                   value={
                     goodwePlant?.info?.powerstation_type
-                      ? t(`type_${goodwePlant?.info?.powerstation_type}`)
+                      ? t(`${goodwePlant?.info?.powerstation_type}`)
                       : t("loading")
                   }
                   tooltip={t("typeTooltip")}
@@ -319,10 +319,10 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
                 </Tooltip>
               </TooltipProvider>
             </div>
-
-            <GoodweEquipmentDetails isLoading={isLoading} t={t} />
           </div>
         </div>
+
+        <GoodweEquipmentDetails isLoading={isLoading} t={t} />
 
         <section className="mb-6">
           <GoodweGraphDisplay

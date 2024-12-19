@@ -3,10 +3,13 @@ import BatteryGauge from "react-battery-gauge";
 import { useSelector } from "react-redux";
 import useDeviceType from "@/hooks/useDeviceType";
 import { selectTheme } from "@/store/slices/themeSlice";
+import { selectPlantDetails } from "@/store/slices/plantsSlice";
 
 const BatteryIndicator = ({ soc }) => {
   const theme = useSelector(selectTheme);
   const { isMobile } = useDeviceType();
+  const plant = useSelector(selectPlantDetails);
+  const isGoodwe = plant?.data?.data.organization === "goodwe";
 
   // Define the vertical gradient for the entire filling
   const gradientFill = useMemo(() => {
@@ -51,7 +54,7 @@ const BatteryIndicator = ({ soc }) => {
         animated={true}
         charging={false}
         size={150}
-        orientation={isMobile ? "horizontal" : "vertical"}
+        orientation={!isMobile && !isGoodwe ? "vertical" : "horizontal"}
         customization={{
           batteryBody: {
             strokeWidth: 4,

@@ -371,10 +371,8 @@ const SolarEdgePlantDetails = React.memo(
                           >
                             <p className="font-medium">
                               {t(
-                                `statusDescriptions.${
-                                  solaredgePlant?.status || "unknown"
-                                }`
-                              )}
+                                `statusDescriptions.${solaredgePlant?.status}`
+                              ) || "unknown"}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -459,11 +457,6 @@ const SolarEdgePlantDetails = React.memo(
           <section className="flex flex-col md:flex-row gap-6 mt-6 w-full">
             <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
               <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                {/* Cool Energy Icon */}
-                <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-                  <IoFlashOutline className="text-3xl md:text-4xl" />
-                </div>
-
                 {/* Battery Gauge */}
                 <BatteryIndicator soc={batteryLevel} />
 

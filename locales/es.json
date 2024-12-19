@@ -314,13 +314,13 @@
   "plantStatus": "Estado",
   "filterPlaceholder": "Busca por nombre o dirección...",
   "type": "Tipo",
-  "type_Residential": "Residencial",
-  "type_Commercial": "Comercial",
-  "type_Industrial": "Industrial",
-  "type_Commercial rooftop": "Tejado Comercial",
-  "type_Ground Mounted": "Montado en el suelo",
-  "type_Battery Storage": "Almacenamiento de batería",
-  "type_Optimizers & Inverters": "Optimizadores e inversores",
+  "Residential": "Residencial",
+  "Commercial": "Comercial",
+  "Industrial": "Industrial",
+  "Commercial rooftop": "Tejado Comercial",
+  "Ground Mounted": "Montado en el suelo",
+  "Battery Storage": "Almacenamiento de batería",
+  "Optimizers & Inverters": "Optimizadores e inversores",
   "organization": "Provedor",
   "plantsFound": "Plantas encontradas",
   "applyFilters": "Aplicar filtros",
@@ -1592,5 +1592,6 @@
   "batteryChargingState": "Estado de Carga",
   "date": "Fecha",
   "time": "Hora",
-  "todayGenerationTooltip": "La cantidad total de energía solar generada hoy."
+  "todayGenerationTooltip": "La cantidad total de energía solar generada hoy.",
+  "power": "Potencia"
 }

@@ -15,15 +15,23 @@ const CustomSelect = ({ value, onChange, options, label, className }) => {
     setIsOpen(false); // Close dropdown on selection
   };
 
+  const toTitleCase = (str) => {
+    return str
+      .toLowerCase() // Ensure the string is lowercase first
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   return (
     <div className={`relative ${className}`}>
       {/* Dropdown Button */}
       <button
         onClick={handleToggle}
-        className="h-full w-max font-secondary text-md flex items-center text-sm dark:border dark:border-gray-200/50 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
+        className="h-full w-max font-secondary text-md flex items-center text-sm dark:border dark:border-gray-200/50 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-2 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow"
       >
-        <span className="mr-2">{t(label)}</span>
-        <span className="ml-auto">{value}</span>
+        <span className="mr-2">{toTitleCase(t(label))}</span>
+        <span className="ml-auto">{toTitleCase(t(value))}</span>
         <BsChevronDown className="ml-2 mt-1 " />
       </button>
 

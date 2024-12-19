@@ -10,6 +10,7 @@ import {
   fetchPlantsByProviderAPI,
 } from "@/services/shared-api";
 import {
+  fetchGoodweEquipmentDetailsAPI,
   fetchGoodweGraphDataAPI,
   fetchGoodweRealtimeDataAPI,
   fetchGoodweWeatherDataAPI,
@@ -159,6 +160,24 @@ export const fetchGoodweRealtimeData = createAsyncThunk(
     } catch (error) {
       console.error("Fetch real-time data error:", error);
       return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchGoodweEquipmentDetails = createAsyncThunk(
+  "plants/fetchGoodweEquipmentDetails",
+  async ({ plantId, token }, { rejectWithValue }) => {
+    try {
+      const equipmentDetails = await fetchGoodweEquipmentDetailsAPI({
+        plantId,
+        token,
+      });
+      return equipmentDetails;
+    } catch (error) {
+      console.error("Fetch equipment details error:", error);
+      return rejectWithValue(
+        error.message || "Failed to fetch equipment details"
+      );
     }
   }
 );
@@ -371,6 +390,9 @@ const initialState = {
   batteryChargingState: null,
   batteryChargingLoading: false,
   batteryChargingError: null,
+  equipmentDetails: null,
+  equipmentLoading: false,
+  equipmentError: null,
 };
 
 const plantsSlice = createSlice({
@@ -507,7 +529,7 @@ const plantsSlice = createSlice({
         state.realtimeError = null;
       })
       .addCase(fetchGoodweRealtimeData.fulfilled, (state, action) => {
-        console.log("Real-time data fetched successfully:", action.payload);
+        // console.log("Real-time data fetched successfully:", action.payload);
         state.realtimeLoading = false;
         state.realtimeData = action.payload;
         state.realtimeError = null;
@@ -518,6 +540,20 @@ const plantsSlice = createSlice({
         state.realtimeData = null;
         state.realtimeError =
           action.payload || "Failed to fetch real-time data";
+      })
+      .addCase(fetchGoodweEquipmentDetails.pending, (state) => {
+        state.equipmentLoading = true;
+        state.equipmentError = null;
+      })
+      .addCase(fetchGoodweEquipmentDetails.fulfilled, (state, action) => {
+        state.equipmentLoading = false;
+        state.equipmentDetails = action.payload.inverters;
+        state.equipmentError = null;
+      })
+      .addCase(fetchGoodweEquipmentDetails.rejected, (state, action) => {
+        state.equipmentLoading = false;
+        state.equipmentDetails = null;
+        state.equipmentError = action.payload;
       })
 
       // Solaredge
@@ -731,6 +767,9 @@ export const selectBatteryChargingLoading = (state) =>
   state.plants.batteryChargingLoading;
 export const selectBatteryChargingError = (state) =>
   state.plants.batteryChargingError;
+export const selectEquipmentDetails = (state) => state.plants.equipmentDetails;
+export const selectEquipmentLoading = (state) => state.plants.equipmentLoading;
+export const selectEquipmentError = (state) => state.plants.equipmentError;
 
 export const {
   clearPlants,

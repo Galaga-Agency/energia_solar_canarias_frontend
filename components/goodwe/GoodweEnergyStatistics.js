@@ -77,7 +77,7 @@ const GoodweEnergyStatistics = ({
       <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
         {t("energyStatistics")}
       </h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
         {stats.map(({ icon: Icon, title, value, tooltip }, index) => (
           <div
             key={index}

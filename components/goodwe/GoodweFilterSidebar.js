@@ -23,11 +23,11 @@ const GoodweFilterSidebar = ({
 
   // Translation keys for Goodwe plant types
   const GOODWE_TYPES = {
-    Residential: "type_Residential",
-    "Commercial rooftop": "type_Commercial_Rooftop",
-    "Ground Mounted": "type_Ground_Mounted",
-    "Battery Storage": "type_Battery_Storage",
-    "Optimizers & Inverters": "type_Optimizers_Inverters",
+    Residential: "Residential",
+    "Commercial Rooftop": "Commercial Rooftop",
+    "Ground Mounted": "Ground Mounted",
+    "Battery Storage": "Battery Storage",
+    "Optimizers & Inverters": "Optimizers Inverters",
   };
 
   const filterPlants = useCallback(

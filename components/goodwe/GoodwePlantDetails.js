@@ -37,6 +37,7 @@ import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatis
 import BatteryIndicator from "../BatteryIndicator";
 import GoodweEnergyStatistics from "./GoodweEnergyStatistics";
 import GoodwePerformanceMetrics from "./GoodwePerformanceMetrics";
+import GoodweEquipmentDetails from "./GoodweEquipmentDetails";
 
 const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
@@ -293,24 +294,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           />
         )}
 
-        <div className="flex flex-col md:flex-row gap-6 ">
-          <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex md:flex-col items-center justify-center gap-4 md:mb-6">
-            <div className="flex items-center justify-center bg-gradient-to-br from-yellow-400 to-green-500 text-white rounded-full p-2 shadow-lg">
-              <IoFlashOutline className="text-3xl md:text-4xl" />
-            </div>
-            <BatteryIndicator soc={goodwePlant?.soc[0]?.power || 0} />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
-                  <Info className="h-4 w-4" />
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
-                  <p>{t("batteryTooltipContent")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-
+        <div className="flex flex-col 2xl:flex-row gap-6 ">
           <GoodwePerformanceMetrics
             isLoading={isLoading}
             theme={theme}
@@ -320,6 +304,24 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
             getYieldColor={getYieldColor}
             getYieldIcon={getYieldIcon}
           />
+
+          <div className="flex flex-col md:flex-row gap-6 xl:min-w-[10vw]">
+            <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex md:flex-col items-center justify-center gap-4 md:mb-6">
+              <BatteryIndicator soc={goodwePlant?.soc[0]?.power || 0} />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
+                    <Info className="h-4 w-4" />
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-xs">
+                    <p>{t("batteryTooltipContent")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
+            <GoodweEquipmentDetails isLoading={isLoading} t={t} />
+          </div>
         </div>
 
         <section className="mb-6">

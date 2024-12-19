@@ -10,6 +10,11 @@ export const fetchGoodweGraphDataAPI = async ({
   token,
 }) => {
   try {
+    const body =
+      range === undefined
+        ? { id, date, chartIndexId, full_script: "false" }
+        : { id, date, range, chartIndexId };
+
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=goodwe`,
       {
@@ -20,7 +25,7 @@ export const fetchGoodweGraphDataAPI = async ({
           apiKey: API_KEY,
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ id, date, range, chartIndexId }),
+        body: JSON.stringify(body),
       }
     );
 
@@ -29,7 +34,7 @@ export const fetchGoodweGraphDataAPI = async ({
       throw new Error(errorData.message || "Failed to fetch graph data");
     }
 
-    console.log("graph response: ", response.json);
+    // console.log("graph response: ", response.json);
     return await response.json();
   } catch (error) {
     console.error("Graph data fetch error:", error);
@@ -109,11 +114,42 @@ export const fetchGoodweRealtimeDataAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
-    console.log("API Response Data:", data.data);
+    // console.log("API Response Data:", data.data);
 
     return data.data;
   } catch (error) {
     console.error("Real-time data fetch error:", error);
+    throw error;
+  }
+};
+
+export const fetchGoodweEquipmentDetailsAPI = async ({ plantId, token }) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/inventario/${plantId}?proveedor=goodwe`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch equipment details");
+    }
+
+    const data = await response.json();
+
+    console.log("API Response Data:", data.data);
+
+    return data.data.data;
+  } catch (error) {
+    console.error("Equipment details fetch error:", error);
     throw error;
   }
 };

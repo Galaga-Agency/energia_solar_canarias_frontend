@@ -650,8 +650,8 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
               value2={graphData?.totalExport}
               label1={t("Autoconsumo")}
               label2={t("Exportada")}
-              color1="#4CAF50"
-              color2="#FF5722"
+              color1={theme === "dark" ? "#BDBFC0" : "#0B2738"}
+              color2={theme === "dark" ? "#657880" : "#758B95"}
             />
             <PercentageBar
               title={t("Consumo")}
@@ -659,8 +659,8 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
               value2={graphData?.totalImport}
               label1={t("Autoconsumo")}
               label2={t("Importada")}
-              color1="#4CAF50"
-              color2="#2196F3"
+              color1={theme === "dark" ? "#FFD57B" : "#FFD57B"}
+              color2={theme === "dark" ? " #A48D67" : "#F4E3C0"}
             />
           </div>
 

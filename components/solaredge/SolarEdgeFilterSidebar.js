@@ -23,8 +23,8 @@ const SolarEdgeFilterSidebar = ({
 
   // Translation keys for SolarEdge plant types
   const SOLAREDGE_TYPES = {
-    RESIDENCIAL: "type_Residential",
-    INDUSTRIAL: "type_Industrial",
+    RESIDENCIAL: "Residential",
+    INDUSTRIAL: "Industrial",
   };
 
   useEffect(() => {

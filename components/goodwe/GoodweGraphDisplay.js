@@ -15,7 +15,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { BiRefresh } from "react-icons/bi";
+import { BiDotsVerticalRounded, BiRefresh } from "react-icons/bi";
 import Loading from "@/components/ui/Loading";
 import { useTranslation } from "react-i18next";
 import {
@@ -29,22 +29,18 @@ import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import GoodweGraphDisplaySkeleton from "@/components/loadingSkeletons/GoodweGraphDisplaySkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
-
-const COLORS = {
-  selfConsumption: "#4CAF50", // Green
-  consumption: "#F44336", // Red
-  solarProduction: "#FFEB3B", // Yellow
-  export: "#FF5722", // Orange
-  import: "#2196F3", // Blue
-};
+import CustomSelect from "../ui/CustomSelect";
+import ExportModal from "../ExportModal";
+import DateSelector from "../DateSelector";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { BsCalendar3 } from "react-icons/bs";
 
 const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [range, setRange] = useState("dia");
-  const [chartIndexId, setChartIndexId] = useState(
-    "generacion de energia y ingresos"
-  );
+  const [chartIndexId, setChartIndexId] = useState("potencia");
   const [isInitialized, setIsInitialized] = useState(false);
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
@@ -53,27 +49,32 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
   const currentDate = useMemo(() => new Date().toISOString().split("T")[0], []);
   const { isMobile, isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isDateSelectorOpen, setIsDateSelectorOpen] = useState(false);
 
   const handleFetchGraph = useCallback(async () => {
-    if (plantId && user?.tokenIdentificador) {
+    if (plantId && user?.tokenIdentificador && selectedDate) {
       try {
+        const formattedDate = selectedDate.toISOString().split("T")[0];
+        const requestBody = {
+          id: plantId,
+          date: formattedDate,
+          chartIndexId,
+          token: user.tokenIdentificador,
+        };
+
+        if (chartIndexId !== "potencia") {
+          requestBody.range = range;
+        }
+
         const response = await dispatch(
-          fetchGoodweGraphData({
-            id: plantId,
-            date: currentDate,
-            range,
-            chartIndexId,
-            token: user.tokenIdentificador,
-          })
+          fetchGoodweGraphData(requestBody)
         ).unwrap();
 
-        // Extract today's generation (last value in the xy array)
         const lines = response?.data?.data?.lines || [];
         const todayPV = lines.length > 0 ? lines[0].xy.slice(-1)[0]?.y : null;
 
-        // console.log("Today's PV Generation:", todayPV);
-
-        // Notify parent with the value
         if (onValueUpdate && todayPV !== null) {
           onValueUpdate(todayPV);
         }
@@ -84,14 +85,12 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
   }, [
     dispatch,
     plantId,
-    currentDate,
+    selectedDate,
     range,
     chartIndexId,
     user?.tokenIdentificador,
     onValueUpdate,
   ]);
-
-  // console.log("graphData -----------> ", graphData);
 
   useEffect(() => {
     const shouldFetchData =
@@ -114,75 +113,50 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
     };
   }, [dispatch]);
 
-  const getExpectedMetrics = useCallback(() => {
-    switch (chartIndexId) {
-      case "estadisticas sobre energia":
-        return [
-          {
-            name: t("PV+BAT"),
-            valueKey: "selfUseOfPv",
-            color: COLORS.selfConsumption,
-          },
-          {
-            name: t("Red"),
-            valueKey: "consumptionOfLoad",
-            color: COLORS.consumption,
-          },
-          {
-            name: t("Interno"),
-            valueKey: "in_House",
-            color: COLORS.selfConsumption,
-          },
-          { name: t("Alimentar"), valueKey: "buy", color: COLORS.export },
-        ];
-      case "generacion de energia y ingresos":
-        return [
-          {
-            name: "PVGeneration",
-            label: t("energy") + " (kWh)",
-            color: COLORS.solarProduction,
-            isBar: true,
-          },
-          {
-            name: "Income",
-            label: t("income") + " (EUR)",
-            color: COLORS.selfConsumption,
-            isBar: false,
-          },
-        ];
-      case "proporcion para uso personal":
-        return [
-          {
-            name: "SelfUse",
-            label: t("selfUse") + " (kWh)",
-            color: COLORS.selfConsumption,
-            isBar: true,
-          },
-          {
-            name: "SelfUseRatio",
-            label: t("selfUseRatio") + " (%)",
-            color: COLORS.import,
-            isBar: false,
-          },
-        ];
-      default:
-        return [
-          {
-            name: "ContributionIndex",
-            label: t("contributionIndex"),
-            color: COLORS.export,
-            isBar: true,
-          },
-        ];
-    }
-  }, [t, chartIndexId]);
-
-  const expectedMetrics = useMemo(
-    () => getExpectedMetrics(),
-    [getExpectedMetrics]
-  );
-
   const transformedData = useMemo(() => {
+    if (!graphData?.data?.data) return []; // Handle empty data gracefully
+
+    if (chartIndexId === "potencia") {
+      const lines = graphData?.data?.data?.lines || [];
+      if (!lines.length) return []; // No data available
+
+      // Current time
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      // Combine all the lines into a single array for the graph
+      const combinedData = lines[0].xy.map((point, index) => {
+        const dataPoint = { time: point.x }; // X-axis data
+        lines.forEach((line) => {
+          if (line.xy[index]) {
+            dataPoint[line.key] = line.xy[index].y; // Y-axis data for each line
+          }
+        });
+        return dataPoint;
+      });
+
+      // Get last timestamp from data (e.g., 00:00 - 23:00)
+      const lastTimestamp = combinedData[combinedData.length - 1]?.time;
+
+      // Extend to the current hour if data is missing
+      const extendedData = [...combinedData];
+      if (lastTimestamp) {
+        const startTime = new Date(`${currentDate}T${lastTimestamp}:00`);
+        for (let hour = startTime.getHours() + 1; hour <= currentHour; hour++) {
+          const timeLabel = hour.toString().padStart(2, "0") + ":00";
+          extendedData.push({
+            time: timeLabel, // Add new time labels
+            ...lines.reduce((acc, line) => {
+              acc[line.key] = 0; // Fill missing data with 0
+              return acc;
+            }, {}),
+          });
+        }
+      }
+
+      return extendedData;
+    }
+
     if (chartIndexId === "estadisticas sobre energia") {
       const modelData = graphData?.data?.data?.modelData || {};
       return {
@@ -209,12 +183,27 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
       };
     }
 
-    const validData = graphData?.data?.data;
-    if (!validData?.lines?.length) return [];
+    if (chartIndexId === "generacion de energia y ingresos") {
+      const lines = graphData?.data?.data?.lines || [];
+      if (!lines.length) return []; // No data available
 
-    return validData.lines[0].xy.map((point, index) => {
+      return lines[0].xy.map((point, index) => {
+        const dataPoint = { date: point.x };
+        lines.forEach((line) => {
+          if (line.xy[index]) {
+            dataPoint[line.name] = line.xy[index].y;
+          }
+        });
+        return dataPoint;
+      });
+    }
+
+    const validData = graphData?.data?.data?.lines || [];
+    if (!validData.length) return []; // Handle no valid data gracefully
+
+    return validData[0].xy.map((point, index) => {
       const dataPoint = { date: point.x };
-      validData.lines.forEach((line) => {
+      validData.forEach((line) => {
         if (line.xy[index]) {
           dataPoint[line.name] = line.xy[index].y;
         }
@@ -223,244 +212,309 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
     });
   }, [graphData?.data?.data, chartIndexId, t]);
 
-  const renderPieChart = useCallback(
-    (chartData, title) => {
-      const isEmpty = chartData.every(
-        (entry) => entry.value === 0 || entry.value === null
-      );
+  // console.log("graphData: ", graphData);
 
-      const placeholderData = [
-        { name: t("NoData"), value: 1, color: "#d3d3d3" },
-      ];
-      const totalValue = chartData.reduce((sum, entry) => sum + entry.value, 0);
+  const getBarOrLineColor = (lineName) => {
+    switch (chartIndexId) {
+      case "generacion de energia y ingresos":
+        if (lineName === "PVGeneration")
+          return theme === "dark" ? "#AD936A" : "#9CA3AF";
+        if (lineName === "Income")
+          return theme === "dark" ? "#FFD57B" : "#0B2738";
+        break;
 
-      return (
-        <div
-          key={`piechart-${title}`}
-          className="flex flex-col items-center p-4"
-        >
-          <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
-            {title}
-          </h2>
-          <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
-            <ResponsiveContainer width={300} height={!isDesktop ? 250 : 350}>
-              <PieChart>
-                <Pie
-                  data={isEmpty ? placeholderData : chartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={isMobile ? 110 : 120}
-                  label={null}
-                >
-                  {(isEmpty ? placeholderData : chartData).map(
-                    (entry, index) => (
-                      <Cell
-                        key={`cell-${title}-${index}`}
-                        fill={entry.color || COLORS[index % COLORS.length]}
-                      />
-                    )
-                  )}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex flex-col gap-2">
-              {(isEmpty ? placeholderData : chartData).map((entry, index) => {
-                const percentage = totalValue
-                  ? ((entry.value / totalValue) * 100).toFixed(1)
-                  : 0;
-                return (
-                  <div
-                    key={`legend-${title}-${index}`}
-                    className="flex items-center gap-2 text-sm whitespace-nowrap"
-                  >
-                    <div
-                      style={{
-                        backgroundColor: isEmpty
-                          ? "#d3d3d3"
-                          : COLORS[index % COLORS.length],
-                      }}
-                      className="w-4 h-4"
-                    ></div>
-                    <span className="text-custom-dark-blue dark:text-custom-yellow">
-                      {entry.name}: {entry.value.toFixed(2)} {entry.unit} (
-                      {percentage}%)
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      );
-    },
-    [isDesktop, isMobile, t]
-  );
+      case "proporcion para uso personal":
+        if (lineName === "SelfUse")
+          return theme === "dark" ? "#FFD57B" : "#AD936A";
+        if (lineName === "SelfUseRatio")
+          return theme === "dark" ? "#BDBFC0" : "#0B2738";
+        if (lineName === "PVGeneration")
+          return theme === "dark" ? "#AD936A" : "#9CA3AF";
+        if (lineName === "Sell")
+          return theme === "dark" ? "#657880" : "#FFD57B";
+        break;
 
-  const renderContent = useCallback(() => {
-    const validData = graphData?.data?.data;
-    const hasValidLines = validData?.lines?.length > 0;
+      case "indice de contribucion":
+        if (lineName === "Consumption")
+          return theme === "dark" ? "#FFD57B" : "#9CA3AF";
+        if (lineName === "Buy") return theme === "dark" ? "#BDBFC0" : "#FFD57B";
+        if (lineName === "ContributionRatio")
+          return theme === "dark" ? "#AD936A" : "#AD936A";
+        if (lineName === "SelfUse")
+          return theme === "dark" ? "#657880" : "#0B2738";
+        break;
 
-    if (isLoading || !graphData?.data?.data) {
-      return <Loading />;
+      default:
+        return "#d3d3d3";
+    }
+  };
+
+  const getPotenciaLineColor = (lineName, theme) => {
+    if (!lineName || typeof lineName !== "string") {
+      console.warn("Invalid lineName:", lineName);
+      return "#d3d3d3"; // Default color for invalid line names
     }
 
-    if (chartIndexId === "estadisticas sobre energia" && transformedData) {
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {Object.entries(transformedData).map(([title, chartData]) =>
-            renderPieChart(chartData, t(title))
-          )}
-        </div>
-      );
+    const sanitizedLineName = lineName.replace("PCurve_Power_", ""); // Remove prefix
+    const colorMap = {
+      PV: theme === "dark" ? "#FFD57B" : "#BDBFC0",
+      Battery: theme === "dark" ? "#A48D67" : "#0B2738",
+      Meter: theme === "dark" ? "#657880" : "#FFD57B",
+      Load: theme === "dark" ? "#BDBFC0" : "#9CA3AF",
+      SOC: theme === "dark" ? "#9CA3AF" : "#AD936A",
+    };
+
+    return colorMap[sanitizedLineName] || "#d3d3d3"; // Default color for unknown keys
+  };
+
+  const getPieChartColor = (dataKey) => {
+    const trimmedKey = dataKey.trim(); // Trim leading/trailing spaces
+    switch (trimmedKey) {
+      case "Red":
+        return theme === "dark" ? "#FFD57B" : "#FFD57B";
+      case "Interno":
+        return theme === "dark" ? "#657880" : "#0B2738";
+      case "PV+BAT":
+        return theme === "dark" ? "#657880" : "#0B2738";
+      case "Alimentar":
+        return theme === "dark" ? "#FFD57B" : "#FFD57B";
+      default:
+        console.warn(`Unknown dataKey: "${trimmedKey}"`);
+        return "#d3d3d3";
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (!transformedData || !transformedData.length) {
+      console.warn("No data available for export.");
+      return;
     }
 
-    if (!hasValidLines) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full">
-          <h2 className="text-gray-500 text-lg">{t("noDataAvailable")}</h2>
-        </div>
-      );
-    }
+    const exportData = transformedData.map((item) => ({
+      ...item,
+    }));
 
-    return (
-      <ComposedChart
-        key={`${range}-${chartIndexId}`}
-        data={transformedData}
-        margin={{
-          left: isMobile ? -15 : 15,
-          right: isMobile ? -25 : 15,
-          top: 10,
-          bottom: 10,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
-        <XAxis
-          dataKey="date"
-          tickFormatter={(value) => new Date(value).toLocaleDateString()}
-        />
-        {validData.axis?.map((ax) => (
-          <YAxis
-            key={`y-axis-${ax.axisId}`}
-            yAxisId={ax.axisId}
-            domain={[0, "auto"]}
-            unit={isMobile ? "" : ax.unit}
-            orientation={ax.axisId === 0 ? "left" : "right"}
-            label={{
-              value: isMobile ? ax.unit : "",
-              angle: -90,
-              position: "insideLeft",
-              offset: 20,
-              dy: -20,
-            }}
-          />
-        ))}
-        <Tooltip />
-        <Legend />
-        {chartIndexId === "estadisticas sobre energia"
-          ? expectedMetrics.map((metric) => (
-              <Bar
-                key={metric.name}
-                dataKey={metric.name}
-                fill={metric.color}
-                name={metric.label}
-                stackId="stack"
-              />
-            ))
-          : validData.lines.map((line, index) =>
-              index % 2 === 0 ? (
-                <Bar
-                  key={line.name}
-                  dataKey={line.name}
-                  fill={line.frontColor}
-                  yAxisId={line.axis}
-                  name={line.label}
-                  opacity={0.8}
-                />
-              ) : (
-                <Line
-                  key={line.name}
-                  type="monotone"
-                  dataKey={line.name}
-                  stroke={line.frontColor}
-                  strokeWidth={2}
-                  name={line.label}
-                  yAxisId={line.axis}
-                  dot={false}
-                  activeDot={{ r: 6 }}
-                />
-              )
-            )}
-      </ComposedChart>
-    );
-  }, [
-    graphData?.data?.data,
-    isLoading,
-    chartIndexId,
-    transformedData,
-    range,
-    expectedMetrics,
-    isMobile,
-    t,
-    renderPieChart,
-  ]);
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [
+        Object.keys(exportData[0]).join(","), // Headers
+        ...exportData.map((row) => Object.values(row).join(",")), // Rows
+      ].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${chartIndexId}-graph-data.csv`);
+    document.body.appendChild(link); // Required for Firefox
+    link.click();
+    document.body.removeChild(link);
+
+    setIsModalOpen(false); // Close modal after export
+  };
 
   return (
-    <>
+    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
+      <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left">
+            {title}
+          </h2>
+          <button
+            onClick={handleFetchGraph}
+            disabled={isLoading}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
+          >
+            <BiRefresh
+              className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
+                isLoading ? "animate-spin" : ""
+              }`}
+            />
+          </button>
+        </div>
+        <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
+          {chartIndexId === "potencia" ? (
+            <div className="relative">
+              {/* Button to trigger DateSelector */}
+              <button
+                onClick={() => setIsDateSelectorOpen((prev) => !prev)}
+                className="font-secondary dark:border dark:border-gray-200/50 text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
+              >
+                <span>
+                  {selectedDate
+                    ? format(selectedDate, "dd/MM/yyyy", { locale: es })
+                    : t("dateAll")}
+                </span>
+                <BsCalendar3 />
+              </button>
+
+              {/* DateSelector Component */}
+              {isDateSelectorOpen && (
+                <DateSelector
+                  isOpen={isDateSelectorOpen}
+                  onClose={() => setIsDateSelectorOpen(false)}
+                  onSelect={(date) => {
+                    setSelectedDate(date);
+                    setIsDateSelectorOpen(false);
+
+                    // Update graph data based on selected date
+                    handleFetchGraph();
+                  }}
+                  value={selectedDate}
+                />
+              )}
+            </div>
+          ) : (
+            <CustomSelect
+              value={range}
+              onChange={(selectedValue) => setRange(selectedValue)}
+              options={[
+                { value: "dia", label: "day" },
+                { value: "mes", label: "month" },
+                { value: "año", label: "year" },
+              ]}
+            />
+          )}
+
+          <CustomSelect
+            value={chartIndexId}
+            onChange={(selectedValue) => setChartIndexId(selectedValue)}
+            options={[
+              {
+                value: "potencia",
+                label: "power",
+              },
+              {
+                value: "generacion de energia y ingresos",
+                label: "energyAndIncome",
+              },
+              {
+                value: "proporcion para uso personal",
+                label: "personalUse",
+              },
+              {
+                value: "indice de contribucion",
+                label: "contributionIndex",
+              },
+              {
+                value: "estadisticas sobre energia",
+                label: "energyStatistics",
+              },
+            ]}
+          />
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+          </button>
+        </div>
+      </div>
       {isLoading ? (
         <GoodweGraphDisplaySkeleton theme={theme} />
+      ) : chartIndexId === "potencia" && transformedData ? (
+        <ResponsiveContainer width="100%" height={400}>
+          <ComposedChart data={transformedData}>
+            <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+            <XAxis
+              dataKey="time"
+              tickFormatter={(value) => {
+                const [hour] = value.split(":");
+                return `${hour}:00`; // Ensures consistent hour formatting
+              }}
+            />
+            <YAxis />
+            <Tooltip
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                        {label}
+                      </p>
+                      {payload.map((entry, index) => {
+                        const sanitizedName = entry.name.replace(
+                          "PCurve_Power_",
+                          ""
+                        );
+                        const formattedName = sanitizedName
+                          .replace("PV", "PV(W)")
+                          .replace("Battery", "Batería(W)")
+                          .replace("Meter", "Medidor(W)")
+                          .replace("Load", "Carga(W)")
+                          .replace("SOC", "SOC(%)");
+
+                        const resolvedColor =
+                          chartIndexId === "potencia"
+                            ? getPotenciaLineColor(entry.name, theme)
+                            : getBarOrLineColor(entry.name, theme);
+
+                        return (
+                          <div key={`tooltip-item-${index}`} className="mb-1">
+                            <span
+                              style={{
+                                color: resolvedColor,
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {formattedName}:
+                            </span>{" "}
+                            <span
+                              style={{
+                                color: theme === "dark" ? "#FFF" : "#000",
+                              }}
+                            >
+                              {entry.value}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+
+            <Legend
+              formatter={(value) => {
+                const sanitizedValue = value.replace("PCurve_Power_", "");
+                const formattedValue = sanitizedValue
+                  .replace("PV", "PV(W)")
+                  .replace("Battery", "Batería(W)")
+                  .replace("Meter", "Medidor(W)")
+                  .replace("Load", "Carga(W)")
+                  .replace("SOC", "SOC(%)");
+
+                const resolvedColor =
+                  chartIndexId === "potencia"
+                    ? getPotenciaLineColor(value, theme)
+                    : getBarOrLineColor(value, theme);
+
+                return (
+                  <span style={{ color: resolvedColor }}>{formattedValue}</span>
+                );
+              }}
+            />
+
+            {graphData?.data?.data?.lines?.map((line) => (
+              <Line
+                key={line.key}
+                type="monotone"
+                dataKey={line.key} // Use the line's key
+                stroke={
+                  chartIndexId === "potencia"
+                    ? getPotenciaLineColor(line.key, theme)
+                    : getBarOrLineColor(line.name)
+                }
+                strokeWidth={3}
+                dot={false}
+                activeDot={{ r: 6 }}
+              />
+            ))}
+          </ComposedChart>
+        </ResponsiveContainer>
       ) : (
-        <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
-          <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
-            <div className="flex items-center gap-4 w-full md:w-auto">
-              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left">
-                {title}
-              </h2>
-              <button
-                onClick={handleFetchGraph}
-                disabled={isLoading}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
-              >
-                <BiRefresh
-                  className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                    isLoading ? "animate-spin" : ""
-                  }`}
-                />
-              </button>
-            </div>
-            <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
-              <select
-                value={range}
-                onChange={(e) => setRange(e.target.value)}
-                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
-                disabled={isLoading}
-              >
-                <option value="dia">{t("day")}</option>
-                <option value="mes">{t("month")}</option>
-                <option value="año">{t("year")}</option>
-              </select>
-              <select
-                value={chartIndexId}
-                onChange={(e) => setChartIndexId(e.target.value)}
-                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white text-sm w-auto"
-                disabled={isLoading}
-              >
-                <option value="generacion de energia y ingresos">
-                  {t("energyAndIncome")}
-                </option>
-                <option value="proporcion para uso personal">
-                  {t("personalUse")}
-                </option>
-                <option value="indice de contribucion">
-                  {t("contributionIndex")}
-                </option>
-                <option value="estadisticas sobre energia">
-                  {t("energyStatistics")}
-                </option>
-              </select>
-            </div>
-          </div>
+        <>
           <ResponsiveContainer
             width="100%"
             height={
@@ -469,11 +523,227 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
                 : 400
             }
           >
-            {renderContent()}
+            {chartIndexId === "estadisticas sobre energia" &&
+            transformedData ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {Object.entries(transformedData).map(([title, chartData]) => {
+                  const totalValue = chartData.reduce(
+                    (sum, entry) => sum + entry.value,
+                    0
+                  );
+
+                  return (
+                    <div
+                      key={`piechart-${title}`}
+                      className="flex flex-col items-center p-4"
+                    >
+                      <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                        {t(title)}
+                      </h2>
+                      <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
+                        <ResponsiveContainer
+                          width={300}
+                          height={!isDesktop ? 250 : 350}
+                        >
+                          <PieChart>
+                            <Pie
+                              data={chartData}
+                              dataKey="value"
+                              nameKey="name"
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={isMobile ? 110 : 120}
+                              label={null}
+                            >
+                              {chartData.map((entry) => (
+                                <Cell
+                                  key={`cell-${entry.name}`}
+                                  fill={getPieChartColor(entry.name)}
+                                />
+                              ))}
+                            </Pie>
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="flex flex-col gap-2">
+                          {chartData.map((entry) => {
+                            const percentage = totalValue
+                              ? ((entry.value / totalValue) * 100).toFixed(1)
+                              : 0;
+
+                            return (
+                              <div
+                                key={`legend-${entry.name}`}
+                                className="flex items-center gap-2 text-sm whitespace-nowrap"
+                              >
+                                <div
+                                  style={{
+                                    backgroundColor: getPieChartColor(
+                                      entry.name
+                                    ),
+                                  }}
+                                  className="w-4 h-4"
+                                ></div>
+                                <span className="text-custom-dark-blue dark:text-custom-yellow">
+                                  {entry.name}: {entry.value.toFixed(2)}{" "}
+                                  {entry.unit} ({percentage}%)
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : isLoading || !graphData?.data?.data ? (
+              <Loading />
+            ) : (
+              <ComposedChart
+                key={`${range}-${chartIndexId}`}
+                data={transformedData}
+                margin={{
+                  left: isMobile ? -15 : 15,
+                  right: isMobile ? -25 : 15,
+                  top: 10,
+                  bottom: 10,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString()
+                  }
+                />
+                {graphData?.data?.data?.axis?.map((ax) => (
+                  <YAxis
+                    key={`y-axis-${ax.axisId}`}
+                    yAxisId={ax.axisId}
+                    domain={[0, "auto"]}
+                    unit={isMobile ? "" : ax.unit}
+                    orientation={ax.axisId === 0 ? "left" : "right"}
+                    label={{
+                      value: isMobile ? ax.unit : "",
+                      angle: -90,
+                      position: "insideLeft",
+                      offset: 20,
+                      dy: -20,
+                    }}
+                  />
+                ))}
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
+                          <p className="text-sm font-bold text-gray-900 dark:text-gray-200 mb-2">
+                            {label}
+                          </p>
+                          {payload.map((entry, index) => {
+                            const sanitizedName = entry.name.replace(
+                              "PCurve_Power_",
+                              ""
+                            );
+                            const formattedName = sanitizedName
+                              .replace("PV", "PV(W)")
+                              .replace("Battery", "Batería(W)")
+                              .replace("Meter", "Medidor(W)")
+                              .replace("Load", "Carga(W)")
+                              .replace("SOC", "SOC(%)");
+
+                            const resolvedColor =
+                              chartIndexId === "potencia"
+                                ? getPotenciaLineColor(entry.name, theme)
+                                : getBarOrLineColor(entry.name, theme);
+
+                            return (
+                              <div
+                                key={`tooltip-item-${index}`}
+                                className="flex items-center gap-2 mb-1"
+                              >
+                                <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-300">
+                                  {formattedName}
+                                </span>
+                                <span className="text-sm font-bold text-gray-900 dark:text-gray-200">
+                                  {entry.value}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Legend
+                  formatter={(value, entry) => {
+                    const resolvedColor =
+                      entry.color ||
+                      getPieChartColor(value) || // Customize for PieChart legends
+                      getBarOrLineColor(value, 0); // Default for bars and lines
+
+                    return (
+                      <span
+                        style={{
+                          color: resolvedColor,
+                        }}
+                      >
+                        {t(value)}
+                      </span>
+                    );
+                  }}
+                />
+
+                {/* Render bars first */}
+                {graphData?.data?.data?.lines?.map(
+                  (line, index) =>
+                    index % 2 === 0 && (
+                      <Bar
+                        key={line.name}
+                        dataKey={line.name}
+                        fill={getBarOrLineColor(line.name, index)}
+                        yAxisId={line.axis}
+                        name={line.label}
+                        opacity={0.8}
+                      />
+                    )
+                )}
+
+                {/* Render lines on top */}
+                {graphData?.data?.data?.lines?.map(
+                  (line, index) =>
+                    index % 2 !== 0 && (
+                      <Line
+                        key={line.name}
+                        type="monotone"
+                        dataKey={line.name}
+                        stroke={getBarOrLineColor(line.name, index)}
+                        strokeWidth={3}
+                        name={line.label}
+                        yAxisId={line.axis}
+                        dot={false}
+                        activeDot={{ r: 6 }}
+                      />
+                    )
+                )}
+              </ComposedChart>
+            )}
           </ResponsiveContainer>
-        </div>
+        </>
       )}
-    </>
+      {isModalOpen && (
+        <ExportModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onExport={handleExportCSV}
+          t={t}
+          isLoading={isLoading}
+          hasData={transformedData?.length > 0}
+        />
+      )}
+    </div>
   );
 };
 

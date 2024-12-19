@@ -230,8 +230,8 @@ const BatteryChargingGraph = ({ token, plantId }) => {
               <Area
                 type="monotone"
                 dataKey="batteryPercentageState"
-                stroke="#4CAF50"
-                fill="#4CAF50"
+                stroke={theme === "dark" ? " #BDBFC0" : "#0B2738"}
+                fill={theme === "dark" ? "#657880" : "#758B95"}
                 fillOpacity={0.3}
               />
             </AreaChart>

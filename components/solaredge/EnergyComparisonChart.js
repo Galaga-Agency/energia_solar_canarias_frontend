@@ -33,8 +33,6 @@ import SecondaryButton from "../ui/SecondaryButton";
 import ExportModal from "../ExportModal";
 import { Info } from "lucide-react";
 
-const COLORS = ["#2196F3", "#4CAF50", "#FFEB3B", "#FF5722"];
-
 const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -46,6 +44,12 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { downloadCSV } = useCSVExport();
   const comparisonError = useSelector(selectComparisonError);
+
+  const COLORS = useMemo(() => {
+    return theme === "dark"
+      ? ["#A48D67", "#657880", "#BDBFC0", "#FFD57B", "#695A42"]
+      : ["#0B2738", "#AD936A", "#FFD57B", "#0B2738", "#728EA1"];
+  }, [theme]);
 
   const monthNames = useMemo(
     () => [
@@ -277,6 +281,7 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
                     stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
                     opacity={theme === "dark" ? 0.5 : 1}
                   />
+
                   <XAxis dataKey="name" tick={{ fill: "#ccc" }} />
                   <YAxis
                     dataKey="value" // Ensure a static dataKey exists
@@ -382,7 +387,13 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
                       key={key}
                       dataKey={key}
                       radius={[10, 10, 0, 0]}
-                      fill={COLORS[index % COLORS.length]}
+                      fill={
+                        timeUnit === "YEAR"
+                          ? theme === "dark"
+                            ? "#FFD57B" // Yellow for dark mode
+                            : "#0B2738" // Dark blue for light mode
+                          : COLORS[index % COLORS.length]
+                      }
                       barSize={getBarSize()}
                     />
                   ) : null

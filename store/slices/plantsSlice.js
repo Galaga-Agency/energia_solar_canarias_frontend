@@ -356,6 +356,21 @@ export const fetchVictronEnergyRealtimeData = createAsyncThunk(
   }
 );
 
+export const fetchVictronEnergyEquipmentDetails = createAsyncThunk(
+  "plants/fetchVictronEnergyEquipmentDetails",
+  async ({ plantId, token }, { rejectWithValue }) => {
+    try {
+      const equipmentDetails = await fetchVictronEnergyEquipmentDetailsAPI({
+        plantId,
+        token,
+      });
+      return equipmentDetails;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   plants: [],
   plantDetails: null,
@@ -687,6 +702,23 @@ const plantsSlice = createSlice({
         state.realtimeData = null;
         state.realtimeError =
           action.payload || "Failed to fetch real-time data";
+      })
+      .addCase(fetchVictronEnergyEquipmentDetails.pending, (state) => {
+        state.equipmentLoading = true;
+        state.equipmentError = null;
+      })
+      .addCase(
+        fetchVictronEnergyEquipmentDetails.fulfilled,
+        (state, action) => {
+          state.equipmentLoading = false;
+          state.equipmentDetails = action.payload;
+          state.equipmentError = null;
+        }
+      )
+      .addCase(fetchVictronEnergyEquipmentDetails.rejected, (state, action) => {
+        state.equipmentLoading = false;
+        state.equipmentDetails = null;
+        state.equipmentError = action.payload;
       });
   },
 });

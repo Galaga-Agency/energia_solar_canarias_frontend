@@ -61,240 +61,329 @@ const AddPlantForm = ({ onClose, isOpen }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 -mt-12 z-[999] grid place-items-center overflow-hidden rounded-lg"
-        >
+        <div className="fixed inset-0 z-[999]">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50"
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            transition={{ duration: 0.3 }}
             onClick={onClose}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           />
 
-          <motion.div
-            initial={{ scale: 0, rotate: "12.5deg" }}
-            animate={{ scale: 1, rotate: "0deg" }}
-            exit={{ scale: 0, rotate: "0deg" }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-custom-light-gray dark:bg-custom-dark-blue/90 backdrop-blur-sm  text-custom-dark-blue dark:text-custom-light-gray rounded-lg shadow-dark-shadow w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-[90vh] md:h-auto max-h-[80vh]"
-          >
-            <Texture />
-            <div className="bg-custom-yellow dark:bg-custom-yellow text-custom-dark-blue dark:text-custom-dark-blue p-4 flex items-center shadow-dark-shadow">
-              <FiPlus className="text-2xl mr-2" />
-              <h2 className="text-lg font-bold">{t("addPlant")}</h2>
-            </div>
-            <form
-              onSubmit={handleSubmit(handleFormSubmit)}
-              className="p-6 space-y-4"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                    {t("email")}*
-                  </label>
-                  <input
-                    type="email"
-                    {...register("email", { required: t("emailRequired") })}
-                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500">{errors.email.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                    {t("plantName")}*
-                  </label>
-                  <input
-                    type="text"
-                    {...register("plantName", {
-                      required: t("plantNameRequired"),
-                    })}
-                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
-                      errors.plantName ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.plantName && (
-                    <p className="text-red-500">{errors.plantName.message}</p>
-                  )}
-                </div>
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                  {t("installerCode")}
-                </label>
-                <input
-                  type="text"
-                  {...register("installerCode")}
-                  className="w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                  {t("address")}*
-                </label>
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    {...register("address", {
-                      required: t("addressRequired"),
-                    })}
-                    className={`flex-grow border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
-                      errors.address ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    className="ml-2 p-2 bg-gray-200 dark:bg-custom-dark-gray rounded text-gray-700 dark:text-custom-light-gray button-shadow"
-                    onClick={() => setIsMapOpen(true)}
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 25,
+                  delay: 0.1,
+                }}
+                className="relative w-full max-w-4xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-4 md:p-6 backdrop-blur-lg shadow-xl"
+              >
+                <Texture className="opacity-30" />
+
+                <motion.div
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-2 py-4 px-6 bg-gradient-to-r from-custom-yellow to-custom-yellow/90 rounded-xl text-custom-dark-blue mb-6"
+                >
+                  <FiPlus className="text-2xl" />
+                  <h2 className="text-xl md:text-2xl font-bold">
+                    {t("addPlant")}
+                  </h2>
+                </motion.div>
+
+                <form
+                  onSubmit={handleSubmit(handleFormSubmit)}
+                  className="p-6 space-y-6"
+                >
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                   >
-                    <IoLocationSharp className="text-2xl text-custom-dark-blue" />
-                  </button>
-                </div>
-                {errors.address && (
-                  <p className="text-red-500">{errors.address.message}</p>
-                )}
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                    {t("classification")}*
-                  </label>
-                  <select
-                    {...register("classification", {
-                      required: t("classificationRequired"),
-                    })}
-                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
-                      errors.classification
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">{t("selectClassification")}</option>
-                    <option value="residential">{t("residential")}</option>
-                    <option value="ground-mounted">{t("groundMounted")}</option>
-                    <option value="commercial-rooftop">
-                      {t("commercialRooftop")}
-                    </option>
-                    <option value="battery-storage">
-                      {t("batteryStorage")}
-                    </option>
-                  </select>
-                  {errors.classification && (
-                    <p className="text-red-500">
-                      {errors.classification.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                    {t("capacity")}*
-                  </label>
-                  <input
-                    type="number"
-                    {...register("capacity", {
-                      required: t("capacityRequired"),
-                    })}
-                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
-                      errors.capacity ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.capacity && (
-                    <p className="text-red-500">{errors.capacity.message}</p>
-                  )}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                    {t("module")}*
-                  </label>
-                  <input
-                    type="number"
-                    {...register("module", {
-                      required: t("moduleRequired"),
-                    })}
-                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
-                      errors.module ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.module && (
-                    <p className="text-red-500">{errors.module.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                    {t("profitRatio")}*
-                  </label>
-                  <input
-                    type="number"
-                    {...register("profitRatio", {
-                      required: t("profitRatioRequired"),
-                    })}
-                    className={`w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray ${
-                      errors.profitRatio ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.profitRatio && (
-                    <p className="text-red-500">{errors.profitRatio.message}</p>
-                  )}
-                </div>
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
-                  {t("uploadPhotos")}
-                </label>
-                <input
-                  type="file"
-                  className="w-full border rounded p-2 bg-white dark:bg-custom-dark-gray dark:text-custom-light-gray"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-                {imagePreviews.length > 0 && (
-                  <div className="mt-2 flex gap-2 flex-wrap">
-                    {imagePreviews.map((img, index) => (
-                      <div
-                        key={index}
-                        className="relative flex flex-col justify-between items-center p-1"
-                      >
-                        <Image
-                          src={img.url}
-                          alt={img.name}
-                          width={70}
-                          height={70}
-                          className="object-cover rounded"
-                        />
-                        <p className="text-xs text-center mt-1">
-                          {truncateName(img.name)}
+                    <div>
+                      <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                        {t("email")}*
+                      </label>
+                      <input
+                        type="email"
+                        {...register("email", { required: t("emailRequired") })}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.email
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
+                        } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
+                      />
+                      {errors.email && (
+                        <p className="text-red-500 mt-1 text-sm">
+                          {errors.email.message}
                         </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                        {t("plantName")}*
+                      </label>
+                      <input
+                        type="text"
+                        {...register("plantName", {
+                          required: t("plantNameRequired"),
+                        })}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.plantName
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
+                        } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
+                      />
+                      {errors.plantName && (
+                        <p className="text-red-500 mt-1 text-sm">
+                          {errors.plantName.message}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                      {t("installerCode")}
+                    </label>
+                    <input
+                      type="text"
+                      {...register("installerCode")}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all"
+                    />
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                      {t("address")}*
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        {...register("address", {
+                          required: t("addressRequired"),
+                        })}
+                        className={`flex-1 px-4 py-2 rounded-lg border ${
+                          errors.address
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
+                        } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        onClick={() => setIsMapOpen(true)}
+                        className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                      >
+                        <IoLocationSharp className="text-2xl" />
+                      </motion.button>
+                    </div>
+                    {errors.address && (
+                      <p className="text-red-500 mt-1 text-sm">
+                        {errors.address.message}
+                      </p>
+                    )}
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                  >
+                    <div>
+                      <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                        {t("classification")}*
+                      </label>
+                      <select
+                        {...register("classification", {
+                          required: t("classificationRequired"),
+                        })}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.classification
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
+                        } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
+                      >
+                        <option value="">{t("selectClassification")}</option>
+                        <option value="residential">{t("residential")}</option>
+                        <option value="ground-mounted">
+                          {t("groundMounted")}
+                        </option>
+                        <option value="commercial-rooftop">
+                          {t("commercialRooftop")}
+                        </option>
+                        <option value="battery-storage">
+                          {t("batteryStorage")}
+                        </option>
+                      </select>
+                      {errors.classification && (
+                        <p className="text-red-500 mt-1 text-sm">
+                          {errors.classification.message}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                        {t("capacity")}*
+                      </label>
+                      <input
+                        type="number"
+                        {...register("capacity", {
+                          required: t("capacityRequired"),
+                        })}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.capacity
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
+                        } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
+                      />
+                      {errors.capacity && (
+                        <p className="text-red-500 mt-1 text-sm">
+                          {errors.capacity.message}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.7 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                  >
+                    <div>
+                      <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                        {t("module")}*
+                      </label>
+                      <input
+                        type="number"
+                        {...register("module", {
+                          required: t("moduleRequired"),
+                        })}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.module
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
+                        } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
+                      />
+                      {errors.module && (
+                        <p className="text-red-500 mt-1 text-sm">
+                          {errors.module.message}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                        {t("profitRatio")}*
+                      </label>
+                      <input
+                        type="number"
+                        {...register("profitRatio", {
+                          required: t("profitRatioRequired"),
+                        })}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.profitRatio
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
+                        } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
+                      />
+                      {errors.profitRatio && (
+                        <p className="text-red-500 mt-1 text-sm">
+                          {errors.profitRatio.message}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                  >
+                    <label className="block mb-1 text-gray-700 dark:text-custom-light-gray">
+                      {t("uploadPhotos")}
+                    </label>
+                    <input
+                      type="file"
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                    {imagePreviews.length > 0 && (
+                      <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                        {imagePreviews.map((img, index) => (
+                          <div
+                            key={index}
+                            className="relative group rounded-lg overflow-hidden bg-white dark:bg-gray-800 p-2"
+                          >
+                            <Image
+                              src={img.url}
+                              alt={img.name}
+                              width={100}
+                              height={100}
+                              className="w-full h-24 object-cover rounded-lg"
+                            />
+                            <p className="mt-2 text-xs text-center text-gray-600 dark:text-gray-300 truncate">
+                              {truncateName(img.name)}
+                            </p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-4">
-                <SecondaryButton type="button" onClick={onClose}>
-                  {t("cancel")}
-                </SecondaryButton>
-                <PrimaryButton type="submit">{t("submit")}</PrimaryButton>
-              </div>
-            </form>
-          </motion.div>
+                    )}
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.9 }}
+                    className="flex justify-end items-center gap-4 pt-4"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <SecondaryButton type="button" onClick={onClose}>
+                        {t("cancel")}
+                      </SecondaryButton>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <PrimaryButton type="submit">{t("submit")}</PrimaryButton>
+                    </motion.div>
+                  </motion.div>
+                </form>
+              </motion.div>
+            </div>
+          </div>
+
           <SelectAddressOnMap
             isOpen={isMapOpen}
             onClose={() => setIsMapOpen(false)}
             onLocationSelect={onMapLocationSelect}
           />
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

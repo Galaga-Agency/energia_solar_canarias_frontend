@@ -18,6 +18,8 @@ import { PiSolarPanelFill } from "react-icons/pi";
 import { useParams } from "next/navigation";
 import TankData from "./TankData";
 import VictronEnergyGraph from "./VictronEnergyGraph";
+import VictronEnergyEquipmentDetails from "./VictronEnergyEquipmentDetails";
+import DateRangeModal from "./DateRangeModal";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
@@ -43,6 +45,13 @@ const VictronEnergyPlantDetails = () => {
       hour12: false,
     })
   );
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [currentRange, setCurrentRange] = useState({ type: "today" });
+
+  const handleRangeSelect = (range) => {
+    setCurrentRange(range);
+    setIsDateModalOpen(false);
+  };
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -128,7 +137,7 @@ const VictronEnergyPlantDetails = () => {
             </span>
           </div>
         </header>
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 w-full">
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 w-full mb-6">
           {hasCoordinates && (
             <WeatherWidget
               lat={latitude}
@@ -137,7 +146,7 @@ const VictronEnergyPlantDetails = () => {
               provider="victronenergy"
             />
           )}
-          {tankData &&
+          {/* {tankData &&
             !["tc", "tf", "tl", "tr", "tst"].every(
               (key) => tankData[key] === undefined
             ) && (
@@ -154,10 +163,10 @@ const VictronEnergyPlantDetails = () => {
 
                 <TankData tankData={tankData} />
               </section>
-            )}
+            )} */}
         </div>
 
-        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg my-6">
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6  backdrop-blur-sm shadow-lg mb-6">
           <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
             {t("Real-Time Energy Flow")}
           </h2>
@@ -167,9 +176,21 @@ const VictronEnergyPlantDetails = () => {
           />
         </section>
 
+        <VictronEnergyEquipmentDetails token={user?.tokenIdentificador} />
+
         <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg my-6">
-          <VictronEnergyGraph plantId={plantId} title={t("plantAnalytics")} />
+          <VictronEnergyGraph
+            plantId={plantId}
+            currentRange={currentRange}
+            setIsDateModalOpen={setIsDateModalOpen}
+          />
         </section>
+
+        <DateRangeModal
+          isOpen={isDateModalOpen}
+          onClose={() => setIsDateModalOpen(false)}
+          onSelectRange={handleRangeSelect}
+        />
       </div>
     </PageTransition>
   );

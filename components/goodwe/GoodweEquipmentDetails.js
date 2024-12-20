@@ -16,6 +16,7 @@ import {
 import EquipmentDetailsSkeleton from "../loadingSkeletons/EquipmentDetailsSkeleton";
 import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const GoodweEquipmentDetails = ({ t }) => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const GoodweEquipmentDetails = ({ t }) => {
   const plantId = params.plantId;
   const user = useSelector(selectUser);
   const token = user.tokenIdentificador;
+  const theme = useSelector(selectTheme);
 
   const [expanded, setExpanded] = useState(false);
   const specsRef = useRef(null);
@@ -33,16 +35,20 @@ const GoodweEquipmentDetails = ({ t }) => {
   const itemHeight = 44;
   const previewItems = 3;
 
+  const provider = "goodwe";
+
   useEffect(() => {
     if (plantId && token) {
       dispatch(fetchGoodweEquipmentDetails({ plantId, token }));
     }
   }, [plantId, token, dispatch]);
 
-  if (isLoading) return <EquipmentDetailsSkeleton />;
+  if (isLoading)
+    return <EquipmentDetailsSkeleton theme={theme} provider={provider} />;
+
   if (error) {
     return (
-      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
+      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg mb-6">
         <div className="text-red-500 p-4 bg-red-100 dark:bg-red-900/20 rounded-lg">
           {t("Error loading equipment")}
         </div>
@@ -52,7 +58,7 @@ const GoodweEquipmentDetails = ({ t }) => {
 
   if (!equipmentDetails?.inverterPoints?.[0]) {
     return (
-      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
+      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg mb-6">
         <div className="text-gray-500 p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
           {t("No equipment data available")}
         </div>

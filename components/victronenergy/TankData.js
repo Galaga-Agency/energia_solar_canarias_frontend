@@ -1,11 +1,14 @@
 import React from "react";
 import { useTranslation } from "next-i18next";
+import { useSelector } from "react-redux";
 import { Clock } from "lucide-react";
 import moment from "moment";
 import "moment/locale/es";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const TankData = ({ tankData = {} }) => {
   const { t } = useTranslation();
+  const theme = useSelector(selectTheme);
 
   const getTankInstances = () => {
     const tankInstances = [];
@@ -36,12 +39,14 @@ const TankData = ({ tankData = {} }) => {
   const getFillGradient = (percentage) => {
     if (percentage <= 30) {
       return {
-        gradient: "tankLowGradient",
+        gradient:
+          theme === "dark" ? "tankLowGradientDark" : "tankLowGradientLight",
         animation: "0.8;0.9;0.8",
       };
     }
     return {
-      gradient: "tankNormalGradient",
+      gradient:
+        theme === "dark" ? "tankNormalGradientDark" : "tankNormalGradientLight",
       animation: "0.9;1;0.9",
     };
   };
@@ -87,64 +92,60 @@ const TankData = ({ tankData = {} }) => {
               preserveAspectRatio="xMidYMid meet"
             >
               <defs>
+                {/* Gradients */}
                 <linearGradient
-                  id="tankNormalGradient"
+                  id="tankNormalGradientLight"
                   x1="0%"
                   y1="0%"
                   x2="0%"
                   y2="100%"
                 >
-                  <stop offset="0%" stopColor="#22C55E" />
+                  <stop offset="0%" stopColor="#0B2738FF" />
+                  <stop offset="100%" stopColor="#0B273833" />
+                </linearGradient>
+                <linearGradient
+                  id="tankLowGradientLight"
+                  x1="0%"
+                  y1="0%"
+                  x2="0%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stopColor="#FFD57BFF" />
+                  <stop offset="100%" stopColor="#FFD57B33" />
+                </linearGradient>
+                <linearGradient
+                  id="tankNormalGradientDark"
+                  x1="0%"
+                  y1="0%"
+                  x2="0%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stopColor="#FFD57BFF" />
+                  <stop offset="100%" stopColor="#FFD57B33" />
+                </linearGradient>
+                <linearGradient
+                  id="tankLowGradientDark"
+                  x1="0%"
+                  y1="0%"
+                  x2="0%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stopColor="#FB923C" />
                   <stop offset="100%" stopColor="#FACC15" />
-                </linearGradient>
-                <linearGradient
-                  id="tankLowGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="0%"
-                  y2="100%"
-                >
-                  <stop offset="0%" stopColor="#FACC15" />
-                  <stop offset="100%" stopColor="#FB923C" />
-                </linearGradient>
-                <filter
-                  id="innerShadow"
-                  x="-20%"
-                  y="-20%"
-                  width="140%"
-                  height="140%"
-                >
-                  <feGaussianBlur
-                    in="SourceGraphic"
-                    stdDeviation="3"
-                    result="blur"
-                  />
-                  <feOffset in="blur" dx="0" dy="2" />
-                  <feComposite in="SourceGraphic" operator="over" />
-                </filter>
-                <filter id="liquidFilter">
-                  <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
-                  <feColorMatrix
-                    type="matrix"
-                    values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 15 -7"
-                  />
-                </filter>
-                <linearGradient id="glassGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
                 </linearGradient>
               </defs>
 
-              {/* Outer container with enhanced depth */}
+              {/* Border stroke for the tank */}
               <rect
-                x="10"
-                y="10"
-                width="100"
-                height="180"
-                rx="15"
-                fill="#f8f9fa"
-                className="dark:fill-gray-800"
-                filter="url(#innerShadow)"
+                x="20"
+                y="20"
+                width="80"
+                height="160"
+                rx="10"
+                fill="none"
+                stroke={theme === "dark" ? "#FFD57BFF" : "#0B2738FF"}
+                strokeWidth="2"
+                className="transition-all"
               />
 
               {/* Inner tank frame */}
@@ -169,7 +170,7 @@ const TankData = ({ tankData = {} }) => {
                 className="dark:fill-gray-900"
               />
 
-              {/* Fluid level with dynamic gradient */}
+              {/* Fluid level with gradient */}
               <rect
                 x="25"
                 y={yPosition}
@@ -187,62 +188,6 @@ const TankData = ({ tankData = {} }) => {
                   repeatCount="indefinite"
                 />
               </rect>
-
-              {/* Level markers with improved visibility */}
-              {[0, 25, 50, 75, 100].map((mark) => (
-                <g key={mark}>
-                  <text
-                    x="105"
-                    y={180 - mark * 1.5}
-                    fontSize="10"
-                    className="fill-gray-500 dark:fill-gray-400"
-                    fontWeight="500"
-                  >
-                    {mark}
-                  </text>
-                  <line
-                    x1="25"
-                    x2="95"
-                    y1={175 - mark * 1.5}
-                    y2={175 - mark * 1.5}
-                    stroke="#e5e5e5"
-                    strokeWidth="0.5"
-                    strokeDasharray="2 2"
-                    className="dark:stroke-gray-600"
-                  />
-                </g>
-              ))}
-
-              {/* Enhanced glass effect */}
-              <rect
-                x="25"
-                y="25"
-                width="70"
-                height="150"
-                rx="8"
-                fill="url(#glassGradient)"
-                className="pointer-events-none"
-              />
-
-              {/* Container borders and highlights */}
-              <rect
-                x="20"
-                y="20"
-                width="80"
-                height="160"
-                rx="10"
-                fill="none"
-                stroke="#e0e0e0"
-                strokeWidth="2"
-                className="dark:stroke-gray-600"
-              />
-              <path
-                d="M30,30 Q60,45 90,30"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.5"
-                opacity="0.5"
-              />
             </svg>
           </div>
 

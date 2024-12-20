@@ -11,10 +11,10 @@ const EnergyStatisticsSkeleton = ({ theme }) => {
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
         {[...Array(6)].map((_, i) => (
           <div key={i} className="relative text-center p-5">
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14">
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-10 h-10">
               <CustomSkeleton width="100%" height="100%" theme={theme} circle />
             </div>
-            <div className="h-32 mt-4">
+            <div className="h-28 mt-4">
               <CustomSkeleton width="100%" height="100%" theme={theme} />
             </div>
           </div>

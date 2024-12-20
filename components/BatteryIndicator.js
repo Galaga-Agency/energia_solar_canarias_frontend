@@ -7,9 +7,9 @@ import { selectPlantDetails } from "@/store/slices/plantsSlice";
 
 const BatteryIndicator = ({ soc }) => {
   const theme = useSelector(selectTheme);
-  const { isMobile } = useDeviceType();
+  const { isMobile, isDesktop, isSmallDesktop } = useDeviceType();
   const plant = useSelector(selectPlantDetails);
-  const isGoodwe = plant?.data?.data.organization === "goodwe";
+  const isGoodwe = plant?.data?.data?.organization === "goodwe";
 
   // Define the vertical gradient for the entire filling
   const gradientFill = useMemo(() => {
@@ -54,7 +54,7 @@ const BatteryIndicator = ({ soc }) => {
         animated={true}
         charging={false}
         size={150}
-        orientation={!isMobile && !isGoodwe ? "vertical" : "horizontal"}
+        orientation={isDesktop ? "vertical" : "horizontal"}
         customization={{
           batteryBody: {
             strokeWidth: 4,

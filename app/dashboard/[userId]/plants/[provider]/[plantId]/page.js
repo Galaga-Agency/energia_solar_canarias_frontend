@@ -21,6 +21,7 @@ import { BiRefresh } from "react-icons/bi";
 import Texture from "@/components/Texture";
 import PageTransition from "@/components/PageTransition";
 import VictronEnergyPlantDetails from "@/components/victronenergy/VictronEnergyPlantDetails";
+import BottomNavbar from "@/components/BottomNavbar";
 
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId } = params;
@@ -274,6 +275,7 @@ const PlantDetailsPage = ({ params }) => {
   return (
     <PageTransition>
       <div className="min-h-screen">{renderContent}</div>
+      {/* <BottomNavbar userId={user && user.id} userClass={user && user.clase} /> */}
     </PageTransition>
   );
 };

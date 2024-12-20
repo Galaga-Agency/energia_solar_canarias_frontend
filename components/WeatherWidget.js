@@ -141,7 +141,7 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
       {weatherLoading ? (
         <WeatherSkeleton theme={theme} />
       ) : (
-        <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm flex flex-col h-full flex-1">
+        <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm flex flex-col h-full flex-1 2xl:min-w-[40vw]">
           <h2 className="text-xl font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
             {t("weatherForecast")}
           </h2>
@@ -203,13 +203,13 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
               </div>
 
               {/* Forecast */}
-              <div className="flex-1 grid grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+              <div className="flex-1 grid grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                 {weatherData?.daily?.time
-                  ?.slice(1, isDesktop ? 4 : isSmallDesktop ? 4 : 3)
+                  ?.slice(1, isDesktop || isSmallDesktop ? 4 : 3)
                   .map((date, index) => (
                     <div
                       key={index}
-                      className="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md"
+                      className="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex-1"
                     >
                       <div className="flex flex-col">
                         <p className="text-sm text-slate-600 dark:text-slate-300">

@@ -117,3 +117,36 @@ export const fetchVictronEnergyRealtimeDataAPI = async ({ plantId, token }) => {
     throw error;
   }
 };
+
+export const fetchVictronEnergyEquipmentDetailsAPI = async ({
+  plantId,
+  token,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/inventario/${plantId}?proveedor=victronenergy`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const clonedResponse = response.clone();
+    if (!response.ok) {
+      const errorData = await clonedResponse.json().catch(() => ({}));
+      console.error("Error Response:", errorData);
+      throw new Error(errorData.message || "Failed to fetch equipment details");
+    }
+
+    const data = await response.json();
+    return data?.records || null;
+  } catch (error) {
+    console.error("Equipment details fetch error:", error);
+    throw error;
+  }
+};

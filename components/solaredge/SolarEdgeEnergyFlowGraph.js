@@ -69,27 +69,27 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const VISIBLE_CURVES = [
     {
       dataKey: "selfConsumption",
-      color: "#4CAF50",
+      color: theme === "dark" ? "#FFD57B" : "#BDBFC0",
       name: t("Autoconsumo"),
     },
     {
       dataKey: "consumption",
-      color: "#F44336",
+      color: theme === "dark" ? "#BDBFC0" : "#0B2738",
       name: t("Consumo"),
     },
     {
       dataKey: "solarProduction",
-      color: "#FFEB3B",
+      color: theme === "dark" ? "#657880" : "#FFD57B",
       name: t("Producción Solar"),
     },
     {
       dataKey: "export",
-      color: "#FF5722",
+      color: theme === "dark" ? "#A48D67" : "#9CA3AF",
       name: t("Exportación"),
     },
     {
       dataKey: "import",
-      color: "#2196F3",
+      color: theme === "dark" ? "#9CA3AF" : "#AD936A",
       name: t("Importación"),
     },
   ];
@@ -737,7 +737,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                       stroke={curve.color}
                       name={curve.name}
                       dot={false}
-                      strokeWidth={2}
+                      strokeWidth={3}
                     />
                   ))}
                 </ComposedChart>

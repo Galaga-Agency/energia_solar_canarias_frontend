@@ -312,8 +312,11 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
     setIsModalOpen(false); // Close modal after export
   };
 
+  console.log("graph data ---> ", graphData);
+
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
         <div className="flex items-center gap-4 w-full md:w-auto">
           <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left">
@@ -334,7 +337,6 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
         <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
           {chartIndexId === "potencia" ? (
             <div className="relative">
-              {/* Button to trigger DateSelector */}
               <button
                 onClick={() => setIsDateSelectorOpen((prev) => !prev)}
                 className="font-secondary dark:border dark:border-gray-200/50 text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
@@ -347,7 +349,6 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
                 <BsCalendar3 />
               </button>
 
-              {/* DateSelector Component */}
               {isDateSelectorOpen && (
                 <DateSelector
                   isOpen={isDateSelectorOpen}
@@ -355,8 +356,6 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
                   onSelect={(date) => {
                     setSelectedDate(date);
                     setIsDateSelectorOpen(false);
-
-                    // Update graph data based on selected date
                     handleFetchGraph();
                   }}
                   value={selectedDate}
@@ -379,22 +378,13 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
             value={chartIndexId}
             onChange={(selectedValue) => setChartIndexId(selectedValue)}
             options={[
-              {
-                value: "potencia",
-                label: "power",
-              },
+              { value: "potencia", label: "power" },
               {
                 value: "generacion de energia y ingresos",
                 label: "energyAndIncome",
               },
-              {
-                value: "proporcion para uso personal",
-                label: "personalUse",
-              },
-              {
-                value: "indice de contribucion",
-                label: "contributionIndex",
-              },
+              { value: "proporcion para uso personal", label: "personalUse" },
+              { value: "indice de contribucion", label: "contributionIndex" },
               {
                 value: "estadisticas sobre energia",
                 label: "energyStatistics",
@@ -409,330 +399,493 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
           </button>
         </div>
       </div>
+
+      {/* Chart Section */}
       {isLoading ? (
         <GoodweGraphDisplaySkeleton theme={theme} />
-      ) : chartIndexId === "potencia" && transformedData ? (
-        <ResponsiveContainer width="100%" height={400}>
-          <ComposedChart data={transformedData}>
-            <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
-            <XAxis
-              dataKey="time"
-              tickFormatter={(value) => {
-                const [hour] = value.split(":");
-                return `${hour}:00`; // Ensures consistent hour formatting
-              }}
-            />
-            <YAxis />
-            <Tooltip
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        {label}
-                      </p>
-                      {payload.map((entry, index) => {
-                        const sanitizedName = entry.name.replace(
-                          "PCurve_Power_",
-                          ""
-                        );
-                        const formattedName = sanitizedName
-                          .replace("PV", "PV(W)")
-                          .replace("Battery", "Batería(W)")
-                          .replace("Meter", "Medidor(W)")
-                          .replace("Load", "Carga(W)")
-                          .replace("SOC", "SOC(%)");
-
-                        const resolvedColor =
-                          chartIndexId === "potencia"
-                            ? getPotenciaLineColor(entry.name, theme)
-                            : getBarOrLineColor(entry.name, theme);
-
-                        return (
-                          <div key={`tooltip-item-${index}`} className="mb-1">
-                            <span
-                              style={{
-                                color: resolvedColor,
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {formattedName}:
-                            </span>{" "}
-                            <span
-                              style={{
-                                color: theme === "dark" ? "#FFF" : "#000",
-                              }}
-                            >
-                              {entry.value}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-
-            <Legend
-              formatter={(value) => {
-                const sanitizedValue = value.replace("PCurve_Power_", "");
-                const formattedValue = sanitizedValue
-                  .replace("PV", "PV(W)")
-                  .replace("Battery", "Batería(W)")
-                  .replace("Meter", "Medidor(W)")
-                  .replace("Load", "Carga(W)")
-                  .replace("SOC", "SOC(%)");
-
-                const resolvedColor =
-                  chartIndexId === "potencia"
-                    ? getPotenciaLineColor(value, theme)
-                    : getBarOrLineColor(value, theme);
-
-                return (
-                  <span style={{ color: resolvedColor }}>{formattedValue}</span>
-                );
-              }}
-            />
-
-            {graphData?.data?.data?.lines?.map((line) => (
-              <Line
-                key={line.key}
-                type="monotone"
-                dataKey={line.key} // Use the line's key
-                stroke={
-                  chartIndexId === "potencia"
-                    ? getPotenciaLineColor(line.key, theme)
-                    : getBarOrLineColor(line.name)
-                }
-                strokeWidth={3}
-                dot={false}
-                activeDot={{ r: 6 }}
-              />
-            ))}
-          </ComposedChart>
-        </ResponsiveContainer>
       ) : (
         <>
-          <ResponsiveContainer
-            width="100%"
-            height={
-              chartIndexId === "estadisticas sobre energia" && isMobile
-                ? "auto"
-                : 400
-            }
-          >
-            {chartIndexId === "estadisticas sobre energia" &&
-            transformedData ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {Object.entries(transformedData).map(([title, chartData]) => {
-                  const totalValue = chartData.reduce(
-                    (sum, entry) => sum + entry.value,
-                    0
-                  );
-
-                  return (
-                    <div
-                      key={`piechart-${title}`}
-                      className="flex flex-col items-center p-4"
-                    >
-                      <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
-                        {t(title)}
-                      </h2>
-                      <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
-                        <ResponsiveContainer
-                          width={300}
-                          height={!isDesktop ? 250 : 350}
-                        >
-                          <PieChart>
-                            <Pie
-                              data={chartData}
-                              dataKey="value"
-                              nameKey="name"
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={isMobile ? 110 : 120}
-                              label={null}
-                            >
-                              {chartData.map((entry) => (
-                                <Cell
-                                  key={`cell-${entry.name}`}
-                                  fill={getPieChartColor(entry.name)}
-                                />
-                              ))}
-                            </Pie>
-                          </PieChart>
-                        </ResponsiveContainer>
-                        <div className="flex flex-col gap-2">
-                          {chartData.map((entry) => {
-                            const percentage = totalValue
-                              ? ((entry.value / totalValue) * 100).toFixed(1)
-                              : 0;
-
-                            return (
-                              <div
-                                key={`legend-${entry.name}`}
-                                className="flex items-center gap-2 text-sm whitespace-nowrap"
-                              >
-                                <div
-                                  style={{
-                                    backgroundColor: getPieChartColor(
-                                      entry.name
-                                    ),
-                                  }}
-                                  className="w-4 h-4"
-                                ></div>
-                                <span className="text-custom-dark-blue dark:text-custom-yellow">
-                                  {entry.name}: {entry.value.toFixed(2)}{" "}
-                                  {entry.unit} ({percentage}%)
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+          {/* Power Chart */}
+          {chartIndexId === "potencia" && (
+            <>
+              {!transformedData?.length ||
+              !graphData?.data?.data?.lines?.[0]?.xy?.length ? (
+                <div>
+                  <div className="flex flex-col items-center justify-center pb-4 px-8 gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg text-gray-500 dark:text-gray-400">
+                        {t("noDataAvailable")}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            ) : isLoading || !graphData?.data?.data ? (
-              <Loading />
-            ) : (
-              <ComposedChart
-                key={`${range}-${chartIndexId}`}
-                data={transformedData}
-                margin={{
-                  left: isMobile ? -15 : 15,
-                  right: isMobile ? -25 : 15,
-                  top: 10,
-                  bottom: 10,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(value) =>
-                    new Date(value).toLocaleDateString()
-                  }
-                />
-                {graphData?.data?.data?.axis?.map((ax) => (
-                  <YAxis
-                    key={`y-axis-${ax.axisId}`}
-                    yAxisId={ax.axisId}
-                    domain={[0, "auto"]}
-                    unit={isMobile ? "" : ax.unit}
-                    orientation={ax.axisId === 0 ? "left" : "right"}
-                    label={{
-                      value: isMobile ? ax.unit : "",
-                      angle: -90,
-                      position: "insideLeft",
-                      offset: 20,
-                      dy: -20,
-                    }}
-                  />
-                ))}
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
-                          <p className="text-sm font-bold text-gray-900 dark:text-gray-200 mb-2">
-                            {label}
-                          </p>
-                          {payload.map((entry, index) => {
-                            const sanitizedName = entry.name.replace(
+                  </div>
+                  <div className="overflow-x-auto">
+                    <div style={{ minWidth: "600px" }}>
+                      <ResponsiveContainer width="100%" height={400}>
+                        <ComposedChart data={[]}>
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            opacity={0.5}
+                            stroke={
+                              theme === "dark"
+                                ? "#E0E0E0"
+                                : "rgb(161, 161, 170)"
+                            }
+                          />
+                          <XAxis tickFormatter={() => ""} />
+                          <YAxis domain={[0, 100]} />
+                          <Tooltip content={() => null} />
+                        </ComposedChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <div style={{ minWidth: "600px" }}>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <ComposedChart data={transformedData}>
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                        <XAxis
+                          dataKey="time"
+                          tickFormatter={(value) => {
+                            const [hour] = value.split(":");
+                            return `${hour}:00`;
+                          }}
+                        />
+                        <YAxis />
+                        <Tooltip
+                          content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
+                                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                                    {label}
+                                  </p>
+                                  {payload.map((entry, index) => {
+                                    const sanitizedName = entry.name.replace(
+                                      "PCurve_Power_",
+                                      ""
+                                    );
+                                    const formattedName = sanitizedName
+                                      .replace("PV", "PV(W)")
+                                      .replace("Battery", "Batería(W)")
+                                      .replace("Meter", "Medidor(W)")
+                                      .replace("Load", "Carga(W)")
+                                      .replace("SOC", "SOC(%)");
+
+                                    const resolvedColor = getPotenciaLineColor(
+                                      entry.name,
+                                      theme
+                                    );
+
+                                    return (
+                                      <div
+                                        key={`tooltip-item-${index}`}
+                                        className="mb-1"
+                                      >
+                                        <span
+                                          style={{
+                                            color: resolvedColor,
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {formattedName}:
+                                        </span>{" "}
+                                        <span
+                                          style={{
+                                            color:
+                                              theme === "dark"
+                                                ? "#FFF"
+                                                : "#000",
+                                          }}
+                                        >
+                                          {entry.value}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend
+                          formatter={(value) => {
+                            const sanitizedValue = value.replace(
                               "PCurve_Power_",
                               ""
                             );
-                            const formattedName = sanitizedName
+                            const formattedValue = sanitizedValue
                               .replace("PV", "PV(W)")
                               .replace("Battery", "Batería(W)")
                               .replace("Meter", "Medidor(W)")
                               .replace("Load", "Carga(W)")
                               .replace("SOC", "SOC(%)");
 
-                            const resolvedColor =
-                              chartIndexId === "potencia"
-                                ? getPotenciaLineColor(entry.name, theme)
-                                : getBarOrLineColor(entry.name, theme);
+                            return (
+                              <span
+                                style={{
+                                  color: getPotenciaLineColor(value, theme),
+                                }}
+                              >
+                                {formattedValue}
+                              </span>
+                            );
+                          }}
+                        />
+                        {graphData?.data?.data?.lines?.map((line) => (
+                          <Line
+                            key={line.key}
+                            type="monotone"
+                            dataKey={line.key}
+                            stroke={getPotenciaLineColor(line.key, theme)}
+                            strokeWidth={3}
+                            dot={false}
+                            activeDot={{ r: 6 }}
+                          />
+                        ))}
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
 
+          {/* Energy Statistics (Pie Charts) */}
+          {chartIndexId === "estadisticas sobre energia" && (
+            <>
+              {/* Improved check for empty data */}
+              {(() => {
+                const modelData = graphData?.data?.data?.modelData;
+
+                // Check if any of the relevant values exist and are non-zero
+                const hasACData =
+                  (modelData?.in_House || 0) + (modelData?.buy || 0) > 0;
+                const hasLoadData =
+                  (modelData?.selfUseOfPv || 0) +
+                    (modelData?.consumptionOfLoad || 0) >
+                  0;
+
+                if (!modelData || (!hasACData && !hasLoadData)) {
+                  return (
+                    <div>
+                      <div className="flex flex-col items-center justify-center pb-4 px-8 gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg text-gray-500 dark:text-gray-400">
+                            {t("noDataAvailable")}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {["Salida de CA", "Consumo de carga"].map((title) => (
+                          <div
+                            key={title}
+                            className="flex flex-col items-center p-4"
+                          >
+                            <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                              {t(title)}
+                            </h2>
+                            <ResponsiveContainer
+                              width={300}
+                              height={!isDesktop ? 250 : 350}
+                            >
+                              <PieChart>
+                                <Pie
+                                  data={[{ name: "No Data", value: 1 }]}
+                                  dataKey="value"
+                                  nameKey="name"
+                                  cx="50%"
+                                  cy="50%"
+                                  outerRadius={isMobile ? 110 : 120}
+                                  fill={
+                                    theme === "dark" ? "#4B5563" : "#E5E7EB"
+                                  }
+                                />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+
+                // If we have data, proceed with normal rendering
+                return (
+                  <div className="w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {Object.entries(transformedData).map(
+                        ([title, chartData]) => {
+                          const totalValue = chartData.reduce(
+                            (sum, entry) => sum + entry.value,
+                            0
+                          );
+
+                          // If this specific chart has no data, show empty state for it
+                          if (totalValue === 0) {
                             return (
                               <div
-                                key={`tooltip-item-${index}`}
-                                className="flex items-center gap-2 mb-1"
+                                key={`piechart-${title}`}
+                                className="flex flex-col items-center p-4"
                               >
-                                <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-300">
-                                  {formattedName}
-                                </span>
-                                <span className="text-sm font-bold text-gray-900 dark:text-gray-200">
-                                  {entry.value}
-                                </span>
+                                <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                                  {t(title)}
+                                </h2>
+                                <ResponsiveContainer
+                                  width={300}
+                                  height={!isDesktop ? 250 : 350}
+                                >
+                                  <PieChart>
+                                    <Pie
+                                      data={[{ name: "No Data", value: 1 }]}
+                                      dataKey="value"
+                                      nameKey="name"
+                                      cx="50%"
+                                      cy="50%"
+                                      outerRadius={isMobile ? 110 : 120}
+                                      fill={
+                                        theme === "dark" ? "#4B5563" : "#E5E7EB"
+                                      }
+                                    />
+                                  </PieChart>
+                                </ResponsiveContainer>
                               </div>
                             );
-                          })}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Legend
-                  formatter={(value, entry) => {
-                    const resolvedColor =
-                      entry.color ||
-                      getPieChartColor(value) || // Customize for PieChart legends
-                      getBarOrLineColor(value, 0); // Default for bars and lines
+                          }
 
-                    return (
-                      <span
-                        style={{
-                          color: resolvedColor,
-                        }}
-                      >
-                        {t(value)}
-                      </span>
-                    );
-                  }}
-                />
+                          return (
+                            <div
+                              key={`piechart-${title}`}
+                              className="flex flex-col items-center p-4"
+                            >
+                              <h2 className="text-lg font-semibold mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                                {t(title)}
+                              </h2>
+                              <div className="flex flex-col xl:flex-row items-center justify-center gap-8">
+                                <ResponsiveContainer
+                                  width={300}
+                                  height={!isDesktop ? 250 : 350}
+                                >
+                                  <PieChart>
+                                    <Pie
+                                      data={chartData}
+                                      dataKey="value"
+                                      nameKey="name"
+                                      cx="50%"
+                                      cy="50%"
+                                      outerRadius={isMobile ? 110 : 120}
+                                      label={null}
+                                    >
+                                      {chartData.map((entry) => (
+                                        <Cell
+                                          key={`cell-${entry.name}`}
+                                          fill={getPieChartColor(entry.name)}
+                                        />
+                                      ))}
+                                    </Pie>
+                                  </PieChart>
+                                </ResponsiveContainer>
+                                <div className="flex flex-col gap-2">
+                                  {chartData.map((entry) => {
+                                    const percentage = totalValue
+                                      ? (
+                                          (entry.value / totalValue) *
+                                          100
+                                        ).toFixed(1)
+                                      : 0;
 
-                {/* Render bars first */}
-                {graphData?.data?.data?.lines?.map(
-                  (line, index) =>
-                    index % 2 === 0 && (
-                      <Bar
-                        key={line.name}
-                        dataKey={line.name}
-                        fill={getBarOrLineColor(line.name, index)}
-                        yAxisId={line.axis}
-                        name={line.label}
-                        opacity={0.8}
-                      />
-                    )
+                                    return (
+                                      <div
+                                        key={`legend-${entry.name}`}
+                                        className="flex items-center gap-2 text-sm whitespace-nowrap"
+                                      >
+                                        <div
+                                          style={{
+                                            backgroundColor: getPieChartColor(
+                                              entry.name
+                                            ),
+                                          }}
+                                          className="w-4 h-4"
+                                        ></div>
+                                        <span className="text-custom-dark-blue dark:text-custom-yellow">
+                                          {entry.name}: {entry.value.toFixed(2)}{" "}
+                                          {entry.unit} ({percentage}%)
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+            </>
+          )}
+
+          {/* Other Charts */}
+          {chartIndexId !== "potencia" &&
+            chartIndexId !== "estadisticas sobre energia" && (
+              <>
+                {!transformedData?.length ? (
+                  <div>
+                    <div className="flex flex-col items-center justify-center pb-4 px-8 gap-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg text-gray-500 dark:text-gray-400">
+                          {t("noDataAvailable")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <div style={{ minWidth: "600px" }}>
+                        <ResponsiveContainer width="100%" height={400}>
+                          <ComposedChart data={[]}>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              opacity={0.5}
+                              stroke={
+                                theme === "dark"
+                                  ? "#E0E0E0"
+                                  : "rgb(161, 161, 170)"
+                              }
+                            />
+                            <XAxis tickFormatter={() => ""} />
+                            <YAxis domain={[0, 100]} />
+                            <Tooltip content={() => null} />
+                          </ComposedChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <div style={{ minWidth: "600px" }}>
+                      <ResponsiveContainer width="100%" height={400}>
+                        <ComposedChart
+                          key={`${range}-${chartIndexId}`}
+                          data={transformedData}
+                          margin={{
+                            left: isMobile ? -15 : 15,
+                            right: isMobile ? -25 : 15,
+                            top: 10,
+                            bottom: 10,
+                          }}
+                        >
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            className="opacity-50"
+                          />
+                          <XAxis
+                            dataKey="date"
+                            tickFormatter={(value) =>
+                              new Date(value).toLocaleDateString()
+                            }
+                          />
+                          {graphData?.data?.data?.axis?.map((ax) => (
+                            <YAxis
+                              key={`y-axis-${ax.axisId}`}
+                              yAxisId={ax.axisId}
+                              domain={[0, "auto"]}
+                              unit={isMobile ? "" : ax.unit}
+                              orientation={ax.axisId === 0 ? "left" : "right"}
+                              label={{
+                                value: isMobile ? ax.unit : "",
+                                angle: -90,
+                                position: "insideLeft",
+                                offset: 20,
+                                dy: -20,
+                              }}
+                            />
+                          ))}
+                          <Tooltip
+                            content={({ active, payload, label }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
+                                    <p className="text-sm font-bold text-gray-900 dark:text-gray-200 mb-2">
+                                      {label}
+                                    </p>
+                                    {payload.map((entry, index) => (
+                                      <div
+                                        key={`tooltip-item-${index}`}
+                                        className="flex items-center gap-2 mb-1"
+                                      >
+                                        <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-300">
+                                          {entry.name}
+                                        </span>
+                                        <span className="text-sm font-bold text-gray-900 dark:text-gray-200">
+                                          {entry.value}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Legend
+                            formatter={(value, entry) => {
+                              const resolvedColor =
+                                entry.color ||
+                                getPieChartColor(value) ||
+                                getBarOrLineColor(value, 0);
+
+                              return (
+                                <span style={{ color: resolvedColor }}>
+                                  {t(value)}
+                                </span>
+                              );
+                            }}
+                          />
+                          {/* Bars */}
+                          {graphData?.data?.data?.lines?.map(
+                            (line, index) =>
+                              index % 2 === 0 && (
+                                <Bar
+                                  key={line.name}
+                                  dataKey={line.name}
+                                  fill={getBarOrLineColor(line.name, index)}
+                                  yAxisId={line.axis}
+                                  name={line.label}
+                                  opacity={0.8}
+                                />
+                              )
+                          )}
+                          {/* Lines */}
+                          {graphData?.data?.data?.lines?.map(
+                            (line, index) =>
+                              index % 2 !== 0 && (
+                                <Line
+                                  key={line.name}
+                                  type="monotone"
+                                  dataKey={line.name}
+                                  stroke={getBarOrLineColor(line.name, index)}
+                                  strokeWidth={3}
+                                  name={line.label}
+                                  yAxisId={line.axis}
+                                  dot={false}
+                                  activeDot={{ r: 6 }}
+                                />
+                              )
+                          )}
+                        </ComposedChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                 )}
-
-                {/* Render lines on top */}
-                {graphData?.data?.data?.lines?.map(
-                  (line, index) =>
-                    index % 2 !== 0 && (
-                      <Line
-                        key={line.name}
-                        type="monotone"
-                        dataKey={line.name}
-                        stroke={getBarOrLineColor(line.name, index)}
-                        strokeWidth={3}
-                        name={line.label}
-                        yAxisId={line.axis}
-                        dot={false}
-                        activeDot={{ r: 6 }}
-                      />
-                    )
-                )}
-              </ComposedChart>
+              </>
             )}
-          </ResponsiveContainer>
         </>
       )}
+
+      {/* Export Modal */}
       {isModalOpen && (
         <ExportModal
           isOpen={isModalOpen}

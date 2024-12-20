@@ -125,7 +125,7 @@ const DateSelector = ({ isOpen, onClose, onSelect, value }) => {
           </div>
 
           {/* Quick actions */}
-          <div className="mt-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
+          {/* <div className="mt-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
             <div className="space-x-2">
               <button
                 onClick={() => {
@@ -146,7 +146,7 @@ const DateSelector = ({ isOpen, onClose, onSelect, value }) => {
                 This Month
               </button>
             </div>
-          </div>
+          </div> */}
         </motion.div>
       )}
     </AnimatePresence>

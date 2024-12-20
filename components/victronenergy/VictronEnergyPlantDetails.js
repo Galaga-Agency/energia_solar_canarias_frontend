@@ -125,8 +125,13 @@ const VictronEnergyPlantDetails = () => {
         <Texture />
         <header className="flex justify-between items-center mb-6">
           <IoArrowBackCircle
-            className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
-            onClick={() => window.history.back()}
+            className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer "
+            onClick={(e) => {
+              e.stopPropagation();
+              window.location.href = isAdmin
+                ? `/dashboard/${user.id}/admin/victronenergy`
+                : `/dashboard/${user.id}/plants`;
+            }}
           />
           <div className="flex flex-col items-end  ml-auto">
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">

@@ -740,6 +740,18 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     [showForecast]
   );
 
+  const getAvailableYAxisId = (
+    hasBatteryVoltage,
+    hasConsumption,
+    hasSolar,
+    hasBatteryState
+  ) => {
+    if (hasConsumption || hasSolar) return "power";
+    if (hasBatteryVoltage) return "voltage";
+    if (hasBatteryState) return "percentage";
+    return "power"; // Default fallback
+  };
+
   const chartData = useMemo(() => {
     if (!graphData?.records) {
       console.error("No records found in graphData");
@@ -855,6 +867,9 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
   const hasSolar = chartData.length > 0 && chartData.some((d) => d.solar > 0);
   const hasBatteryState =
     chartData.length > 0 && chartData.some((d) => d.battery !== null);
+  const hasNoData =
+    chartData.length === 0 ||
+    (!hasConsumption && !hasSolar && !hasBatteryState);
 
   return (
     <>
@@ -925,7 +940,6 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
               <div className="overflow-x-auto">
                 <div style={{ minWidth: "600px" }}>
                   <ResponsiveContainer width="100%" height={400}>
-                    {/* Inside the ComposedChart component */}
                     <ComposedChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
                       <XAxis
@@ -939,39 +953,20 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                         className="text-custom-dark-blue dark:text-custom-light-gray"
                       />
 
-                      {/* Conditional Y-axes */}
-                      {hasBatteryVoltage && (
-                        <YAxis
-                          yAxisId="voltage"
-                          orientation="left"
-                          domain={["auto", "auto"]}
-                          label={{
-                            value: "V",
-                            angle: -90,
-                            position: "insideLeft",
-                            offset: 10,
-                          }}
-                          className="text-custom-dark-blue dark:text-custom-light-gray"
-                        />
-                      )}
+                      {/* Always have at least one Y-axis */}
+                      <YAxis
+                        yAxisId="power"
+                        orientation="left"
+                        label={{
+                          value: "kWh",
+                          angle: -90,
+                          position: "insideLeft",
+                          offset: 10,
+                        }}
+                        className="text-custom-dark-blue dark:text-custom-light-gray"
+                      />
 
-                      {(hasConsumption || hasSolar) && (
-                        <YAxis
-                          yAxisId="power"
-                          orientation={hasBatteryVoltage ? "right" : "left"}
-                          label={{
-                            value: "kWh",
-                            angle: hasBatteryVoltage ? 90 : -90,
-                            position: hasBatteryVoltage
-                              ? "insideRight"
-                              : "insideLeft",
-                            offset: 10,
-                          }}
-                          className="text-custom-dark-blue dark:text-custom-light-gray"
-                        />
-                      )}
-
-                      {hasBatteryState && !hasBatteryVoltage && (
+                      {hasBatteryState && (
                         <YAxis
                           yAxisId="percentage"
                           orientation="right"
@@ -992,15 +987,6 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                         height={36}
                         className="text-custom-dark-blue dark:text-custom-light-gray"
                         payload={[
-                          ...(hasBatteryVoltage
-                            ? [
-                                {
-                                  value: t("Tensión de la batería"),
-                                  type: "line",
-                                  color: COLORS.battery,
-                                },
-                              ]
-                            : []),
                           ...(hasConsumption
                             ? [
                                 {
@@ -1019,7 +1005,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                                 },
                               ]
                             : []),
-                          ...(!hasBatteryVoltage && hasBatteryState
+                          ...(hasBatteryState
                             ? [
                                 {
                                   value: t("Batería"),
@@ -1059,51 +1045,18 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                         />
                       )}
 
-                      {/* Battery voltage or state */}
-                      {hasBatteryVoltage ? (
-                        <>
-                          <Line
-                            type="monotone"
-                            dataKey="battery"
-                            stroke={COLORS.battery}
-                            yAxisId="voltage"
-                            name={t("Tensión de la batería")}
-                            strokeWidth={2}
-                            dot={false}
-                            unit="V"
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="batteryMax"
-                            stroke="transparent"
-                            fill={COLORS.battery}
-                            fillOpacity={0.1}
-                            yAxisId="voltage"
-                            stackId="1"
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="batteryMin"
-                            stroke="transparent"
-                            fill={COLORS.battery}
-                            fillOpacity={0.1}
-                            yAxisId="voltage"
-                            stackId="1"
-                          />
-                        </>
-                      ) : (
-                        hasBatteryState && (
-                          <Line
-                            type="monotone"
-                            dataKey="battery"
-                            stroke={COLORS.battery}
-                            yAxisId="percentage"
-                            name={t("Batería")}
-                            strokeWidth={3}
-                            dot={false}
-                            unit="%"
-                          />
-                        )
+                      {/* Battery state */}
+                      {hasBatteryState && (
+                        <Line
+                          type="monotone"
+                          dataKey="battery"
+                          stroke={COLORS.battery}
+                          yAxisId="percentage"
+                          name={t("Batería")}
+                          strokeWidth={3}
+                          dot={false}
+                          unit="%"
+                        />
                       )}
 
                       {/* Forecast data */}
@@ -1149,7 +1102,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                         stroke="#666"
                         label="Now"
                         strokeDasharray="3 3"
-                        yAxisId={hasBatteryVoltage ? "voltage" : "power"}
+                        yAxisId="power"
                       />
                     </ComposedChart>
                   </ResponsiveContainer>

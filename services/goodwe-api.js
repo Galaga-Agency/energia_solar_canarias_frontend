@@ -145,7 +145,7 @@ export const fetchGoodweEquipmentDetailsAPI = async ({ plantId, token }) => {
 
     const data = await response.json();
 
-    console.log("API Response Data:", data.data);
+    // console.log("API Response Data:", data.data);
 
     return data.data.data;
   } catch (error) {

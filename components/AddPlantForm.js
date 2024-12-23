@@ -71,8 +71,8 @@ const AddPlantForm = ({ onClose, isOpen }) => {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           />
 
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4">
+          <div className="fixed inset-0">
+            <div className="flex min-h-full items-center justify-center p-4 pb-20 md:pb-24">
               <motion.div
                 initial={{ scale: 0.9, y: 20, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -83,7 +83,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
                   damping: 25,
                   delay: 0.1,
                 }}
-                className="relative w-full max-w-4xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-4 md:p-6 backdrop-blur-lg shadow-xl"
+                className="relative w-full max-w-4xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-4 md:p-6 backdrop-blur-lg shadow-xl overflow-hidden"
               >
                 <Texture className="opacity-30" />
 
@@ -101,7 +101,7 @@ const AddPlantForm = ({ onClose, isOpen }) => {
 
                 <form
                   onSubmit={handleSubmit(handleFormSubmit)}
-                  className="p-6 space-y-6"
+                  className="p-6 space-y-6 max-h-[60vh] md:max-h-[65vh] overflow-y-auto custom-scrollbar"
                 >
                   <motion.div
                     initial={{ x: -20, opacity: 0 }}

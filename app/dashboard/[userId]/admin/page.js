@@ -147,7 +147,7 @@ const AdminDashboard = () => {
   }, [view, plants]);
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16">
       <TransitionEffect />
       <div className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]">
         <ThemeToggle />

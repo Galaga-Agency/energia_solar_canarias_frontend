@@ -145,7 +145,7 @@ const AlertsModal = ({ isOpen, onClose, alerts: initialAlerts = [] }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[999] grid place-items-center overflow-y-auto p-4"
+          className="fixed inset-0 z-[999] grid place-items-center overflow-y-auto custom-scrollbar p-4"
         >
           <motion.div
             initial={{ opacity: 0 }}
@@ -279,7 +279,7 @@ const AlertsModal = ({ isOpen, onClose, alerts: initialAlerts = [] }) => {
             </div>
 
             {/* Alerts Table */}
-            <div className="max-h-[60vh] overflow-y-auto px-6 py-6 overflow-x-auto">
+            <div className="max-h-[60vh] overflow-y-auto custom-scrollbar px-6 py-6 overflow-x-auto">
               {filteredAlerts.length === 0 ? (
                 <div className="text-center text-gray-500 dark:text-gray-300 py-12 font-secondary">
                   {t("noAlerts")}

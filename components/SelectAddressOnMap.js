@@ -101,7 +101,7 @@ const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={onClose}
           />
           <motion.div
@@ -109,7 +109,7 @@ const SelectAddressOnMap = ({ isOpen, onClose, onLocationSelect }) => {
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray rounded-lg w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto h-auto"
+            className="bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray rounded-lg w-[90vw] md:w-[80vw] max-w-4xl relative z-10 overflow-y-auto custom-scrollbar h-auto"
           >
             <div className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-yellow dark:text-custom-dark-blue p-4 flex items-center">
               <h2 className="text-lg">{t("selectLocation")}</h2>

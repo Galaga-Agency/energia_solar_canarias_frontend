@@ -90,6 +90,14 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
     return "⚠️";
   };
 
+  const capitalizeWords = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   const formatValueWithDecimals = (value, unit) => {
     if (!value || isNaN(parseFloat(value))) {
       return `N/A ${unit}`;
@@ -103,7 +111,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
     setTodayPVGeneration(value);
   };
 
-  console.log("goodwePlant: ", goodwePlant);
+  // console.log("goodwePlant: ", goodwePlant);
 
   if (error) {
     return (
@@ -163,7 +171,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           />
           <div className="flex items-center ml-auto">
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">
-              {goodwePlant?.info?.stationname || t("loading")}
+              {capitalizeWords(goodwePlant?.info?.stationname) || t("loading")}
             </h1>
             <div
               className={`w-6 h-6 rounded-full ml-2 ${

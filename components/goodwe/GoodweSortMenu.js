@@ -17,18 +17,26 @@ const GoodweSortMenu = ({ onSortChange }) => {
       icon: <BsSortAlphaDown />,
       label: t("sortByName"),
     },
-    {
-      value: "installationDate",
-      icon: <BsCalendar />,
-      label: t("sortByCreationDate"),
-    },
+    // {
+    //   value: "installationDate",
+    //   icon: <BsCalendar />,
+    //   label: t("sortByCreationDate"),
+    // },
     {
       value: "powerOutput",
       icon: <BsLightningFill />,
       label: t("sortByPowerOutput"),
     },
-    { value: "capacity", icon: <GiElectric />, label: t("sortByCapacity") },
-    { value: "status", icon: <GiPowerButton />, label: t("sortByStatus") },
+    {
+      value: "capacity",
+      icon: <GiElectric />,
+      label: t("sortByCapacity"),
+    },
+    {
+      value: "status",
+      icon: <GiPowerButton />,
+      label: t("sortByStatus"),
+    },
   ];
 
   const handleSelect = (value) => {
@@ -36,7 +44,8 @@ const GoodweSortMenu = ({ onSortChange }) => {
       selectedOption === value && sortOrder === "asc" ? "desc" : "asc";
     setSelectedOption(value);
     setSortOrder(newOrder);
-    onSortChange(value, newOrder); // Trigger sort change immediately
+    console.log("Sorting with:", { value, newOrder });
+    onSortChange(value, newOrder);
     setIsOpen(false);
   };
 

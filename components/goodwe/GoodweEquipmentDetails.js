@@ -89,7 +89,7 @@ const GoodweEquipmentDetails = ({ t }) => {
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
+            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
               {deviceTitle}
             </h2>
             <TooltipProvider>

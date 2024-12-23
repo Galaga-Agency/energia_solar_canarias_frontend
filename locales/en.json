@@ -752,5 +752,11 @@
   "enabled": "Enabled",
   "disabled": "Disabled",
   "Delete Device": "Delete Device",
-  "Visto por última vez:": "Last seen:"
+  "Visto por última vez:": "Last seen:",
+  "status_overview": "Status Overview",
+  "total_capacity": "Total Capacity",
+  "current_production": "Current Production",
+  "total_production": "Total Production",
+  "capacityMin": "Min",
+  "capacityMax": "Max"
 }

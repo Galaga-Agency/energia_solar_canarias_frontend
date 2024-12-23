@@ -77,29 +77,29 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
     mapRef.current = mapInstance;
   };
 
-  if (!isLoaded) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-custom-dark-gray">
-          Loading Google Maps...
-        </div>
-      </div>
-    );
-  }
-  if (loadError) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-red-500">Error loading Google Maps</div>
-      </div>
-    );
-  }
-  if (geocodeError) {
-    return (
-      <div className="p-8 md:p-10 h-full flex items-center justify-center">
-        <div className="text-lg text-red-500">{geocodeError}</div>
-      </div>
-    );
-  }
+  // if (!isLoaded) {
+  //   return (
+  //     <div className="p-8 md:p-10 h-full flex items-center justify-center">
+  //       <div className="text-lg text-custom-dark-gray">
+  //         Loading Google Maps...
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  // if (loadError) {
+  //   return (
+  //     <div className="p-8 md:p-10 h-full flex items-center justify-center">
+  //       <div className="text-lg text-red-500">Error loading Google Maps</div>
+  //     </div>
+  //   );
+  // }
+  // if (geocodeError) {
+  //   return (
+  //     <div className="p-8 md:p-10 h-full flex items-center justify-center">
+  //       <div className="text-lg text-red-500">{geocodeError}</div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <AnimatePresence>
@@ -108,7 +108,7 @@ const PlantsMapModal = ({ isOpen, onClose, plants }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 grid place-items-center overflow-hidden rounded-lg"
+          className="fixed inset-0 z-[999] grid place-items-center overflow-hidden rounded-lg"
         >
           <motion.div
             initial={{ opacity: 0 }}

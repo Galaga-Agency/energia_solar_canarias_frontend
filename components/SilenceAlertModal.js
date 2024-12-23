@@ -32,7 +32,7 @@ const SilenceAlertModal = ({ onClose, onSave }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-auto max-h-[500px] overflow-y-auto">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-auto max-h-[500px] overflow-y-auto custom-scrollbar">
       <h2 className="text-xl font-bold mb-4 text-red-500">
         {t("silenceAlert")}
       </h2>

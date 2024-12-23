@@ -216,7 +216,7 @@ const UsersTab = () => {
   return (
     <>
       <TransitionEffect />
-      <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto p-8">
+      <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar p-8">
         <Texture />
 
         <div className="fixed top-4 right-4 flex items-center gap-2 z-50">

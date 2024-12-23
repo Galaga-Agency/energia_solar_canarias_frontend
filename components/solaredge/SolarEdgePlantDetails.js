@@ -263,7 +263,14 @@ const SolarEdgePlantDetails = React.memo(
             }`}
           >
             <Texture />
-            <button onClick={() => window.history.back()}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = isAdmin
+                  ? `/dashboard/${user?.id}/admin/solaredge`
+                  : `/dashboard/${user?.id}/plants`;
+              }}
+            >
               <IoArrowBackCircle className="text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4" />
             </button>
             <div className="h-auto w-full flex flex-col justify-center items-center">

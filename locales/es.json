@@ -1657,5 +1657,14 @@
   "enabled": "Habilitado",
   "disabled": "Deshabilitado",
   "Delete Device": "Eliminar dispositivo",
-  "Visto por última vez:": "Visto por última vez:"
+  "Visto por última vez:": "Visto por última vez:",
+  "status_overview": "Resumen de Estado",
+  "working": "Funcionando",
+  "disconnected": "Desconectado",
+  "warning": "Advertencia",
+  "fault": "Fallo",
+  "current_production": "Producción Actual",
+  "total_production": "Producción Total",
+  "capacityMin": "Mín",
+  "capacityMax": "Máx"
 }

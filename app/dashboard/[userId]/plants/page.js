@@ -95,7 +95,7 @@ const ClientDashboardPage = ({ params }) => {
   }, [plants, dispatch]);
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
       <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
         <ThemeToggle />

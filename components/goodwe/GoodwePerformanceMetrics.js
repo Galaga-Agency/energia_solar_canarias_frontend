@@ -43,15 +43,15 @@ const GoodwePerformanceMetrics = ({
       icon: BarChart2,
       title: "performanceRatio",
       tooltip: "performanceRatioTooltip",
-      value: (
-        <div className="flex items-center gap-2">
+      valueComponent: (
+        <span className="flex items-center gap-2">
           <span className={getYieldColor(goodwePlant?.kpi?.yield_rate)}>
             {`${((goodwePlant?.kpi?.yield_rate || 0) * 100).toFixed(0)}%`}
           </span>
           {!isMobile && (
             <span>{getYieldIcon(goodwePlant?.kpi?.yield_rate)}</span>
           )}
-        </div>
+        </span>
       ),
     },
   ];
@@ -66,39 +66,39 @@ const GoodwePerformanceMetrics = ({
         {t("performanceMetrics")}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {metrics.map(({ icon: Icon, title, tooltip, value }, index) => (
-          <div
-            key={index}
-            className="flex-1 relative text-center bg-slate-50 dark:bg-slate-700/50 p-5 rounded-lg shadow-md flex flex-col items-center gap-3 hover:scale-105 transform transition-transform duration-700"
-          >
-            <div className="flex flex-col items-center gap-2">
-              <div className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute -top-6 w-14 h-14 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md">
-                <Icon className="w-8 h-8 text-custom-dark-blue dark:text-custom-yellow" />
-              </div>
-              <p className="text-sm mt-8  text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1">
-                {t(title)}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help ml-1" />
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="top"
-                      className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
-                    >
-                      <p className="text-sm font-medium">{t(tooltip)}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </p>
-            </div>
-            <p
-              className={`text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow`}
+        {metrics.map(
+          ({ icon: Icon, title, tooltip, value, valueComponent }, index) => (
+            <div
+              key={index}
+              className="flex-1 relative text-center bg-slate-50 dark:bg-slate-700/50 p-5 rounded-lg shadow-md flex flex-col items-center gap-3 hover:scale-105 transform transition-transform duration-700"
             >
-              {value}
-            </p>
-          </div>
-        ))}
+              <div className="flex flex-col items-center gap-2">
+                <div className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute -top-6 w-14 h-14 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md">
+                  <Icon className="w-8 h-8 text-custom-dark-blue dark:text-custom-yellow" />
+                </div>
+                <div className="text-sm mt-8 text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1">
+                  {t(title)}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help ml-1" />
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
+                      >
+                        <p className="text-sm font-medium">{t(tooltip)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+              <div className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                {valueComponent || value}
+              </div>
+            </div>
+          )
+        )}
       </div>
     </section>
   );

@@ -35,6 +35,14 @@ const PlantsListTableItem = ({ plant }) => {
     return date.toLocaleDateString("es-ES");
   };
 
+  const capitalizeWords = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full">
@@ -50,7 +58,7 @@ const PlantsListTableItem = ({ plant }) => {
             >
               <PiSolarPanelFill className="inline mr-2 text-custom-yellow text-2xl w-[15%] drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]" />
               <p className="w-[85%] text-custom-dark-blue dark:text-custom-light-gray">
-                {plant.name}
+                {capitalizeWords(plant.name)}
               </p>
             </td>
             {!isMobile && (
@@ -69,7 +77,7 @@ const PlantsListTableItem = ({ plant }) => {
                       className="w-[85%] overflow-hidden text-ellipsis whitespace-nowrap text-custom-dark-blue dark:text-custom-light-gray"
                       title={plant.address || "N/A"}
                     >
-                      {plant.address || "N/A"}
+                      {capitalizeWords(plant.address) || "N/A"}
                     </p>
                   </>
                 )}

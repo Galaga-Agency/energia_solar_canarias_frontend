@@ -205,7 +205,7 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
               {/* Forecast */}
               <div className="flex-1 grid grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
                 {weatherData?.daily?.time
-                  ?.slice(1, isDesktop || isSmallDesktop ? 4 : 3)
+                  ?.slice(1, isDesktop ? 4 : 3)
                   .map((date, index) => (
                     <div
                       key={index}

@@ -34,6 +34,7 @@ import SolarEdgeFilterSidebar from "@/components/solaredge/SolarEdgeFilterSideba
 import GoodweFilterSidebar from "@/components/goodwe/GoodweFilterSidebar";
 import VictronFilterSidebar from "@/components/victronenergy/VictronFilterSidebar";
 import VictronSortMenu from "@/components/victronenergy/VictronSortMenu";
+import GoodweStatsOverview from "@/components/goodwe/GoodweStatsOverview";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -98,6 +99,12 @@ const ProviderPage = () => {
   }, []);
 
   const handleSortChange = (criteria, order) => {
+    console.log("Before sorting:", {
+      criteria,
+      order,
+      plantsCount: filteredPlants.length,
+    });
+
     const sorted = [...filteredPlants].sort((a, b) => {
       let valueA, valueB;
 
@@ -126,10 +133,45 @@ const ProviderPage = () => {
           break;
         }
 
-        case "goodwe":
-          valueA = a[criteria];
-          valueB = b[criteria];
-          break;
+        case "goodwe": {
+          switch (criteria) {
+            case "alphabetical":
+              valueA = (a.name || "").toLowerCase();
+              valueB = (b.name || "").toLowerCase();
+              break;
+            case "installationDate":
+              valueA = new Date(a.installation_date || 0);
+              valueB = new Date(b.installation_date || 0);
+              return order === "asc" ? valueA - valueB : valueB - valueA;
+            case "powerOutput":
+              valueA = parseFloat(a.power_output || 0);
+              valueB = parseFloat(b.power_output || 0);
+              break;
+            case "capacity":
+              valueA = parseFloat(a.capacity || 0);
+              valueB = parseFloat(b.capacity || 0);
+              break;
+            case "status":
+              valueA = (a.status || "").toLowerCase();
+              valueB = (b.status || "").toLowerCase();
+              break;
+            default:
+              valueA = a[criteria];
+              valueB = b[criteria];
+          }
+
+          // Handle string comparison for name and status
+          if (typeof valueA === "string") {
+            return order === "asc"
+              ? valueA.localeCompare(valueB)
+              : valueB.localeCompare(valueA);
+          }
+
+          // Handle numeric comparison for other fields
+          return order === "asc"
+            ? (valueA ?? 0) - (valueB ?? 0)
+            : (valueB ?? 0) - (valueA ?? 0);
+        }
 
         default:
           valueA = a[criteria];
@@ -147,6 +189,8 @@ const ProviderPage = () => {
         ? (valueA ?? 0) - (valueB ?? 0)
         : (valueB ?? 0) - (valueA ?? 0);
     });
+
+    console.log("After sorting:", { plantsCount: sorted.length });
 
     setFilteredPlants(sorted);
   };
@@ -205,7 +249,7 @@ const ProviderPage = () => {
   // console.log("plants: ", plants);
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto pb-16">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16">
       <TransitionEffect />
       <div className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]">
         <ThemeToggle />
@@ -226,6 +270,12 @@ const ProviderPage = () => {
           <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue max-w-[60vw]">
             {provider?.name}
           </h2>
+        </div>
+
+        <div className="flex-grow lg:px-8">
+          {providerPassed === "goodwe" && (
+            <GoodweStatsOverview plants={filteredPlants} t={t} />
+          )}
         </div>
 
         <PlantsMapModal

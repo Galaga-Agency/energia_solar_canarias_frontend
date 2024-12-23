@@ -25,6 +25,14 @@ const PlantCard = ({ plant }) => {
     router.push(`/dashboard/${userId}/plants/${provider}/${plant.id}`);
   };
 
+  const capitalizeWords = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   return (
     <div
       onClick={handleCardClick}
@@ -39,7 +47,7 @@ const PlantCard = ({ plant }) => {
 
       <h3 className="text-2xl font-primary font-bold text-custom-dark-blue dark:text-custom-yellow mb-4">
         <PiSolarPanelFill className="inline mr-2 text-custom-yellow" />
-        {plant.name}
+        {capitalizeWords(plant.name)}
       </h3>
       <div className="space-y-2">
         <p className="flex items-center text-lg text-gray-700 dark:text-custom-light-gray truncate max-w-full">

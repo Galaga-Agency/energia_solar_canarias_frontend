@@ -109,7 +109,7 @@ const ProviderCard = ({ provider, onClick }) => {
 
           <p
             className="font-secondary text-slate-300 text-sm text-center 
-                      max-w-[80%] line-clamp-3 translate-y-8
+                      max-w-[90%] line-clamp-3 translate-y-8
                       group-hover:translate-y-0
                       transition-transform duration-700 delay-100"
           >

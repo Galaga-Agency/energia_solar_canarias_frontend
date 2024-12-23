@@ -15,7 +15,7 @@ const GoodweFilterSidebar = ({
     status: [],
     type: [],
     search: "",
-    capacity: { min: 0, max: 10000 },
+    capacity: { min: 0, max: 1000 },
   });
   const { isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
@@ -24,10 +24,8 @@ const GoodweFilterSidebar = ({
   // Translation keys for Goodwe plant types
   const GOODWE_TYPES = {
     Residential: "Residential",
-    "Commercial Rooftop": "Commercial Rooftop",
-    "Ground Mounted": "Ground Mounted",
+    "Commercial rooftop": "Commercial Rooftop",
     "Battery Storage": "Battery Storage",
-    "Optimizers & Inverters": "Optimizers Inverters",
   };
 
   const filterPlants = useCallback(
@@ -233,23 +231,33 @@ const GoodweFilterSidebar = ({
 
       <div className="mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-          {t("capacity")}
+          {t("capacity")} (kw)
         </h3>
         <div className="flex gap-4">
-          <input
-            type="number"
-            value={filters.capacity.min}
-            onChange={(e) => handleCapacityChange("min", e.target.value)}
-            className="w-1/2 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-            placeholder={t("min")}
-          />
-          <input
-            type="number"
-            value={filters.capacity.max}
-            onChange={(e) => handleCapacityChange("max", e.target.value)}
-            className="w-1/2 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-            placeholder={t("max")}
-          />
+          <div className="flex flex-col w-1/2">
+            <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
+              {t("min")}
+            </label>
+            <input
+              type="number"
+              value={filters.capacity.min}
+              onChange={(e) => handleCapacityChange("min", e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
+              placeholder={t("min")}
+            />
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
+              {t("max")}
+            </label>
+            <input
+              type="number"
+              value={filters.capacity.max}
+              onChange={(e) => handleCapacityChange("max", e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
+              placeholder={t("max")}
+            />
+          </div>
         </div>
       </div>
 

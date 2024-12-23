@@ -312,7 +312,7 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
     setIsModalOpen(false); // Close modal after export
   };
 
-  console.log("graph data ---> ", graphData);
+  // console.log("graph data ---> ", graphData);
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">

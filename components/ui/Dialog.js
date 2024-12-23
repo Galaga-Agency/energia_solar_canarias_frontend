@@ -22,7 +22,7 @@ const Dialog = ({ open, onOpenChange, children }) => {
 
 const DialogContent = ({ children, className = "" }) => (
   <div
-    className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-h-[90vh] overflow-y-auto w-full max-w-4xl ${className}`}
+    className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-h-[90vh] overflow-y-auto custom-scrollbar w-full max-w-4xl ${className}`}
   >
     {children}
   </div>

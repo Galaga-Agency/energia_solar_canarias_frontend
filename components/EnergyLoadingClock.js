@@ -4,42 +4,32 @@ import React, { useState, useEffect } from "react";
 
 const EnergyLoadingClock = ({ duration = 15, onComplete, isPaused }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
+  const [key, setKey] = useState(0); // Add key for forcing reset
 
-  // Handle timer countdown
   useEffect(() => {
     let timer;
-
     if (!isPaused && timeLeft > 0) {
       timer = setInterval(() => {
         setTimeLeft((prev) => {
-          const newTime = prev - 1;
-          if (newTime <= 0) {
+          if (prev <= 1) {
             clearInterval(timer);
-            // Call onComplete in the next tick to avoid state updates during render
-            setTimeout(() => {
-              onComplete?.();
-            }, 0);
-            return 0;
+            onComplete?.();
+            setKey((k) => k + 1); // Force reset
+            return duration; // Reset to initial duration
           }
-          return newTime;
+          return prev - 1;
         });
       }, 1000);
     }
 
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [timeLeft, isPaused, onComplete]);
+    return () => timer && clearInterval(timer);
+  }, [timeLeft, isPaused, onComplete, duration, key]);
 
-  // Reset timer when duration changes
   useEffect(() => {
     setTimeLeft(duration);
-  }, [duration]);
+  }, [duration, key]);
 
-  // Calculate circumference (2 * π * r)
   const circumference = 2 * Math.PI * 16;
-
-  // Calculate stroke-dashoffset
   const strokeDashoffset = ((duration - timeLeft) / duration) * circumference;
 
   return (

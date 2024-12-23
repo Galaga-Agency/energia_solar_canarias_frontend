@@ -3,6 +3,7 @@ import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
+import { RotateCcw } from "lucide-react";
 
 const SolarEdgeFilterSidebar = ({
   plants,
@@ -11,21 +12,17 @@ const SolarEdgeFilterSidebar = ({
   setIsSidebarOpen,
 }) => {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState({
+  const initialFilters = {
     status: [],
-    type: [],
     search: "",
-    capacity: { min: 0, max: 10000 },
-  });
-  const { isDesktop } = useDeviceType();
+    peakPower: { min: 0, max: 39.15 },
+    highestAlert: { min: 0, max: 9 },
+  };
+
+  const [filters, setFilters] = useState(initialFilters);
+  const { isMobile, isTablet } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
-
-  // Translation keys for SolarEdge plant types
-  const SOLAREDGE_TYPES = {
-    RESIDENCIAL: "Residential",
-    INDUSTRIAL: "Industrial",
-  };
 
   useEffect(() => {
     if (plants?.length > 0 && !isInitialized) {
@@ -42,52 +39,37 @@ const SolarEdgeFilterSidebar = ({
 
       return plants.filter((plant) => {
         // Search Filter
-        if (currentFilters.search && currentFilters.search.trim()) {
+        if (currentFilters.search?.trim()) {
           const searchTerm = currentFilters.search.toLowerCase().trim();
-          const name = plant.name || "";
-          const address = plant.address || "";
+          const name = (plant.name || "").toLowerCase();
+          const address = (plant.address || "").toLowerCase();
 
-          if (
-            !name.toLowerCase().includes(searchTerm) &&
-            !address.toLowerCase().includes(searchTerm)
-          ) {
+          if (!name.includes(searchTerm) && !address.includes(searchTerm)) {
             return false;
           }
         }
 
         // Status Filter
-        if (currentFilters.status && currentFilters.status.length > 0) {
-          const plantStatus = plant.status || "";
-          if (!currentFilters.status.includes(plantStatus)) {
+        if (currentFilters.status?.length > 0) {
+          if (!currentFilters.status.includes(plant.status)) {
             return false;
           }
         }
 
-        // Type Filter
-        if (currentFilters.type && currentFilters.type.length > 0) {
-          const plantType = (plant.type || "")
-            .toLowerCase()
-            .replace(/[&\s]/g, ""); // Normalize `type`
-          const typeMatch = currentFilters.type.some(
-            (filterType) =>
-              filterType.toLowerCase().replace(/[&\s]/g, "") === plantType
-          );
-          if (!typeMatch) {
-            return false;
-          }
-        }
-
-        // Capacity Filter
-        const peakPower = plant.capacity || 0;
+        // Peak Power Filter
+        const power = plant.capacity || 0;
         if (
-          currentFilters.capacity.min &&
-          peakPower < currentFilters.capacity.min
+          power < currentFilters.peakPower.min ||
+          power > currentFilters.peakPower.max
         ) {
           return false;
         }
+
+        // Highest Alert Filter
+        const alertLevel = plant.highest_impact || 0;
         if (
-          currentFilters.capacity.max &&
-          peakPower > currentFilters.capacity.max
+          alertLevel < currentFilters.highestAlert.min ||
+          alertLevel > currentFilters.highestAlert.max
         ) {
           return false;
         }
@@ -100,34 +82,7 @@ const SolarEdgeFilterSidebar = ({
 
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
-      console.log("Checkbox changed:", filterType, value);
-
       setFilters((prevFilters) => {
-        // For type filters, normalize the comparison
-        if (filterType === "type") {
-          const normalizedValue = value.toLowerCase().replace(/\s+/g, "");
-          const exists = prevFilters[filterType].some(
-            (v) => v.toLowerCase().replace(/\s+/g, "") === normalizedValue
-          );
-
-          const newValues = exists
-            ? prevFilters[filterType].filter(
-                (v) => v.toLowerCase().replace(/\s+/g, "") !== normalizedValue
-              )
-            : [...prevFilters[filterType], value];
-
-          const newFilters = {
-            ...prevFilters,
-            [filterType]: newValues,
-          };
-
-          const filteredResults = filterPlants(newFilters);
-          onFilterChange(filteredResults);
-
-          return newFilters;
-        }
-
-        // For other filters, keep the original logic
         const exists = prevFilters[filterType].includes(value);
         const newValues = exists
           ? prevFilters[filterType].filter((v) => v !== value)
@@ -138,16 +93,13 @@ const SolarEdgeFilterSidebar = ({
           [filterType]: newValues,
         };
 
-        const filteredResults = filterPlants(newFilters);
-        onFilterChange(filteredResults);
-
+        onFilterChange(filterPlants(newFilters));
         return newFilters;
       });
     },
     [filterPlants, onFilterChange]
   );
 
-  // Fix the handleSearchChange as well
   const handleSearchChange = useCallback(
     (event) => {
       const searchTerm = event.target.value;
@@ -156,8 +108,6 @@ const SolarEdgeFilterSidebar = ({
           ...prevFilters,
           search: searchTerm,
         };
-
-        // Apply filters immediately
         onFilterChange(filterPlants(updatedFilters));
         return updatedFilters;
       });
@@ -165,29 +115,31 @@ const SolarEdgeFilterSidebar = ({
     [filterPlants, onFilterChange]
   );
 
-  // And fix handleCapacityChange
-  const handleCapacityChange = useCallback(
+  const handlePeakPowerChange = useCallback(
     (type, value) => {
       if (value === "" || isNaN(value)) {
-        value = type === "min" ? 0 : 10000;
+        value = type === "min" ? 0 : 39.15;
       }
 
       setFilters((prevFilters) => {
         const updatedFilters = {
           ...prevFilters,
-          capacity: {
-            ...prevFilters.capacity,
+          peakPower: {
+            ...prevFilters.peakPower,
             [type]: Number(value),
           },
         };
-
-        // Apply filters immediately
         onFilterChange(filterPlants(updatedFilters));
         return updatedFilters;
       });
     },
     [filterPlants, onFilterChange]
   );
+
+  const handleResetFilters = useCallback(() => {
+    setFilters(initialFilters);
+    onFilterChange(filterPlants(initialFilters));
+  }, [filterPlants, onFilterChange]);
 
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);
@@ -206,37 +158,49 @@ const SolarEdgeFilterSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`overflow-auto pb-16 fixed z-50 top-0 left-0 h-screen xl:h-auto transform transition-all duration-300 ease-in-out ${
+      className={`overflow-auto pb-16 fixed z-40 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
       <div className="flex justify-between mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-          {t("filter")}
+          {t("filter_fleet")}
         </h3>
-        {!isDesktop && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={closeSidebar}
-            className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+            onClick={handleResetFilters}
+            className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
+            title={t("reset_filters")}
           >
-            <IoMdClose />
+            <span>{t("reset")}</span> <RotateCcw className="w-5 h-5" />
           </button>
-        )}
+          {isMobile ||
+            (isTablet && (
+              <button
+                onClick={closeSidebar}
+                className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+              >
+                <IoMdClose />
+              </button>
+            ))}
+        </div>
       </div>
 
+      {/* Search */}
       <div className="mb-4">
         <input
           type="text"
           value={filters.search}
           onChange={handleSearchChange}
-          placeholder={t("filterPlaceholder")}
+          placeholder={t("search_plant")}
           className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
         />
       </div>
 
+      {/* Status */}
       <div className="mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-          {t("plantStatus")}
+          {t("activation_state")}
         </h3>
         <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
           {["working", "error", "waiting", "disconnected"].map((status) => (
@@ -250,55 +214,29 @@ const SolarEdgeFilterSidebar = ({
         </div>
       </div>
 
+      {/* Peak Power */}
       <div className="mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-          {t("type")}
+          {t("peak_power")} (kWp)
         </h3>
-        <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-          {Object.keys(SOLAREDGE_TYPES).map((type) => (
-            <CustomCheckbox
-              key={type}
-              label={t(SOLAREDGE_TYPES[type])}
-              checked={filters.type.includes(type)}
-              onChange={() => handleCheckboxChange("type", type)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-          {t("capacity")}
-        </h3>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           <input
             type="number"
-            value={filters.capacity.min}
-            onChange={(e) => handleCapacityChange("min", e.target.value)}
-            className="w-1/2 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-            placeholder={t("min")}
+            value={filters.peakPower.min}
+            onChange={(e) => handlePeakPowerChange("min", e.target.value)}
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
           />
+          <span className="text-custom-dark-blue dark:text-custom-yellow">
+            -
+          </span>
           <input
             type="number"
-            value={filters.capacity.max}
-            onChange={(e) => handleCapacityChange("max", e.target.value)}
-            className="w-1/2 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-            placeholder={t("max")}
+            value={filters.peakPower.max}
+            onChange={(e) => handlePeakPowerChange("max", e.target.value)}
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
           />
         </div>
       </div>
-
-      {/* <div className="xl:hidden flex justify-center mt-4">
-        <button
-          onClick={() => {
-            onFilterChange(filterPlants(filters));
-            closeSidebar();
-          }}
-          className="bg-custom-yellow text-custom-dark-blue py-2 px-6 rounded-lg"
-        >
-          {t("applyFilters")}
-        </button>
-      </div> */}
     </div>
   );
 };

@@ -35,6 +35,7 @@ import GoodweFilterSidebar from "@/components/goodwe/GoodweFilterSidebar";
 import VictronFilterSidebar from "@/components/victronenergy/VictronFilterSidebar";
 import VictronSortMenu from "@/components/victronenergy/VictronSortMenu";
 import GoodweStatsOverview from "@/components/goodwe/GoodweStatsOverview";
+import SolarEdgeStatsOverview from "@/components/solaredge/SolarEdgeStatsOverview";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -273,9 +274,16 @@ const ProviderPage = () => {
         </div>
 
         <div className="flex-grow lg:px-8">
-          {providerPassed === "goodwe" && (
-            <GoodweStatsOverview plants={filteredPlants} t={t} />
-          )}
+          {(() => {
+            switch (providerPassed) {
+              case "goodwe":
+                return <GoodweStatsOverview plants={filteredPlants} t={t} />;
+              case "solaredge":
+                return <SolarEdgeStatsOverview plants={filteredPlants} t={t} />;
+              default:
+                return null;
+            }
+          })()}
         </div>
 
         <PlantsMapModal

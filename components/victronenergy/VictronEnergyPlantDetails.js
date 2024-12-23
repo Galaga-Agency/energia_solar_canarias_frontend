@@ -4,7 +4,7 @@ import {
   selectPlantDetails,
   selectLoadingDetails,
 } from "@/store/slices/plantsSlice";
-import { selectUser } from "@/store/slices/userSlice";
+import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import { IoArrowBackCircle } from "react-icons/io5";
 import PageTransition from "@/components/PageTransition";
 import Loading from "@/components/ui/Loading";
@@ -32,6 +32,7 @@ const VictronEnergyPlantDetails = () => {
   const [latitude, setLatitude] = useState();
   const [longitude, setLongitude] = useState();
   const [hasCoordinates, setHasCoordinates] = useState(false);
+  const isAdmin = useSelector(selectIsAdmin);
   const params = useParams();
   const plantId = params.plantId;
   const [loadTime] = useState(

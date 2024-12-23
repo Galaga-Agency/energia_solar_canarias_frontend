@@ -344,7 +344,7 @@ const SolarEdgePlantDetails = React.memo(
                 <div className="flex flex-1 flex-col gap-4">
                   <DetailRow
                     icon={
-                      <HiOutlineStatusOnline className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
+                      <HiOutlineStatusOnline className="text-2xl text-custom-dark-blue dark:text-custom-light-gray shrink-0" />
                     }
                     label={t("currentStatus")}
                     value={
@@ -400,7 +400,7 @@ const SolarEdgePlantDetails = React.memo(
                   />
                   <DetailRow
                     icon={
-                      <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
+                      <Building2 className="text-2xl text-custom-dark-blue dark:text-custom-light-gray shrink-0" />
                     }
                     label={t("poweredBy")}
                     value={formatOrganization(solaredgePlant?.organization)}
@@ -408,7 +408,7 @@ const SolarEdgePlantDetails = React.memo(
                   />
                   <DetailRow
                     icon={
-                      <Tag className="text-3xl text-custom-dark-blue dark:text-custom-yellow" />
+                      <Tag className="text-2xl text-custom-dark-blue dark:text-custom-light-gray shrink-0" />
                     }
                     label={t("typeOfPlant")}
                     value={formatType(solaredgePlant?.type)}

@@ -3,6 +3,7 @@ import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
+import { RotateCcw } from "lucide-react";
 
 const VictronFilterSidebar = ({
   plants,
@@ -17,11 +18,15 @@ const VictronFilterSidebar = ({
     search: "",
     installationDate: { min: "", max: "" },
   });
-  const { isDesktop } = useDeviceType();
+  const { isMobile, isTablet, isDesktop } = useDeviceType();
   const sidebarRef = useRef(null); // This will reference the sidebar
   const [isInitialized, setIsInitialized] = useState(false);
-
-  // Translation keys for Victron plant types
+  const initialFilters = {
+    status: [],
+    type: [],
+    search: "",
+    installationDate: { min: "", max: "" },
+  };
   const VICTRON_TYPES = {
     solar: "type_Solar",
     generator: "type_Generator",
@@ -144,6 +149,11 @@ const VictronFilterSidebar = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [closeSidebar]);
 
+  const handleResetFilters = useCallback(() => {
+    setFilters(initialFilters);
+    onFilterChange(filterPlants(initialFilters));
+  }, [filterPlants, onFilterChange]);
+
   return (
     <div
       ref={sidebarRef}
@@ -151,18 +161,28 @@ const VictronFilterSidebar = ({
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-6 rounded-lg shadow-lg max-w-xs w-full md:min-w-[30vw] xl:min-w-[16vw]`}
     >
-      <div className="flex justify-between mb-6">
-        <h3 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-2">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
           {t("filter")}
         </h3>
-        {!isDesktop && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={closeSidebar}
-            className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+            onClick={handleResetFilters}
+            className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
+            title={t("reset_filters")}
           >
-            <IoMdClose />
+            <span>{t("reset")}</span> <RotateCcw className="w-5 h-5" />
           </button>
-        )}
+          {isMobile ||
+            (isTablet && (
+              <button
+                onClick={closeSidebar}
+                className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+              >
+                <IoMdClose />
+              </button>
+            ))}
+        </div>
       </div>
 
       <div className="mb-6">

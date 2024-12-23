@@ -17,7 +17,7 @@ const GoodweFilterSidebar = ({
     search: "",
     capacity: { min: 0, max: 1000 },
   });
-  const { isDesktop } = useDeviceType();
+  const { isMobile, isTablet } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -169,7 +169,7 @@ const GoodweFilterSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`overflow-auto pb-16 fixed z-50 top-0 left-0 h-screen xl:h-auto transform transition-all duration-300 ease-in-out ${
+      className={`overflow-auto pb-16 fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
@@ -177,14 +177,15 @@ const GoodweFilterSidebar = ({
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("filter")}
         </h3>
-        {!isDesktop && (
-          <button
-            onClick={closeSidebar}
-            className="text-custom-dark-blue dark:text-custom-yellow text-xl"
-          >
-            <IoMdClose />
-          </button>
-        )}
+        {isMobile ||
+          (isTablet && (
+            <button
+              onClick={closeSidebar}
+              className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+            >
+              <IoMdClose />
+            </button>
+          ))}
       </div>
 
       <div className="mb-4">

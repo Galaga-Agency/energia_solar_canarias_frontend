@@ -193,7 +193,7 @@ const SolarEdgePlantDetails = React.memo(
     const formatType = useCallback(
       (type) => {
         if (!type) return t("typeNotAvailable");
-        return t(`type_${type}`);
+        return t(`${type}`);
       },
       [t]
     );

@@ -162,8 +162,8 @@ const SolarEdgeFilterSidebar = ({
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
-      <div className="flex justify-between mb-4">
-        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
           {t("filter_fleet")}
         </h3>
         <div className="flex items-center gap-2">

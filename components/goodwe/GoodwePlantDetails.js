@@ -16,6 +16,7 @@ import Texture from "@/components/Texture";
 import GoodweEnergyFlowDisplay from "@/components/goodwe/GoodweEnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
+  selectAlerts,
   selectDetailsError,
   selectLoadingBenefits,
   selectLoadingDetails,
@@ -39,6 +40,8 @@ import GoodweEnergyStatistics from "./GoodweEnergyStatistics";
 import GoodwePerformanceMetrics from "./GoodwePerformanceMetrics";
 import GoodweEquipmentDetails from "./GoodweEquipmentDetails";
 import GoodweEnergyStatisticsSkeleton from "../loadingSkeletons/GoodweEnergyStatisticsSkeleton";
+import GoodweAlerts from "@/components/goodwe/GoodweAlerts";
+import AlertsModal from "../AlertsModal";
 
 const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
@@ -49,6 +52,8 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const { t } = useTranslation();
   const { isMobile, isTablet, isSmallDesktop } = useDeviceType();
   const [todayPVGeneration, setTodayPVGeneration] = useState(null);
+  const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
+  const alerts = useSelector(selectAlerts);
 
   const token = useMemo(() => user?.tokenIdentificador, [user]);
   const goodwePlant = useMemo(
@@ -370,7 +375,13 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           />
         </div>
 
-        <GoodweEquipmentDetails isLoading={isLoading} t={t} />
+        <div className="flex flex-col md:flex-row gap-6">
+          <GoodweEquipmentDetails isLoading={isLoading} t={t} />
+          <GoodweAlerts
+            plantId={goodwePlant?.info?.powerstation_id}
+            onViewAll={() => setIsAlertsModalOpen(true)}
+          />
+        </div>
 
         <section className="mb-6">
           <GoodweGraphDisplay
@@ -380,6 +391,16 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           />
         </section>
       </div>
+
+      <AlertsModal
+        isOpen={isAlertsModalOpen}
+        onClose={() => setIsAlertsModalOpen(false)}
+        alerts={
+          alerts?.goodwe?.data?.list?.filter(
+            (alert) => alert.stationId === goodwePlant?.info?.powerstation_id
+          ) || []
+        }
+      />
     </PageTransition>
   );
 });

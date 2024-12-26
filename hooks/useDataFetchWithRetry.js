@@ -31,10 +31,10 @@ export const useDataFetchWithRetry = ({
           token,
         };
 
-        console.log("Fetching with complete params:", completeParams);
+        // console.log("Fetching with complete params:", completeParams);
 
         const result = await dispatch(fetchAction(completeParams)).unwrap();
-        console.log("Fetch result:", result);
+        // console.log("Fetch result:", result);
 
         if (!validateData(result)) {
           setHasEmptyData(true);

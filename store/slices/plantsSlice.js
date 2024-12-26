@@ -10,6 +10,7 @@ import {
   fetchPlantsByProviderAPI,
 } from "@/services/shared-api";
 import {
+  fetchGoodweAlertsAPI,
   fetchGoodweEquipmentDetailsAPI,
   fetchGoodweGraphDataAPI,
   fetchGoodweRealtimeDataAPI,
@@ -25,6 +26,7 @@ import {
   fetchSolarEdgeWeatherDataAPI,
 } from "@/services/solardedge-api";
 import {
+  fetchVictronEnergyAlertsAPI,
   fetchVictronEnergyGraphDataAPI,
   fetchVictronEnergyRealtimeDataAPI,
   fetchVictronEnergyWeatherDataAPI,
@@ -178,6 +180,22 @@ export const fetchGoodweEquipmentDetails = createAsyncThunk(
       return rejectWithValue(
         error.message || "Failed to fetch equipment details"
       );
+    }
+  }
+);
+
+export const fetchGoodweAlerts = createAsyncThunk(
+  "plants/fetchGoodweAlerts",
+  async ({ token, pageIndex, pageSize }, { rejectWithValue }) => {
+    try {
+      const alertsData = await fetchGoodweAlertsAPI({
+        token,
+        pageIndex,
+        pageSize,
+      });
+      return alertsData;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -371,6 +389,18 @@ export const fetchVictronEnergyEquipmentDetails = createAsyncThunk(
   }
 );
 
+export const fetchVictronEnergyAlerts = createAsyncThunk(
+  "plants/fetchVictronEnergyAlerts",
+  async ({ plantId, token }, { rejectWithValue }) => {
+    try {
+      const alertsData = await fetchVictronEnergyAlertsAPI({ plantId, token });
+      return { provider: "victronenergy", data: alertsData };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   plants: [],
   plantDetails: null,
@@ -408,6 +438,12 @@ const initialState = {
   equipmentDetails: null,
   equipmentLoading: false,
   equipmentError: null,
+  alerts: {
+    victronenergy: null,
+    goodwe: null,
+  },
+  alertsLoading: false,
+  alertsError: null,
 };
 
 const plantsSlice = createSlice({
@@ -570,6 +606,19 @@ const plantsSlice = createSlice({
         state.equipmentDetails = null;
         state.equipmentError = action.payload;
       })
+      .addCase(fetchGoodweAlerts.pending, (state) => {
+        state.alertsLoading = true;
+        state.alertsError = null;
+      })
+      .addCase(fetchGoodweAlerts.fulfilled, (state, action) => {
+        state.alertsLoading = false;
+        state.alerts.goodwe = action.payload;
+        state.alertsError = null;
+      })
+      .addCase(fetchGoodweAlerts.rejected, (state, action) => {
+        state.alertsLoading = false;
+        state.alertsError = action.payload || "Failed to fetch Goodwe alerts";
+      })
 
       // Solaredge
       .addCase(fetchSolarEdgeGraphData.pending, (state) => {
@@ -719,6 +768,19 @@ const plantsSlice = createSlice({
         state.equipmentLoading = false;
         state.equipmentDetails = null;
         state.equipmentError = action.payload;
+      })
+      .addCase(fetchVictronEnergyAlerts.pending, (state) => {
+        state.alertsLoading = true;
+        state.alertsError = null;
+      })
+      .addCase(fetchVictronEnergyAlerts.fulfilled, (state, action) => {
+        state.alertsLoading = false;
+        state.alerts[action.payload.provider] = action.payload.data;
+        state.alertsError = null;
+      })
+      .addCase(fetchVictronEnergyAlerts.rejected, (state, action) => {
+        state.alertsLoading = false;
+        state.alertsError = action.payload || "Failed to fetch alerts";
       });
   },
 });
@@ -802,6 +864,9 @@ export const selectBatteryChargingError = (state) =>
 export const selectEquipmentDetails = (state) => state.plants.equipmentDetails;
 export const selectEquipmentLoading = (state) => state.plants.equipmentLoading;
 export const selectEquipmentError = (state) => state.plants.equipmentError;
+export const selectAlerts = (state) => state.plants.alerts;
+export const selectAlertsLoading = (state) => state.plants.alertsLoading;
+export const selectAlertsError = (state) => state.plants.alertsError;
 
 export const {
   clearPlants,

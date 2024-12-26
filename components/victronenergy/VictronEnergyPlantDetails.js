@@ -20,6 +20,9 @@ import TankData from "./TankData";
 import VictronEnergyGraph from "./VictronEnergyGraph";
 import VictronEnergyEquipmentDetails from "./VictronEnergyEquipmentDetails";
 import DateRangeModal from "./DateRangeModal";
+import VictronEnergyAlerts from "./VictronEnergyAlerts";
+import VictronAlertsModal from "./VictronAlertsModal";
+import { selectAlerts } from "@/store/slices/plantsSlice";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
@@ -48,6 +51,8 @@ const VictronEnergyPlantDetails = () => {
   );
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [currentRange, setCurrentRange] = useState({ type: "today" });
+  const alertsData = useSelector(selectAlerts);
+  const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
 
   const handleRangeSelect = (range) => {
     setCurrentRange(range);
@@ -131,7 +136,7 @@ const VictronEnergyPlantDetails = () => {
         }`}
       >
         <Texture />
-        <header className="flex justify-between items-center mb-6">
+        <header className="flex justify-between items-center">
           <IoArrowBackCircle
             className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer "
             onClick={(e) => {
@@ -151,14 +156,14 @@ const VictronEnergyPlantDetails = () => {
           </div>
         </header>
         <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 w-full mb-6">
-          {hasCoordinates && (
+          {/* {hasCoordinates && (
             <WeatherWidget
               lat={latitude}
               lng={longitude}
               token={user?.tokenIdentificador}
               provider="victronenergy"
             />
-          )}
+          )} */}
           {/* {tankData &&
             !["tc", "tf", "tl", "tr", "tst"].every(
               (key) => tankData[key] === undefined
@@ -189,7 +194,16 @@ const VictronEnergyPlantDetails = () => {
           />
         </section>
 
-        <VictronEnergyEquipmentDetails token={user?.tokenIdentificador} />
+        <div className="flex flex-col md:flex-row gap-6">
+          <VictronEnergyEquipmentDetails token={user?.tokenIdentificador} />
+
+          <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
+            <VictronEnergyAlerts
+              plantId={plantId}
+              onViewAll={() => setIsAlertsModalOpen(true)}
+            />
+          </section>
+        </div>
 
         <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg my-6">
           <VictronEnergyGraph
@@ -205,6 +219,12 @@ const VictronEnergyPlantDetails = () => {
           onSelectRange={handleRangeSelect}
         />
       </div>
+
+      <VictronAlertsModal
+        isOpen={isAlertsModalOpen}
+        onClose={() => setIsAlertsModalOpen(false)}
+        alerts={alertsData?.victronenergy?.records || []}
+      />
     </PageTransition>
   );
 };

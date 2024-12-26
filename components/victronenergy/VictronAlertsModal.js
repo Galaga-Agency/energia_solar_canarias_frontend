@@ -1,4 +1,3 @@
-// AlertsModal.js
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiAlertCircle, FiX, FiArchive, FiCheck } from "react-icons/fi";
@@ -9,7 +8,7 @@ import Texture from "@/components/Texture";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 
-const AlertsModal = ({ isOpen, onClose, alerts }) => {
+const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
   const { t } = useTranslation();
   const [selectedAlerts, setSelectedAlerts] = useState([]);
   const [showActive, setShowActive] = useState(true);
@@ -215,4 +214,4 @@ const AlertsModal = ({ isOpen, onClose, alerts }) => {
   );
 };
 
-export default AlertsModal;
+export default VictronAlertsModal;

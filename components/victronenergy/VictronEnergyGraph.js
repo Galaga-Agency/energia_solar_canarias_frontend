@@ -40,6 +40,7 @@ import { es } from "date-fns/locale";
 import { useDataFetchWithRetry } from "@/hooks/useDataFetchWithRetry";
 import useDeviceType from "@/hooks/useDeviceType";
 import { selectTheme } from "@/store/slices/themeSlice";
+import VictronGraphSkeleton from "../loadingSkeletons/VictronGraphSkeleton";
 
 const getColors = (theme) => ({
   consumption: theme === "dark" ? "#FFD57B" : "#BDBFC0",
@@ -534,7 +535,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
 
   const transformData = useCallback(
     (rawData, forecastData) => {
-      console.log("Raw Data passed to transformData:", rawData);
+      // console.log("Raw Data passed to transformData:", rawData);
 
       // If we're in forecast mode and have forecast data
       if (showForecast && rawData?.records) {
@@ -847,19 +848,6 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     setIsDateModalOpen(false);
   }, []);
 
-  if (isInitialLoad || isLoading || retryLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-custom-dark-blue dark:border-custom-light-gray mb-4"></div>
-          <p className="text-custom-dark-blue dark:text-custom-light-gray">
-            {t("Cargando datos...")}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const hasBatteryVoltage =
     chartData.length > 0 && "batteryMin" in chartData[0];
   const hasConsumption =
@@ -878,7 +866,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
           <div className="w-full sm:w-auto">
             {canShowForecast(currentRange.type) && (
               <button
-                className="px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto"
+                className="select-none px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto"
                 onClick={handleForecastToggle}
                 disabled={isForecastLoading}
               >
@@ -891,7 +879,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
             )}
           </div>
           <button
-            className="px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto ml-auto"
+            className="select-none px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto ml-auto"
             onClick={() => setIsDateModalOpen(true)}
           >
             {t(currentRange.type)}
@@ -900,14 +888,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
 
         <div className="bg-white dark:bg-custom-dark-blue p-6 rounded-xl shadow-lg">
           {(isInitialLoad || isLoading || retryLoading) && (
-            <div className="flex items-center justify-center h-96">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-custom-dark-blue dark:border-custom-light-gray mb-4"></div>
-                <p className="text-custom-dark-blue dark:text-custom-light-gray">
-                  {t("Cargando datos...")}
-                </p>
-              </div>
-            </div>
+            <VictronGraphSkeleton theme={theme} />
           )}
           {error && (
             <div className="flex items-center justify-center h-96">

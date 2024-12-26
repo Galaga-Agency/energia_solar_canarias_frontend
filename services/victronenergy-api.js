@@ -43,14 +43,14 @@ export const fetchVictronEnergyGraphDataAPI = async ({
   token,
 }) => {
   try {
-    console.log("API call with params:", {
-      plantId,
-      interval,
-      type,
-      fechaInicio,
-      fechaFin,
-      token,
-    });
+    // console.log("API call with params:", {
+    //   plantId,
+    //   interval,
+    //   type,
+    //   fechaInicio,
+    //   fechaFin,
+    //   token,
+    // });
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=victronenergy`,
       {
@@ -147,6 +147,36 @@ export const fetchVictronEnergyEquipmentDetailsAPI = async ({
     return data?.records || null;
   } catch (error) {
     console.error("Equipment details fetch error:", error);
+    throw error;
+  }
+};
+
+export const fetchVictronEnergyAlertsAPI = async ({ plantId, token }) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/alert?proveedor=victronenergy&siteId=${plantId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const clonedResponse = response.clone();
+    if (!response.ok) {
+      const errorData = await clonedResponse.json().catch(() => ({}));
+      console.error("Error Response:", errorData);
+      throw new Error(errorData.message || "Failed to fetch alerts data");
+    }
+
+    const data = await response.json();
+    return data?.data || null;
+  } catch (error) {
+    console.error("Alerts data fetch error:", error);
     throw error;
   }
 };

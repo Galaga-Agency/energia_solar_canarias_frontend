@@ -14,6 +14,7 @@ import { BiArrowBack } from "react-icons/bi";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
+import { IoArrowBackCircle } from "react-icons/io5";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
@@ -51,9 +52,9 @@ const ForgotPassword = () => {
     >
       <TransitionEffect />
       {/* Back Icon and Language Selector */}
-      <BiArrowBack
+      <IoArrowBackCircle
         onClick={() => router.push("/")}
-        className="absolute top-4 left-4 text-custom-dark-blue dark:text-custom-yellow text-3xl cursor-pointer hover:opacity-80 z-50"
+        className="absolute cursor-pointer top-4 left-4 text-4xl font-primary text-custom-dark-blue dark:text-custom-yellow mb-1 mr-4 z-50"
       />
       <div className="absolute top-4  right-4 z-50 flex flex-col items-end gap-2">
         <div className="flex flex-col items-end">

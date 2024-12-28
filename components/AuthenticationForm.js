@@ -18,6 +18,7 @@ import ResultContent from "@/components/ResultContent";
 import FormInput from "@/components/ui/FormInput";
 import { useForm } from "react-hook-form";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import CustomCheckbox from "./ui/CustomCheckbox";
 
 const AuthenticationForm = () => {
   const [currentFace, setCurrentFace] = useState("login");
@@ -112,10 +113,22 @@ const AuthenticationForm = () => {
     const {
       handleSubmit: handleLoginSubmit,
       register,
-      formState: { errors },
-    } = useForm();
+      formState: { errors, isValid, isDirty },
+      watch,
+    } = useForm({
+      mode: "onChange",
+      defaultValues: {
+        email: "",
+        password: "",
+      },
+    });
 
     const [showPassword, setShowPassword] = useState(false);
+
+    // Watch form fields
+    const email = watch("email");
+    const password = watch("password");
+    const isFormFilled = email && password;
 
     return (
       <>
@@ -134,6 +147,13 @@ const AuthenticationForm = () => {
             name="email"
             type="email"
             placeholder={t("emailPlaceholder")}
+            validation={{
+              required: t("emailRequired"),
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: t("invalidEmail"),
+              },
+            }}
           />
           <div className="relative">
             <FormInput
@@ -143,6 +163,9 @@ const AuthenticationForm = () => {
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder={t("passwordPlaceholder")}
+              validation={{
+                required: t("passwordRequired"),
+              }}
             />
             <button
               type="button"
@@ -155,14 +178,20 @@ const AuthenticationForm = () => {
           <div className="text-center">
             <button
               type="button"
-              className="text-blue-500 hover:underline font-secondary mt-2 dark:text-blue-300"
+              className="text-gray-800 dark:text-gray-200 underline font-secondary mt-2 underline-offset-2"
               onClick={() => router.push("/forgot-password")}
             >
               {t("forgotPassword")}
             </button>
           </div>
           <br />
-          <PrimaryButton type="submit" disabled={loading || isSubmitting}>
+          <PrimaryButton
+            type="submit"
+            disabled={
+              loading || isSubmitting || !isValid || !isDirty || !isFormFilled
+            }
+            isLoading={isSubmitting}
+          >
             {t("signIn")}
           </PrimaryButton>
         </form>
@@ -172,7 +201,7 @@ const AuthenticationForm = () => {
             <button
               type="button"
               onClick={() => setCurrentFace("register")}
-              className="text-gray-800 dark:text-gray-200 text-md underline"
+              className="text-gray-800 dark:text-gray-200 text-md underline underline-offset-2"
             >
               {t("register")}
             </button>
@@ -182,15 +211,31 @@ const AuthenticationForm = () => {
     );
   };
 
-  // RegisterForm component
   const RegisterForm = () => {
     const {
       handleSubmit: handleRegisterSubmit,
       register,
-      formState: { errors },
-    } = useForm();
+      formState: { errors, isValid, isDirty },
+      watch,
+      setValue,
+    } = useForm({
+      mode: "onChange",
+      defaultValues: {
+        username: "",
+        email: "",
+        password: "",
+        privacyPolicy: false,
+      },
+    });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
+
+    // Watch form fields
+    const username = watch("username");
+    const email = watch("email");
+    const password = watch("password");
+    const isFormFilled = username && email && password && isChecked;
 
     return (
       <>
@@ -210,6 +255,13 @@ const AuthenticationForm = () => {
             register={register}
             name="username"
             placeholder={t("usernamePlaceholder")}
+            validation={{
+              required: t("usernameRequired"),
+              minLength: {
+                value: 3,
+                message: t("usernameMinLength"),
+              },
+            }}
           />
           <FormInput
             label={t("email")}
@@ -218,6 +270,13 @@ const AuthenticationForm = () => {
             name="email"
             type="email"
             placeholder={t("emailPlaceholder")}
+            validation={{
+              required: t("emailRequired"),
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: t("invalidEmail"),
+              },
+            }}
           />
           <div className="relative">
             <FormInput
@@ -227,6 +286,18 @@ const AuthenticationForm = () => {
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder={t("passwordPlaceholder")}
+              validation={{
+                required: t("passwordRequired"),
+                minLength: {
+                  value: 8,
+                  message: t("passwordMinLength"),
+                },
+                pattern: {
+                  value:
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                  message: t("passwordPattern"),
+                },
+              }}
             />
             <button
               type="button"
@@ -237,44 +308,52 @@ const AuthenticationForm = () => {
             </button>
           </div>
           <div className="mb-4">
-            <label className="inline-flex items-center">
-              <input
-                type="checkbox"
-                className="form-checkbox h-5 w-5 text-blue-600"
-                {...register("privacyPolicy", {
-                  required: t("privacyPolicyConsent"),
-                })}
-              />
-              <span className="ml-2 text-gray-800 dark:text-gray-200">
-                {t("privacyPolicyLabel")}
-                <a
-                  href="https://www.energiasolarcanarias.es/politica-de-cookies"
-                  className="text-blue-500 dark:text-blue-300 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("cookiesPolicy")}
-                </a>
-                ,{" "}
-                <a
-                  href="https://www.energiasolarcanarias.es/politica-de-privacidad"
-                  className="text-blue-500 dark:text-blue-300 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("privacyPolicy")}
-                </a>{" "}
-                {t("andTheLegalNoticePrefix")}{" "}
-                <a
-                  href="https://www.energiasolarcanarias.es/aviso-legal"
-                  className="text-blue-500 dark:text-blue-300 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("legalNotice")}
-                </a>
-              </span>
-            </label>
+            <CustomCheckbox
+              checked={isChecked}
+              onChange={(e) => {
+                setIsChecked(e);
+                setValue("privacyPolicy", e, { shouldValidate: true });
+              }}
+              className="text-gray-800 dark:text-gray-200"
+              label={
+                <span className="text-gray-800 dark:text-gray-200">
+                  {t("privacyPolicyLabel")}{" "}
+                  <a
+                    href="https://www.energiasolarcanarias.es/politica-de-cookies"
+                    className="text-gray-800 dark:text-gray-200 underline underline-offset-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("cookiesPolicy")}
+                  </a>
+                  ,{" "}
+                  <a
+                    href="https://www.energiasolarcanarias.es/politica-de-privacidad"
+                    className="text-gray-800 dark:text-gray-200 underline underline-offset-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("privacyPolicy")}
+                  </a>{" "}
+                  {t("andTheLegalNoticePrefix")}{" "}
+                  <a
+                    href="https://www.energiasolarcanarias.es/aviso-legal"
+                    className="text-gray-800 dark:text-gray-200 underline underline-offset-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("legalNotice")}
+                  </a>
+                </span>
+              }
+            />
+            <input
+              type="hidden"
+              {...register("privacyPolicy", {
+                required: t("privacyPolicyConsent"),
+              })}
+              value={isChecked}
+            />
             <div className="min-h-[10px] mb-4">
               {errors.privacyPolicy && (
                 <p className="text-red-500 text-sm mt-0">
@@ -283,7 +362,13 @@ const AuthenticationForm = () => {
               )}
             </div>
           </div>
-          <PrimaryButton type="submit" disabled={loading || isSubmitting}>
+          <PrimaryButton
+            type="submit"
+            disabled={
+              loading || isSubmitting || !isValid || !isDirty || !isFormFilled
+            }
+            isLoading={isSubmitting}
+          >
             {t("register")}
           </PrimaryButton>
         </form>
@@ -293,7 +378,7 @@ const AuthenticationForm = () => {
             <button
               type="button"
               onClick={() => setCurrentFace("login")}
-              className="text-gray-800 dark:text-gray-200 text-md underline"
+              className="text-gray-800 dark:text-gray-200 text-md underline underline-offset-2"
             >
               {t("signIn")}
             </button>

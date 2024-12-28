@@ -1709,5 +1709,11 @@
   "pwaMode": "Modo PWA",
   "platform": "Plataforma",
   "androidDevice": "Dispositivo Android",
-  "androidInstallInstructions": "Para instalar: toca el botón de menú (tres puntos) en Chrome y selecciona 'Añadir a pantalla de inicio'"
+  "androidInstallInstructions": "Para instalar: toca el botón de menú (tres puntos) en Chrome y selecciona 'Añadir a pantalla de inicio'",
+  "systemAlerts": "Alertas del Sistema",
+  "systemRunningOk": "Su sistema está funcionando correctamente",
+  "errorLoadingAlerts": "Error al cargar las alertas",
+  "cleared": "Resuelto",
+  "tryAnotherTimeRange": "Prueba con otro rango de fechas",
+  "selectDifferentRange": "Seleccionar otro rango"
 }

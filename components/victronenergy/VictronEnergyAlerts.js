@@ -27,7 +27,7 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
         <p className="text-red-600 dark:text-red-400">
-          {t("Error loading alerts")}: {error}
+          {t("errorLoadingAlerts")}: {error}
         </p>
       </div>
     );
@@ -48,7 +48,7 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
           <FiAlertCircle className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
         </div>
         <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
-          {t("System Alerts")}
+          {t("systemAlerts")}
           <span className="text-slate-500 dark:text-slate-400 text-sm ml-2">
             ({records.length})
           </span>
@@ -56,38 +56,56 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
       </div>
 
       <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg shadow-md overflow-hidden">
-        {recentRecords.map((alert) => (
-          <div
-            key={alert.idAlarm}
-            className={`flex justify-between items-center p-4 hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300 border-b border-slate-200 dark:border-slate-600/50 last:border-0 ${
-              alert.isActive === 0 ? "opacity-50" : ""
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`min-w-3 w-3 h-3 rounded-full ${getSeverityColor(
-                  alert.isActive
-                )}`}
-              />
-              <span className="text-slate-700 dark:text-slate-200">
-                {alert.description}
-              </span>
-            </div>
-            <div className="flex flex-col items-end text-sm text-slate-500 dark:text-slate-400 ml-4">
-              <span>
-                {format(new Date(alert.started * 1000), "dd/MM/yyyy HH:mm", {
-                  locale: es,
-                })}
-              </span>
-              {alert.cleared && (
-                <span className="text-xs italic">
-                  {t("Cleared")}:{" "}
-                  {format(new Date(alert.cleared * 1000), "HH:mm")}
-                </span>
-              )}
-            </div>
+        {records.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-8 text-center">
+            <FiAlertCircle className="text-4xl text-slate-400 dark:text-slate-500 mb-3" />
+            <p className="text-slate-600 dark:text-slate-300 font-secondary">
+              {t("noAlerts")}
+            </p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+              {t("systemRunningOk")}
+            </p>
           </div>
-        ))}
+        ) : (
+          <>
+            {recentRecords.map((alert) => (
+              <div
+                key={alert.idAlarm}
+                className={`flex justify-between items-center p-4 hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300 border-b border-slate-200 dark:border-slate-600/50 last:border-0 ${
+                  alert.isActive === 0 ? "opacity-50" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`min-w-3 w-3 h-3 rounded-full ${getSeverityColor(
+                      alert.isActive
+                    )}`}
+                  />
+                  <span className="text-slate-700 dark:text-slate-200">
+                    {alert.description}
+                  </span>
+                </div>
+                <div className="flex flex-col items-end text-sm text-slate-500 dark:text-slate-400 ml-4">
+                  <span>
+                    {format(
+                      new Date(alert.started * 1000),
+                      "dd/MM/yyyy HH:mm",
+                      {
+                        locale: es,
+                      }
+                    )}
+                  </span>
+                  {alert.cleared && (
+                    <span className="text-xs italic">
+                      {t("cleared")}:{" "}
+                      {format(new Date(alert.cleared * 1000), "HH:mm")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       {records.length > (isTablet ? 3 : 5) && (
@@ -96,7 +114,7 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
             onClick={onViewAll}
             className="font-secondary text-custom-dark-blue dark:text-custom-yellow hover:bg-slate-100 dark:hover:bg-slate-700/50 px-4 py-2 rounded-lg transition-colors duration-300"
           >
-            {t("View All")}
+            {t("viewAll")}
           </button>
         </div>
       )}

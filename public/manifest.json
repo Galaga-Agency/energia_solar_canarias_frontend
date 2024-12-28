@@ -1,6 +1,6 @@
 {
   "name": "Energia Solar Canarias",
-  "short_name": "ESC",
+  "short_name": "Energia Solar Canarias",
   "description": "A web application for Energia Solar Canarias",
   "start_url": "/",
   "scope": "/",

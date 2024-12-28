@@ -22,6 +22,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
+      <head>
+        <meta
+          name="apple-mobile-web-app-title"
+          content="Energia Solar Canarias"
+        />
+      </head>
       <body>
         <StoreProvider>
           <ThemeWrapper>

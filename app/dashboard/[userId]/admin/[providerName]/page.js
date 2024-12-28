@@ -36,6 +36,8 @@ import VictronFilterSidebar from "@/components/victronenergy/VictronFilterSideba
 import VictronSortMenu from "@/components/victronenergy/VictronSortMenu";
 import GoodweStatsOverview from "@/components/goodwe/GoodweStatsOverview";
 import SolarEdgeStatsOverview from "@/components/solaredge/SolarEdgeStatsOverview";
+import BatteryStatuses from "@/components/BatteryStatuses";
+import VictronStatsOverview from "@/components/victronenergy/VictronStatsOverview";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -280,6 +282,8 @@ const ProviderPage = () => {
                 return <GoodweStatsOverview plants={filteredPlants} t={t} />;
               case "solaredge":
                 return <SolarEdgeStatsOverview plants={filteredPlants} t={t} />;
+              case "victronenergy":
+                return <VictronStatsOverview plants={filteredPlants} t={t} />;
               default:
                 return null;
             }
@@ -321,7 +325,11 @@ const ProviderPage = () => {
                   <FaMapMarkedAlt className="text-2xl" />
                 </button>
               </div>
-              {providerPassed !== "victronenergy" && <PlantStatuses />}
+              {providerPassed === "victronenergy" ? (
+                <BatteryStatuses />
+              ) : (
+                <PlantStatuses />
+              )}
             </div>
 
             {loading || isModalOpen ? (

@@ -243,7 +243,7 @@ const VictronEnergyFlow = () => {
     return () => clearInterval(intervalId);
   }, [fetchRealtimeData]);
 
-  if (isComponentLoading) {
+  if (isComponentLoading || !energyData) {
     return <VictronEnergyFlowSkeleton theme={theme} />;
   }
 

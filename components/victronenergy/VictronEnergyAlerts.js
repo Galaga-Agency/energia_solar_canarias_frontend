@@ -42,7 +42,7 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
   };
 
   return (
-    <div>
+    <div className="flex-1">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md">
           <FiAlertCircle className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
@@ -59,7 +59,9 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
         {recentRecords.map((alert) => (
           <div
             key={alert.idAlarm}
-            className="flex justify-between items-center p-4 hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300 border-b border-slate-200 dark:border-slate-600/50 last:border-0"
+            className={`flex justify-between items-center p-4 hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300 border-b border-slate-200 dark:border-slate-600/50 last:border-0 ${
+              alert.isActive === 0 ? "opacity-50" : ""
+            }`}
           >
             <div className="flex items-center gap-3">
               <div
@@ -71,11 +73,19 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
                 {alert.description}
               </span>
             </div>
-            <span className="text-sm text-slate-500 dark:text-slate-400 ml-4">
-              {format(new Date(alert.started * 1000), "dd/MM/yyyy HH:mm", {
-                locale: es,
-              })}
-            </span>
+            <div className="flex flex-col items-end text-sm text-slate-500 dark:text-slate-400 ml-4">
+              <span>
+                {format(new Date(alert.started * 1000), "dd/MM/yyyy HH:mm", {
+                  locale: es,
+                })}
+              </span>
+              {alert.cleared && (
+                <span className="text-xs italic">
+                  {t("Cleared")}:{" "}
+                  {format(new Date(alert.cleared * 1000), "HH:mm")}
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>

@@ -1688,5 +1688,18 @@
   "enter_address": "Introduce dirección",
   "enter_postal_code": "Introduce código postal",
   "select_location": "Seleccionar ubicaciones",
-  "reset": "Reiniciar"
+  "reset": "Reiniciar",
+  "batteryStatusTitle": "Estado de Batería",
+  "charging": "Cargando",
+  "discharging": "Descargando",
+  "resting": "En reposo",
+  "battery_overview": "Estado de Baterías",
+  "installation_types": "Tipos de Instalación",
+  "solar": "Solar",
+  "battery": "Batería",
+  "Cleared": "Resuelto",
+  "No active alerts": "No hay alertas activas",
+  "No cleared alerts": "No hay alertas resueltas",
+  "Everything is running smoothly": "Todo funciona correctamente",
+  "No alerts have been cleared yet": "Aún no se han resuelto alertas"
 }

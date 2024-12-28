@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import { TbCalendarCheck } from "react-icons/tb";
+import { LiaBirthdayCakeSolid } from "react-icons/lia";
 
 const statusColors = {
   working: "bg-green-500",
@@ -43,6 +44,32 @@ const PlantsListTableItem = ({ plant }) => {
       .join(" ");
   };
 
+  const getBatteryStateColor = (state) => {
+    switch (state?.toLowerCase()) {
+      case "cargando":
+        return "bg-green-500";
+      case "descargando":
+        return "bg-red-500";
+      case "en reposo":
+        return "bg-yellow-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const getBatteryStateLabel = (state) => {
+    switch (state?.toLowerCase()) {
+      case "cargando":
+        return t("Charging");
+      case "descargando":
+        return t("Discharging");
+      case "en reposo":
+        return t("Resting");
+      default:
+        return t("Unknown");
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full">
@@ -65,7 +92,7 @@ const PlantsListTableItem = ({ plant }) => {
               <td className="flex w-[40%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-left items-center">
                 {provider === "victronenergy" ? (
                   <>
-                    <TbCalendarCheck className="inline text-xl mr-2 text-custom-yellow w-[15%] drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]" />
+                    <LiaBirthdayCakeSolid className="inline text-xl mr-2 text-custom-yellow w-[15%] drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]" />
                     <span className="text-custom-dark-blue dark:text-custom-light-gray">
                       {formatDate(plant.installation_date)}
                     </span>
@@ -83,15 +110,22 @@ const PlantsListTableItem = ({ plant }) => {
                 )}
               </td>
             )}
-            {provider !== "victronenergy" && (
-              <td className="flex w-[20%] md:w-[20%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">
+            <td className="flex w-[20%] md:w-[20%] py-4 border-b border-gray-300 text-custom-dark-blue dark:text-custom-yellow justify-center items-center">
+              {provider === "victronenergy" ? (
+                <div
+                  className={`w-3 h-3 rounded-full ${getBatteryStateColor(
+                    plant.status
+                  )} drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]`}
+                  title={getBatteryStateLabel(plant.status)}
+                />
+              ) : (
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    statusColors[plant.status] || "bg-gray-500" // Default to gray if status is null
+                    statusColors[plant.status] || "bg-gray-500"
                   } drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]`}
                 />
-              </td>
-            )}
+              )}
+            </td>
           </tr>
         </tbody>
       </table>

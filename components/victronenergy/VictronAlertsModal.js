@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiAlertCircle, FiX, FiArchive, FiCheck } from "react-icons/fi";
+import { FiAlertCircle, FiX } from "react-icons/fi";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useTranslation } from "next-i18next";
 import Texture from "@/components/Texture";
-import PrimaryButton from "@/components/ui/PrimaryButton";
-import CustomCheckbox from "@/components/ui/CustomCheckbox";
 
 const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
   const { t } = useTranslation();
-  const [selectedAlerts, setSelectedAlerts] = useState([]);
   const [showActive, setShowActive] = useState(true);
 
   useEffect(() => {
@@ -29,13 +26,19 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
     showActive ? alert.isActive : !alert.isActive
   );
 
-  const handleSelectAlert = (alertId) => {
-    setSelectedAlerts((prev) =>
-      prev.includes(alertId)
-        ? prev.filter((id) => id !== alertId)
-        : [...prev, alertId]
-    );
-  };
+  const NoAlertsMessage = () => (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <FiAlertCircle className="text-4xl text-gray-400 dark:text-gray-600 mb-4" />
+      <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">
+        {showActive ? t("No active alerts") : t("No cleared alerts")}
+      </h3>
+      <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+        {showActive
+          ? t("Everything is running smoothly")
+          : t("No alerts have been cleared yet")}
+      </p>
+    </div>
+  );
 
   return (
     <AnimatePresence mode="wait">
@@ -122,29 +125,6 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
                         {t("Cleared")}
                       </button>
                     </div>
-
-                    {selectedAlerts.length > 0 && (
-                      <div className="flex gap-2">
-                        <PrimaryButton
-                          onClick={() => {
-                            /* Handle mark as read */
-                          }}
-                          className="flex items-center gap-2"
-                        >
-                          <FiCheck />
-                          <p className="ml-2">{t("Mark as Read")}</p>
-                        </PrimaryButton>
-                        <PrimaryButton
-                          onClick={() => {
-                            /* Handle archive */
-                          }}
-                          className="flex items-center gap-2"
-                        >
-                          <FiArchive />
-                          <p className="ml-2">{t("Archive")}</p>
-                        </PrimaryButton>
-                      </div>
-                    )}
                   </motion.div>
 
                   <motion.div
@@ -154,16 +134,14 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
                     transition={{ delay: 0.4 }}
                     className="max-h-[60vh] overflow-y-auto custom-scrollbar space-y-4"
                   >
-                    {filteredAlerts.map((alert) => (
-                      <div
-                        key={alert.idAlarm}
-                        className="bg-white/50 dark:bg-slate-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
-                      >
-                        <div className="flex items-center gap-4">
-                          <CustomCheckbox
-                            checked={selectedAlerts.includes(alert.idAlarm)}
-                            onChange={() => handleSelectAlert(alert.idAlarm)}
-                          />
+                    {filteredAlerts.length === 0 ? (
+                      <NoAlertsMessage />
+                    ) : (
+                      filteredAlerts.map((alert) => (
+                        <div
+                          key={alert.idAlarm}
+                          className="bg-white/50 dark:bg-slate-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+                        >
                           <div className="flex items-center justify-between flex-1">
                             <div className="flex items-center gap-3">
                               <div
@@ -201,8 +179,8 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </motion.div>
                 </div>
               </motion.div>

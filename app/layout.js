@@ -13,8 +13,8 @@ export const metadata = {
   authors: [{ name: "Energia Solar Canarias" }],
   icons: {
     icon: "/assets/icons/favicon.ico",
-    shortcut: "/assets/icons/favicon.ico",
-    apple: "/assets/icons/apple-touch-icon.png",
+    shortcut: "/assets/icons/maskable-icon.png",
+    apple: "/assets/icons/maskable-icon.png",
   },
   manifest: "/manifest.json",
 };

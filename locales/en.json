@@ -778,5 +778,20 @@
   "enter_address": "Enter address",
   "enter_postal_code": "Enter postal code",
   "select_location": "Select Location",
-  "reset": "Reset"
+  "reset": "Reset",
+  "batteryStatusTitle": "Battery Status",
+  "charging": "Charging",
+  "discharging": "Discharging",
+  "resting": "Resting",
+  "battery_overview": "Battery Overview",
+  "installation_types": "Installation Types",
+  "solar": "Solar",
+  "battery": "Battery",
+  "No active alerts": "No active alerts",
+  "No cleared alerts": "No cleared alerts",
+  "Everything is running smoothly": "Everything is running smoothly",
+  "No alerts have been cleared yet": "No alerts have been cleared yet",
+  "System Alerts": "System Alerts",
+  "Active": "Active",
+  "Cleared": "Cleared"
 }

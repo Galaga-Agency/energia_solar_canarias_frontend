@@ -321,7 +321,7 @@ const VictronEnergyEquipmentDetails = ({ token }) => {
   if (isLoading) return <VictronEquipmentDetailsSkeleton theme={theme} />;
 
   return (
-    <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
+    <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg md:max-w-[calc(50vw - 36px)]">
       <h2 className="text-xl mb-6 text-custom-dark-blue dark:text-custom-yellow">
         {t("equipment")}
       </h2>

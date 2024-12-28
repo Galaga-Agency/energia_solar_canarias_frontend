@@ -3,6 +3,7 @@ import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
+import { RotateCcw } from "lucide-react";
 
 const GoodweFilterSidebar = ({
   plants,
@@ -11,12 +12,14 @@ const GoodweFilterSidebar = ({
   setIsSidebarOpen,
 }) => {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState({
+  const initialFilters = {
     status: [],
     type: [],
     search: "",
     capacity: { min: 0, max: 1000 },
-  });
+  };
+
+  const [filters, setFilters] = useState(initialFilters);
   const { isMobile, isTablet } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -152,6 +155,11 @@ const GoodweFilterSidebar = ({
     [filterPlants, onFilterChange]
   );
 
+  const handleResetFilters = useCallback(() => {
+    setFilters(initialFilters);
+    onFilterChange(filterPlants(initialFilters));
+  }, [filterPlants, onFilterChange]);
+
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);
   }, [setIsSidebarOpen]);
@@ -173,19 +181,27 @@ const GoodweFilterSidebar = ({
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
-      <div className="flex justify-between mb-4">
-        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
           {t("filter")}
         </h3>
-        {isMobile ||
-          (isTablet && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleResetFilters}
+            className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
+            title={t("reset_filters")}
+          >
+            <span>{t("reset")}</span> <RotateCcw className="w-5 h-5" />
+          </button>
+          {(isMobile || isTablet) && (
             <button
               onClick={closeSidebar}
               className="text-custom-dark-blue dark:text-custom-yellow text-xl"
             >
               <IoMdClose />
             </button>
-          ))}
+          )}
+        </div>
       </div>
 
       <div className="mb-4">
@@ -261,18 +277,6 @@ const GoodweFilterSidebar = ({
           </div>
         </div>
       </div>
-
-      {/* <div className="xl:hidden flex justify-center mt-4">
-        <button
-          onClick={() => {
-            onFilterChange(filterPlants(filters));
-            closeSidebar();
-          }}
-          className="bg-custom-yellow text-custom-dark-blue py-2 px-6 rounded-lg"
-        >
-          {t("applyFilters")}
-        </button>
-      </div> */}
     </div>
   );
 };

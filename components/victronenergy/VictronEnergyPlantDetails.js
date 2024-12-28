@@ -65,6 +65,8 @@ const VictronEnergyPlantDetails = () => {
     }
   }, [latitude, longitude]);
 
+  console.log("plant:", plant);
+
   // Extract latitude and longitude from plant data
   useEffect(() => {
     if (plant) {
@@ -197,7 +199,7 @@ const VictronEnergyPlantDetails = () => {
         <div className="flex flex-col md:flex-row gap-6">
           <VictronEnergyEquipmentDetails token={user?.tokenIdentificador} />
 
-          <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
+          <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">
             <VictronEnergyAlerts
               plantId={plantId}
               onViewAll={() => setIsAlertsModalOpen(true)}

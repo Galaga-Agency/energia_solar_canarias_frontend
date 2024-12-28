@@ -19,7 +19,7 @@ const VictronFilterSidebar = ({
     installationDate: { min: "", max: "" },
   });
   const { isMobile, isTablet, isDesktop } = useDeviceType();
-  const sidebarRef = useRef(null); // This will reference the sidebar
+  const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const initialFilters = {
     status: [],
@@ -27,11 +27,19 @@ const VictronFilterSidebar = ({
     search: "",
     installationDate: { min: "", max: "" },
   };
+
   const VICTRON_TYPES = {
     solar: "type_Solar",
     generator: "type_Generator",
     battery: "type_Battery",
     grid: "type_Grid",
+  };
+
+  // Changed to English keys since we're using these for the filter values
+  const BATTERY_STATES = {
+    charging: "Cargando",
+    discharging: "Descargando",
+    resting: "En reposo",
   };
 
   useEffect(() => {
@@ -68,6 +76,24 @@ const VictronFilterSidebar = ({
           }
         }
 
+        // Battery Status Filter
+        if (currentFilters.status.length > 0) {
+          console.log("Plant status:", plant.status);
+          console.log("Current filters:", currentFilters.status);
+
+          const plantStatus = plant.status;
+          // Check if any of our filter values match this plant's status
+          const matchingStatus = currentFilters.status.some(
+            (filterStatus) => BATTERY_STATES[filterStatus] === plantStatus
+          );
+
+          console.log("Matching status:", matchingStatus);
+
+          if (!matchingStatus) {
+            return false;
+          }
+        }
+
         // Installation Date Filter
         if (
           currentFilters.installationDate.min &&
@@ -93,6 +119,7 @@ const VictronFilterSidebar = ({
 
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
+      console.log("Checkbox changed:", filterType, value);
       setFilters((prevFilters) => {
         const newFilters = {
           ...prevFilters,
@@ -100,7 +127,7 @@ const VictronFilterSidebar = ({
             ? prevFilters[filterType].filter((item) => item !== value)
             : [...prevFilters[filterType], value],
         };
-
+        console.log("New filters:", newFilters);
         onFilterChange(filterPlants(newFilters));
         return newFilters;
       });
@@ -138,11 +165,10 @@ const VictronFilterSidebar = ({
     setIsSidebarOpen(false);
   }, [setIsSidebarOpen]);
 
-  // This is the key change: Listen for clicks outside the sidebar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        closeSidebar(); // Close the sidebar if the click is outside
+        closeSidebar();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -173,15 +199,14 @@ const VictronFilterSidebar = ({
           >
             <span>{t("reset")}</span> <RotateCcw className="w-5 h-5" />
           </button>
-          {isMobile ||
-            (isTablet && (
-              <button
-                onClick={closeSidebar}
-                className="text-custom-dark-blue dark:text-custom-yellow text-xl"
-              >
-                <IoMdClose />
-              </button>
-            ))}
+          {(isMobile || isTablet) && (
+            <button
+              onClick={closeSidebar}
+              className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+            >
+              <IoMdClose />
+            </button>
+          )}
         </div>
       </div>
 
@@ -206,6 +231,22 @@ const VictronFilterSidebar = ({
               label={t(VICTRON_TYPES[type])}
               checked={filters.type.includes(type)}
               onChange={() => handleCheckboxChange("type", type)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+          {t("batteryStatusTitle")}
+        </h3>
+        <div className="flex flex-col gap-3 text-custom-dark-blue dark:text-custom-light-gray">
+          {Object.entries(BATTERY_STATES).map(([status]) => (
+            <CustomCheckbox
+              key={status}
+              label={t(status)}
+              checked={filters.status.includes(status)}
+              onChange={() => handleCheckboxChange("status", status)}
             />
           ))}
         </div>

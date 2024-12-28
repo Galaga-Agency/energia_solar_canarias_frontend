@@ -1707,5 +1707,7 @@
   "installable": "Instalable",
   "iosDevice": "Dispositivo iOS",
   "pwaMode": "Modo PWA",
-  "platform": "Plataforma"
+  "platform": "Plataforma",
+  "androidDevice": "Dispositivo Android",
+  "androidInstallInstructions": "Para instalar: toca el botón de menú (tres puntos) en Chrome y selecciona 'Añadir a pantalla de inicio'"
 }

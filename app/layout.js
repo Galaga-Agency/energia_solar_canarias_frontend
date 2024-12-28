@@ -27,6 +27,21 @@ export default function RootLayout({ children }) {
           name="apple-mobile-web-app-title"
           content="Energia Solar Canarias"
         />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="application-name" content="Your App Name" />
+        <meta name="apple-mobile-web-app-title" content="Your App Name" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="msapplication-navbutton-color" content="#000000" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+        <meta name="msapplication-starturl" content="/" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
       </head>
       <body>
         <StoreProvider>

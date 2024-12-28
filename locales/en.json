@@ -799,5 +799,7 @@
   "installable": "Installable",
   "iosDevice": "iOS Device",
   "pwaMode": "PWA Mode",
-  "platform": "Platform"
+  "platform": "Platform",
+  "androidDevice": "Android Device",
+  "androidInstallInstructions": "To install: tap the menu button (three dots) in Chrome and select 'Add to Home screen'"
 }

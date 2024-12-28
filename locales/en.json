@@ -793,5 +793,11 @@
   "No alerts have been cleared yet": "No alerts have been cleared yet",
   "System Alerts": "System Alerts",
   "Active": "Active",
-  "Cleared": "Cleared"
+  "Cleared": "Cleared",
+  "addToHomeScreen": "Add to Home Screen",
+  "installApp": "Install App",
+  "installable": "Installable",
+  "iosDevice": "iOS Device",
+  "pwaMode": "PWA Mode",
+  "platform": "Platform"
 }

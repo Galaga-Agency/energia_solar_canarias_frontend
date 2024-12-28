@@ -1,104 +1,101 @@
-"use client";
-
-import React, { useState, useEffect, useRef } from "react";
-import { FaDownload, FaTimes } from "react-icons/fa";
-import useDeviceType from "@/hooks/useDeviceType";
+import React, { useState, useEffect } from "react";
+import { FaDownload } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 const InstallationGuide = () => {
   const { t } = useTranslation();
-  const [os, setOs] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const modalRef = useRef(null);
-  const { isMobile, isTablet, isDesktop } = useDeviceType();
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [debugInfo, setDebugInfo] = useState({
+    isPWA: false,
+    userAgent: "",
+    platform: "",
+  });
 
   useEffect(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
+    // Debug information
+    setDebugInfo({
+      isPWA: window.matchMedia("(display-mode: standalone)").matches,
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+    });
 
-    if (userAgent.includes("android")) {
-      setOs("Android");
-    } else if (
-      userAgent.includes("iphone") ||
-      userAgent.includes("ipad") ||
-      userAgent.includes("ipod") ||
-      (userAgent.includes("mac") && "ontouchend" in document)
-    ) {
-      setOs("iOS");
-    } else if (userAgent.includes("win")) {
-      setOs("Windows");
-    } else if (userAgent.includes("mac")) {
-      setOs("macOS");
-    } else if (userAgent.includes("linux")) {
-      setOs("Linux");
-    }
+    // Check if device is iOS
+    const isIOSDevice =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    setIsIOS(isIOSDevice);
 
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setIsExpanded(false);
-      }
+    // Listen for beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e) => {
+      console.log("beforeinstallprompt event fired");
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
     };
 
-    if (isExpanded) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    // Log when the component mounts
+    console.log("InstallationGuide mounted", {
+      isIOSDevice,
+      isStandalone: window.matchMedia("(display-mode: standalone)").matches,
+    });
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
     };
-  }, [isExpanded, isMobile, isTablet, isDesktop, os]);
+  }, []);
 
-  const videoSources = {
-    Windows: "/videos/windows-installation.mp4",
-    macOS: "/videos/macos-installation.mp4",
-    Linux: "/videos/linux-installation.mp4",
-    Android: "/videos/android-installation.mp4",
-    iOS: "/videos/ios-installation.mp4",
-  };
+  const handleInstallClick = async () => {
+    console.log("Install button clicked", { deferredPrompt, isIOS });
 
-  const handleToggle = () => {
-    setIsExpanded(!isExpanded);
+    if (!deferredPrompt && !isIOS) {
+      console.log("No installation prompt available");
+      return;
+    }
+
+    if (deferredPrompt) {
+      try {
+        const result = await deferredPrompt.prompt();
+        console.log("Install prompt result:", result);
+        setDeferredPrompt(null);
+        setIsInstallable(false);
+      } catch (error) {
+        console.error("Error showing install prompt:", error);
+      }
+    }
   };
 
   return (
-    <div className="flex flex-col items-end">
-      {os && (
-        <button
-          className="flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all"
-          onClick={handleToggle}
-        >
-          <FaDownload className="text-lg" />
-          <span>
-            {t("installationGuideTitle")} {`${os}`}
-          </span>
-        </button>
-      )}
+    <div className="flex flex-col gap-2">
+      <button
+        onClick={handleInstallClick}
+        className="flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all"
+      >
+        <FaDownload className="text-lg" />
+        <span>{isIOS ? t("addToHomeScreen") : t("installApp")}</span>
+      </button>
 
-      {isExpanded && (
-        <div
-          className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-60"
-          style={{ backdropFilter: "blur(5px)" }}
-        >
-          <div
-            ref={modalRef}
-            className="relative w-full max-w-[90%] md:max-w-[700px] p-1 bg-white rounded-lg shadow-lg"
-          >
-            <button
-              className="absolute -top-3 -right-3 text-custom-dark-blue text-2xl bg-custom-yellow rounded-full p-1 hover:shadow-white-shadow z-[999]"
-              onClick={handleToggle}
-            >
-              <FaTimes className="text-2xl" />
-            </button>
-            <video
-              src={videoSources[os]}
-              controls
-              autoPlay
-              className="w-full rounded-md shadow-md bg-black"
-            />
-          </div>
+      {/* Debug information - remove in production */}
+      <div className="text-xs text-gray-500">
+        <div>
+          {t("installable")}: {isInstallable ? t("yes") : t("no")}
         </div>
-      )}
+        <div>
+          {t("iosDevice")}: {isIOS ? t("yes") : t("no")}
+        </div>
+        <div>
+          {t("pwaMode")}: {debugInfo.isPWA ? t("yes") : t("no")}
+        </div>
+        <div>
+          {t("platform")}: {debugInfo.platform}
+        </div>
+      </div>
     </div>
   );
 };

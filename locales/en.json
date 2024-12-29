@@ -274,7 +274,6 @@
   "userEmail": "Email",
   "noUsersFound": "No users found.",
   "errorFetchingUsers": "Error fetching users: {error}",
-  "invalidToken": "Invalid token.",
   "sortByRegistrationDate": "Sort by Registration Date",
   "noPlantData": "Plant not found",
   "plantNotFound": "An error occured, refresh the page or try again later",
@@ -807,5 +806,6 @@
   "errorLoadingAlerts": "Error loading alerts",
   "cleared": "Cleared",
   "tryAnotherTimeRange": "Try a different time range",
-  "selectDifferentRange": "Select different range"
+  "selectDifferentRange": "Select different range",
+  "invalidToken": "Invalid verification code. Please try again."
 }

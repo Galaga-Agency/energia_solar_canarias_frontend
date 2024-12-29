@@ -428,7 +428,7 @@ const SolarEdgePlantDetails = React.memo(
               token={token}
               t={t}
             />
-            <AlertsOverview alerts={mockAlerts} />
+            {/* <AlertsOverview alerts={mockAlerts} /> */}
           </section>
 
           <div className="flex flex-col xl:flex-row xl:gap-6">

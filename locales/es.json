@@ -269,7 +269,7 @@
   "peakPower": "Potencia Máxima FV",
   "co2Saved": "CO2 Ahorrado",
   "users": "Usarios",
-  "invalidToken": "Token Invalido",
+  "invalidToken": "Código de verificación inválido. Por favor, inténtalo de nuevo.",
   "usersList": "Lista de Usuarios",
   "userName": "Nombre",
   "userEmail": "Correo Electrónico",

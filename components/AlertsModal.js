@@ -1,4 +1,3 @@
-// AlertsModal.js
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiAlertCircle, FiX, FiArchive, FiCheck } from "react-icons/fi";
@@ -36,6 +35,30 @@ const AlertsModal = ({ isOpen, onClose, alerts }) => {
         ? prev.filter((id) => id !== alertId)
         : [...prev, alertId]
     );
+  };
+
+  const formatTimestamp = (timestamp, provider) => {
+    if (!timestamp) return "";
+
+    try {
+      switch (provider?.toLowerCase()) {
+        case "goodwe":
+          // GoodWe sends timestamps without multiplication needed
+          return format(new Date(timestamp), "dd/MM/yyyy HH:mm", {
+            locale: es,
+          });
+
+        case "victronenergy":
+        case "solaredge":
+        default:
+          return format(new Date(timestamp * 1000), "dd/MM/yyyy HH:mm", {
+            locale: es,
+          });
+      }
+    } catch (error) {
+      console.error("Error formatting timestamp:", error);
+      return "Invalid date";
+    }
   };
 
   return (
@@ -183,19 +206,14 @@ const AlertsModal = ({ isOpen, onClose, alerts }) => {
                             </div>
                             <div className="text-right text-sm text-gray-500 dark:text-gray-400">
                               <div>
-                                {format(
-                                  new Date(alert.started * 1000),
-                                  "dd/MM/yyyy HH:mm",
-                                  { locale: es }
-                                )}
+                                {formatTimestamp(alert.started, alert.provider)}
                               </div>
                               {alert.cleared && (
                                 <div className="text-green-600 dark:text-green-400">
                                   {t("Cleared")}:{" "}
-                                  {format(
-                                    new Date(alert.cleared * 1000),
-                                    "HH:mm",
-                                    { locale: es }
+                                  {formatTimestamp(
+                                    alert.cleared,
+                                    alert.provider
                                   )}
                                 </div>
                               )}

@@ -28,7 +28,17 @@ export const validateToken = createAsyncThunk(
   async ({ id, token }, { rejectWithValue }) => {
     try {
       const response = await validateTokenRequestAPI(id, token);
-      if (!response) throw new Error("Token validation failed");
+      console.log("API Response:", response); // Add this log
+
+      // If the response indicates an error or is not successful
+      if (
+        !response ||
+        response.status === false ||
+        response.status === "error"
+      ) {
+        return rejectWithValue(response?.message || "Token validation failed");
+      }
+
       return response;
     } catch (error) {
       return rejectWithValue(error.message);

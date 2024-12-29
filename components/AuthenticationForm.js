@@ -37,8 +37,7 @@ const AuthenticationForm = () => {
     setIsSubmitting(true);
     try {
       const user = await dispatch(authenticateUser(data)).unwrap();
-      saveAuthData("mockAuthToken", user);
-
+      saveAuthData(user.data.tokenIdentificador || "mockAuthToken", user.data);
       if (type === "login") {
         setSubmissionResult({ status: "loginSuccess" });
         setUserToValidate(user.data.id);
@@ -65,38 +64,48 @@ const AuthenticationForm = () => {
   };
 
   const handleTokenSubmit = async () => {
-    if (!tokenInput.trim() || !userToValidate) return;
+    if (!tokenInput.trim() || !userToValidate) return false;
     setIsSubmitting(true);
+
     try {
       const response = await dispatch(
         validateToken({ id: userToValidate, token: tokenInput })
       );
+      console.log("RESPONSE:", response);
 
       if (
-        response.meta.requestStatus === "fulfilled" &&
-        response.payload.status === true
+        response.type?.includes("rejected") ||
+        response.error ||
+        !response.payload?.status
       ) {
-        Cookies.set("user", JSON.stringify(response.payload.data), {
-          expires: 180,
-        });
-        dispatch(setUser(response.payload.data));
-
-        window.location.href = `/dashboard/${userToValidate}`;
-      } else {
+        console.log("STOPPING - ERROR DETECTED");
         setSubmissionResult({
           status: "loginError",
-          message: response.message || t("invalidToken"),
+          message: response.payload || t("invalidToken"),
         });
         setTokenInput("");
+        setIsSubmitting(false);
+        return false; // Return false for failure
       }
+
+      // Only if we're absolutely sure it's valid
+      console.log("SUCCESS - REDIRECTING");
+      saveAuthData(
+        response.payload.data.tokenIdentificador,
+        response.payload.data
+      );
+      dispatch(setUser(response.payload.data));
+      window.location.href = `/dashboard/${userToValidate}`;
+      return true; // Return true for success
     } catch (error) {
+      console.log("CAUGHT ERROR:", error);
       setSubmissionResult({
         status: "loginError",
         message: t("invalidToken"),
       });
       setTokenInput("");
-    } finally {
       setIsSubmitting(false);
+      return false; // Return false for error
     }
   };
 

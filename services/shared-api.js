@@ -38,30 +38,27 @@ export const validateTokenRequestAPI = async (id, token) => {
       },
     });
 
-    if (!response.ok) {
-      const errorData = await response
-        .clone()
-        .json()
-        .catch(() => {
-          return { message: "Unknown error" };
-        });
+    const data = await response.json();
 
+    // For any non-200 response, return a standardized error format
+    if (!response.ok) {
       return {
-        status: "error",
-        code: response.status,
-        message: errorData.message || "Unknown error",
-        errors: errorData,
+        status: false,
+        data: null,
+        message: data.message || "Token validation failed",
       };
     }
 
-    const data = await response.json();
-    return data;
+    return {
+      status: true,
+      data: data.data,
+      message: data.message,
+    };
   } catch (error) {
     return {
-      status: "error",
-      code: 0,
-      message: error.message || "Unknown error",
-      errors: error,
+      status: false,
+      data: null,
+      message: error.message || "Token validation failed",
     };
   }
 };

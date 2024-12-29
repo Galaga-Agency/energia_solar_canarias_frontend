@@ -7,17 +7,22 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser, selectIsLoggedIn } from "@/store/slices/userSlice";
+import {
+  setUser,
+  selectIsLoggedIn,
+  selectTokenValidated,
+} from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
   const isLoggedIn = useSelector(selectIsLoggedIn);
+  const tokenValidated = useSelector(selectTokenValidated);
   const redirectAttempted = useRef(false);
 
   useEffect(() => {
-    if (redirectAttempted.current) {
+    if (redirectAttempted.current || !tokenValidated) {
       return;
     }
 
@@ -25,20 +30,22 @@ export default function Home() {
     if (userCookie && !isLoggedIn) {
       try {
         const user = JSON.parse(userCookie);
-        if (user && user.id) {
+        if (user && user.id && user.tokenIdentificador) {
           dispatch(setUser(user));
           redirectAttempted.current = true;
           router.push(`/dashboard/${user.id}/plants`);
         } else {
-          console.warn("User cookie data is invalid:", user);
+          console.warn("User cookie data is invalid or incomplete:", user);
           Cookies.remove("user");
+          Cookies.remove("authToken");
         }
       } catch (error) {
         console.error("Error parsing user cookie:", error);
         Cookies.remove("user");
+        Cookies.remove("authToken");
       }
     }
-  }, [dispatch, router, isLoggedIn]);
+  }, [dispatch, router, isLoggedIn, tokenValidated]);
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">

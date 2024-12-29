@@ -89,8 +89,14 @@ const GoodweAlerts = ({ plantId, onViewAll }) => {
 
       <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg shadow-md overflow-hidden">
         {recentRecords.length === 0 ? (
-          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-            {t("No alerts available")}
+          <div className="flex flex-col items-center justify-center p-8 text-center">
+            <FiAlertCircle className="text-4xl text-slate-400 dark:text-slate-500 mb-3" />
+            <p className="text-slate-600 dark:text-slate-300 font-secondary">
+              {t("noAlerts")}
+            </p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+              {t("systemRunningOk")}
+            </p>
           </div>
         ) : (
           recentRecords.map((alert) => (

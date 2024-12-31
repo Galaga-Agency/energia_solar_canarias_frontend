@@ -46,6 +46,7 @@ module.exports = {
         "orbit-path-2": "orbit-path-2 3s linear infinite reverse",
         "orbit-path-3": "orbit-path-3 4s linear infinite",
         "orbit-path-4": "orbit-path-4 3.5s linear infinite reverse",
+        "circle-flow": "circle-flow 3s infinite ease-in-out",
         grid: "grid 150s linear infinite",
         textBlink: "textBlink 0.5s ease-in-out",
         "double-blink":
@@ -97,6 +98,20 @@ module.exports = {
             opacity: "0",
           },
         },
+        "circle-flow": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.8)",
+          },
+          "50%": {
+            opacity: "1",
+            transform: "scale(1.1)",
+          },
+          "100%": {
+            opacity: "0",
+            transform: "scale(0.8)",
+          },
+        },
         energyFlow: {
           "0%": { opacity: 0.2, transform: "translateX(0) scale(0.8)" },
           "50%": { opacity: 1, transform: "translateX(20px) scale(1)" },
@@ -117,6 +132,18 @@ module.exports = {
           "10%": { opacity: "1" },
           "90%": { opacity: "1" },
           "100%": { transform: "translateX(-100%)", opacity: "0" },
+        },
+        "circle-flow": {
+          "0%": {
+            transform: "rotate(-40deg) translateX(40px) rotate(40deg)",
+            opacity: "0",
+          },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": {
+            transform: "rotate(70deg) translateX(60px) rotate(-70deg)",
+            opacity: "0",
+          },
         },
         fadeIn: {
           "0%": { opacity: "0" },

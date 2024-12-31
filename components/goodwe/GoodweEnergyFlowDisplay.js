@@ -85,16 +85,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
     }
   }, [formattedPlantId, token, dispatch]);
 
-  useEffect(() => {
-    if (!formattedPlantId || !token) {
-      return;
-    }
-
-    fetchRealtimeData();
-    const interval = setInterval(fetchRealtimeData, 30000);
-    return () => clearInterval(interval);
-  }, [fetchRealtimeData, formattedPlantId, token]);
-
   const {
     load = 0,
     pv = 0,
@@ -102,14 +92,17 @@ const GoodweEnergyFlowDisplay = memo(() => {
     unit = "kW",
   } = realtimeData?.powerflow || {};
 
-  const hasFlow = useMemo(
-    () => load > 0 || pv > 0 || grid > 0,
-    [load, pv, grid]
-  );
+  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, pv, grid]);
 
   const renderDesktopFlow = useCallback(
     (fromValue, toValue, direction) => {
-      if (fromValue <= 0 || toValue <= 0) return null;
+      console.log("Mobile Flow Values:", {
+        fromValue,
+        toValue,
+        type: typeof fromValue,
+      });
+      if (!fromValue || !toValue || fromValue === "0W" || toValue === "0W")
+        return null;
 
       const FlowIcon = direction === "right" ? ChevronRight : ChevronLeft;
       const flowClass =
@@ -175,7 +168,13 @@ const GoodweEnergyFlowDisplay = memo(() => {
 
   const renderMobileFlow = useCallback(
     (direction, fromValue, toValue) => {
-      if (fromValue <= 0 || toValue <= 0) return null;
+      console.log("Mobile Flow Values:", {
+        fromValue,
+        toValue,
+        type: typeof fromValue,
+      });
+      if (!fromValue || !toValue || fromValue === "0W" || toValue === "0W")
+        return null;
 
       const intensity = Math.min(Math.max((fromValue / 10) * 100, 20), 100);
       const glowColor =
@@ -191,7 +190,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
               : "-right-12 rotate-48"
           } top-20 w-32 h-52`}
         >
-          {/* Background path */}
           <div
             className="absolute w-full h-full rounded-tr-full opacity-20"
             style={{
@@ -199,18 +197,27 @@ const GoodweEnergyFlowDisplay = memo(() => {
             }}
           />
 
-          {/* Animated chevrons */}
           {[...Array(3)].map((_, i) => (
-            <ChevronDown
-              key={i}
-              className={`absolute text-custom-yellow animate-circle-flow`}
-              size={28}
-              strokeWidth={2.5}
-              style={{
-                animationDelay: `${i * 1000}ms`,
-                filter: `drop-shadow(0 0 ${intensity / 20}px ${glowColor})`,
-              }}
-            />
+            <div key={i} className="relative">
+              <div
+                className="absolute bg-custom-yellow/30 blur-md animate-circle-flow"
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  animationDelay: `${i * 1000}ms`,
+                  transform: "scale(1.2)",
+                }}
+              />
+              <ChevronDown
+                className="absolute text-custom-yellow animate-circle-flow"
+                size={28}
+                strokeWidth={2.5}
+                style={{
+                  animationDelay: `${i * 1000}ms`,
+                  filter: `drop-shadow(0 0 ${intensity / 10}px ${glowColor})`,
+                }}
+              />
+            </div>
           ))}
         </div>
       );
@@ -221,6 +228,16 @@ const GoodweEnergyFlowDisplay = memo(() => {
   if (!formattedPlantId) {
     return null;
   }
+
+  useEffect(() => {
+    if (!formattedPlantId || !token) {
+      return;
+    }
+
+    fetchRealtimeData();
+    const interval = setInterval(fetchRealtimeData, 30000);
+    return () => clearInterval(interval);
+  }, [fetchRealtimeData, formattedPlantId, token, hasFlow]);
 
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">

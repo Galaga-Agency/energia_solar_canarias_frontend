@@ -135,13 +135,13 @@ module.exports = {
         },
         "circle-flow": {
           "0%": {
-            transform: "rotate(-40deg) translateX(40px) rotate(40deg)",
+            transform: "rotate(-40deg) translateX(40px) rotate(-20deg)",
             opacity: "0",
           },
           "10%": { opacity: "1" },
           "90%": { opacity: "1" },
           "100%": {
-            transform: "rotate(70deg) translateX(70px) rotate(-70deg)",
+            transform: "rotate(70deg) translateX(70px) rotate(-50deg)",
             opacity: "0",
           },
         },

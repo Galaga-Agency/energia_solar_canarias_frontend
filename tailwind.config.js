@@ -141,7 +141,7 @@ module.exports = {
           "10%": { opacity: "1" },
           "90%": { opacity: "1" },
           "100%": {
-            transform: "rotate(70deg) translateX(60px) rotate(-70deg)",
+            transform: "rotate(70deg) translateX(70px) rotate(-70deg)",
             opacity: "0",
           },
         },

@@ -307,7 +307,7 @@ const SolarEdgePlantDetails = React.memo(
           {/* Header */}
           <header className="flex justify-between items-center mb-6">
             <IoArrowBackCircle
-              className="text-5xl lg:text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer "
+              className="text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 window.location.href = isAdmin

@@ -189,7 +189,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
             direction === "left"
               ? "-left-12 -scale-x-100 -rotate-24"
               : "-right-12 rotate-48"
-          } top-24 w-32 h-52`}
+          } top-20 w-32 h-52`}
         >
           {/* Background path */}
           <div
@@ -200,7 +200,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
           />
 
           {/* Animated chevrons */}
-          {[...Array(6)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <ChevronDown
               key={i}
               className={`absolute text-custom-yellow animate-circle-flow`}
@@ -285,7 +285,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
           {/* Bottom Icons Container */}
           <div className="flex justify-center items-end gap-4 md:gap-24 mt-6">
             {/* House */}
-            <div className="w-[180px]">
+            <div className="w-auto">
               <div className="flex flex-col items-center">
                 <Home
                   className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
@@ -308,7 +308,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
             </div>
 
             {/* Grid */}
-            <div className="w-[180px]">
+            <div className="w-auto">
               <div className="flex flex-col items-center">
                 <UtilityPole
                   strokeWidth={2.5}

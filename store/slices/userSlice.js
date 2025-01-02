@@ -77,7 +77,7 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
       state.isLoggedIn = true;
-      state.isAdmin = action.payload.clase === "admin";
+      state.isAdmin = action.payload?.clase === "admin";
       state.error = null;
     },
     logoutUser: (state) => {
@@ -102,7 +102,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.isLoggedIn = true;
-        state.isAdmin = action.payload.clase === "admin";
+        state.isAdmin = action.payload?.clase === "admin";
         state.error = null;
       })
       .addCase(authenticateUser.rejected, (state, action) => {
@@ -157,7 +157,7 @@ const selectUserState = (state) => state.user;
 // Derived selectors
 export const selectUser = createSelector(
   [selectUserState],
-  (userState) => userState.user
+  (userState) => userState?.user
 );
 
 export const selectIsUserReady = createSelector(
@@ -167,27 +167,27 @@ export const selectIsUserReady = createSelector(
 
 export const selectTokenValidated = createSelector(
   [selectUserState],
-  (userState) => userState.tokenValidated
+  (userState) => userState?.tokenValidated
 );
 
 export const selectIsLoggedIn = createSelector(
   [selectUserState],
-  (userState) => userState.isLoggedIn
+  (userState) => userState?.isLoggedIn
 );
 
 export const selectIsAdmin = createSelector(
   [selectUserState],
-  (userState) => userState.isAdmin
+  (userState) => userState?.isAdmin
 );
 
 export const selectLoading = createSelector(
   [selectUserState],
-  (userState) => userState.loading
+  (userState) => userState?.loading
 );
 
 export const selectError = createSelector(
   [selectUserState],
-  (userState) => userState.error
+  (userState) => userState?.error
 );
 
 export const selectUserWithToken = createSelector([selectUser], (user) => ({

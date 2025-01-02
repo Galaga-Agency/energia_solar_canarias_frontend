@@ -85,10 +85,9 @@ const AuthenticationForm = () => {
         });
         setTokenInput("");
         setIsSubmitting(false);
-        return false; // Return false for failure
+        return false;
       }
 
-      // Only if we're absolutely sure it's valid
       console.log("SUCCESS - REDIRECTING");
       saveAuthData(
         response.payload.data.tokenIdentificador,
@@ -96,7 +95,7 @@ const AuthenticationForm = () => {
       );
       dispatch(setUser(response.payload.data));
       window.location.href = `/dashboard/${userToValidate}`;
-      return true; // Return true for success
+      return true;
     } catch (error) {
       console.log("CAUGHT ERROR:", error);
       setSubmissionResult({

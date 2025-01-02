@@ -9,33 +9,50 @@ const useAuth = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const storedUser = Cookies.get("user");
-    const storedToken = Cookies.get("authToken");
+    const validateStoredAuth = async () => {
+      const storedUser = Cookies.get("user");
+      const storedToken = Cookies.get("authToken");
 
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      dispatch(setReduxUser(parsedUser));
-    }
+      if (storedUser && storedToken) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
 
-    if (storedToken) {
-      setToken(storedToken);
-    }
+          // Validate token with your backend
+          const response = await dispatch(
+            validateToken({
+              id: parsedUser.id,
+              token: storedToken,
+            })
+          ).unwrap();
+
+          if (response.status === true) {
+            setUser(response.data);
+            setToken(storedToken);
+            dispatch(setReduxUser(response.data));
+          } else {
+            // If token is invalid, clear everything
+            clearAuthData();
+          }
+        } catch (error) {
+          clearAuthData();
+        }
+      }
+    };
+
+    validateStoredAuth();
   }, [dispatch]);
 
   const saveAuthData = (token, user) => {
-    // Set cookies with 180 days expiration
-    Cookies.set("authToken", token, {
+    const cookieOptions = {
       expires: 180,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-    });
+      path: "/",
+      domain: window.location.hostname,
+    };
 
-    Cookies.set("user", JSON.stringify(user), {
-      expires: 180,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    Cookies.set("authToken", token, cookieOptions);
+    Cookies.set("user", JSON.stringify(user), cookieOptions);
 
     setToken(token);
     setUser(user);

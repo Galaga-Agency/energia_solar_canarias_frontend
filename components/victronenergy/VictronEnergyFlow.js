@@ -234,7 +234,7 @@ const VictronEnergyFlow = () => {
     } finally {
       setIsFetching(false);
     }
-  }, [dispatch, plantId, token]);
+  }, [dispatch, plantId, token, isFetching]);
 
   useEffect(() => {
     fetchRealtimeData();

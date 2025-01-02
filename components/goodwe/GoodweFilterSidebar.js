@@ -5,6 +5,19 @@ import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
 import { RotateCcw } from "lucide-react";
 
+const INITIAL_FILTERS = {
+  status: [],
+  type: [],
+  search: "",
+  capacity: { min: 0, max: 1000 },
+};
+
+const GOODWE_TYPES = {
+  Residential: "Residential",
+  "Commercial rooftop": "Commercial Rooftop",
+  "Battery Storage": "Battery Storage",
+};
+
 const GoodweFilterSidebar = ({
   plants,
   onFilterChange,
@@ -12,24 +25,10 @@ const GoodweFilterSidebar = ({
   setIsSidebarOpen,
 }) => {
   const { t } = useTranslation();
-  const initialFilters = {
-    status: [],
-    type: [],
-    search: "",
-    capacity: { min: 0, max: 1000 },
-  };
-
-  const [filters, setFilters] = useState(initialFilters);
   const { isMobile, isTablet } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
-
-  // Translation keys for Goodwe plant types
-  const GOODWE_TYPES = {
-    Residential: "Residential",
-    "Commercial rooftop": "Commercial Rooftop",
-    "Battery Storage": "Battery Storage",
-  };
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
 
   const filterPlants = useCallback(
     (currentFilters) => {
@@ -78,35 +77,28 @@ const GoodweFilterSidebar = ({
   useEffect(() => {
     if (plants?.length > 0 && !isInitialized) {
       setIsInitialized(true);
-      setTimeout(() => {
-        onFilterChange(plants);
-      }, 0);
+      onFilterChange(plants);
     }
   }, [plants, isInitialized, onFilterChange]);
 
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
       setFilters((prevFilters) => {
-        // Create new array rather than mutating the existing one
-        let updatedFilter = [...prevFilters[filterType]];
-
-        // If value exists, remove it. If it doesn't exist, add it.
+        const updatedFilter = [...prevFilters[filterType]];
         const index = updatedFilter.indexOf(value);
+
         if (index > -1) {
-          updatedFilter = updatedFilter.filter((item) => item !== value);
+          updatedFilter.splice(index, 1);
         } else {
           updatedFilter.push(value);
         }
 
-        // Create new filters object
         const updatedFilters = {
           ...prevFilters,
           [filterType]: updatedFilter,
         };
 
-        // Apply filters immediately
         onFilterChange(filterPlants(updatedFilters));
-
         return updatedFilters;
       });
     },
@@ -121,11 +113,7 @@ const GoodweFilterSidebar = ({
           ...prevFilters,
           search: searchTerm,
         };
-
-        setTimeout(() => {
-          onFilterChange(filterPlants(updatedFilters));
-        }, 0);
-
+        onFilterChange(filterPlants(updatedFilters));
         return updatedFilters;
       });
     },
@@ -135,20 +123,17 @@ const GoodweFilterSidebar = ({
   const handleCapacityChange = useCallback(
     (type, value) => {
       if (!value || isNaN(value)) return;
+
       setFilters((prevFilters) => {
-        const updatedCapacity = {
-          ...prevFilters.capacity,
-          [type]: Number(value),
-        };
         const updatedFilters = {
           ...prevFilters,
-          capacity: updatedCapacity,
+          capacity: {
+            ...prevFilters.capacity,
+            [type]: Number(value),
+          },
         };
 
-        setTimeout(() => {
-          onFilterChange(filterPlants(updatedFilters));
-        }, 0);
-
+        onFilterChange(filterPlants(updatedFilters));
         return updatedFilters;
       });
     },
@@ -156,8 +141,8 @@ const GoodweFilterSidebar = ({
   );
 
   const handleResetFilters = useCallback(() => {
-    setFilters(initialFilters);
-    onFilterChange(filterPlants(initialFilters));
+    setFilters(INITIAL_FILTERS);
+    onFilterChange(filterPlants(INITIAL_FILTERS));
   }, [filterPlants, onFilterChange]);
 
   const closeSidebar = useCallback(() => {
@@ -170,6 +155,7 @@ const GoodweFilterSidebar = ({
         closeSidebar();
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [closeSidebar]);

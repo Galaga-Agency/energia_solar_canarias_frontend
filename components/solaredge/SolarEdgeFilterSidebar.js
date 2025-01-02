@@ -139,7 +139,7 @@ const SolarEdgeFilterSidebar = ({
   const handleResetFilters = useCallback(() => {
     setFilters(initialFilters);
     onFilterChange(filterPlants(initialFilters));
-  }, [filterPlants, onFilterChange]);
+  }, [filterPlants, onFilterChange, initialFilters]);
 
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);

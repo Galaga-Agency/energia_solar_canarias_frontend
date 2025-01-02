@@ -36,7 +36,7 @@ const AuthWrapper = ({ children }) => {
       // If we're logged in and validated but on a public path, redirect to dashboard
       router.push(`/dashboard/${user?.id}`);
     }
-  }, [token, tokenValidated, isLoggedIn, router]);
+  }, [token, tokenValidated, isLoggedIn, router, user?.id]);
 
   return children;
 };

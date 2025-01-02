@@ -28,6 +28,13 @@ import { selectUser } from "@/store/slices/userSlice";
 import { FaSolarPanel } from "react-icons/fa";
 
 const GoodweEnergyFlowDisplay = memo(() => {
+  const params = useParams();
+  const formattedPlantId = params?.plantId?.toString() || null;
+
+  if (!formattedPlantId) {
+    return null;
+  }
+
   const { isMobile, isTablet } = useDeviceType();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -40,8 +47,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
   const lastUpdatedRef = useRef(new Date().toLocaleString());
   const isLoading = useSelector(selectRealtimeLoading);
   const theme = useSelector(selectTheme);
-  const params = useParams();
-  const formattedPlantId = params?.plantId?.toString() || null;
   const user = useSelector(selectUser);
   const token = useMemo(() => user?.tokenIdentificador, [user]);
 
@@ -92,7 +97,7 @@ const GoodweEnergyFlowDisplay = memo(() => {
     unit = "kW",
   } = realtimeData?.powerflow || {};
 
-  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, pv, grid]);
+  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, grid]);
 
   const renderDesktopFlow = useCallback(
     (fromValue, toValue, direction) => {

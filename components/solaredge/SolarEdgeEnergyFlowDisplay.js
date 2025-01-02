@@ -28,9 +28,24 @@ import { FaSolarPanel } from "react-icons/fa";
 import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 
 const SolarEdgeEnergyFlowDisplay = memo(() => {
+  const params = useParams();
+  const formattedPlantId = params?.plantId?.toString() || null;
+  const isLoading = useSelector(selectLoadingDetails);
+  const theme = useSelector(selectTheme);
+
+  if (!formattedPlantId) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <EnergyFlowSkeleton theme={theme} />;
+  }
+
   const { isMobile, isTablet } = useDeviceType();
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const user = useSelector(selectUser);
+
   const [realtimeData, setRealtimeData] = useState({
     powerflow: { load: 0, pv: 0, grid: 0, soc: 0, unit: "kW" },
   });
@@ -38,12 +53,17 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
   const [isFetching, setIsFetching] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const lastUpdatedRef = useRef(new Date().toLocaleString());
-  const isLoading = useSelector(selectLoadingDetails);
-  const theme = useSelector(selectTheme);
-  const params = useParams();
-  const formattedPlantId = params?.plantId?.toString() || null;
-  const user = useSelector(selectUser);
+
   const token = useMemo(() => user?.tokenIdentificador, [user]);
+
+  const {
+    load = 0,
+    pv = 0,
+    grid = 0,
+    unit = "kW",
+  } = realtimeData?.powerflow || {};
+
+  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, grid]);
 
   const fetchRealtimeData = useCallback(async () => {
     if (!formattedPlantId || !token) {
@@ -83,15 +103,6 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
       setIsBlinking(false);
     }
   }, [formattedPlantId, token, dispatch]);
-
-  const {
-    load = 0,
-    pv = 0,
-    grid = 0,
-    unit = "kW",
-  } = realtimeData?.powerflow || {};
-
-  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, pv, grid]);
 
   const renderDesktopFlow = useCallback(
     (fromValue, toValue, direction) => {
@@ -214,14 +225,6 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
     [theme]
   );
 
-  if (!formattedPlantId) {
-    return null;
-  }
-
-  if (isLoading) {
-    return <EnergyFlowSkeleton theme={theme} />;
-  }
-
   useEffect(() => {
     if (!formattedPlantId || !token) {
       return;
@@ -230,7 +233,7 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
     fetchRealtimeData();
     const interval = setInterval(fetchRealtimeData, 30000);
     return () => clearInterval(interval);
-  }, [fetchRealtimeData, formattedPlantId, token, hasFlow]);
+  }, [fetchRealtimeData, formattedPlantId, token]);
 
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">

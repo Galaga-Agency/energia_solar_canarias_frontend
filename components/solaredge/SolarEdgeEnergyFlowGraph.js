@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -43,59 +45,103 @@ import ExportModal from "../ExportModal";
 import useCSVExport from "@/hooks/useCSVExport";
 import CustomSelect from "../ui/CustomSelect";
 
+// Constants
+const MAX_RETRIES = 3;
+const BASE_RETRY_DELAY = 500;
+const MAX_RETRY_DELAY = 1000;
+
+const RANGE_OPTIONS = [
+  { value: "DAY", label: "day" },
+  { value: "WEEK", label: "week" },
+  { value: "MONTH", label: "month" },
+  { value: "YEAR", label: "year" },
+  { value: "CICLO", label: "billingCycle" },
+  { value: "CUSTOM", label: "custom" },
+];
+
+const getVisibleCurves = (theme, t) => [
+  {
+    dataKey: "selfConsumption",
+    color: theme === "dark" ? "#FFD57B" : "#BDBFC0",
+    name: t("Autoconsumo"),
+  },
+  {
+    dataKey: "consumption",
+    color: theme === "dark" ? "#BDBFC0" : "#0B2738",
+    name: t("Consumo"),
+  },
+  {
+    dataKey: "solarProduction",
+    color: theme === "dark" ? "#657880" : "#FFD57B",
+    name: t("Producción Solar"),
+  },
+  {
+    dataKey: "export",
+    color: theme === "dark" ? "#A48D67" : "#9CA3AF",
+    name: t("Exportación"),
+  },
+  {
+    dataKey: "import",
+    color: theme === "dark" ? "#9CA3AF" : "#AD936A",
+    name: t("Importación"),
+  },
+];
+
+const validateData = (data) => {
+  if (!data) return false;
+  const requiredArrays = [
+    "consumption",
+    "export",
+    "import",
+    "selfConsumption",
+    "solarProduction",
+  ];
+  return requiredArrays.every(
+    (key) => Array.isArray(data[key]) && data[key].length > 0
+  );
+};
+
 const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isMobile } = useDeviceType();
-  const [range, setRange] = useState("DAY");
-  const [customRange, setCustomRange] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [retryCount, setRetryCount] = useState(0);
-  const [hasEmptyData, setHasEmptyData] = useState(false);
-  const maxRetries = 3;
-  const retryDelay = Math.floor(Math.random() * 500) + 500;
+  const params = useParams();
+  const plantId = params?.plantId;
+
+  // Selectors
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
   const theme = useSelector(selectTheme);
-  const params = useParams();
-  const plantId = params?.plantId;
+
+  // State
+  const [range, setRange] = useState("DAY");
+  const [customRange, setCustomRange] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [retryCount, setRetryCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { downloadCSV } = useCSVExport();
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
 
-  const VISIBLE_CURVES = [
-    {
-      dataKey: "selfConsumption",
-      color: theme === "dark" ? "#FFD57B" : "#BDBFC0",
-      name: t("Autoconsumo"),
-    },
-    {
-      dataKey: "consumption",
-      color: theme === "dark" ? "#BDBFC0" : "#0B2738",
-      name: t("Consumo"),
-    },
-    {
-      dataKey: "solarProduction",
-      color: theme === "dark" ? "#657880" : "#FFD57B",
-      name: t("Producción Solar"),
-    },
-    {
-      dataKey: "export",
-      color: theme === "dark" ? "#A48D67" : "#9CA3AF",
-      name: t("Exportación"),
-    },
-    {
-      dataKey: "import",
-      color: theme === "dark" ? "#9CA3AF" : "#AD936A",
-      name: t("Importación"),
-    },
-  ];
+  // Hooks
+  const { downloadCSV } = useCSVExport();
 
-  const formatDate = (date) =>
-    date ? date.toISOString().replace("T", " ").slice(0, 19) : undefined;
+  // Memoized values
+  const visibleCurves = useMemo(() => getVisibleCurves(theme, t), [theme, t]);
+
+  const retryDelay = useMemo(
+    () =>
+      Math.floor(Math.random() * (MAX_RETRY_DELAY - BASE_RETRY_DELAY)) +
+      BASE_RETRY_DELAY,
+    []
+  );
+
+  const formatDate = useCallback(
+    (date) =>
+      date ? date.toISOString().replace("T", " ").slice(0, 19) : undefined,
+    []
+  );
 
   const calculateStartDate = useCallback(() => {
     const now = new Date();
@@ -122,14 +168,25 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
         yearStart.setDate(now.getDate());
         return yearStart;
       }
-      case "CICLO": {
+      case "CICLO":
         return new Date(now.getFullYear(), now.getMonth(), 1);
-      }
       default:
         return now;
     }
   }, [range]);
 
+  const handleFetch = useCallback(
+    async (params) => {
+      try {
+        await dispatch(fetchSolarEdgeGraphData(params));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+    [dispatch]
+  );
+
+  // Date range effect
   useEffect(() => {
     if (!customRange) {
       setStartDate(calculateStartDate());
@@ -137,81 +194,45 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     }
   }, [range, customRange, calculateStartDate]);
 
+  // Last update time effect
   useEffect(() => {
     if (graphData?.overview?.lastUpdateTime) {
       setLastUpdateTime(graphData.overview.lastUpdateTime);
     }
   }, [graphData]);
 
-  const handleFetch = useCallback(
-    async (params) => {
-      try {
-        await dispatch(
-          fetchSolarEdgeGraphData({
-            plantId: params.id,
-            dia: params.dia,
-            fechaInicio: params.fechaInicio,
-            fechaFin: params.fechaFin,
-            token: params.token,
-          })
-        );
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setHasEmptyData(true);
-      }
-    },
-    [dispatch]
-  );
-
-  // Update validateData function
+  // Data validation and retry effect
   useEffect(() => {
-    const validateData = (data) => {
-      if (!data) return false;
-
-      // Check if we have the required arrays with data
-      const requiredArrays = [
-        "consumption",
-        "export",
-        "import",
-        "selfConsumption",
-        "solarProduction",
-      ];
-      return requiredArrays.every(
-        (key) => Array.isArray(data[key]) && data[key].length > 0
-      );
-    };
-
+    let retryTimer;
     const isDataValid = validateData(graphData);
 
-    if (!isDataValid) {
-      if (retryCount < maxRetries) {
-        setHasEmptyData(true);
-        const retryTimer = setTimeout(() => {
-          setRetryCount((prev) => prev + 1);
-          handleFetch({
-            id: plantId,
-            dia:
-              range === "DAY"
-                ? "QUARTER_OF_AN_HOUR"
-                : range === "YEAR"
-                ? "MONTH"
-                : "DAY",
-            fechaInicio: formatDate(
-              customRange ? startDate : calculateStartDate()
-            ),
-            fechaFin: formatDate(customRange ? endDate : new Date()),
-            token,
-          });
-        }, retryDelay);
-        return () => clearTimeout(retryTimer);
-      }
-    } else {
-      setHasEmptyData(false);
-      setRetryCount(0);
+    if (!isDataValid && retryCount < MAX_RETRIES) {
+      retryTimer = setTimeout(() => {
+        setRetryCount((prev) => prev + 1);
+        handleFetch({
+          id: plantId,
+          dia:
+            range === "DAY"
+              ? "QUARTER_OF_AN_HOUR"
+              : range === "YEAR"
+              ? "MONTH"
+              : "DAY",
+          fechaInicio: formatDate(
+            customRange ? startDate : calculateStartDate()
+          ),
+          fechaFin: formatDate(customRange ? endDate : new Date()),
+          token,
+        });
+      }, retryDelay);
     }
+
+    return () => {
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, [
     graphData,
     retryCount,
+    retryDelay,
     handleFetch,
     plantId,
     range,
@@ -220,8 +241,10 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     endDate,
     token,
     calculateStartDate,
+    formatDate,
   ]);
 
+  // Initial fetch effect
   useEffect(() => {
     handleFetch({
       id: plantId,
@@ -244,8 +267,10 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     endDate,
     calculateStartDate,
     token,
+    formatDate,
   ]);
 
+  // Cleanup effect
   useEffect(() => {
     return () => {
       dispatch(clearGraphData());
@@ -282,6 +307,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     if (!transformedData.length) return [];
 
     const now = new Date();
+
     switch (range) {
       case "DAY": {
         const past24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -330,46 +356,49 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     }
   }, [transformedData, range]);
 
-  const formatXAxis = (dateStr) => {
-    try {
-      const date = new Date(dateStr);
+  const formatXAxis = useCallback(
+    (dateStr) => {
+      try {
+        const date = new Date(dateStr);
 
-      switch (range) {
-        case "DAY":
-          return date.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-        case "WEEK":
-          return date.toLocaleDateString(undefined, {
-            weekday: "short",
-            month: "short",
-            day: "numeric",
-          });
-        case "MONTH":
-          return date.toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
-          });
-        case "YEAR":
-          return date.toLocaleDateString(undefined, {
-            month: "short",
-            year: "2-digit",
-          });
-        case "CICLO":
-          return date.toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
-          });
-        default:
-          return date.toLocaleDateString();
+        switch (range) {
+          case "DAY":
+            return date.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          case "WEEK":
+            return date.toLocaleDateString(undefined, {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            });
+          case "MONTH":
+            return date.toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+            });
+          case "YEAR":
+            return date.toLocaleDateString(undefined, {
+              month: "short",
+              year: "2-digit",
+            });
+          case "CICLO":
+            return date.toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+            });
+          default:
+            return date.toLocaleDateString();
+        }
+      } catch {
+        return dateStr;
       }
-    } catch {
-      return dateStr;
-    }
-  };
+    },
+    [range]
+  );
 
-  const handleButtonClick = () => {
+  const handleButtonClick = useCallback(() => {
     if (!token) {
       console.error("Token is missing! Cannot fetch data.");
       return;
@@ -387,7 +416,17 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
       fechaFin: formatDate(customRange ? endDate : new Date()),
       token,
     });
-  };
+  }, [
+    token,
+    handleFetch,
+    plantId,
+    range,
+    customRange,
+    startDate,
+    endDate,
+    calculateStartDate,
+    formatDate,
+  ]);
 
   const renderTooltip = useCallback(
     (name) => {
@@ -436,15 +475,13 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     if (!transformedData.length) return true;
 
     return transformedData.every((dataPoint) =>
-      VISIBLE_CURVES.every(
+      visibleCurves.every(
         (curve) => !dataPoint[curve.dataKey] || dataPoint[curve.dataKey] === 0
       )
     );
-  }, [transformedData, VISIBLE_CURVES]);
+  }, [transformedData, visibleCurves]);
 
-  // console.log("filteredData: ", filteredData);
-
-  const handleExportCSV = () => {
+  const handleExportCSV = useCallback(() => {
     const exportData = filteredData.map((item) => ({
       "Hora de medición": item.date,
       "Producción (W)": item.solarProduction || 0,
@@ -454,16 +491,17 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
       "De Solar (W)": item.selfConsumption || 0,
     }));
 
-    // Download the combined data as CSV
     downloadCSV(exportData, "solaredge_data.csv");
     setIsModalOpen(false);
-  };
+  }, [filteredData, downloadCSV]);
+
+  if (isLoading) {
+    return <SolarEdgeEnergyFlowGraphSkeleton theme={theme} />;
+  }
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6">
-      {/* Header Section */}
       <div className="flex flex-col gap-4 mb-6">
-        {/* Title and Controls Row */}
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <div className="flex flex-col md:flex-row justify-start md:items-center">
             <div className="flex items-center justify-between">
@@ -501,21 +539,12 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
           </div>
           <div className="flex items-center gap-4">
             <CustomSelect
-              value={t(range.toLowerCase())} // Pass the translated current value
+              value={range}
               onChange={(value) => {
                 setRange(value);
                 setCustomRange(value === "CUSTOM");
               }}
-              label="" // Remove the label since we just want to show the value
-              options={[
-                { value: "DAY", label: "day" },
-                { value: "WEEK", label: "week" },
-                { value: "MONTH", label: "month" },
-                { value: "YEAR", label: "year" },
-                { value: "CICLO", label: "billingCycle" },
-                { value: "CUSTOM", label: "custom" },
-              ]}
-              className="text-sm" // Match the text size with the rest of the UI
+              options={RANGE_OPTIONS}
             />
             {!isMobile && (
               <button
@@ -528,7 +557,6 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
           </div>
         </div>
 
-        {/* Date Picker Row */}
         {customRange && (
           <div className="flex flex-col md:flex-row gap-4">
             <DatePicker
@@ -561,12 +589,8 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
         )}
       </div>
 
-      {/* Content Section */}
-      {isLoading ? (
-        <SolarEdgeEnergyFlowGraphSkeleton theme={theme} />
-      ) : isEmptyOrZeroData ? (
+      {isEmptyOrZeroData ? (
         <div>
-          {/* No Data Available Message */}
           <div className="flex items-center justify-center pb-4 px-8 gap-4">
             <p className="text-lg text-gray-500 dark:text-gray-400">
               {t("noDataAvailable")}
@@ -581,7 +605,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                 <TooltipContent side="top">
                   <p className="text-sm text-gray-700 dark:text-gray-200">
                     {t("noDataTooltip", {
-                      range: t(range.toLowerCase()), // Translates the selected range
+                      range: t(range.toLowerCase()),
                     })}
                   </p>
                 </TooltipContent>
@@ -589,12 +613,11 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
             </TooltipProvider>
           </div>
 
-          {/* Empty Graph */}
           <div className="overflow-x-auto">
             <div style={{ minWidth: "600px" }}>
               <ResponsiveContainer width="100%" height={400}>
                 <ComposedChart
-                  data={[{ date: "", selfConsumption: 0 }]} // Mock empty data
+                  data={[{ date: "", selfConsumption: 0 }]}
                   margin={{
                     left: 5,
                     right: isMobile ? -25 : 15,
@@ -609,11 +632,11 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                   />
                   <XAxis
                     dataKey="date"
-                    tick={{ fill: "#ccc" }} // Greyed out axis
+                    tick={{ fill: "#ccc" }}
                     interval="preserveStartEnd"
                   />
                   <YAxis
-                    tick={{ fill: "#ccc" }} // Greyed out axis
+                    tick={{ fill: "#ccc" }}
                     label={{
                       value: "kW",
                       angle: -90,
@@ -621,10 +644,9 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                       offset: 5,
                     }}
                   />
-                  <Tooltip content={() => null} /> {/* Empty tooltip */}
+                  <Tooltip content={() => null} />
                   <Legend content={customLegendRenderer} />
-                  {/* Empty line without data */}
-                  {VISIBLE_CURVES.map((curve) => (
+                  {visibleCurves.map((curve) => (
                     <Line
                       key={curve.dataKey}
                       type="monotone"
@@ -632,7 +654,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                       stroke={curve.color}
                       name={curve.name}
                       dot={false}
-                      strokeWidth={0} // Hide lines
+                      strokeWidth={0}
                     />
                   ))}
                 </ComposedChart>
@@ -642,7 +664,6 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
         </div>
       ) : (
         <>
-          {/* Percentage Bars */}
           <div className="mb-6 flex flex-col gap-6">
             <PercentageBar
               title={t("Producción del Sistema")}
@@ -664,7 +685,6 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
             />
           </div>
 
-          {/* Graph */}
           <div className="overflow-x-auto">
             <div style={{ minWidth: "600px" }}>
               <ResponsiveContainer width="100%" height={400}>
@@ -727,9 +747,8 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                       );
                     }}
                   />
-
                   <Legend content={customLegendRenderer} />
-                  {VISIBLE_CURVES.map((curve) => (
+                  {visibleCurves.map((curve) => (
                     <Line
                       key={curve.dataKey}
                       type="monotone"
@@ -747,7 +766,6 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
         </>
       )}
 
-      {/* Export Modal */}
       {isModalOpen && (
         <ExportModal
           isOpen={isModalOpen}

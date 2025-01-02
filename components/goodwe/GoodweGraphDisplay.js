@@ -36,51 +36,72 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { BsCalendar3 } from "react-icons/bs";
 
+const CHART_RANGE_OPTIONS = [
+  { value: "dia", label: "day" },
+  { value: "mes", label: "month" },
+  { value: "año", label: "year" },
+];
+
+const CHART_TYPE_OPTIONS = [
+  { value: "potencia", label: "power" },
+  { value: "generacion de energia y ingresos", label: "energyAndIncome" },
+  { value: "proporcion para uso personal", label: "personalUse" },
+  { value: "indice de contribucion", label: "contributionIndex" },
+  { value: "estadisticas sobre energia", label: "energyStatistics" },
+];
+
 const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const [range, setRange] = useState("dia");
-  const [chartIndexId, setChartIndexId] = useState("potencia");
-  const [isInitialized, setIsInitialized] = useState(false);
+  const { isMobile, isDesktop } = useDeviceType();
+
+  // Redux selectors
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
-  const currentDate = useMemo(() => new Date().toISOString().split("T")[0], []);
-  const { isMobile, isDesktop } = useDeviceType();
   const theme = useSelector(selectTheme);
+  const token = useMemo(() => user?.tokenIdentificador, [user]);
+
+  // Local state
+  const [range, setRange] = useState("dia");
+  const [chartIndexId, setChartIndexId] = useState("potencia");
+  const [isInitialized, setIsInitialized] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDateSelectorOpen, setIsDateSelectorOpen] = useState(false);
 
+  // Replaced useMemo with constant since it doesn't depend on any values
+  const currentDate = new Date().toISOString().split("T")[0];
+
   const handleFetchGraph = useCallback(async () => {
-    if (plantId && user?.tokenIdentificador && selectedDate) {
-      try {
-        const formattedDate = selectedDate.toISOString().split("T")[0];
-        const requestBody = {
-          id: plantId,
-          date: formattedDate,
-          chartIndexId,
-          token: user.tokenIdentificador,
-        };
+    if (!plantId || !token || !selectedDate) return;
 
-        if (chartIndexId !== "potencia") {
-          requestBody.range = range;
-        }
+    try {
+      const formattedDate = selectedDate.toISOString().split("T")[0];
+      const requestBody = {
+        id: plantId,
+        date: formattedDate,
+        chartIndexId,
+        token,
+      };
 
-        const response = await dispatch(
-          fetchGoodweGraphData(requestBody)
-        ).unwrap();
-
-        const lines = response?.data?.data?.lines || [];
-        const todayPV = lines.length > 0 ? lines[0].xy.slice(-1)[0]?.y : null;
-
-        if (onValueUpdate && todayPV !== null) {
-          onValueUpdate(todayPV);
-        }
-      } catch (error) {
-        console.error("Error fetching graph data:", error);
+      if (chartIndexId !== "potencia") {
+        requestBody.range = range;
       }
+
+      const response = await dispatch(
+        fetchGoodweGraphData(requestBody)
+      ).unwrap();
+
+      const lines = response?.data?.data?.lines || [];
+      const todayPV = lines.length > 0 ? lines[0].xy.slice(-1)[0]?.y : null;
+
+      if (onValueUpdate && todayPV !== null) {
+        onValueUpdate(todayPV);
+      }
+    } catch (error) {
+      console.error("Error fetching graph data:", error);
     }
   }, [
     dispatch,
@@ -88,70 +109,66 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
     selectedDate,
     range,
     chartIndexId,
-    user?.tokenIdentificador,
+    token,
     onValueUpdate,
   ]);
 
+  // Initialization effect
   useEffect(() => {
-    const shouldFetchData =
-      !isInitialized && plantId && user?.tokenIdentificador;
-    if (shouldFetchData) {
+    if (!isInitialized && plantId && token) {
       setIsInitialized(true);
       handleFetchGraph();
     }
-  }, [isInitialized, plantId, user?.tokenIdentificador, handleFetchGraph]);
+  }, [isInitialized, plantId, token, handleFetchGraph]);
 
+  // Data fetching effect
   useEffect(() => {
     if (isInitialized) {
       handleFetchGraph();
     }
   }, [isInitialized, handleFetchGraph]);
 
-  useEffect(() => {
-    return () => {
+  // Cleanup effect
+  useEffect(
+    () => () => {
       dispatch(clearGraphData());
-    };
-  }, [dispatch]);
+    },
+    [dispatch]
+  );
 
   const transformedData = useMemo(() => {
-    if (!graphData?.data?.data) return []; // Handle empty data gracefully
+    if (!graphData?.data?.data) return [];
 
     if (chartIndexId === "potencia") {
       const lines = graphData?.data?.data?.lines || [];
-      if (!lines.length) return []; // No data available
+      if (!lines.length) return [];
 
-      // Current time
       const now = new Date();
       const currentHour = now.getHours();
-
-      // Combine all the lines into a single array for the graph
       const combinedData = lines[0].xy.map((point, index) => {
-        const dataPoint = { time: point.x }; // X-axis data
+        const dataPoint = { time: point.x };
         lines.forEach((line) => {
           if (line.xy[index]) {
-            dataPoint[line.key] = line.xy[index].y; // Y-axis data for each line
+            dataPoint[line.key] = line.xy[index].y;
           }
         });
         return dataPoint;
       });
 
-      // Get last timestamp from data (e.g., 00:00 - 23:00)
       const lastTimestamp = combinedData[combinedData.length - 1]?.time;
+      if (!lastTimestamp) return combinedData;
 
-      // Extend to the current hour if data is missing
       const extendedData = [...combinedData];
-      if (lastTimestamp) {
-        const startTime = new Date(`${currentDate}T${lastTimestamp}:00`);
-        for (let hour = startTime.getHours() + 1; hour <= currentHour; hour++) {
-          const timeLabel = hour.toString().padStart(2, "0") + ":00";
-          extendedData.push({
-            time: timeLabel, // Add new time labels
-            ...lines.reduce((acc, line) => {
-              acc[line.key] = 0; // Fill missing data with 0
-              return acc;
-            }, {}),
-          });
-        }
+      const startTime = new Date(`${currentDate}T${lastTimestamp}:00`);
+      for (let hour = startTime.getHours() + 1; hour <= currentHour; hour++) {
+        const timeLabel = hour.toString().padStart(2, "0") + ":00";
+        extendedData.push({
+          time: timeLabel,
+          ...lines.reduce((acc, line) => {
+            acc[line.key] = 0;
+            return acc;
+          }, {}),
+        });
       }
 
       return extendedData;
@@ -183,106 +200,93 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
       };
     }
 
-    if (chartIndexId === "generacion de energia y ingresos") {
-      const lines = graphData?.data?.data?.lines || [];
-      if (!lines.length) return []; // No data available
+    const lines = graphData?.data?.data?.lines || [];
+    if (!lines.length) return [];
 
-      return lines[0].xy.map((point, index) => {
-        const dataPoint = { date: point.x };
-        lines.forEach((line) => {
-          if (line.xy[index]) {
-            dataPoint[line.name] = line.xy[index].y;
-          }
-        });
-        return dataPoint;
-      });
-    }
-
-    const validData = graphData?.data?.data?.lines || [];
-    if (!validData.length) return []; // Handle no valid data gracefully
-
-    return validData[0].xy.map((point, index) => {
+    return lines[0].xy.map((point, index) => {
       const dataPoint = { date: point.x };
-      validData.forEach((line) => {
+      lines.forEach((line) => {
         if (line.xy[index]) {
           dataPoint[line.name] = line.xy[index].y;
         }
       });
       return dataPoint;
     });
-  }, [graphData?.data?.data, chartIndexId, t]);
+  }, [graphData?.data?.data, chartIndexId, t, currentDate]);
 
-  // console.log("graphData: ", graphData);
+  // Color utility functions
+  const getBarOrLineColor = useCallback(
+    (lineName) => {
+      switch (chartIndexId) {
+        case "generacion de energia y ingresos":
+          if (lineName === "PVGeneration")
+            return theme === "dark" ? "#AD936A" : "#9CA3AF";
+          if (lineName === "Income")
+            return theme === "dark" ? "#FFD57B" : "#0B2738";
+          break;
+        case "proporcion para uso personal":
+          if (lineName === "SelfUse")
+            return theme === "dark" ? "#FFD57B" : "#AD936A";
+          if (lineName === "SelfUseRatio")
+            return theme === "dark" ? "#BDBFC0" : "#0B2738";
+          if (lineName === "PVGeneration")
+            return theme === "dark" ? "#AD936A" : "#9CA3AF";
+          if (lineName === "Sell")
+            return theme === "dark" ? "#657880" : "#FFD57B";
+          break;
+        case "indice de contribucion":
+          if (lineName === "Consumption")
+            return theme === "dark" ? "#AD936A" : "#9CA3AF";
+          if (lineName === "Buy")
+            return theme === "dark" ? "#BDBFC0" : "#FFD57B";
+          if (lineName === "ContributionRatio")
+            return theme === "dark" ? "#FFD57B" : "#AD936A";
+          if (lineName === "SelfUse")
+            return theme === "dark" ? "#BDBFC0" : "#0B2738";
+          break;
+        default:
+          return "#d3d3d3";
+      }
+    },
+    [chartIndexId, theme]
+  );
 
-  const getBarOrLineColor = (lineName) => {
-    switch (chartIndexId) {
-      case "generacion de energia y ingresos":
-        if (lineName === "PVGeneration")
-          return theme === "dark" ? "#AD936A" : "#9CA3AF";
-        if (lineName === "Income")
-          return theme === "dark" ? "#FFD57B" : "#0B2738";
-        break;
-
-      case "proporcion para uso personal":
-        if (lineName === "SelfUse")
-          return theme === "dark" ? "#FFD57B" : "#AD936A";
-        if (lineName === "SelfUseRatio")
-          return theme === "dark" ? "#BDBFC0" : "#0B2738";
-        if (lineName === "PVGeneration")
-          return theme === "dark" ? "#AD936A" : "#9CA3AF";
-        if (lineName === "Sell")
-          return theme === "dark" ? "#657880" : "#FFD57B";
-        break;
-
-      case "indice de contribucion":
-        if (lineName === "Consumption")
-          return theme === "dark" ? "#AD936A" : "#9CA3AF";
-        if (lineName === "Buy") return theme === "dark" ? "#BDBFC0" : "#FFD57B";
-        if (lineName === "ContributionRatio")
-          return theme === "dark" ? "#FFD57B" : "#AD936A";
-        if (lineName === "SelfUse")
-          return theme === "dark" ? "#BDBFC0" : "#0B2738";
-        break;
-
-      default:
-        return "#d3d3d3";
-    }
-  };
-
-  const getPotenciaLineColor = (lineName, theme) => {
+  const getPotenciaLineColor = useCallback((lineName, currentTheme) => {
     if (!lineName || typeof lineName !== "string") {
       console.warn("Invalid lineName:", lineName);
-      return "#d3d3d3"; // Default color for invalid line names
+      return "#d3d3d3";
     }
 
-    const sanitizedLineName = lineName.replace("PCurve_Power_", ""); // Remove prefix
+    const sanitizedLineName = lineName.replace("PCurve_Power_", "");
     const colorMap = {
-      PV: theme === "dark" ? "#FFD57B" : "#BDBFC0",
-      Battery: theme === "dark" ? "#BDBFC0" : "#0B2738",
-      Meter: theme === "dark" ? "#657880" : "#FFD57B",
-      Load: theme === "dark" ? "#A48D67" : "#9CA3AF",
-      SOC: theme === "dark" ? "#9CA3AF" : "#AD936A",
+      PV: currentTheme === "dark" ? "#FFD57B" : "#BDBFC0",
+      Battery: currentTheme === "dark" ? "#BDBFC0" : "#0B2738",
+      Meter: currentTheme === "dark" ? "#657880" : "#FFD57B",
+      Load: currentTheme === "dark" ? "#A48D67" : "#9CA3AF",
+      SOC: currentTheme === "dark" ? "#9CA3AF" : "#AD936A",
     };
 
-    return colorMap[sanitizedLineName] || "#d3d3d3"; // Default color for unknown keys
-  };
+    return colorMap[sanitizedLineName] || "#d3d3d3";
+  }, []);
 
-  const getPieChartColor = (dataKey) => {
-    const trimmedKey = dataKey.trim(); // Trim leading/trailing spaces
-    switch (trimmedKey) {
-      case "Red":
-        return theme === "dark" ? "#FFD57B" : "#FFD57B";
-      case "Interno":
-        return theme === "dark" ? "#657880" : "#0B2738";
-      case "PV+BAT":
-        return theme === "dark" ? "#657880" : "#0B2738";
-      case "Alimentar":
-        return theme === "dark" ? "#FFD57B" : "#FFD57B";
-      default:
-        console.warn(`Unknown dataKey: "${trimmedKey}"`);
-        return "#d3d3d3";
-    }
-  };
+  const getPieChartColor = useCallback(
+    (dataKey) => {
+      const trimmedKey = dataKey.trim();
+      switch (trimmedKey) {
+        case "Red":
+          return theme === "dark" ? "#FFD57B" : "#FFD57B";
+        case "Interno":
+        case "PV+BAT":
+          return theme === "dark" ? "#657880" : "#0B2738";
+        case "Alimentar":
+          return theme === "dark" ? "#FFD57B" : "#FFD57B";
+        default:
+          console.warn(`Unknown dataKey: "${trimmedKey}"`);
+          return "#d3d3d3";
+      }
+    },
+    [theme]
+  );
 
   const handleExportCSV = () => {
     if (!transformedData || !transformedData.length) {

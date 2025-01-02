@@ -14,12 +14,16 @@ import {
 } from "@/store/slices/plantsSlice";
 import EnergyLoadingClock from "@/components/EnergyLoadingClock";
 import { useTranslation } from "next-i18next";
-import { UtilityPole } from "lucide-react";
+import {
+  UtilityPole,
+  ChevronRight,
+  ChevronDown,
+  Home,
+  ChevronLeft,
+} from "lucide-react";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
-import { ChevronRight, ChevronLeft } from "lucide-react";
-import { Home } from "lucide-react";
 import { FaSolarPanel } from "react-icons/fa";
 import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 
@@ -80,20 +84,6 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
     }
   }, [formattedPlantId, token, dispatch]);
 
-  useEffect(() => {
-    if (!formattedPlantId || !token) {
-      return;
-    }
-
-    fetchRealtimeData();
-    const interval = setInterval(fetchRealtimeData, 30000);
-    return () => clearInterval(interval);
-  }, [fetchRealtimeData, formattedPlantId, token]);
-
-  const formatPowerValue = (value, unit) => {
-    return `${value.toFixed(2)} ${unit}`;
-  };
-
   const {
     load = 0,
     pv = 0,
@@ -101,28 +91,16 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
     unit = "kW",
   } = realtimeData?.powerflow || {};
 
-  // console.log("realtimeData: ", realtimeData);
+  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, pv, grid]);
 
-  const hasFlow = useMemo(() => load > 0, [load]);
-
-  const renderFlow = useCallback(
+  const renderDesktopFlow = useCallback(
     (fromValue, toValue, direction) => {
-      if (fromValue <= 0 || toValue <= 0) return null;
+      if (!fromValue || !toValue || fromValue === 0 || toValue === 0)
+        return null;
 
-      const FlowIcon = isMobile
-        ? ChevronRight
-        : direction === "right"
-        ? ChevronRight
-        : ChevronLeft;
-
-      const flowClass = isMobile
-        ? direction === "right"
-          ? "animate-flow-right"
-          : "animate-flow-right"
-        : direction === "right"
-        ? "animate-flow-right"
-        : "animate-flow-left";
-
+      const FlowIcon = direction === "right" ? ChevronRight : ChevronLeft;
+      const flowClass =
+        direction === "right" ? "animate-flow-right" : "animate-flow-left";
       const intensity = Math.min(Math.max((fromValue / 10) * 100, 20), 100);
       const glowColor =
         theme === "dark"
@@ -137,19 +115,13 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
               background: `linear-gradient(${
                 direction === "right" ? "90deg" : "270deg"
               }, 
-            transparent 0%, 
-            ${glowColor} 50%, 
-            transparent 100%)`,
+              transparent 0%, 
+              ${glowColor} 50%, 
+              transparent 100%)`,
             }}
           />
 
-          <div
-            className={`flex ${
-              isMobile && direction === "left"
-                ? "scale-x-[-1] -scale-y-[1]"
-                : ""
-            } ${direction && !isMobile === "left" ? "" : "gap-3"}`}
-          >
+          <div className={`flex gap-3`}>
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
@@ -157,11 +129,11 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
               >
                 <FlowIcon
                   className={`
-                text-custom-yellow 
-                  ${flowClass} relative z-10
-                  transition-transform hover:scale-110
-                `}
-                  size={isMobile ? 28 : 40}
+                    text-custom-yellow 
+                    ${flowClass} relative z-10
+                    transition-transform hover:scale-110
+                  `}
+                  size={40}
                   strokeWidth={2.5}
                   style={{
                     animationDelay: `${i * 200}ms`,
@@ -170,10 +142,10 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
                 />
                 <div
                   className={`
-                  absolute inset-0 blur-md -z-10 
-                  bg-custom-yellow/30 
-                  ${flowClass}
-                `}
+                    absolute inset-0 blur-md -z-10 
+                    bg-custom-yellow/30 
+                    ${flowClass}
+                  `}
                   style={{
                     animationDelay: `${i * 200}ms`,
                     transform: "scale(1.2)",
@@ -185,98 +157,62 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
         </div>
       );
     },
-    [theme, isMobile]
+    [theme]
   );
 
-  const renderMobileLayout = () => {
-    return (
-      <div className="relative flex flex-col items-center">
-        {/* Top Solar Panel Container */}
+  const renderMobileFlow = useCallback(
+    (direction, fromValue, toValue) => {
+      if (!fromValue || !toValue || fromValue === 0 || toValue === 0)
+        return null;
+
+      const intensity = Math.min(Math.max((fromValue / 10) * 100, 20), 100);
+      const glowColor =
+        theme === "dark"
+          ? `rgba(255, 213, 122, ${intensity / 100})`
+          : `rgba(0, 44, 63, ${intensity / 100})`;
+
+      return (
         <div
-          className={`w-[180px] flex flex-col items-center ${
-            pv > 0 ? "mb-32" : ""
-          } `}
+          className={`absolute ${
+            direction === "left"
+              ? "-left-12 -scale-x-100 -rotate-24"
+              : "-right-12 rotate-48"
+          } top-20 w-32 h-52`}
         >
-          <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] font-group-hover:scale-105 transition-transform mb-2" />
+          <div
+            className="absolute w-full h-full rounded-tr-full opacity-20"
+            style={{
+              background: `linear-gradient(0deg, transparent 0%, ${glowColor} 50%, transparent 100%)`,
+            }}
+          />
 
-          <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
-            <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
-              {t("Energy Produced")}
-            </span>
-            <span
-              className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
-                isBlinking ? "animate-double-blink" : ""
-              }`}
-            >
-              {error ? "N/A" : formatPowerValue(pv, unit)}
-            </span>
-          </div>
-        </div>
-
-        {/* Container for bottom row with flows */}
-        <div className="relative w-full max-w-[400px]">
-          {/* Flow to House (Left) */}
-          <div className="absolute -top-24 left-1/4 -translate-x-1/2 w-24 h-24 flex items-center justify-center transform -rotate-[83deg]">
-            {renderFlow(pv, load, "left")}
-          </div>
-
-          {/* Flow to Grid (Right) */}
-          <div className="absolute -top-24 right-1/4 translate-x-1/2 w-24 h-24 flex items-center justify-center transform rotate-[83deg]">
-            {renderFlow(pv, grid, "right")}
-          </div>
-
-          {/* Bottom Icons Container */}
-          <div className="flex justify-center items-end gap-4 md:gap-24 mt-6">
-            {/* House */}
-            <div className="w-[180px]">
-              <div className="flex flex-col items-center">
-                <Home
-                  className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
-                  strokeWidth={2.5}
-                  size={80}
-                />
-                <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
-                  <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
-                    {t("Energy Consumed")}
-                  </span>
-                  <span
-                    className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
-                      isBlinking ? "animate-double-blink" : ""
-                    }`}
-                  >
-                    {error ? "N/A" : formatPowerValue(load, unit)}
-                  </span>
-                </div>
-              </div>
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="relative">
+              <div
+                className="absolute bg-custom-yellow/30 blur-md animate-circle-flow"
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  animationDelay: `${i * 1000}ms`,
+                  transform: "scale(1.2)",
+                }}
+              />
+              <ChevronDown
+                className="absolute text-custom-yellow animate-circle-flow"
+                size={28}
+                strokeWidth={2.5}
+                style={{
+                  animationDelay: `${i * 1000}ms`,
+                  filter: `drop-shadow(0 0 ${intensity / 10}px ${glowColor})`,
+                }}
+              />
             </div>
-
-            {/* Grid */}
-            <div className="w-[180px]">
-              <div className="flex flex-col items-center">
-                <UtilityPole
-                  strokeWidth={2.5}
-                  size={80}
-                  className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow mb-2"
-                />
-                <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
-                  <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
-                    {t("Energy Exported")}
-                  </span>
-                  <span
-                    className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
-                      isBlinking ? "animate-double-blink" : ""
-                    }`}
-                  >
-                    {error ? "N/A" : formatPowerValue(grid, unit)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-      </div>
-    );
-  };
+      );
+    },
+    [theme]
+  );
 
   if (!formattedPlantId) {
     return null;
@@ -285,6 +221,16 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
   if (isLoading) {
     return <EnergyFlowSkeleton theme={theme} />;
   }
+
+  useEffect(() => {
+    if (!formattedPlantId || !token) {
+      return;
+    }
+
+    fetchRealtimeData();
+    const interval = setInterval(fetchRealtimeData, 30000);
+    return () => clearInterval(interval);
+  }, [fetchRealtimeData, formattedPlantId, token, hasFlow]);
 
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
@@ -318,43 +264,14 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
         )}
       </div>
 
-      {/* Responsive Layout Switch */}
-      <div className="md:hidden">{renderMobileLayout()}</div>
-
-      {/* Desktop Layout */}
-      <div className="hidden md:flex flex-row justify-between items-end gap-8">
-        <div className="w-1/3 relative flex flex-col items-center">
-          <div className="group flex flex-col items-center gap-4 w-full">
-            <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
-            <Home
-              className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
-              strokeWidth={2}
-              size={isTablet ? 72 : 150}
-            />
-            <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
-              <span className="block text-sm text-slate-600 dark:text-slate-300">
-                {t("Energy Consumed")}
-              </span>
-              <span
-                className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
-                  isBlinking ? "animate-double-blink" : ""
-                }`}
-              >
-                {error ? "N/A" : formatPowerValue(load, unit)}
-              </span>
-            </div>
-          </div>
-          <div className="absolute -right-12 top-[20%] lg:top-[40%] -translate-y-1/2">
-            {renderFlow(pv, load, "left")}
-          </div>
-        </div>
-
-        <div className="w-1/3 relative flex flex-col items-center">
-          <div className="group flex flex-col items-center gap-4 w-full relative">
-            <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
-            <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] group-hover:scale-105 transition-transform mb-2" />
-            <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
-              <span className="block text-sm text-slate-600 dark:text-slate-300">
+      {/* Mobile Layout */}
+      {isMobile ? (
+        <div className="relative flex flex-col items-center">
+          {/* Top Solar Panel Container */}
+          <div className={`w-[180px] flex flex-col items-center`}>
+            <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] font-group-hover:scale-105 transition-transform mb-2" />
+            <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
+              <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
                 {t("Energy Produced")}
               </span>
               <span
@@ -362,37 +279,138 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
-                {error ? "N/A" : formatPowerValue(pv, unit)}
+                {error ? "N/A" : `${pv.toFixed(2)} ${unit}`}
               </span>
             </div>
           </div>
-        </div>
 
-        <div className="w-1/3 relative flex flex-col items-center">
-          <div className="absolute -left-12 top-[20%] lg:top-[40%] -translate-y-1/2">
-            {renderFlow(pv, grid, "right")}
-          </div>
-          <div className="group flex flex-col items-center gap-4 w-full">
-            <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
-            <UtilityPole
-              size={isTablet ? 72 : 150}
-              className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
-            />
-            <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
-              <span className="block text-sm text-slate-600 dark:text-slate-300">
-                {t("Energy Exported")}
-              </span>
-              <span
-                className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
-                  isBlinking ? "animate-double-blink" : ""
-                }`}
-              >
-                {error ? "N/A" : formatPowerValue(grid, unit)}
-              </span>
+          {/* Flow Paths */}
+          {renderMobileFlow("left", pv, load)}
+          {renderMobileFlow("right", pv, grid)}
+
+          {/* Bottom Icons Container */}
+          <div className="flex justify-center items-end gap-4 md:gap-24 mt-6">
+            {/* House */}
+            <div className="w-auto">
+              <div className="flex flex-col items-center">
+                <Home
+                  className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
+                  strokeWidth={2.5}
+                  size={80}
+                />
+                <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
+                  <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
+                    {t("Energy Consumed")}
+                  </span>
+                  <span
+                    className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
+                      isBlinking ? "animate-double-blink" : ""
+                    }`}
+                  >
+                    {error ? "N/A" : `${load.toFixed(2)} ${unit}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Grid */}
+            <div className="w-auto">
+              <div className="flex flex-col items-center">
+                <UtilityPole
+                  strokeWidth={2.5}
+                  size={80}
+                  className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow mb-2"
+                />
+                <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg shadow-md w-full text-center">
+                  <span className="block text-sm text-slate-600 dark:text-slate-300 text-nowrap">
+                    {t("Energy Exported")}
+                  </span>
+                  <span
+                    className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
+                      isBlinking ? "animate-double-blink" : ""
+                    }`}
+                  >
+                    {error ? "N/A" : `${grid.toFixed(2)} ${unit}`}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        /* Desktop Layout */
+        <div className="hidden md:flex flex-row justify-between items-end gap-8">
+          <div className="w-1/3 relative flex flex-col items-center">
+            <div className="group flex flex-col items-center gap-4 w-full">
+              <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
+              <Home
+                className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
+                strokeWidth={2}
+                size={isTablet ? 72 : 150}
+              />
+              <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
+                <span className="block text-sm text-slate-600 dark:text-slate-300">
+                  {t("Energy Consumed")}
+                </span>
+                <span
+                  className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
+                    isBlinking ? "animate-double-blink" : ""
+                  }`}
+                >
+                  {error ? "N/A" : `${load.toFixed(2)} ${unit}`}
+                </span>
+              </div>
+            </div>
+            <div className="absolute -right-12 top-[20%] lg:top-[40%] -translate-y-1/2">
+              {renderDesktopFlow(pv, load, "left")}
+            </div>
+          </div>
+
+          <div className="w-1/3 relative flex flex-col items-center">
+            <div className="group flex flex-col items-center gap-4 w-full relative">
+              <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
+              <FaSolarPanel className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow text-[72px] lg:text-[150px] group-hover:scale-105 transition-transform mb-2" />
+              <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
+                <span className="block text-sm text-slate-600 dark:text-slate-300">
+                  {t("Energy Produced")}
+                </span>
+                <span
+                  className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
+                    isBlinking ? "animate-double-blink" : ""
+                  }`}
+                >
+                  {error ? "N/A" : `${pv.toFixed(2)} ${unit}`}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-1/3 relative flex flex-col items-center">
+            <div className="absolute -left-12 top-[20%] lg:top-[40%] -translate-y-1/2">
+              {renderDesktopFlow(pv, grid, "right")}
+            </div>
+            <div className="group flex flex-col items-center gap-4 w-full">
+              <div className="absolute inset-0 w-full h-52 -top-6 rounded-full bg-gray-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10" />
+              <UtilityPole
+                size={isTablet ? 72 : 150}
+                className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] text-custom-dark-blue dark:text-custom-yellow group-hover:scale-105 transition-transform mb-2"
+              />
+              <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg shadow-md group-hover:shadow-xl w-full text-center z-0">
+                <span className="block text-sm text-slate-600 dark:text-slate-300">
+                  {t("Energy Exported")}
+                </span>
+                <span
+                  className={`block text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ${
+                    isBlinking ? "animate-double-blink" : ""
+                  }`}
+                >
+                  {error ? "N/A" : `${grid.toFixed(2)} ${unit}`}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 });

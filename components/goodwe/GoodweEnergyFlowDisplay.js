@@ -28,16 +28,16 @@ import { selectUser } from "@/store/slices/userSlice";
 import { FaSolarPanel } from "react-icons/fa";
 
 const GoodweEnergyFlowDisplay = memo(() => {
+  // Move ALL hooks to the top level
   const params = useParams();
-  const formattedPlantId = params?.plantId?.toString() || null;
-
-  if (!formattedPlantId) {
-    return null;
-  }
-
   const { isMobile, isTablet } = useDeviceType();
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const isLoading = useSelector(selectRealtimeLoading);
+  const theme = useSelector(selectTheme);
+  const user = useSelector(selectUser);
+
+  // All useState hooks at the top
   const [realtimeData, setRealtimeData] = useState({
     powerflow: { load: 0, pv: 0, grid: 0, soc: 0, unit: "kW" },
   });
@@ -45,11 +45,21 @@ const GoodweEnergyFlowDisplay = memo(() => {
   const [isFetching, setIsFetching] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const lastUpdatedRef = useRef(new Date().toLocaleString());
-  const isLoading = useSelector(selectRealtimeLoading);
-  const theme = useSelector(selectTheme);
-  const user = useSelector(selectUser);
+
+  // Derived values and memos
+  const formattedPlantId = params?.plantId?.toString() || null;
   const token = useMemo(() => user?.tokenIdentificador, [user]);
 
+  const {
+    load = 0,
+    pv = 0,
+    grid = 0,
+    unit = "kW",
+  } = realtimeData?.powerflow || {};
+
+  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, grid]);
+
+  // Callbacks
   const fetchRealtimeData = useCallback(async () => {
     if (!formattedPlantId || !token) {
       console.error("Plant ID or token is missing");
@@ -89,15 +99,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
       setIsBlinking(false);
     }
   }, [formattedPlantId, token, dispatch]);
-
-  const {
-    load = 0,
-    pv = 0,
-    grid = 0,
-    unit = "kW",
-  } = realtimeData?.powerflow || {};
-
-  const hasFlow = useMemo(() => load > 0 || grid > 0, [load, grid]);
 
   const renderDesktopFlow = useCallback(
     (fromValue, toValue, direction) => {
@@ -230,10 +231,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
     [theme]
   );
 
-  if (!formattedPlantId) {
-    return null;
-  }
-
   useEffect(() => {
     if (!formattedPlantId || !token) {
       return;
@@ -242,8 +239,14 @@ const GoodweEnergyFlowDisplay = memo(() => {
     fetchRealtimeData();
     const interval = setInterval(fetchRealtimeData, 30000);
     return () => clearInterval(interval);
-  }, [fetchRealtimeData, formattedPlantId, token, hasFlow]);
+  }, [fetchRealtimeData, formattedPlantId, token]);
 
+  // Early returns after all hooks
+  if (!formattedPlantId) {
+    return null;
+  }
+
+  // Rest of your component's JSX remains the same
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
       {/* Header section */}

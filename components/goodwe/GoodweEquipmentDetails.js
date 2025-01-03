@@ -82,7 +82,7 @@ const GoodweEquipmentDetails = ({ t }) => {
     inverter.dict.right.length > previewItems;
 
   return (
-    <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg mb-6">
+    <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg md:mb-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md">
           <Cpu className="text-custom-dark-blue dark:text-custom-yellow text-xl" />

@@ -28,7 +28,6 @@ import { FaSolarPanel } from "react-icons/fa";
 import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 
 const SolarEdgeEnergyFlowDisplay = memo(() => {
-  // Move all hooks to the top level
   const params = useParams();
   const { isMobile, isTablet } = useDeviceType();
   const dispatch = useDispatch();
@@ -36,8 +35,6 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
   const user = useSelector(selectUser);
   const isLoading = useSelector(selectLoadingDetails);
   const theme = useSelector(selectTheme);
-
-  // State hooks
   const [realtimeData, setRealtimeData] = useState({
     powerflow: { load: 0, pv: 0, grid: 0, soc: 0, unit: "kW" },
   });
@@ -45,8 +42,6 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
   const [isFetching, setIsFetching] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const lastUpdatedRef = useRef(new Date().toLocaleString());
-
-  // Derived values
   const formattedPlantId = params?.plantId?.toString() || null;
   const token = useMemo(() => user?.tokenIdentificador, [user]);
 
@@ -58,15 +53,6 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
   } = realtimeData?.powerflow || {};
 
   const hasFlow = useMemo(() => load > 0 || grid > 0, [load, grid]);
-
-  // Early returns after all hooks
-  if (!formattedPlantId) {
-    return null;
-  }
-
-  if (isLoading) {
-    return <EnergyFlowSkeleton theme={theme} />;
-  }
 
   const fetchRealtimeData = useCallback(async () => {
     if (!formattedPlantId || !token) {
@@ -238,7 +224,14 @@ const SolarEdgeEnergyFlowDisplay = memo(() => {
     return () => clearInterval(interval);
   }, [fetchRealtimeData, formattedPlantId, token]);
 
-  // Rest of the component remains the same
+  if (!formattedPlantId) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <EnergyFlowSkeleton theme={theme} />;
+  }
+
   return (
     <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 mb-6 backdrop-blur-sm">
       {/* Header section */}

@@ -211,30 +211,32 @@ const VictronEnergyFlow = () => {
   };
 
   const fetchRealtimeData = useCallback(async () => {
-    if (!plantId || !token || isFetching) return;
-    setIsFetching(true);
+    if (!plantId || !token) return;
 
-    try {
-      const result = await dispatch(
-        fetchVictronEnergyRealtimeData({
-          plantId,
-          token,
-        })
-      ).unwrap();
+    if (!isFetching) {
+      setIsFetching(true);
+      try {
+        const result = await dispatch(
+          fetchVictronEnergyRealtimeData({
+            plantId,
+            token,
+          })
+        ).unwrap();
 
-      const processedData = processRecords(result?.records);
-      if (processedData) {
-        setEnergyData(processedData);
-        lastUpdatedRef.current = new Date().toLocaleString();
-        setIsBlinking(true);
-        setTimeout(() => setIsBlinking(false), 300);
+        const processedData = processRecords(result?.records);
+        if (processedData) {
+          setEnergyData(processedData);
+          lastUpdatedRef.current = new Date().toLocaleString();
+          setIsBlinking(true);
+          setTimeout(() => setIsBlinking(false), 300);
+        }
+      } catch (err) {
+        console.error("Error fetching real-time data:", err);
+      } finally {
+        setIsFetching(false);
       }
-    } catch (err) {
-      console.error("Error fetching real-time data:", err);
-    } finally {
-      setIsFetching(false);
     }
-  }, [dispatch, plantId, token, isFetching]);
+  }, [dispatch, plantId, token]);
 
   useEffect(() => {
     fetchRealtimeData();

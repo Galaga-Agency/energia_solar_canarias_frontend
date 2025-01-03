@@ -14,12 +14,13 @@ import {
 } from "@/store/slices/plantsSlice";
 import { useParams } from "next/navigation";
 import EquipmentDetailsSkeleton from "../loadingSkeletons/EquipmentDetailsSkeleton";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 const SolarEdgeEquipmentDetails = ({ token, t }) => {
   const dispatch = useDispatch();
   const params = useParams();
   const plantId = params.plantId;
-
+  const theme = useSelector(selectTheme);
   const inventory = useSelector(selectInventory);
   const isLoading = useSelector(selectInventoryLoading);
   const [activeSection, setActiveSection] = useState(null);
@@ -134,7 +135,7 @@ const SolarEdgeEquipmentDetails = ({ token, t }) => {
     },
   ];
 
-  if (isLoading) return <EquipmentDetailsSkeleton />;
+  if (isLoading) return <EquipmentDetailsSkeleton theme={theme} />;
 
   return (
     <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg">

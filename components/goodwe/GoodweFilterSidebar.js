@@ -10,6 +10,7 @@ const INITIAL_FILTERS = {
   type: [],
   search: "",
   capacity: { min: 0, max: 1000 },
+  hasAlerts: false,
 };
 
 const GOODWE_TYPES = {
@@ -23,6 +24,7 @@ const GoodweFilterSidebar = ({
   onFilterChange,
   isSidebarOpen,
   setIsSidebarOpen,
+  alerts,
 }) => {
   const { t } = useTranslation();
   const { isMobile, isTablet } = useDeviceType();
@@ -35,6 +37,16 @@ const GoodweFilterSidebar = ({
       if (!plants) return [];
 
       let filtered = [...plants];
+
+      if (currentFilters.hasAlerts) {
+        filtered = filtered.filter((plant) => {
+          // Get alerts for this specific plant
+          const plantAlerts = alerts.filter(
+            (alert) => alert.stationId === plant.id && alert.status === 0
+          );
+          return plantAlerts.length > 0;
+        });
+      }
 
       if (currentFilters.search) {
         const searchTerm = currentFilters.search.toLowerCase();
@@ -84,19 +96,29 @@ const GoodweFilterSidebar = ({
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
       setFilters((prevFilters) => {
-        const updatedFilter = [...prevFilters[filterType]];
-        const index = updatedFilter.indexOf(value);
+        let updatedFilters;
 
-        if (index > -1) {
-          updatedFilter.splice(index, 1);
+        // Special handling for hasAlerts boolean filter
+        if (filterType === "hasAlerts") {
+          updatedFilters = {
+            ...prevFilters,
+            hasAlerts: !prevFilters.hasAlerts,
+          };
         } else {
-          updatedFilter.push(value);
-        }
+          const updatedFilter = [...prevFilters[filterType]];
+          const index = updatedFilter.indexOf(value);
 
-        const updatedFilters = {
-          ...prevFilters,
-          [filterType]: updatedFilter,
-        };
+          if (index > -1) {
+            updatedFilter.splice(index, 1);
+          } else {
+            updatedFilter.push(value);
+          }
+
+          updatedFilters = {
+            ...prevFilters,
+            [filterType]: updatedFilter,
+          };
+        }
 
         onFilterChange(filterPlants(updatedFilters));
         return updatedFilters;
@@ -198,6 +220,17 @@ const GoodweFilterSidebar = ({
           placeholder={t("filterPlaceholder")}
           className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
         />
+      </div>
+
+      {/* Alert Filter */}
+      <div className="mb-4">
+        <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+          <CustomCheckbox
+            label={t("show_only_plants_with_alerts")}
+            checked={filters.hasAlerts}
+            onChange={() => handleCheckboxChange("hasAlerts")}
+          />
+        </div>
       </div>
 
       <div className="mb-4">

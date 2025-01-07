@@ -1715,5 +1715,6 @@
   "errorLoadingAlerts": "Error al cargar las alertas",
   "cleared": "Resuelto",
   "tryAnotherTimeRange": "Prueba con otro rango de fechas",
-  "selectDifferentRange": "Seleccionar otro rango"
+  "selectDifferentRange": "Seleccionar otro rango",
+  "show_only_plants_with_alerts": "Mostrar solo plantas con alertas"
 }

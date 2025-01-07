@@ -10,6 +10,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import {
   clearPlantDetails,
   fetchPlantsByProvider,
+  selectAlerts,
   selectLoading,
   selectPlants,
 } from "@/store/slices/plantsSlice";
@@ -38,6 +39,7 @@ import GoodweStatsOverview from "@/components/goodwe/GoodweStatsOverview";
 import SolarEdgeStatsOverview from "@/components/solaredge/SolarEdgeStatsOverview";
 import BatteryStatuses from "@/components/BatteryStatuses";
 import VictronStatsOverview from "@/components/victronenergy/VictronStatsOverview";
+import { useOptimalItemsCount } from "@/hooks/useOptimalItemsCount";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -53,8 +55,7 @@ const ProviderPage = () => {
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const plantsPerPage = 9;
+  const plantsPerPage = useOptimalItemsCount();
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = filteredPlants.slice(
@@ -229,6 +230,7 @@ const ProviderPage = () => {
             onFilterChange={handleFilterChange}
             isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
+            alerts={alerts?.goodwe?.data?.list || []}
           />
         );
       case "victronenergy":
@@ -250,6 +252,26 @@ const ProviderPage = () => {
   };
 
   // console.log("plants: ", plants);
+
+  const alerts = useSelector(selectAlerts);
+  let alertsCount = 0;
+
+  switch (providerPassed) {
+    case "goodwe":
+      alertsCount =
+        alerts?.goodwe?.data?.list?.filter((alert) => alert.status === 0)
+          ?.length || 0;
+      console.log("alertsCount: ", alertsCount);
+      break;
+    case "victronenergy":
+      alertsCount = alerts?.victronenergy || 0;
+      break;
+    case "solaredge":
+      alertsCount = alerts?.solaredge || 0;
+      break;
+    default:
+      alertsCount = 0;
+  }
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16">
@@ -279,7 +301,13 @@ const ProviderPage = () => {
           {(() => {
             switch (providerPassed) {
               case "goodwe":
-                return <GoodweStatsOverview plants={filteredPlants} t={t} />;
+                return (
+                  <GoodweStatsOverview
+                    plants={filteredPlants}
+                    t={t}
+                    alerts={alerts}
+                  />
+                );
               case "solaredge":
                 return <SolarEdgeStatsOverview plants={filteredPlants} t={t} />;
               case "victronenergy":

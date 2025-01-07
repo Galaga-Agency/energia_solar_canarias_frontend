@@ -1,9 +1,21 @@
 import React from "react";
 import { Battery, AlertTriangle, Zap } from "lucide-react";
+import { useSelector } from "react-redux";
+import { selectAlerts } from "@/store/slices/plantsSlice";
 
 const VictronStatsOverview = ({ plants, t }) => {
+  const installationTypes = React.useMemo(() => {
+    if (!plants) return {};
+    return plants.reduce((acc, plant) => {
+      const type = plant.type;
+      if (type && typeof type === "string") {
+        acc[type] = (acc[type] || 0) + 1;
+      }
+      return acc;
+    }, {});
+  }, [plants]);
+
   const stats = {
-    // Battery states based on bst property
     charging:
       plants?.filter((p) => p.status?.toLowerCase() === "cargando").length || 0,
     discharging:
@@ -13,19 +25,7 @@ const VictronStatsOverview = ({ plants, t }) => {
       plants?.filter((p) => p.status?.toLowerCase() === "en reposo").length ||
       0,
     offline: plants?.filter((p) => !p.status).length || 0,
-
-    // Get unique installation types and their counts
-    installationTypes:
-      plants?.reduce((acc, plant) => {
-        if (plant.type) {
-          acc[plant.type] = (acc[plant.type] || 0) + 1;
-        }
-        return acc;
-      }, {}) || {},
-
-    // Alerts
-    totalAlerts:
-      plants?.reduce((acc, p) => acc + (p.alert_quantity || 0), 0) || 0,
+    totalAlerts: alertsCount || 0,
   };
 
   return (
@@ -73,13 +73,13 @@ const VictronStatsOverview = ({ plants, t }) => {
           </h3>
         </div>
         <div className="flex justify-center gap-8">
-          {Object.entries(stats.installationTypes).map(([type, count]) => (
+          {Object.entries(installationTypes).map(([type, count]) => (
             <div key={type} className="flex items-center gap-2">
               <span className="text-2xl font-medium text-slate-700 dark:text-slate-200">
                 {count}
               </span>
               <span className="text-sm text-slate-600 dark:text-slate-400">
-                {t(`${type}`)}
+                {t(`type_${type}`)}
               </span>
             </div>
           ))}

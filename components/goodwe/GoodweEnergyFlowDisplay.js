@@ -102,11 +102,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
 
   const renderDesktopFlow = useCallback(
     (fromValue, toValue, direction) => {
-      console.log("Mobile Flow Values:", {
-        fromValue,
-        toValue,
-        type: typeof fromValue,
-      });
       if (!fromValue || !toValue || fromValue === "0W" || toValue === "0W")
         return null;
 
@@ -174,11 +169,6 @@ const GoodweEnergyFlowDisplay = memo(() => {
 
   const renderMobileFlow = useCallback(
     (direction, fromValue, toValue) => {
-      console.log("Mobile Flow Values:", {
-        fromValue,
-        toValue,
-        type: typeof fromValue,
-      });
       if (!fromValue || !toValue || fromValue === "0W" || toValue === "0W")
         return null;
 

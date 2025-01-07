@@ -17,6 +17,7 @@ const SolarEdgeFilterSidebar = ({
     search: "",
     peakPower: { min: 0, max: 39.15 },
     highestAlert: { min: 0, max: 9 },
+    hasAlerts: false,
   };
 
   const [filters, setFilters] = useState(initialFilters);
@@ -38,6 +39,11 @@ const SolarEdgeFilterSidebar = ({
       if (!plants) return [];
 
       return plants.filter((plant) => {
+        // Alert Filter
+        if (currentFilters.hasAlerts && plant.alert_quantity === 0) {
+          return false;
+        }
+
         // Search Filter
         if (currentFilters.search?.trim()) {
           const searchTerm = currentFilters.search.toLowerCase().trim();
@@ -83,15 +89,23 @@ const SolarEdgeFilterSidebar = ({
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
       setFilters((prevFilters) => {
-        const exists = prevFilters[filterType].includes(value);
-        const newValues = exists
-          ? prevFilters[filterType].filter((v) => v !== value)
-          : [...prevFilters[filterType], value];
+        let newFilters;
+        if (filterType === "hasAlerts") {
+          newFilters = {
+            ...prevFilters,
+            hasAlerts: value,
+          };
+        } else {
+          const exists = prevFilters[filterType].includes(value);
+          const newValues = exists
+            ? prevFilters[filterType].filter((v) => v !== value)
+            : [...prevFilters[filterType], value];
 
-        const newFilters = {
-          ...prevFilters,
-          [filterType]: newValues,
-        };
+          newFilters = {
+            ...prevFilters,
+            [filterType]: newValues,
+          };
+        }
 
         onFilterChange(filterPlants(newFilters));
         return newFilters;
@@ -174,15 +188,14 @@ const SolarEdgeFilterSidebar = ({
           >
             <span>{t("reset")}</span> <RotateCcw className="w-5 h-5" />
           </button>
-          {isMobile ||
-            (isTablet && (
-              <button
-                onClick={closeSidebar}
-                className="text-custom-dark-blue dark:text-custom-yellow text-xl"
-              >
-                <IoMdClose />
-              </button>
-            ))}
+          {(isMobile || isTablet) && (
+            <button
+              onClick={closeSidebar}
+              className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+            >
+              <IoMdClose />
+            </button>
+          )}
         </div>
       </div>
 
@@ -195,6 +208,17 @@ const SolarEdgeFilterSidebar = ({
           placeholder={t("search_plant")}
           className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
         />
+      </div>
+
+      {/* Alert Filter */}
+      <div className="mb-4">
+        <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+          <CustomCheckbox
+            label={t("show_only_plants_with_alerts")}
+            checked={filters.hasAlerts}
+            onChange={(checked) => handleCheckboxChange("hasAlerts", checked)}
+          />
+        </div>
       </div>
 
       {/* Status */}

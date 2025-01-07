@@ -1,49 +1,43 @@
-import React, { useMemo } from "react";
+import React from "react";
 import BatteryGauge from "react-battery-gauge";
 import { useSelector } from "react-redux";
 import useDeviceType from "@/hooks/useDeviceType";
 import { selectTheme } from "@/store/slices/themeSlice";
-import { selectPlantDetails } from "@/store/slices/plantsSlice";
 
 const BatteryIndicator = ({ soc }) => {
   const theme = useSelector(selectTheme);
-  const { isMobile, isDesktop, isSmallDesktop } = useDeviceType();
-  const plant = useSelector(selectPlantDetails);
-  const isGoodwe = plant?.data?.data?.organization === "goodwe";
+  const { isDesktop, isSmallDesktop } = useDeviceType();
 
-  // Define the vertical gradient for the entire filling
-  const gradientFill = useMemo(() => {
-    const stops =
-      theme === "dark"
-        ? [
-            { offset: "0%", color: "#FFD57BFF" }, // Darker at the top
-            { offset: "100%", color: "#FFD57B33" }, // Lighter at the bottom
-          ]
-        : [
-            { offset: "0%", color: "#0B2738FF" }, // Darker at the top
-            { offset: "100%", color: "#0B273833" }, // Lighter at the bottom
-          ];
-    return stops;
-  }, [theme]);
-
+  const isVertical = isDesktop || isSmallDesktop;
   const showPercentage = soc !== null && soc !== undefined;
 
+  // Define a unique parent ID for the SVG
+  const parentId = React.useId();
+  const gradientId = `${parentId}-gradient`;
+
   return (
-    <div className="flex justify-center items-center">
-      {/* Define the vertical gradient in an SVG */}
-      <svg width="0" height="0">
+    <div className="flex justify-center items-center" id={parentId}>
+      <svg
+        style={{ width: 0, height: 0, position: "absolute" }}
+        aria-hidden="true"
+      >
         <defs>
           <linearGradient
-            id="batteryGradientFull"
-            x1="100%"
-            y1="0%"
-            x2="0%"
-            y2="0%"
+            id={gradientId}
+            x1="0"
+            y1="0"
+            x2={isVertical ? "0" : "1"}
+            y2={isVertical ? "1" : "0"}
+            gradientUnits="objectBoundingBox"
           >
-            {/* Apply gradient stops */}
-            {gradientFill.map(({ offset, color }, index) => (
-              <stop key={index} offset={offset} stopColor={color} />
-            ))}
+            <stop
+              offset="0%"
+              stopColor={theme === "dark" ? "#FFD57BFF" : "#0B2738FF"}
+            />
+            <stop
+              offset="100%"
+              stopColor={theme === "dark" ? "#FFD57B33" : "#0B273833"}
+            />
           </linearGradient>
         </defs>
       </svg>
@@ -54,7 +48,7 @@ const BatteryIndicator = ({ soc }) => {
         animated={true}
         charging={false}
         size={150}
-        orientation={isDesktop ? "vertical" : "horizontal"}
+        orientation={isVertical ? "vertical" : "horizontal"}
         customization={{
           batteryBody: {
             strokeWidth: 4,
@@ -72,12 +66,12 @@ const BatteryIndicator = ({ soc }) => {
             capToBodyRatio: 0.4,
           },
           batteryMeter: {
-            fill: "url(#batteryGradientFull)", // Apply the full gradient
+            fill: `url(#${gradientId})`,
             lowBatteryValue: 15,
             lowBatteryFill: "#F44336",
             outerGap: 1,
-            noOfCells: 1, // Single cell for continuous gradient
-            interCellsGap: 0, // No gaps between cells
+            noOfCells: 1,
+            interCellsGap: 0,
           },
           readingText: {
             lightContrastColor:

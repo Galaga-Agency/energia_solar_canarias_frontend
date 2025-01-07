@@ -64,7 +64,7 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
             {t("peak_power")}
           </h3>
         </div>
-        <div className="flex items-baseline justify-between">
+        <div className="flex items-baseline justify-center gap-2">
           <span className="text-2xl font-medium text-slate-700 dark:text-slate-200">
             {stats.totalPower.toFixed(2)}
           </span>
@@ -83,8 +83,7 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
           </h3>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          <div className="flex items-center justify-center gap-2">
             <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
               {stats.highImpactAlerts}
             </span>
@@ -93,7 +92,6 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
             <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
               {stats.totalAlerts}
             </span>

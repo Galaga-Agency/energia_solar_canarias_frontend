@@ -12,21 +12,18 @@ const VictronFilterSidebar = ({
   setIsSidebarOpen,
 }) => {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState({
-    status: [],
-    type: [],
-    search: "",
-    installationDate: { min: "", max: "" },
-  });
-  const { isMobile, isTablet, isDesktop } = useDeviceType();
-  const sidebarRef = useRef(null);
-  const [isInitialized, setIsInitialized] = useState(false);
   const initialFilters = {
     status: [],
     type: [],
     search: "",
     installationDate: { min: "", max: "" },
+    hasAlerts: false,
   };
+
+  const [filters, setFilters] = useState(initialFilters);
+  const { isMobile, isTablet, isDesktop } = useDeviceType();
+  const sidebarRef = useRef(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const VICTRON_TYPES = {
     solar: "type_Solar",
@@ -35,7 +32,6 @@ const VictronFilterSidebar = ({
     grid: "type_Grid",
   };
 
-  // Changed to English keys since we're using these for the filter values
   const BATTERY_STATES = {
     charging: "Cargando",
     discharging: "Descargando",
@@ -56,6 +52,14 @@ const VictronFilterSidebar = ({
       if (!plants) return [];
 
       return plants.filter((plant) => {
+        // Alert Filter
+        if (
+          currentFilters.hasAlerts &&
+          (!plant.alert_quantity || plant.alert_quantity === 0)
+        ) {
+          return false;
+        }
+
         // Search Filter
         if (currentFilters.search.trim()) {
           const searchTerm = currentFilters.search.toLowerCase().trim();
@@ -78,16 +82,10 @@ const VictronFilterSidebar = ({
 
         // Battery Status Filter
         if (currentFilters.status.length > 0) {
-          console.log("Plant status:", plant.status);
-          console.log("Current filters:", currentFilters.status);
-
           const plantStatus = plant.status;
-          // Check if any of our filter values match this plant's status
           const matchingStatus = currentFilters.status.some(
             (filterStatus) => BATTERY_STATES[filterStatus] === plantStatus
           );
-
-          console.log("Matching status:", matchingStatus);
 
           if (!matchingStatus) {
             return false;
@@ -119,17 +117,25 @@ const VictronFilterSidebar = ({
 
   const handleCheckboxChange = useCallback(
     (filterType, value) => {
-      console.log("Checkbox changed:", filterType, value);
       setFilters((prevFilters) => {
-        const newFilters = {
-          ...prevFilters,
-          [filterType]: prevFilters[filterType].includes(value)
-            ? prevFilters[filterType].filter((item) => item !== value)
-            : [...prevFilters[filterType], value],
-        };
-        console.log("New filters:", newFilters);
-        onFilterChange(filterPlants(newFilters));
-        return newFilters;
+        let updatedFilters;
+
+        if (filterType === "hasAlerts") {
+          updatedFilters = {
+            ...prevFilters,
+            hasAlerts: !prevFilters.hasAlerts,
+          };
+        } else {
+          updatedFilters = {
+            ...prevFilters,
+            [filterType]: prevFilters[filterType].includes(value)
+              ? prevFilters[filterType].filter((item) => item !== value)
+              : [...prevFilters[filterType], value],
+          };
+        }
+
+        onFilterChange(filterPlants(updatedFilters));
+        return updatedFilters;
       });
     },
     [filterPlants, onFilterChange]
@@ -161,6 +167,11 @@ const VictronFilterSidebar = ({
     [filterPlants, onFilterChange]
   );
 
+  const handleResetFilters = useCallback(() => {
+    setFilters(initialFilters);
+    onFilterChange(filterPlants(initialFilters));
+  }, [filterPlants, onFilterChange]);
+
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);
   }, [setIsSidebarOpen]);
@@ -174,11 +185,6 @@ const VictronFilterSidebar = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [closeSidebar]);
-
-  const handleResetFilters = useCallback(() => {
-    setFilters(initialFilters);
-    onFilterChange(filterPlants(initialFilters));
-  }, [filterPlants, onFilterChange]);
 
   return (
     <div
@@ -218,6 +224,17 @@ const VictronFilterSidebar = ({
           placeholder={t("filterPlaceholder")}
           className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
         />
+      </div>
+
+      {/* Alert Filter */}
+      <div className="mb-6">
+        <div className="flex flex-col gap-3 text-custom-dark-blue dark:text-custom-light-gray">
+          <CustomCheckbox
+            label={t("show_only_plants_with_alerts")}
+            checked={filters.hasAlerts}
+            onChange={() => handleCheckboxChange("hasAlerts")}
+          />
+        </div>
       </div>
 
       <div className="mb-6">

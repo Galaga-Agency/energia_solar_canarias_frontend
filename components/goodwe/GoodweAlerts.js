@@ -50,10 +50,13 @@ const GoodweAlerts = ({ plantId, onViewAll }) => {
     );
   }
 
-  const records = alerts?.goodwe?.data?.list || [];
+  const allRecords = alerts?.goodwe?.data?.list || [];
+  const activeRecords = allRecords.filter((alert) => alert.status === 0);
+
   const filteredRecords = plantId
-    ? records.filter((alert) => alert.stationId === plantId)
-    : records;
+    ? activeRecords.filter((alert) => alert.stationId === plantId)
+    : activeRecords;
+
   const recentRecords = filteredRecords.slice(0, 3);
 
   const getSeverityColor = (warningLevel, status) => {

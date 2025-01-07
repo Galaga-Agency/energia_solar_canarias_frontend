@@ -807,5 +807,6 @@
   "cleared": "Cleared",
   "tryAnotherTimeRange": "Try a different time range",
   "selectDifferentRange": "Select different range",
-  "invalidToken": "Invalid verification code. Please try again."
+  "invalidToken": "Invalid verification code. Please try again.",
+  "show_only_plants_with_alerts": "Show only plants with alerts"
 }

@@ -161,7 +161,7 @@ export const fetchGoodweAlertsAPI = async ({
 }) => {
   try {
     const url = `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}`;
-    console.log("fetching con URL ---> ", url);
+    // console.log("fetching con URL ---> ", url);
     const response = await fetch(
       `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       {

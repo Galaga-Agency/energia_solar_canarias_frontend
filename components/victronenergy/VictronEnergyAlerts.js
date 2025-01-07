@@ -36,6 +36,8 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
   const records = alerts?.victronenergy?.records || [];
   const recentRecords = records.slice(0, isTablet ? 3 : 5);
 
+  console.log("records", records);
+
   const getSeverityColor = (isActive) => {
     if (!isActive) return "bg-green-500 dark:bg-green-500/80";
     return "bg-red-500 dark:bg-red-500/80";

@@ -30,7 +30,7 @@ import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
 import { providers } from "@/data/providers";
 import PlantsMapModal from "@/components/PlantsMapModal";
-import { IoArrowBackCircle } from "react-icons/io5";
+import { IoArrowBackCircle, IoFilter } from "react-icons/io5";
 import SolarEdgeFilterSidebar from "@/components/solaredge/SolarEdgeFilterSidebar";
 import GoodweFilterSidebar from "@/components/goodwe/GoodweFilterSidebar";
 import VictronFilterSidebar from "@/components/victronenergy/VictronFilterSidebar";
@@ -40,6 +40,7 @@ import SolarEdgeStatsOverview from "@/components/solaredge/SolarEdgeStatsOvervie
 import BatteryStatuses from "@/components/BatteryStatuses";
 import VictronStatsOverview from "@/components/victronenergy/VictronStatsOverview";
 import { useOptimalItemsCount } from "@/hooks/useOptimalItemsCount";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -74,6 +75,7 @@ const ProviderPage = () => {
   const provider = providers.find(
     (p) => p.name.toLowerCase().replace(/\s+/g, "") === providerPassed
   );
+  const { isDesktop } = useDeviceType();
 
   useEffect(() => {
     if (isInitialLoad) {
@@ -345,7 +347,11 @@ const ProviderPage = () => {
             className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
             onClick={toggleSidebar}
           >
-            <span className="text-custom-dark-blue">{t("filter")}</span>
+            {isDesktop ? (
+              <span className="text-custom-dark-blue">{t("filter")}</span>
+            ) : (
+              <IoFilter className="text-xl text-custom-dark-blue" />
+            )}
           </button>
 
           {/* Sidebar */}

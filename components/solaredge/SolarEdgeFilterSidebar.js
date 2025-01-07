@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
-import { IoMdClose } from "react-icons/io";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 const SolarEdgeFilterSidebar = ({
   plants,
@@ -21,7 +21,7 @@ const SolarEdgeFilterSidebar = ({
   };
 
   const [filters, setFilters] = useState(initialFilters);
-  const { isMobile, isTablet } = useDeviceType();
+  const { isMobile, isTablet, isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -178,7 +178,7 @@ const SolarEdgeFilterSidebar = ({
     >
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
-          {t("filter_fleet")}
+          {t("filter")}
         </h3>
         <div className="flex items-center gap-2">
           <button
@@ -186,15 +186,18 @@ const SolarEdgeFilterSidebar = ({
             className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
             title={t("reset_filters")}
           >
-            <span>{t("reset")}</span> <RotateCcw className="w-5 h-5" />
+            {isDesktop && <span>{t("reset")}</span>}{" "}
+            <RotateCcw className="w-5 h-5" />
           </button>
           {(isMobile || isTablet) && (
-            <button
+            <motion.button
+              whileHover={{ rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
               onClick={closeSidebar}
-              className="text-custom-dark-blue dark:text-custom-yellow text-xl"
+              className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
-              <IoMdClose />
-            </button>
+              <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow " />
+            </motion.button>
           )}
         </div>
       </div>

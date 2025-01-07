@@ -171,3 +171,7 @@ label {
   border-radius: 20px;
   border: transparent;
 }
+
+.filter-sidebar-selector {
+  overflow: visible !important;
+}

@@ -26,7 +26,7 @@ const GoodweStatsOverview = ({ plants, t, alerts }) => {
     alerts?.goodwe?.data?.list?.filter((alert) => alert.status === 0)?.length ||
     0;
 
-  console.log("goodwe alerts count in overviw", alerts);
+  // console.log("goodwe alerts count in overviw", alerts);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">

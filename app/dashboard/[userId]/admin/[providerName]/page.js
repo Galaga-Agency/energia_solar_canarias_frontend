@@ -55,7 +55,12 @@ const ProviderPage = () => {
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const plantsPerPage = useOptimalItemsCount();
+  const plantsPerPage = useOptimalItemsCount(
+    ".list-container-selector", // List container CSS selector
+    ".filter-sidebar-selector", // Sidebar CSS selector
+    64, // Height of each list item
+    10 // Max items for mobile
+  );
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = filteredPlants.slice(
@@ -240,6 +245,7 @@ const ProviderPage = () => {
             onFilterChange={handleFilterChange}
             isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
+            alerts={alerts?.victronenergy?.data?.records || []}
           />
         );
       default:
@@ -264,7 +270,10 @@ const ProviderPage = () => {
       console.log("alertsCount: ", alertsCount);
       break;
     case "victronenergy":
-      alertsCount = alerts?.victronenergy || 0;
+      alertsCount =
+        alerts?.victronenergy?.data?.records?.filter(
+          (alert) => alert.isActive === 1
+        )?.length || 0;
       break;
     case "solaredge":
       alertsCount = alerts?.solaredge || 0;
@@ -274,7 +283,7 @@ const ProviderPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-20">
       <TransitionEffect />
       <div className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]">
         <ThemeToggle />
@@ -283,7 +292,7 @@ const ProviderPage = () => {
 
       <Texture />
       <div className="relative h-auto z-10 p-6 md:p-8">
-        <div className="flex items-center mb-10 md:mb-2 z-10">
+        <div className="flex items-center mb-10 md:mb-2 z-10 header">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -311,7 +320,13 @@ const ProviderPage = () => {
               case "solaredge":
                 return <SolarEdgeStatsOverview plants={filteredPlants} t={t} />;
               case "victronenergy":
-                return <VictronStatsOverview plants={filteredPlants} t={t} />;
+                return (
+                  <VictronStatsOverview
+                    plants={filteredPlants}
+                    t={t}
+                    alerts={alerts}
+                  />
+                );
               default:
                 return null;
             }
@@ -360,24 +375,22 @@ const ProviderPage = () => {
               )}
             </div>
 
-            {loading || isModalOpen ? (
-              <div className="py-8">
+            <div className="list-container-selector py-8">
+              {loading || isModalOpen ? (
                 <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
-              </div>
-            ) : paginatedPlants.length > 0 ? (
-              <div className="py-8">
-                {paginatedPlants.map((plant) => (
+              ) : paginatedPlants.length > 0 ? (
+                paginatedPlants.map((plant) => (
                   <PlantsListTableItem key={plant.id} plant={plant} />
-                ))}
-              </div>
-            ) : (
-              <div className="h-auto w-full flex flex-col justify-center items-center">
-                <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
-                <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
-                  {t("noPlantsFound")}
-                </p>
-              </div>
-            )}
+                ))
+              ) : (
+                <div className="h-auto w-full flex flex-col justify-center items-center">
+                  <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+                  <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
+                    {t("noPlantsFound")}
+                  </p>
+                </div>
+              )}
+            </div>
 
             {totalPages > 1 && (
               <Pagination

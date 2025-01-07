@@ -1,37 +1,65 @@
-// app/hooks/useOptimalItemsCount.js
 import { useState, useEffect } from "react";
+import useDeviceType from "./useDeviceType";
 
-export const useOptimalItemsCount = () => {
+export const useOptimalItemsCount = (
+  listContainerSelector,
+  sidebarSelector,
+  itemHeight = 64,
+  maxMobileItems = 10
+) => {
   const [itemsPerPage, setItemsPerPage] = useState(9);
+  const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
     const calculateOptimalItems = () => {
-      // Get the actual container height where the list is rendered
-      const listContainer = document.querySelector(".py-8"); // Using your list container class
+      const listContainer = document.querySelector(listContainerSelector);
+      const sidebar = document.querySelector(sidebarSelector);
+      const header = document.querySelector(".header"); // Add this if you have a header
+      const footer = document.querySelector(".footer"); // Add this if you have a footer
+
       if (!listContainer) return;
 
-      // Get the actual available height
-      const containerHeight = listContainer.clientHeight;
-      const itemHeight = 64; // Height of each row
+      // Viewport height
+      const viewportHeight = window.innerHeight;
 
-      // Calculate how many items will fit
-      const optimal = Math.ceil(containerHeight / itemHeight);
+      // Subtract header, footer, and sidebar heights (if present)
+      const headerHeight = header?.offsetHeight || 0;
+      const footerHeight = footer?.offsetHeight || 0;
+      const sidebarHeight = sidebar?.offsetHeight || 0;
 
-      // Set a reasonable min/max
-      const finalCount = Math.max(5, Math.min(30, optimal));
+      let availableHeight;
 
-      console.log("Container height:", containerHeight);
-      console.log("Will show items:", finalCount);
-
-      setItemsPerPage(finalCount);
+      if (isMobile) {
+        // On mobile: Use viewport height minus header/footer, cap items at maxMobileItems
+        availableHeight = viewportHeight - headerHeight - footerHeight;
+        const calculatedItems = Math.floor(availableHeight / itemHeight);
+        setItemsPerPage(Math.min(calculatedItems, maxMobileItems));
+      } else if (isTablet) {
+        // On tablets: Use full list container height
+        availableHeight = listContainer.clientHeight;
+        const calculatedItems = Math.floor(availableHeight / itemHeight);
+        setItemsPerPage(Math.max(3, calculatedItems)); // Ensure at least 3 items
+      } else {
+        // On desktops: Subtract sidebar height
+        availableHeight = listContainer.clientHeight - sidebarHeight - 20; // Add 20px padding
+        const calculatedItems = Math.floor(availableHeight / itemHeight);
+        setItemsPerPage(Math.max(8, calculatedItems));
+      }
     };
 
-    // Wait for DOM to be ready
-    setTimeout(calculateOptimalItems, 100);
-
+    // Run calculation on mount and on resize
+    calculateOptimalItems();
     window.addEventListener("resize", calculateOptimalItems);
+
     return () => window.removeEventListener("resize", calculateOptimalItems);
-  }, []);
+  }, [
+    listContainerSelector,
+    sidebarSelector,
+    itemHeight,
+    maxMobileItems,
+    isMobile,
+    isTablet,
+  ]);
 
   return itemsPerPage;
 };

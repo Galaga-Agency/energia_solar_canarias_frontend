@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import { FiAlertCircle } from "react-icons/fi";
@@ -8,16 +8,31 @@ import {
   selectAlerts,
   selectAlertsLoading,
   selectAlertsError,
+  fetchVictronEnergyAlerts,
 } from "@/store/slices/plantsSlice";
 import AlertsSkeleton from "@/components/loadingSkeletons/AlertsSkeleton";
 import useDeviceType from "@/hooks/useDeviceType";
+import { selectUser } from "@/store/slices/userSlice";
 
-const VictronEnergyAlerts = ({ onViewAll }) => {
+const VictronEnergyAlerts = ({ plantId, onViewAll }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
   const alerts = useSelector(selectAlerts);
   const isLoading = useSelector(selectAlertsLoading);
   const error = useSelector(selectAlertsError);
   const { isTablet } = useDeviceType();
+
+  useEffect(() => {
+    if (plantId && user?.tokenIdentificador) {
+      dispatch(
+        fetchVictronEnergyAlerts({
+          plantId,
+          token: user.tokenIdentificador,
+        })
+      );
+    }
+  }, [dispatch, plantId, user?.tokenIdentificador]);
 
   if (isLoading) {
     return <AlertsSkeleton />;
@@ -35,8 +50,6 @@ const VictronEnergyAlerts = ({ onViewAll }) => {
 
   const records = alerts?.victronenergy?.records || [];
   const recentRecords = records.slice(0, isTablet ? 3 : 5);
-
-  console.log("records", records);
 
   const getSeverityColor = (isActive) => {
     if (!isActive) return "bg-green-500 dark:bg-green-500/80";

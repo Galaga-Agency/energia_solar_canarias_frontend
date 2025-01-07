@@ -1,9 +1,7 @@
 import React from "react";
 import { Battery, AlertTriangle, Zap } from "lucide-react";
-import { useSelector } from "react-redux";
-import { selectAlerts } from "@/store/slices/plantsSlice";
 
-const VictronStatsOverview = ({ plants, t }) => {
+const VictronStatsOverview = ({ plants, t, alerts }) => {
   const installationTypes = React.useMemo(() => {
     if (!plants) return {};
     return plants.reduce((acc, plant) => {
@@ -25,7 +23,7 @@ const VictronStatsOverview = ({ plants, t }) => {
       plants?.filter((p) => p.status?.toLowerCase() === "en reposo").length ||
       0,
     offline: plants?.filter((p) => !p.status).length || 0,
-    totalAlerts: alertsCount || 0,
+    totalAlerts: alerts.length || 0,
   };
 
   return (
@@ -54,7 +52,7 @@ const VictronStatsOverview = ({ plants, t }) => {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="w-3 h-3 rounded-full bg-slate-400"></div>
             <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
               {stats.resting}
             </span>
@@ -79,7 +77,7 @@ const VictronStatsOverview = ({ plants, t }) => {
                 {count}
               </span>
               <span className="text-sm text-slate-600 dark:text-slate-400">
-                {t(`type_${type}`)}
+                {t(`${type}`)}
               </span>
             </div>
           ))}

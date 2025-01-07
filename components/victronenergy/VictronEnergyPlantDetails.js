@@ -226,6 +226,7 @@ const VictronEnergyPlantDetails = () => {
         isOpen={isAlertsModalOpen}
         onClose={() => setIsAlertsModalOpen(false)}
         alerts={alertsData?.victronenergy?.records || []}
+        plantId={plantId}
       />
     </PageTransition>
   );

@@ -4,6 +4,9 @@ import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
 import { RotateCcw } from "lucide-react";
+import DateSelector from "@/components/DateSelector";
+import { BsCalendar3 } from "react-icons/bs";
+import { parseISO, isValid, isAfter, isBefore, startOfDay } from "date-fns";
 
 const VictronFilterSidebar = ({
   plants,
@@ -12,6 +15,9 @@ const VictronFilterSidebar = ({
   setIsSidebarOpen,
 }) => {
   const { t } = useTranslation();
+  const minDateInputRef = useRef(null);
+  const maxDateInputRef = useRef(null);
+
   const initialFilters = {
     status: [],
     type: [],
@@ -21,9 +27,11 @@ const VictronFilterSidebar = ({
   };
 
   const [filters, setFilters] = useState(initialFilters);
-  const { isMobile, isTablet, isDesktop } = useDeviceType();
+  const { isMobile, isTablet } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isMinDateSelectorOpen, setIsMinDateSelectorOpen] = useState(false);
+  const [isMaxDateSelectorOpen, setIsMaxDateSelectorOpen] = useState(false);
 
   const VICTRON_TYPES = {
     solar: "type_Solar",
@@ -47,6 +55,12 @@ const VictronFilterSidebar = ({
     }
   }, [plants, isInitialized, onFilterChange]);
 
+  const isDateValid = (dateString) => {
+    if (!dateString) return false;
+    const date = parseISO(dateString);
+    return isValid(date);
+  };
+
   const filterPlants = useCallback(
     (currentFilters) => {
       if (!plants) return [];
@@ -63,12 +77,9 @@ const VictronFilterSidebar = ({
         // Search Filter
         if (currentFilters.search.trim()) {
           const searchTerm = currentFilters.search.toLowerCase().trim();
-          const name = plant.name || "";
-          const address = plant.address || "";
-          if (
-            !name.toLowerCase().includes(searchTerm) &&
-            !address?.toLowerCase().includes(searchTerm)
-          ) {
+          const name = (plant.name || "").toLowerCase();
+          const address = (plant.address || "").toLowerCase();
+          if (!name.includes(searchTerm) && !address.includes(searchTerm)) {
             return false;
           }
         }
@@ -86,27 +97,26 @@ const VictronFilterSidebar = ({
           const matchingStatus = currentFilters.status.some(
             (filterStatus) => BATTERY_STATES[filterStatus] === plantStatus
           );
-
           if (!matchingStatus) {
             return false;
           }
         }
 
         // Installation Date Filter
-        if (
-          currentFilters.installationDate.min &&
-          new Date(plant.installation_date) <
-            new Date(currentFilters.installationDate.min)
-        ) {
-          return false;
+        const installationDate = parseISO(plant.installation_date);
+
+        if (isDateValid(currentFilters.installationDate.min)) {
+          const minDate = parseISO(currentFilters.installationDate.min);
+          if (isBefore(installationDate, startOfDay(minDate))) {
+            return false;
+          }
         }
 
-        if (
-          currentFilters.installationDate.max &&
-          new Date(plant.installation_date) >
-            new Date(currentFilters.installationDate.max)
-        ) {
-          return false;
+        if (isDateValid(currentFilters.installationDate.max)) {
+          const maxDate = parseISO(currentFilters.installationDate.max);
+          if (isAfter(installationDate, startOfDay(maxDate))) {
+            return false;
+          }
         }
 
         return true;
@@ -170,6 +180,8 @@ const VictronFilterSidebar = ({
   const handleResetFilters = useCallback(() => {
     setFilters(initialFilters);
     onFilterChange(filterPlants(initialFilters));
+    setIsMinDateSelectorOpen(false);
+    setIsMaxDateSelectorOpen(false);
   }, [filterPlants, onFilterChange]);
 
   const closeSidebar = useCallback(() => {
@@ -178,18 +190,22 @@ const VictronFilterSidebar = ({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        (isMobile || isTablet)
+      ) {
         closeSidebar();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [closeSidebar]);
+  }, [closeSidebar, isMobile, isTablet]);
 
   return (
     <div
       ref={sidebarRef}
-      className={`overflow-auto pb-16 fixed z-[9999] top-0 left-0 transform transition-all h-screen xl:h-auto duration-300 ease-in-out  ${
+      className={`overflow-auto filter-sidebar-selector fixed z-[999] top-0 left-0 transform transition-all h-screen xl:h-full duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-6 rounded-lg shadow-lg max-w-xs w-full md:min-w-[30vw] xl:min-w-[16vw]`}
     >
@@ -241,7 +257,7 @@ const VictronFilterSidebar = ({
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("type")}
         </h3>
-        <div className="flex flex-col gap-3 text-custom-dark-blue dark:text-custom-light-gray">
+        <div className="grid grid-cols-2 space-y-2 text-custom-dark-blue dark:text-custom-light-gray">
           {Object.keys(VICTRON_TYPES).map((type) => (
             <CustomCheckbox
               key={type}
@@ -257,7 +273,7 @@ const VictronFilterSidebar = ({
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("batteryStatusTitle")}
         </h3>
-        <div className="flex flex-col gap-3 text-custom-dark-blue dark:text-custom-light-gray">
+        <div className="flex flex-col gap-2 text-custom-dark-blue dark:text-custom-light-gray">
           {Object.entries(BATTERY_STATES).map(([status]) => (
             <CustomCheckbox
               key={status}
@@ -269,34 +285,80 @@ const VictronFilterSidebar = ({
         </div>
       </div>
 
-      <div className="mb-6">
+      {/* Installation Date Pickers */}
+      <div className="mb-6 relative">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("installationDate")}
         </h3>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col items-start gap-2">
-            <span className="text-custom-dark-blue dark:text-custom-light-gray">
+        <div className="space-y-4">
+          {/* From Date Picker */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t("from")}
-            </span>
-            <input
-              type="date"
-              value={filters.installationDate.min}
-              onChange={(e) => handleDateChange("min", e.target.value)}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-              placeholder={t("installationDateMin")}
-            />
+            </label>
+            <div className="relative" ref={minDateInputRef}>
+              <button
+                onClick={() => {
+                  setIsMaxDateSelectorOpen(false);
+                  setIsMinDateSelectorOpen(!isMinDateSelectorOpen);
+                }}
+                className="w-full p-2 rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                type="button"
+              >
+                <span>
+                  {filters.installationDate.min
+                    ? new Date(
+                        filters.installationDate.min
+                      ).toLocaleDateString()
+                    : t("selectDate")}
+                </span>
+                <BsCalendar3 />
+              </button>
+              {isMinDateSelectorOpen && (
+                <DateSelector
+                  isOpen={isMinDateSelectorOpen}
+                  onClose={() => setIsMinDateSelectorOpen(false)}
+                  onSelect={(date) => handleDateChange("min", date)}
+                  value={filters.installationDate.min}
+                  parentRef={minDateInputRef}
+                />
+              )}
+            </div>
           </div>
-          <div className="flex flex-col items-start gap-2">
-            <span className="text-custom-dark-blue dark:text-custom-light-gray">
+
+          {/* To Date Picker */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t("to")}
-            </span>
-            <input
-              type="date"
-              value={filters.installationDate.max}
-              onChange={(e) => handleDateChange("max", e.target.value)}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-              placeholder={t("installationDateMax")}
-            />
+            </label>
+            <div className="relative" ref={maxDateInputRef}>
+              <button
+                onClick={() => {
+                  setIsMinDateSelectorOpen(false);
+                  setIsMaxDateSelectorOpen(!isMaxDateSelectorOpen);
+                }}
+                className="w-full p-2 rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                type="button"
+              >
+                <span>
+                  {filters.installationDate.max
+                    ? new Date(
+                        filters.installationDate.max
+                      ).toLocaleDateString()
+                    : t("selectDate")}
+                </span>
+                <BsCalendar3 />
+              </button>
+              {isMaxDateSelectorOpen && (
+                <DateSelector
+                  isOpen={isMaxDateSelectorOpen}
+                  onClose={() => setIsMaxDateSelectorOpen(false)}
+                  onSelect={(date) => handleDateChange("max", date)}
+                  value={filters.installationDate.max}
+                  parentRef={maxDateInputRef}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

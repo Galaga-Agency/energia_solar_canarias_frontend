@@ -153,6 +153,7 @@ export const fetchVictronEnergyEquipmentDetailsAPI = async ({
 
 export const fetchVictronEnergyAlertsAPI = async ({ plantId, token }) => {
   try {
+    console.log("Fetching alerts for plant:", plantId);
     const response = await fetch(
       `${API_BASE_URL}/plant/alert?proveedor=victronenergy&siteId=${plantId}`,
       {
@@ -174,6 +175,7 @@ export const fetchVictronEnergyAlertsAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
+    console.log("Alerts Data Response for victron:", data);
     return data?.data || null;
   } catch (error) {
     console.error("Alerts data fetch error:", error);

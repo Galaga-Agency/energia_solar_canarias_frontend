@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   LineChart,
@@ -70,6 +76,7 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDateSelectorOpen, setIsDateSelectorOpen] = useState(false);
+  const dateButtonRef = useRef(null);
 
   // Replaced useMemo with constant since it doesn't depend on any values
   const currentDate = new Date().toISOString().split("T")[0];
@@ -341,17 +348,19 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
         <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
           {chartIndexId === "potencia" ? (
             <div className="relative">
-              <button
-                onClick={() => setIsDateSelectorOpen((prev) => !prev)}
-                className="font-secondary dark:border dark:border-gray-200/50 text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
-              >
-                <span>
-                  {selectedDate
-                    ? format(selectedDate, "dd/MM/yyyy", { locale: es })
-                    : t("dateAll")}
-                </span>
-                <BsCalendar3 />
-              </button>
+              <div ref={dateButtonRef}>
+                <button
+                  onClick={() => setIsDateSelectorOpen((prev) => !prev)}
+                  className="font-secondary dark:border dark:border-gray-200/50 text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
+                >
+                  <span>
+                    {selectedDate
+                      ? format(selectedDate, "dd/MM/yyyy", { locale: es })
+                      : t("dateAll")}
+                  </span>
+                  <BsCalendar3 />
+                </button>
+              </div>
 
               {isDateSelectorOpen && (
                 <DateSelector
@@ -363,6 +372,7 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
                     handleFetchGraph();
                   }}
                   value={selectedDate}
+                  parentRef={dateButtonRef}
                 />
               )}
             </div>

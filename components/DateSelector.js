@@ -14,8 +14,16 @@ import { es } from "date-fns/locale";
 
 const DateSelector = ({ isOpen, onClose, onSelect, value, parentRef }) => {
   const [currentDate, setCurrentDate] = useState(() => {
-    if (value && isValid(parseISO(value))) {
-      return parseISO(value);
+    // For GoodweGraphDisplay (Date object)
+    if (value instanceof Date && !isNaN(value.getTime())) {
+      return value;
+    }
+    // For FilterBar (ISO string)
+    if (typeof value === "string" && value) {
+      const parsed = parseISO(value);
+      if (isValid(parsed)) {
+        return parsed;
+      }
     }
     return startOfMonth(new Date());
   });
@@ -71,17 +79,27 @@ const DateSelector = ({ isOpen, onClose, onSelect, value, parentRef }) => {
 
   const isSelected = (date) => {
     if (!value) return false;
-    try {
-      const valueDate = parseISO(value);
-      return format(date, "yyyy-MM-dd") === format(valueDate, "yyyy-MM-dd");
-    } catch {
-      return false;
+
+    let compareDate;
+    if (value instanceof Date) {
+      compareDate = value;
+    } else if (typeof value === "string") {
+      compareDate = parseISO(value);
     }
+
+    if (!isValid(compareDate)) return false;
+    return format(date, "yyyy-MM-dd") === format(compareDate, "yyyy-MM-dd");
   };
 
   const handleDateSelect = (date) => {
-    const formattedDate = format(date, "yyyy-MM-dd");
-    onSelect(formattedDate);
+    // Return Date object for GoodweGraphDisplay
+    if (value instanceof Date) {
+      onSelect(date);
+    }
+    // Return ISO string for FilterBar
+    else {
+      onSelect(format(date, "yyyy-MM-dd"));
+    }
     onClose();
   };
 
@@ -97,15 +115,14 @@ const DateSelector = ({ isOpen, onClose, onSelect, value, parentRef }) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.15 }}
-        className="absolute z-[9999] mt-1 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700"
+        className="fixed z-[9999] mt-1 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 min-w-[280px]"
         style={{
-          top: parentRef.current?.getBoundingClientRect().bottom - 10,
+          top: parentRef.current?.getBoundingClientRect().bottom - 40,
           left: parentRef.current?.getBoundingClientRect().left,
-          width: parentRef.current?.offsetWidth,
+          width: Math.max(280, parentRef.current?.offsetWidth || 0),
         }}
       >
         <div className="p-2">
-          {/* Header */}
           <div className="flex items-center justify-between mb-2 text-custom-dark-blue dark:text-custom-light-gray">
             <button
               onClick={handlePrevMonth}
@@ -126,7 +143,6 @@ const DateSelector = ({ isOpen, onClose, onSelect, value, parentRef }) => {
             </button>
           </div>
 
-          {/* Calendar */}
           <div className="grid grid-cols-7 gap-1">
             {weekDays.map((day) => (
               <div

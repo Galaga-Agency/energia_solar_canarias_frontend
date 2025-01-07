@@ -290,9 +290,9 @@ const VictronFilterSidebar = ({
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("installationDate")}
         </h3>
-        <div className="space-y-4">
+        <div className="flex space-x-2">
           {/* From Date Picker */}
-          <div className="mb-6">
+          <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t("from")}
             </label>
@@ -327,7 +327,7 @@ const VictronFilterSidebar = ({
           </div>
 
           {/* To Date Picker */}
-          <div className="mb-6">
+          <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t("to")}
             </label>

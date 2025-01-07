@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useTranslation } from "next-i18next";
 import Texture from "@/components/Texture";
+import { X } from "lucide-react";
 
 const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
   const { t } = useTranslation();
@@ -87,12 +88,14 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
                       {t("System Alerts")}
                     </h2>
                   </div>
-                  <button
+                  <motion.button
+                    whileHover={{ rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={onClose}
-                    className="p-2 hover:bg-black/10 rounded-full transition-colors"
+                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                   >
-                    <FiX className="text-2xl" />
-                  </button>
+                    <X className="h-6 w-6 dark:text-custom-dark-blue " />
+                  </motion.button>
                 </motion.div>
 
                 <div className="p-6 space-y-6">

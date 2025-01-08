@@ -1,5 +1,20 @@
 import React from "react";
 import { Battery, AlertTriangle, Zap } from "lucide-react";
+import {
+  BsBatteryCharging,
+  BsBatteryFull,
+  BsBatteryHalf,
+} from "react-icons/bs";
+
+const batteryStateIcons = {
+  charging: {
+    icon: BsBatteryCharging,
+    color: "text-green-500",
+    size: "text-3xl",
+  },
+  discharging: { icon: BsBatteryHalf, color: "text-red-500", size: "text-3xl" },
+  resting: { icon: BsBatteryFull, color: "text-gray-400", size: "text-3xl" },
+};
 
 const VictronStatsOverview = ({ plants, t, alerts }) => {
   const installationTypes = React.useMemo(() => {
@@ -39,24 +54,16 @@ const VictronStatsOverview = ({ plants, t, alerts }) => {
           </h3>
         </div>
         <div className="flex justify-around gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-              {stats.charging}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-              {stats.discharging}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-slate-400"></div>
-            <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-              {stats.resting}
-            </span>
-          </div>
+          {Object.entries(batteryStateIcons).map(
+            ([status, { icon: Icon, color, size }]) => (
+              <div key={status} className="flex items-center gap-2">
+                <Icon className={`${color} ${size} mt-1`} />
+                <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
+                  {stats[status] || 0}
+                </span>
+              </div>
+            )
+          )}
         </div>
       </div>
 

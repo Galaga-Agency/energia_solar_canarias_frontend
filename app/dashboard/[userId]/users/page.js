@@ -5,19 +5,23 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
-import { IoArrowBackCircle, IoTrashOutline } from "react-icons/io5";
-import { AiOutlineEdit } from "react-icons/ai";
+import { IoFilter } from "react-icons/io5";
+import { HiViewGrid, HiViewList } from "react-icons/hi";
+import { FaUserAltSlash } from "react-icons/fa";
 import Pagination from "@/components/ui/Pagination";
 import Texture from "@/components/Texture";
-import SortUserMenu from "@/components/SortUserMenu";
-import UserFilterInput from "@/components/UserFilterInput";
 import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
-import UsersListSkeleton from "@/components/loadingSkeletons/UsersListSkeleton";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
-import useUserFilter from "@/hooks/useUserFilter";
+import UsersSidebar from "@/components/users/UsersSidebar";
+import UsersListSkeleton from "@/components/loadingSkeletons/UsersListSkeleton";
+import UsersGridSkeleton from "@/components/loadingSkeletons/UsersGridSkeleton";
+import UsersListView from "@/components/users/UsersListView";
+import UsersGridView from "@/components/users/UsersGridView";
+import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import useDeviceType from "@/hooks/useDeviceType";
+
 import {
   fetchUsers,
   selectUsers,
@@ -26,8 +30,11 @@ import {
 } from "@/store/slices/usersListSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
-import companyIcon from "@/public/assets/icons/icon-512x512.png";
-import { FaUserAltSlash } from "react-icons/fa";
+
+const INITIAL_FILTERS = {
+  role: ["all"],
+  search: "",
+};
 
 const UsersTab = () => {
   const { t } = useTranslation();
@@ -38,10 +45,14 @@ const UsersTab = () => {
   const users = useSelector(selectUsers);
   const isLoading = useSelector(selectUsersLoading);
   const error = useSelector(selectUsersError);
+  const { isMobile, isTablet } = useDeviceType();
+
+  const [viewMode, setViewMode] = useState("list");
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 10; // Set a fixed number for pagination
-  const { isMobile, isDesktop } = useDeviceType();
-  const [showError, setShowError] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile && !isTablet);
+
+  const usersPerPage = 10;
 
   useEffect(() => {
     if (currentUser) {
@@ -49,174 +60,57 @@ const UsersTab = () => {
     }
   }, [dispatch, currentUser]);
 
-  const { filteredUsers, filterUsers } = useUserFilter(users);
+  const filteredUsers =
+    users?.filter((user) => {
+      const currentFilters = filters || INITIAL_FILTERS;
 
-  const sortUsers = (criteria) => {
-    let sorted = [...filteredUsers];
-    switch (criteria) {
-      case "alphabetical":
-        sorted.sort((a, b) => a.usuario_nombre.localeCompare(b.usuario_nombre));
-        break;
-      case "registrationDate":
-        sorted.sort(
-          (a, b) => new Date(b.registrationDate) - new Date(a.registrationDate)
-        );
-        break;
-      default:
-        break;
-    }
-    return sorted;
-  };
+      if (
+        currentFilters.search &&
+        !user.usuario_nombre
+          .toLowerCase()
+          .includes(currentFilters.search.toLowerCase())
+      ) {
+        return false;
+      }
 
-  const totalPages = Math.ceil(filteredUsers?.length / usersPerPage);
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const paginatedUsers = filteredUsers?.slice(
-    startIndex,
-    startIndex + usersPerPage
+      const userRoles = currentFilters.role || ["all"];
+      if (!userRoles.includes("all") && !userRoles.includes(user.clase)) {
+        return false;
+      }
+
+      return true;
+    }) || [];
+
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage
   );
-
-  const handleUserClick = (selectedUserId) => {
-    router.push(`/dashboard/${currentUser.id}/users/${selectedUserId}`);
-  };
-
-  const toPascalCase = (str) => {
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  const handleRefresh = () => {
-    setShowError(false);
-    dispatch(fetchUsers(currentUser.tokenIdentificador));
-  };
 
   useEffect(() => {
-    if (error) {
-      setShowError(true);
-    }
-  }, [error]);
+    setCurrentPage(1);
+  }, [filters, filteredUsers.length]);
 
-  // Error state handling
-  const renderError = () => (
-    <div className="min-h-screen p-6 w-auto">
-      <div className="h-auto w-full flex flex-col justify-center items-center">
-        <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
-        <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
-          {t("noUsersFound")}
-        </p>
-      </div>
-    </div>
-  );
+  const handleUserClick = (userId) => {
+    router.push(`/dashboard/${currentUser.id}/users/${userId}`);
+  };
 
-  // Loading state handling
-  const renderLoading = () => (
-    <div className="h-full w-full flex justify-center items-center">
-      <UsersListSkeleton theme={theme} rows={usersPerPage} />
-    </div>
-  );
-
-  // Users list or no users found
-  const renderUsers = () => {
-    if (!paginatedUsers?.length) {
-      return (
-        <div className="h-full w-full flex justify-center items-center">
-          <FaUserAltSlash />
-          <p className="text-lg text-custom-dark-blue dark:text-custom-yellow mt-24">
+  if (error) {
+    return (
+      <div className="min-h-screen p-6 w-auto">
+        <div className="h-auto w-full flex flex-col justify-center items-center">
+          <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
+          <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
             {t("noUsersFound")}
           </p>
         </div>
-      );
-    }
-
-    return (
-      <div className="my-12 overflow-hidden">
-        <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300">
-              <th className="py-3 px-4 lg:pl-12 lg:pr-4 text-left text-custom-dark-blue dark:text-custom-yellow">
-                {t("userName")}
-              </th>
-              {isDesktop && <th></th>}
-              {!isMobile && (
-                <th className="py-3 px-4 lg:pr-12 lg:pl-4 text-left text-custom-dark-blue dark:text-custom-yellow">
-                  {t("userEmail")}
-                </th>
-              )}
-              {isDesktop && (
-                <th className="py-3 px-8 text-left text-custom-dark-blue dark:text-custom-yellow">
-                  {t("lastLogin")}
-                </th>
-              )}
-              <th className="py-3 px-6 text-right text-custom-dark-blue dark:text-custom-yellow"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedUsers.map((userItem) => (
-              <tr
-                key={userItem.usuario_id}
-                className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300 cursor-pointer"
-                onClick={() => handleUserClick(userItem.usuario_id)}
-              >
-                <td className="py-3 px-4 lg:pl-12 lg:pr-2 text-lg text-custom-dark-blue dark:text-custom-yellow flex items-center gap-4 mr-4">
-                  <Image
-                    src={userItem.imagen || "/assets/default-profile.png"}
-                    alt={`${userItem.usuario_nombre}'s profile`}
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                  />
-                  {toPascalCase(userItem.usuario_nombre)}{" "}
-                  {toPascalCase(userItem.apellido)}
-                </td>
-                {isDesktop && (
-                  <td className="text-left">
-                    {userItem.clase === "admin" ? (
-                      <span className="bg-custom-dark-blue dark:bg-custom-yellow text-custom-light-gray dark:text-custom-dark-blue mx-6 px-2 py-1 rounded-3xl text-sm font-bold">
-                        admin
-                      </span>
-                    ) : null}
-                  </td>
-                )}
-                {!isMobile && (
-                  <td className="py-3 px-4 text-lg text-custom-dark-blue dark:text-custom-yellow overflow-hidden whitespace-nowrap text-ellipsis">
-                    {userItem.email}
-                  </td>
-                )}
-                {isDesktop && (
-                  <td className="py-3 px-8 text-lg text-custom-dark-blue dark:text-custom-yellow">
-                    {isNaN(new Date(userItem.lastLogin)) ? (
-                      <span className="ml-10">/</span>
-                    ) : (
-                      new Date(userItem.lastLogin).toLocaleDateString()
-                    )}
-                  </td>
-                )}
-                <td className="relative py-3 px-4 text-center text-2xl text-custom-dark-blue dark:text-custom-yellow flex items-center justify-center gap-4">
-                  <AiOutlineEdit className=" absolute cursor-pointer hover:text-blue-500 -translate-y-[40%] right-12 lg:right-24" />
-                  <IoTrashOutline className="absolute cursor-pointer hover:text-red-500 -translate-y-[40%] right-4 lg:right-12" />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            className="mt-4"
-          />
-        )}
       </div>
     );
-  };
+  }
 
   return (
     <>
       <TransitionEffect />
-      <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar p-8">
+      <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
         <Texture />
 
         <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
@@ -224,30 +118,114 @@ const UsersTab = () => {
           <LanguageSelector />
         </div>
 
-        <div className="flex items-center mb-10 md:mb-2 z-10">
-          <Image
-            src={companyIcon}
-            alt="Company Icon"
-            className="w-12 h-12 mr-2 z-10"
-          />
-          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
-            {t("usersList")}
-          </h2>
+        <div className="p-8">
+          {/* Title Section */}
+          <div className="flex items-center">
+            <Image
+              src={companyIcon}
+              alt="Company Icon"
+              className="w-12 h-12 mr-2 z-10"
+            />
+            <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
+              {t("usersList")}
+            </h2>
+          </div>
+
+          {/* Filter Button - Mobile/Tablet Only */}
+          <button
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <IoFilter className="text-xl text-custom-dark-blue" />
+          </button>
+
+          <div className="flex mt-8 gap-6">
+            {/* Sidebar - Desktop */}
+            {!isMobile && !isTablet && (
+              <UsersSidebar
+                filters={filters}
+                onFilterChange={setFilters}
+                isOpen={isSidebarOpen}
+              />
+            )}
+
+            {/* Main Content */}
+            <div className="flex-1">
+              {/* View Controls */}
+              <div className="flex justify-between items-center mb-6">
+                <span className="text-custom-dark-blue dark:text-custom-yellow">
+                  {t("usersFound")}: {filteredUsers.length}
+                </span>
+
+                <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-2 rounded-lg transition-colors ${
+                      viewMode === "list"
+                        ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                        : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                    }`}
+                  >
+                    <HiViewList className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-2 rounded-lg transition-colors ${
+                      viewMode === "grid"
+                        ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                        : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                    }`}
+                  >
+                    <HiViewGrid className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Users List/Grid */}
+              {isLoading ? (
+                viewMode === "list" ? (
+                  <UsersListSkeleton theme={theme} rows={usersPerPage} />
+                ) : (
+                  <UsersGridSkeleton theme={theme} rows={usersPerPage} />
+                )
+              ) : viewMode === "list" ? (
+                <UsersListView
+                  users={paginatedUsers}
+                  onUserClick={handleUserClick}
+                />
+              ) : (
+                <UsersGridView
+                  users={paginatedUsers}
+                  onUserClick={handleUserClick}
+                />
+              )}
+
+              {/* Pagination */}
+              {filteredUsers.length > usersPerPage && (
+                <div className="mt-6">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <UserFilterInput onFilterChange={filterUsers} />
-        <SortUserMenu onSortChange={sortUsers} />
+        {/* Mobile Sidebar */}
+        {(isMobile || isTablet) && isSidebarOpen && (
+          <UsersSidebar
+            filters={filters}
+            onFilterChange={setFilters}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+        )}
 
-        {isLoading
-          ? renderLoading()
-          : showError
-          ? renderError()
-          : renderUsers()}
+        <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
       </div>
-      <BottomNavbar
-        userId={currentUser && currentUser.id}
-        userClass={currentUser && currentUser.clase}
-      />
     </>
   );
 };

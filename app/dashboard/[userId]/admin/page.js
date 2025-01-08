@@ -3,58 +3,60 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import BottomNavbar from "@/components/BottomNavbar";
-import TransitionEffect from "@/components/TransitionEffect";
-import LanguageSelector from "@/components/LanguageSelector";
-import { selectUser } from "@/store/slices/userSlice";
 import {
   fetchPlants,
   fetchPlantsByProvider,
   selectLoading,
   selectPlants,
 } from "@/store/slices/plantsSlice";
+import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
+import BottomNavbar from "@/components/BottomNavbar";
+import TransitionEffect from "@/components/TransitionEffect";
+import LanguageSelector from "@/components/LanguageSelector";
 import ThemeToggle from "@/components/ThemeToggle";
 import SortMenu from "@/components/SortPlantsMenu";
 import Pagination from "@/components/ui/Pagination";
 import ProviderCard from "@/components/ProviderCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
+import AddPlantForm from "@/components/AddPlantForm";
+import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton.js";
+import PlantsListTableItem from "@/components/PlantsListTableItem";
+import Texture from "@/components/Texture";
+import InfoModal from "@/components/InfoModal";
+import FilterSidebar from "@/components/FilterSidebar";
+import ViewChangeDropdown from "@/components/ViewChangeDropdown";
+import { providers } from "@/data/providers";
+import { useTranslation } from "next-i18next";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
-import AddPlantForm from "@/components/AddPlantForm";
 import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
-import Texture from "@/components/Texture";
-import PlantStatuses from "@/components/PlantStatuses";
-import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton.js";
-import { useTranslation } from "next-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import InfoModal from "@/components/InfoModal";
-import PlantsListTableItem from "@/components/PlantsListTableItem";
 import useDeviceType from "@/hooks/useDeviceType";
-import ViewChangeDropdown from "@/components/ViewChangeDropdown";
-import FilterSidebar from "@/components/FilterSidebar";
 import usePlantSort from "@/hooks/usePlantSort";
-import { providers } from "@/data/providers";
+import { HiViewGrid, HiViewList } from "react-icons/hi";
+import PlantCard from "@/components/PlantCard";
 
 const AdminDashboard = () => {
-  const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const router = useRouter();
+  const { t } = useTranslation();
+  const user = useSelector(selectUser);
   const loading = useSelector(selectLoading);
   const plants = useSelector(selectPlants);
   const theme = useSelector(selectTheme);
-  const { t } = useTranslation();
+  const { isMobile } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [view, setView] = useState("providers");
-  const [selectedProvider, setSelectedProvider] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [view, setView] = useState("providers");
   const [filteredPlants, setFilteredPlants] = useState([]);
-  const { isMobile } = useDeviceType();
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState("list");
   const plantsPerPage = 12;
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
@@ -62,14 +64,10 @@ const AdminDashboard = () => {
     startIndex,
     startIndex + plantsPerPage
   );
+
   const { sortedItems, sortItems } = usePlantSort(plants);
 
-  useEffect(() => {
-    if (view === "plants") {
-      setFilteredPlants(plants);
-    }
-  }, [view, plants]);
-
+  // Initial data fetch
   useEffect(() => {
     if (user?.id && user?.tokenIdentificador && isInitialLoad) {
       dispatch(
@@ -84,30 +82,27 @@ const AdminDashboard = () => {
     }
   }, [user, dispatch, currentPage, isInitialLoad, plantsPerPage]);
 
+  // Set filtered plants when view changes
   useEffect(() => {
-    if (!loading && plants.length > 0) {
+    if (view === "plants") {
       setFilteredPlants(plants);
+      sidebarRef.current?.clearFilters();
     }
-  }, [plants, loading]);
+  }, [view, plants]);
 
+  // Update filtered plants on filter change
   const handleFilterChange = (newFilteredPlants) => {
     setFilteredPlants(newFilteredPlants);
     setCurrentPage(1);
   };
 
-  const handleViewChange = (value) => {
-    if (value === "plants") {
-      setIsModalOpen(true);
-    }
-    setView(value);
-  };
-
+  // Handle provider click
   const handleProviderClick = (provider) => {
-    const normalizedProviderName =
-      decodeURIComponent(provider.name?.toLowerCase().replace(/\s+/g, "")) ||
-      "";
-    setSelectedProvider(normalizedProviderName);
+    const normalizedProviderName = provider.name
+      ?.toLowerCase()
+      .replace(/\s+/g, "");
 
+    setSelectedProvider(normalizedProviderName);
     dispatch(
       fetchPlantsByProvider({
         userId: user.id,
@@ -115,36 +110,36 @@ const AdminDashboard = () => {
         provider: normalizedProviderName,
       })
     );
-
     router.push(`/dashboard/${user.id}/admin/${normalizedProviderName}`);
   };
 
-  console.log("plant from list: ", plants);
+  // Close modal
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  //   if (selectedProvider) {
+  //     dispatch(
+  //       fetchPlantsByProvider({
+  //         userId: user.id,
+  //         token: user.tokenIdentificador,
+  //         provider: selectedProvider,
+  //       })
+  //     );
+  //   }
+  // };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    if (selectedProvider) {
-      dispatch(
-        fetchPlantsByProvider({
-          userId: user.id,
-          token: user.tokenIdentificador,
-          provider: selectedProvider,
-        })
-      );
+  // Handle view change (card/list)
+  const handleViewChange = (value) => {
+    if (value === "plants") {
+      setIsModalOpen(true);
     }
+    setView(value);
   };
 
+  // Sort plants
   const handleSortChange = (criteria, order) => {
     sortItems(criteria, order);
     setFilteredPlants(sortedItems);
   };
-
-  useEffect(() => {
-    if (view === "plants") {
-      setFilteredPlants(plants);
-      sidebarRef.current?.clearFilters();
-    }
-  }, [view, plants]);
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16">
@@ -208,26 +203,39 @@ const AdminDashboard = () => {
                   </p>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:justify-between z-30">
-                  <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
-                    <SortMenu onSortChange={handleSortChange} />
+                <div className="flex items-center justify-between mb-4">
+                  <SortMenu onSortChange={handleSortChange} />
+                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
                     <button
-                      onClick={() => setIsMapOpen(true)}
-                      className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex items-center justify-center button-shadow"
+                      onClick={() => setViewMode("list")}
+                      className={`p-2 rounded-lg transition-colors ${
+                        viewMode === "list"
+                          ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                          : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                      }`}
                     >
-                      <FaMapMarkedAlt className="text-2xl" />
+                      <HiViewList className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      className={`p-2 rounded-lg transition-colors ${
+                        viewMode === "grid"
+                          ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                          : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                      }`}
+                    >
+                      <HiViewGrid className="w-5 h-5" />
                     </button>
                   </div>
-                  <PlantStatuses />
                 </div>
 
-                {loading || isModalOpen ? (
+                {loading ? (
                   <div className="py-8">
                     <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
                   </div>
-                ) : paginatedPlants.length > 0 ? (
-                  <div className="py-8">
-                    {paginatedPlants.map((plant) => (
+                ) : filteredPlants.length > 0 ? (
+                  viewMode === "list" ? (
+                    paginatedPlants.map((plant) => (
                       <PlantsListTableItem
                         key={plant.id}
                         plant={{
@@ -235,8 +243,14 @@ const AdminDashboard = () => {
                           id: plant.id?.toString(),
                         }}
                       />
-                    ))}
-                  </div>
+                    ))
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
+                      {paginatedPlants.map((plant) => (
+                        <PlantCard key={plant.id} plant={plant} />
+                      ))}
+                    </div>
+                  )
                 ) : (
                   <div className="h-auto w-full flex flex-col justify-center items-center">
                     <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
@@ -275,13 +289,13 @@ const AdminDashboard = () => {
 
       <BottomNavbar userId={user?.id} userClass={user?.clase} />
 
-      <InfoModal
+      {/* <InfoModal
         isOpen={isModalOpen}
         onClose={closeModal}
         onConfirm={closeModal}
         title={t("loadingPlants")}
         message={t("loadingPlantsMessage")}
-      />
+      /> */}
     </div>
   );
 };

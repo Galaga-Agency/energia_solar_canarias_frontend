@@ -188,7 +188,7 @@ const GoodweFilterSidebar = ({
       ref={sidebarRef}
       className={`overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
@@ -222,7 +222,7 @@ const GoodweFilterSidebar = ({
           value={filters.search}
           onChange={handleSearchChange}
           placeholder={t("filterPlaceholder")}
-          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
+          className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
         />
       </div>
 
@@ -282,7 +282,7 @@ const GoodweFilterSidebar = ({
               type="number"
               value={filters.capacity.min}
               onChange={(e) => handleCapacityChange("min", e.target.value)}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
+              className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
               placeholder={t("min")}
             />
           </div>
@@ -294,7 +294,7 @@ const GoodweFilterSidebar = ({
               type="number"
               value={filters.capacity.max}
               onChange={(e) => handleCapacityChange("max", e.target.value)}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
+              className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
               placeholder={t("max")}
             />
           </div>

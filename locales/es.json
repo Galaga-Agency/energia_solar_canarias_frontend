@@ -105,7 +105,10 @@
     "working": "Funcionando",
     "error": "Error",
     "waiting": "Esperando",
-    "disconnected": "Desconectado"
+    "disconnected": "Desconectado",
+    "Cargando": "Cargando",
+    "Descargando": "Descargando",
+    "En reposo": "En reposo"
   },
   "statusDescriptions": {
     "working": "Todos los inversores de la planta están funcionando con normalidad.",
@@ -1717,5 +1720,16 @@
   "tryAnotherTimeRange": "Prueba con otro rango de fechas",
   "selectDifferentRange": "Seleccionar otro rango",
   "show_only_plants_with_alerts": "Mostrar solo plantas con alertas activas",
-  "Active": "Activas"
+  "Active": "Activas",
+  "reset_filters": "Reiniciar filtros",
+  "role": "Rol",
+  "roles": {
+    "all": "Todos los roles",
+    "admin": "Administrador",
+    "cliente": "Cliente"
+  },
+  "active_status": "Estado de actividad",
+  "all": "Todos",
+  "active": "Activo",
+  "inactive": "Inactivo"
 }

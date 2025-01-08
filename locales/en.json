@@ -105,7 +105,10 @@
     "working": "Working",
     "error": "Error",
     "waiting": "Waiting",
-    "disconnected": "Disconnected"
+    "disconnected": "Disconnected",
+    "Cargando": "Charging",
+    "Descargando": "Discharging",
+    "En reposo": "Idle"
   },
   "state": "Status",
   "statusDescriptions": {
@@ -808,5 +811,16 @@
   "tryAnotherTimeRange": "Try a different time range",
   "selectDifferentRange": "Select different range",
   "invalidToken": "Invalid verification code. Please try again.",
-  "show_only_plants_with_alerts": "Show only plants with active alerts"
+  "show_only_plants_with_alerts": "Show only plants with active alerts",
+  "reset_filters": "Reset Filters",
+  "role": "Role",
+  "roles": {
+    "all": "All Roles",
+    "admin": "Admin",
+    "cliente": "Client"
+  },
+  "active_status": "Active Status",
+  "all": "All",
+  "active": "Active",
+  "inactive": "Inactive"
 }

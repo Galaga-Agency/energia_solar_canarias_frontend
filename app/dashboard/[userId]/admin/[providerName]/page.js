@@ -19,28 +19,30 @@ import ThemeToggle from "@/components/ThemeToggle";
 import SortMenu from "@/components/SortPlantsMenu";
 import SolarEdgeSortMenu from "@/components/solaredge/SolarEdgeSortMenu";
 import GoodweSortMenu from "@/components/goodwe/GoodweSortMenu";
+import VictronSortMenu from "@/components/victronenergy/VictronSortMenu";
 import Pagination from "@/components/ui/Pagination";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import { PiSolarPanelFill } from "react-icons/pi";
+import { HiViewGrid, HiViewList } from "react-icons/hi";
 import Texture from "@/components/Texture";
 import PlantStatuses from "@/components/PlantStatuses";
 import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton.js";
 import { useTranslation } from "next-i18next";
 import InfoModal from "@/components/InfoModal";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
+import PlantCard from "@/components/PlantCard";
 import { providers } from "@/data/providers";
 import PlantsMapModal from "@/components/PlantsMapModal";
 import { IoArrowBackCircle, IoFilter } from "react-icons/io5";
 import SolarEdgeFilterSidebar from "@/components/solaredge/SolarEdgeFilterSidebar";
 import GoodweFilterSidebar from "@/components/goodwe/GoodweFilterSidebar";
 import VictronFilterSidebar from "@/components/victronenergy/VictronFilterSidebar";
-import VictronSortMenu from "@/components/victronenergy/VictronSortMenu";
 import GoodweStatsOverview from "@/components/goodwe/GoodweStatsOverview";
 import SolarEdgeStatsOverview from "@/components/solaredge/SolarEdgeStatsOverview";
 import BatteryStatuses from "@/components/BatteryStatuses";
 import VictronStatsOverview from "@/components/victronenergy/VictronStatsOverview";
 import { useOptimalItemsCount } from "@/hooks/useOptimalItemsCount";
 import useDeviceType from "@/hooks/useDeviceType";
+import { PiSolarPanelFill } from "react-icons/pi";
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -52,6 +54,7 @@ const ProviderPage = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState("list"); // Added view mode toggle
   const [allPlants, setAllPlants] = useState([]);
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -344,14 +347,10 @@ const ProviderPage = () => {
         <div className="flex mt-6">
           {/* Button to open sidebar */}
           <button
-            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
             onClick={toggleSidebar}
           >
-            {isDesktop ? (
-              <span className="text-custom-dark-blue">{t("filter")}</span>
-            ) : (
-              <IoFilter className="text-xl text-custom-dark-blue" />
-            )}
+            <IoFilter />
           </button>
 
           {/* Sidebar */}
@@ -364,39 +363,54 @@ const ProviderPage = () => {
               </p>
             </div>
 
-            <div className="flex flex-col md:flex-row md:justify-between z-30">
-              <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
-                <div className="flex-grow">{renderSortMenu()}</div>
+            <div className="flex items-center justify-between mb-4">
+              {renderSortMenu()}
+              <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
                 <button
-                  onClick={() => setIsMapOpen(true)}
-                  className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex items-center justify-center button-shadow"
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === "list"
+                      ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                      : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                  }`}
                 >
-                  <FaMapMarkedAlt className="text-2xl" />
+                  <HiViewList className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === "grid"
+                      ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                      : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                  }`}
+                >
+                  <HiViewGrid className="w-5 h-5" />
                 </button>
               </div>
-              {providerPassed === "victronenergy" ? (
-                <BatteryStatuses />
-              ) : (
-                <PlantStatuses />
-              )}
             </div>
 
-            <div className="list-container-selector py-8">
-              {loading || isModalOpen ? (
-                <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
-              ) : paginatedPlants.length > 0 ? (
+            {loading ? (
+              <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
+            ) : filteredPlants.length > 0 ? (
+              viewMode === "list" ? (
                 paginatedPlants.map((plant) => (
                   <PlantsListTableItem key={plant.id} plant={plant} />
                 ))
               ) : (
-                <div className="h-auto w-full flex flex-col justify-center items-center">
-                  <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
-                  <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
-                    {t("noPlantsFound")}
-                  </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
+                  {paginatedPlants.map((plant) => (
+                    <PlantCard key={plant.id} plant={plant} />
+                  ))}
                 </div>
-              )}
-            </div>
+              )
+            ) : (
+              <div className="h-auto w-full flex flex-col justify-center items-center">
+                <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+                <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
+                  {t("noPlantsFound")}
+                </p>
+              </div>
+            )}
 
             {totalPages > 1 && (
               <Pagination

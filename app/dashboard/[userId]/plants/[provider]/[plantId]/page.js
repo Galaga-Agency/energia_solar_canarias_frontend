@@ -22,6 +22,7 @@ import Texture from "@/components/Texture";
 import PageTransition from "@/components/PageTransition";
 import VictronEnergyPlantDetails from "@/components/victronenergy/VictronEnergyPlantDetails";
 import BottomNavbar from "@/components/BottomNavbar";
+import TransitionEffect from "@/components/TransitionEffect";
 
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId } = params;
@@ -273,10 +274,11 @@ const PlantDetailsPage = ({ params }) => {
   ]);
 
   return (
-    <PageTransition>
-      <div className="min-h-screen">{renderContent}</div>
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
+      <TransitionEffect />
+      {renderContent}
       {/* <BottomNavbar userId={user && user.id} userClass={user && user.clase} /> */}
-    </PageTransition>
+    </div>
   );
 };
 

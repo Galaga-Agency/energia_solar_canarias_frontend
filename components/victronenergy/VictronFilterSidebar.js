@@ -66,13 +66,23 @@ const VictronFilterSidebar = ({
     (currentFilters) => {
       if (!plants) return [];
 
+      console.log("Current filters:", currentFilters);
+
       return plants.filter((plant) => {
-        // Alert Filter
-        if (
-          currentFilters.hasAlerts &&
-          (!plant.alert_quantity || plant.alert_quantity === 0)
-        ) {
-          return false;
+        console.log(
+          "Checking plant:",
+          plant.name,
+          "Alert quantity:",
+          plant.alert_quantity
+        );
+
+        // Alert Filter - Updated logic
+        if (currentFilters.hasAlerts) {
+          // Only keep plants that have alert_quantity > 0
+          if (!plant.alert_quantity || plant.alert_quantity <= 0) {
+            console.log("Filtering out plant due to no alerts:", plant.name);
+            return false;
+          }
         }
 
         // Search Filter
@@ -136,6 +146,7 @@ const VictronFilterSidebar = ({
             ...prevFilters,
             hasAlerts: !prevFilters.hasAlerts,
           };
+          console.log("Alert filter changed to:", !prevFilters.hasAlerts);
         } else {
           updatedFilters = {
             ...prevFilters,
@@ -145,13 +156,14 @@ const VictronFilterSidebar = ({
           };
         }
 
-        onFilterChange(filterPlants(updatedFilters));
+        const filteredPlants = filterPlants(updatedFilters);
+        console.log("Filtered plants:", filteredPlants);
+        onFilterChange(filteredPlants);
         return updatedFilters;
       });
     },
     [filterPlants, onFilterChange]
   );
-
   const handleSearchChange = useCallback(
     (event) => {
       const searchTerm = event.target.value;
@@ -242,7 +254,7 @@ const VictronFilterSidebar = ({
           value={filters.search}
           onChange={handleSearchChange}
           placeholder={t("filterPlaceholder")}
-          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
+          className="w-full p-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
         />
       </div>
 
@@ -297,7 +309,7 @@ const VictronFilterSidebar = ({
         <div className="flex space-x-2">
           {/* From Date Picker */}
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-custom-dark-blue dark:text-custom-light-gray mb-1">
               {t("from")}
             </label>
             <div className="relative" ref={minDateInputRef}>
@@ -306,17 +318,17 @@ const VictronFilterSidebar = ({
                   setIsMaxDateSelectorOpen(false);
                   setIsMinDateSelectorOpen(!isMinDateSelectorOpen);
                 }}
-                className="w-full p-2 rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                className="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
                 type="button"
               >
-                <span>
+                <span className="text-custom-dark-blue dark:text-custom-light-gray">
                   {filters.installationDate.min
                     ? new Date(
                         filters.installationDate.min
                       ).toLocaleDateString()
                     : t("selectDate")}
                 </span>
-                <BsCalendar3 />
+                <BsCalendar3 className="text-custom-dark-blue dark:text-custom-light-gray" />
               </button>
               {isMinDateSelectorOpen && (
                 <DateSelector
@@ -341,10 +353,10 @@ const VictronFilterSidebar = ({
                   setIsMinDateSelectorOpen(false);
                   setIsMaxDateSelectorOpen(!isMaxDateSelectorOpen);
                 }}
-                className="w-full p-2 rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                className="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
                 type="button"
               >
-                <span>
+                <span className="text-custom-dark-blue dark:text-custom-light-gray">
                   {filters.installationDate.max
                     ? new Date(
                         filters.installationDate.max

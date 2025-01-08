@@ -203,13 +203,13 @@ const SolarEdgeFilterSidebar = ({
       </div>
 
       {/* Search */}
-      <div className="mb-4">
+      <div className="mb-6">
         <input
           type="text"
           value={filters.search}
           onChange={handleSearchChange}
-          placeholder={t("search_plant")}
-          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
+          placeholder={t("filterPlaceholder")}
+          className="w-full p-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
         />
       </div>
 
@@ -246,22 +246,29 @@ const SolarEdgeFilterSidebar = ({
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
           {t("peak_power")} (kWp)
         </h3>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            value={filters.peakPower.min}
-            onChange={(e) => handlePeakPowerChange("min", e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-          />
-          <span className="text-custom-dark-blue dark:text-custom-yellow">
-            -
-          </span>
-          <input
-            type="number"
-            value={filters.peakPower.max}
-            onChange={(e) => handlePeakPowerChange("max", e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow transition duration-300"
-          />
+        <div className="flex gap-4">
+          <div className="flex flex-col w-1/2">
+            <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
+              {t("min")}
+            </label>
+            <input
+              type="number"
+              value={filters.peakPower.min}
+              onChange={(e) => handlePeakPowerChange("min", e.target.value)}
+              className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+            />
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
+              {t("max")}
+            </label>
+            <input
+              type="number"
+              value={filters.peakPower.max}
+              onChange={(e) => handlePeakPowerChange("max", e.target.value)}
+              className="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue dark:text-custom-yellow transition duration-300"
+            />
+          </div>
         </div>
       </div>
     </div>

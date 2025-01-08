@@ -16,14 +16,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    const maxPagesToShow = 3; // Total number of pages to display (including ellipses)
-    const range = 2; // Number of pages before and after the current page to display
+    const range = 1; // Number of pages before and after the current page to display on small screens
+    const isMobile = window.innerWidth < 768;
 
     // Always show the first page
     pageNumbers.push(
       <button
         key={1}
-        className={`mx-1 px-4 py-2 rounded-full border transition-colors duration-300 z-30 ${
+        className={`mx-1 px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base rounded-full border transition-colors duration-300 z-30 ${
           currentPage === 1
             ? "bg-custom-yellow text-black"
             : "bg-custom-dark-blue text-white hover:bg-custom-yellow hover:text-black"
@@ -34,8 +34,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       </button>
     );
 
-    // Add ellipsis if there's a gap between the first page and the current page
-    if (currentPage > range + 2) {
+    // Add ellipsis if not on mobile and there's a gap
+    if (!isMobile && currentPage > range + 2) {
       pageNumbers.push(
         <span key="ellipsis-start" className="mx-1 text-white">
           ...
@@ -51,7 +51,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       pageNumbers.push(
         <button
           key={i}
-          className={`mx-1 px-4 py-2 rounded-full border transition-colors duration-300 z-30 ${
+          className={`mx-1 px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base rounded-full border transition-colors duration-300 z-30 ${
             currentPage === i
               ? "bg-custom-yellow text-black"
               : "bg-custom-dark-blue text-white hover:bg-custom-yellow hover:text-black"
@@ -63,8 +63,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       );
     }
 
-    // Add ellipsis if there's a gap between the last visible page and the last page
-    if (currentPage < totalPages - range - 1) {
+    // Add ellipsis if not on mobile and there's a gap
+    if (!isMobile && currentPage < totalPages - range - 1) {
       pageNumbers.push(
         <span key="ellipsis-end" className="mx-1 text-white">
           ...
@@ -77,7 +77,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       pageNumbers.push(
         <button
           key={totalPages}
-          className={`mx-1 px-4 py-2 rounded-full border transition-colors duration-300 z-30 ${
+          className={`mx-1 px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base rounded-full border transition-colors duration-300 z-30 ${
             currentPage === totalPages
               ? "bg-custom-yellow text-black"
               : "bg-custom-dark-blue text-white hover:bg-custom-yellow hover:text-black"
@@ -93,7 +93,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
-    <div className="flex justify-center items-center space-x-2 mb-12 2xl:mb-0">
+    <div className="flex justify-center items-center space-x-2 mb-12 2xl:mb-0 overflow-x-auto">
       <button
         className={`p-2 rounded-full border transition-all duration-300 z-30 ${
           currentPage === 1
@@ -106,7 +106,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <FiChevronLeft className="text-xl dark:text-custom-yellow z-30" />
       </button>
 
-      {renderPageNumbers()}
+      <div className="flex items-center space-x-1 sm:space-x-2">
+        {renderPageNumbers()}
+      </div>
 
       <button
         className={`p-2 rounded-full border transition-all duration-300 z-30 ${

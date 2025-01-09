@@ -1,96 +1,85 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
 import { FaUserTie } from "react-icons/fa";
 import { AiOutlineEdit } from "react-icons/ai";
 import { IoTrashOutline } from "react-icons/io5";
 import { BsClockHistory } from "react-icons/bs";
-import useDeviceType from "@/hooks/useDeviceType";
 import UsersListSkeleton from "@/components/loadingSkeletons/UsersListSkeleton";
+import useTouchDevice from "@/hooks/useTouchDevice";
+import useFormattedDate from "@/hooks/useFormattedDate";
+import UserEditModal from "@/components/users/UserEditModal";
+import UserDetailsModal from "@/components/users/UserDetailsModal";
+import DeleteConfirmationModal from "@/components/users/DeleteConfirmationModal";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const UsersListView = ({ users, isLoading, onUserClick }) => {
   const { t } = useTranslation();
+  const isTouchDevice = useTouchDevice();
+  const getLoginStatus = useFormattedDate();
   const { isMobile } = useDeviceType();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   if (isLoading) {
     return <UsersListSkeleton rows={10} />;
   }
 
-  const getLoginStatus = (lastLogin) => {
-    if (!lastLogin)
-      return {
-        color: "gray-400",
-        text: t("lastLogin") + ": -",
-        description: t("noLoginRecorded"),
-      };
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setShowDetailsModal(true);
+  };
 
-    const lastLoginDate = new Date(lastLogin);
-    const now = new Date();
-    const diffInDays = Math.floor(
-      (now - lastLoginDate) / (1000 * 60 * 60 * 24)
-    );
+  const handleEditClick = (e, user) => {
+    e.stopPropagation();
+    setSelectedUser(user);
+    setShowEditModal(true);
+  };
 
-    if (diffInDays < 1)
-      return {
-        color: "green-500",
-        text: t("lastLogin") + ": " + t("today"),
-        description: lastLoginDate.toLocaleTimeString(),
-      };
-
-    if (diffInDays < 7)
-      return {
-        color: "blue-500",
-        text: t("lastLogin") + ": " + diffInDays + " " + t("daysAgo"),
-        description: lastLoginDate.toLocaleDateString(),
-      };
-
-    if (diffInDays < 30)
-      return {
-        color: "yellow-500",
-        text:
-          t("lastLogin") +
-          ": " +
-          Math.floor(diffInDays / 7) +
-          " " +
-          t("weeksAgo"),
-        description: lastLoginDate.toLocaleDateString(),
-      };
-
-    return {
-      color: "gray-400",
-      text: t("lastLogin") + ": " + lastLoginDate.toLocaleDateString(),
-      description: t("inactive"),
-    };
+  const handleDeleteClick = (e, user) => {
+    e.stopPropagation();
+    setSelectedUser(user);
+    setShowDeleteModal(true);
   };
 
   return (
-    <div className="space-y-4">
-      {users.map((user) => {
-        const loginStatus = getLoginStatus(user.lastLogin);
+    <div className="mb-8">
+      <div className="space-y-4">
+        {users.map((user) => {
+          const loginStatus = getLoginStatus(user.ultimo_login);
 
-        return (
-          <div
-            key={user.usuario_id}
-            onClick={() => onUserClick(user.usuario_id)}
-            className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-          >
-            <div className="flex items-center justify-between p-4">
-              {/* User Information Section */}
-              <div className="flex items-center gap-4">
-                <div className="relative">
+          return (
+            <div
+              key={user.usuario_id}
+              onClick={() => handleUserClick(user)}
+              className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer group max-w-[85vw] md:max-w-[92vw] mx-auto"
+            >
+              <div className="grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_250px_auto] items-center gap-4 p-4">
+                {/* Avatar */}
+                <div
+                  className="relative flex-shrink-0 w-[48px] h-[48px] md:w-[64px] md:h-[64px]"
+                  style={{ minWidth: "48px" }} // Prevents shrinking
+                >
                   <Image
                     src={user.imagen || "/assets/default-profile.png"}
                     alt={user.usuario_nombre}
-                    width={48}
-                    height={48}
-                    className="rounded-full border-2 border-white dark:border-gray-800 object-cover"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-full border-2 border-white dark:border-gray-800"
+                    loading="eager"
                   />
                   <div
-                    className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-${loginStatus.color} border-2 border-white dark:border-gray-800`}
+                    className={`absolute -bottom-0 -right-0 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${
+                      user.activo === 1 ? "bg-green-500" : "bg-gray-400"
+                    }`}
                   />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
+
+                {/* User Info */}
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-custom-dark-blue dark:text-custom-yellow">
                       {user.usuario_nombre} {user.apellido}
                     </h3>
@@ -101,23 +90,19 @@ const UsersListView = ({ users, isLoading, onUserClick }) => {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">
                     {user.email}
                   </p>
                 </div>
-              </div>
 
-              {/* Status and Actions Section */}
-              <div className="flex items-center gap-6">
+                {/* Last Login Block */}
                 {!isMobile && (
-                  <div className="flex items-center gap-2 text-right">
+                  <div className="flex items-center gap-2">
                     <BsClockHistory
                       className={`w-4 h-4 text-${loginStatus.color}`}
                     />
                     <div>
-                      <div
-                        className={`text-sm text-${loginStatus.color} font-medium`}
-                      >
+                      <div className={`text-sm text-${loginStatus.color}`}>
                         {loginStatus.text}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -127,52 +112,68 @@ const UsersListView = ({ users, isLoading, onUserClick }) => {
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Handle edit
-                    }}
-                    className="p-2 hover:bg-white/80 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                    title={t("editUser")}
+                {/* Actions */}
+                {/* {!isMobile && (
+                  <div
+                    className={`flex items-center gap-2 ${
+                      isTouchDevice
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100"
+                    } transition-opacity`}
                   >
-                    <AiOutlineEdit className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Handle delete
-                    }}
-                    className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                    title={t("deleteUser")}
-                  >
-                    <IoTrashOutline className="w-5 h-5 text-red-500" />
-                  </button>
-                </div>
+                    <button
+                      onClick={(e) => handleEditClick(e, user)}
+                      className="p-2 hover:bg-white/80 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      title={t("editUser")}
+                    >
+                      <AiOutlineEdit className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+                    </button>
+                    <button
+                      onClick={(e) => handleDeleteClick(e, user)}
+                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                      title={t("deleteUser")}
+                    >
+                      <IoTrashOutline className="w-5 h-5 text-red-500" />
+                    </button>
+                  </div>
+                )} */}
               </div>
             </div>
+          );
+        })}
+      </div>
 
-            {/* Mobile Status Bar */}
-            {isMobile && (
-              <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2">
-                <BsClockHistory
-                  className={`w-4 h-4 text-${loginStatus.color}`}
-                />
-                <div className="flex-1 flex justify-between items-center">
-                  <span
-                    className={`text-sm text-${loginStatus.color} font-medium`}
-                  >
-                    {loginStatus.text}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {loginStatus.description}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {showDetailsModal && (
+        <UserDetailsModal
+          user={selectedUser}
+          isOpen={showDetailsModal}
+          onClose={() => setShowDetailsModal(false)}
+          onEdit={() => {
+            setShowDetailsModal(false);
+            setShowEditModal(true);
+          }}
+          onDelete={() => {
+            setShowDetailsModal(false);
+            setShowDeleteModal(true);
+          }}
+        />
+      )}
+
+      {showEditModal && (
+        <UserEditModal
+          user={selectedUser}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
+
+      {showDeleteModal && (
+        <DeleteConfirmationModal
+          user={selectedUser}
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -1174,7 +1174,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                   <MetricCard
                     title={t("Hasta la entrada CA")}
                     value={
-                      graphData.grid_history_to
+                      typeof graphData.grid_history_to === "number"
                         ? graphData.grid_history_to.toFixed(1)
                         : "-"
                     }
@@ -1184,7 +1184,7 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                   <MetricCard
                     title={t("Entrada CA activa")}
                     value={
-                      graphData.grid_history_from
+                      typeof graphData.grid_history_from === "number"
                         ? graphData.grid_history_from.toFixed(1)
                         : "-"
                     }
@@ -1193,19 +1193,31 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                   />
                   <MetricCard
                     title={t("Generador")}
-                    value={totals.genset ? totals.genset.toFixed(1) : "-"}
+                    value={
+                      typeof totals.genset === "number"
+                        ? totals.genset.toFixed(1)
+                        : "-"
+                    }
                     icon={null}
                     unit="kWh"
                   />
                   <MetricCard
                     title={t("Consumo")}
-                    value={totals.totalConsumption}
+                    value={
+                      typeof totals.totalConsumption === "number"
+                        ? totals.totalConsumption.toFixed(1)
+                        : "-"
+                    }
                     icon={null}
                     unit="kWh"
                   />
                   <MetricCard
                     title={t("Solar")}
-                    value={totals.totalSolar}
+                    value={
+                      typeof totals.totalSolar === "number"
+                        ? totals.totalSolar.toFixed(1)
+                        : "-"
+                    }
                     icon={null}
                     unit="kWh"
                   />

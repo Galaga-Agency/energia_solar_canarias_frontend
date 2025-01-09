@@ -52,7 +52,7 @@ const UsersTab = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile && !isTablet);
 
-  const usersPerPage = 10;
+  const usersPerPage = isMobile ? 6 : isTablet ? 7 : 5;
 
   useEffect(() => {
     if (currentUser) {
@@ -106,6 +106,8 @@ const UsersTab = () => {
       </div>
     );
   }
+
+  console.log("users", users);
 
   return (
     <>

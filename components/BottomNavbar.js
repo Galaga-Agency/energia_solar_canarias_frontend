@@ -51,7 +51,7 @@ const BottomNavbar = ({ userId }) => {
   };
 
   return (
-    <div className="footer fixed bottom-0 left-0 right-0 flex justify-around p-2 bg-custom-dark-blue shadow-dark-shadow z-40">
+    <div className="footer fixed bottom-0 left-0 right-0 flex justify-around p-2 bg-custom-dark-blue shadow-dark-shadow z-[999]">
       {icons.map((item, index) => {
         const pathToMatch = item.path.replace("[userId]", userId);
         const isActive = currentPath === pathToMatch;

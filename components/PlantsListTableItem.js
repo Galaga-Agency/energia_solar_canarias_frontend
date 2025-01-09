@@ -140,7 +140,7 @@ const PlantsListTableItem = ({ plant }) => {
     <div className="overflow-hidden w-full mb-3 max-w-[85vw] md:max-w-[92vw] mx-auto">
       <div
         onClick={handleClick}
-        className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-300 cursor-pointer"
+        className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer"
       >
         <div className="flex items-start sm:items-center justify-between p-3 sm:p-4 gap-3">
           {/* Left Side - Icon and Name */}

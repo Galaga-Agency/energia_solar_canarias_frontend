@@ -141,12 +141,7 @@ const VictronEnergyPlantDetails = () => {
         <header className="flex justify-between items-center">
           <IoArrowBackCircle
             className="text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.location.href = isAdmin
-                ? `/dashboard/${user.id}/admin/victronenergy`
-                : `/dashboard/${user.id}/plants`;
-            }}
+            onClick={() => window.history.back()}
           />
           <div className="flex flex-col items-end  ml-auto">
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">

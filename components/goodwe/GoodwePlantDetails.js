@@ -167,12 +167,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
         <header className="flex justify-between items-center mb-6">
           <IoArrowBackCircle
             className="text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.location.href = isAdmin
-                ? `/dashboard/${user?.id}/admin/goodwe`
-                : `/dashboard/${user?.id}/plants`;
-            }}
+            onClick={() => window.history.back()}
           />
           <div className="flex items-center ml-auto">
             <h1 className="text-4xl text-custom-dark-blue dark:text-custom-yellow text-right max-w-[70vw] md:max-w-[80vw] pb-2 pl-6 overflow-hidden text-ellipsis whitespace-nowrap">

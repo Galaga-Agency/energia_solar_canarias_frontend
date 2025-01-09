@@ -88,7 +88,7 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
   return (
     <div
       ref={sidebarRef}
-      className={`overflow-auto filter-sidebar-selector ${
+      className={`h-auto overflow-auto filter-sidebar-selector ${
         isMobile || isTablet
           ? `fixed z-50 top-0 left-0 h-screen transform transition-all duration-300 ease-in-out ${
               isOpen ? "translate-x-0" : "-translate-x-full"

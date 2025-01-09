@@ -6,7 +6,9 @@ import {
 import {
   loginRequestAPI,
   validateTokenRequestAPI,
-  updateUserProfileAPI,
+  updateUserAPI,
+  deleteUserAPI,
+  getUserPlantsAPI,
 } from "@/services/shared-api";
 
 // Async Thunks
@@ -46,13 +48,39 @@ export const validateToken = createAsyncThunk(
   }
 );
 
-export const updateUserProfile = createAsyncThunk(
-  "user/updateUserProfile",
-  async (userData, { rejectWithValue }) => {
+export const updateUser = createAsyncThunk(
+  "users/updateUser",
+  async ({ userId, ...userData }, { getState, rejectWithValue }) => {
     try {
-      const response = await updateUserProfileAPI(userData);
-      if (!response) throw new Error("Profile update failed");
-      return response;
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await updateUserAPI({ userId, userData, token });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  "users/deleteUser",
+  async (userId, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await deleteUserAPI({ userId, token });
+      return { userId, ...response.data };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getUserPlants = createAsyncThunk(
+  "users/getUserPlants",
+  async (userId, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await getUserPlantsAPI({ userId, token });
+      return { userId, plants: response.data };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -67,6 +95,8 @@ const initialState = {
   isLoggedIn: false,
   isAdmin: false,
   tokenValidated: false,
+  users: [],
+  userPlants: {},
 };
 
 // Slice Definition
@@ -134,17 +164,49 @@ const userSlice = createSlice({
         state.isLoggedIn = false;
         state.tokenValidated = false;
       })
-      // Profile update cases
-      .addCase(updateUserProfile.pending, (state) => {
+      // Update user
+      .addCase(updateUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateUserProfile.fulfilled, (state, action) => {
+      .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.data;
+        state.users = state.users.map((user) =>
+          user.usuario_id === action.payload.usuario_id ? action.payload : user
+        );
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Delete user
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
-      .addCase(updateUserProfile.rejected, (state, action) => {
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = state.users.filter(
+          (user) => user.usuario_id !== action.payload.userId
+        );
+        delete state.userPlants[action.payload.userId];
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Get user plants
+      .addCase(getUserPlants.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserPlants.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userPlants[action.payload.userId] = action.payload.plants;
+      })
+      .addCase(getUserPlants.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

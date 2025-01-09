@@ -63,23 +63,29 @@ export const validateTokenRequestAPI = async (id, token) => {
   }
 };
 
-export const updateUserProfileAPI = async (userData) => {
-  const response = await fetch(`${API_BASE_URL}/update-profile`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      usuario: USUARIO,
-      apiKey: API_KEY,
-    },
-    body: JSON.stringify(userData),
-  });
+export const updateUserAPI = async ({ userId, userData, token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(userData),
+    });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Profile update failed");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update user");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
   }
-
-  return await response.json();
 };
 
 export const deleteNotificationAPI = async (notificationId) => {
@@ -184,7 +190,7 @@ export const fetchUserByIdAPI = async ({ userId, token }) => {
   }
 };
 
-export const deleteUserAPI = async (userId) => {
+export const deleteUserAPI = async ({ userId, token }) => {
   try {
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "DELETE",
@@ -192,6 +198,7 @@ export const deleteUserAPI = async (userId) => {
         "Content-Type": "application/json",
         usuario: USUARIO,
         apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -281,6 +288,30 @@ export const fetchPlantsByProviderAPI = async ({ userId, token, provider }) => {
     return plantsData;
   } catch (error) {
     console.error("Error in fetchPlantsByProviderAPI:", error);
+    throw error;
+  }
+};
+
+export const getUserPlantsAPI = async ({ userId, token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}/plants`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch user plants");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching user plants:", error);
     throw error;
   }
 };

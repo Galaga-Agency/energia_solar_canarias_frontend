@@ -840,5 +840,12 @@
   "hoursAgo": "hours ago",
   "daysAgo": "days ago",
   "weeksAgo": "weeks ago",
-  "usersFound": "Users Found"
+  "usersFound": "Users Found",
+  "remove": "Remove",
+  "associatePlant": "Associate New Plant",
+  "userUpdatedSuccessfully": "User updated successfully",
+  "failedToUpdateUser": "Failed to update user",
+  "passwordResetEmailSent": "Password reset email sent",
+  "failedToSendPasswordReset": "Failed to send password reset email",
+  "sendingReset": "Sending reset email..."
 }

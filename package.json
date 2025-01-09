@@ -58,6 +58,7 @@
     "redux-persist": "^6.0.0",
     "shadcn-ui": "^0.9.4",
     "sharp": "^0.33.5",
+    "sonner": "^1.7.1",
     "swiper": "^11.2.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",

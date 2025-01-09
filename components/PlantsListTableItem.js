@@ -180,8 +180,8 @@ const PlantsListTableItem = ({ plant }) => {
                   batteryStateIcons[plant.status.toLowerCase()].icon,
                   {
                     className: `${
-                      batteryStateIcons[plant.status.toLowerCase()].color
-                    } ${batteryStateIcons[plant.status.toLowerCase()].size}`,
+                      batteryStateIcons[plant?.status?.toLowerCase()].color
+                    } ${batteryStateIcons[plant?.status?.toLowerCase()].size}`,
                   }
                 )}
               </div>
@@ -190,7 +190,7 @@ const PlantsListTableItem = ({ plant }) => {
                 {!isMobile && (
                   <span
                     className={`text-sm font-medium ${
-                      statusTextColors[plant.status.toLowerCase()] ||
+                      statusTextColors[plant?.status?.toLowerCase()] ||
                       "text-gray-500"
                     }`}
                   >
@@ -199,7 +199,8 @@ const PlantsListTableItem = ({ plant }) => {
                 )}
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    statusColors[plant.status.toLowerCase()] || "bg-gray-500"
+                    statusTextColors[plant?.status?.toLowerCase()] ||
+                    "text-gray-500"
                   }`}
                 />
               </div>

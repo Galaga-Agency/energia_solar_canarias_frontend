@@ -1749,5 +1749,12 @@
   "weeksAgo": "semanas atrás",
   "justNow": "ahora mismo",
   "hoursAgo": "horas atrás",
-  "usersFound": "Usuarios encontrados"
+  "usersFound": "Usuarios encontrados",
+  "remove": "Eliminar",
+  "associatePlant": "Asociar Nueva Planta",
+  "userUpdatedSuccessfully": "Usuario actualizado correctamente",
+  "failedToUpdateUser": "Error al actualizar el usuario",
+  "passwordResetEmailSent": "Correo de restablecimiento de contraseña enviado",
+  "failedToSendPasswordReset": "Error al enviar el correo de restablecimiento",
+  "sendingReset": "Enviando correo de restablecimiento..."
 }

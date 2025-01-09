@@ -4,6 +4,7 @@ import TranslationProvider from "@/components/TranslationProvider";
 import StoreProvider from "@/components/StoreProvider";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import ThemeWrapper from "@/components/ThemeWrapper";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title:
@@ -46,7 +47,20 @@ export default function RootLayout({ children }) {
       <body>
         <StoreProvider>
           <ThemeWrapper>
-            <TranslationProvider>{children}</TranslationProvider>
+            <TranslationProvider>
+              {children}
+              <Toaster
+                position="top-right"
+                theme="system" // This will follow your app's theme
+                richColors // For better-looking toasts
+                closeButton // Adds a close button to toasts
+                toastOptions={{
+                  // Custom styling to match your app's design
+                  className: "dark:bg-custom-dark-blue dark:text-white",
+                  duration: 3000,
+                }}
+              />
+            </TranslationProvider>
           </ThemeWrapper>
         </StoreProvider>
       </body>

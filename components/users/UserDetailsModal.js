@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import Texture from "@/components/Texture";
 import { Eye, EyeOff } from "lucide-react";
 import PlantsListTableItem from "../PlantsListTableItem";
 import { updateUser, sendPasswordResetEmail } from "@/store/slices/userSlice";
+import PasswordInput from "../ui/PasswordInput";
 
 const mockAssociatedPlants = [
   {
@@ -74,10 +75,12 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   const [allPlants] = useState(mockAllPlants);
   const [isSaving, setIsSaving] = useState(false);
   const [isPasswordResetSent, setIsPasswordResetSent] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const newPasswordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
   // Initialize editedUser when modal opens or user changes
   useEffect(() => {
@@ -453,40 +456,27 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
                         </h4>
 
                         {/* New Password Input */}
-                        <div className="relative">
-                          <input
-                            //type={showPassword ? "text" : "password"} BUG AQUI
-                            placeholder={t("enterNewPassword")}
+                        <div className="space-y-3">
+                          <PasswordInput
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            className="w-full p-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+                            placeholder="Enter new password"
+                            showPassword={showNewPassword}
+                            onTogglePassword={() =>
+                              setShowNewPassword(!showNewPassword)
+                            }
+                            inputRef={newPasswordRef}
                           />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
-                          >
-                            {showPassword ? <EyeOff /> : <Eye />}
-                          </button>
-                        </div>
-
-                        <div className="relative">
-                          <input
-                            //type={showConfirmPassword ? "text" : "password"} hay error AQUI TAMBIEN
-                            placeholder={t("confirmNewPassword")}
+                          <PasswordInput
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full p-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
+                            placeholder="Confirm new password"
+                            showPassword={showConfirmPassword}
+                            onTogglePassword={() =>
                               setShowConfirmPassword(!showConfirmPassword)
                             }
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
-                          >
-                            {showConfirmPassword ? <EyeOff /> : <Eye />}
-                          </button>
+                            inputRef={confirmPasswordRef}
+                          />
                         </div>
                       </div>
 

@@ -4,10 +4,13 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 import {
+  associatePlantToUserAPI,
+  dissociatePlantFromUserAPI,
   fetchAllPlantsAPI,
   fetchEnvironmentalBenefitsAPI,
   fetchPlantDetailsAPI,
   fetchPlantsByProviderAPI,
+  fetchUserAssociatedPlantsAPI,
 } from "@/services/shared-api";
 import {
   fetchGoodweAlertsAPI,
@@ -48,6 +51,52 @@ export const fetchPlants = createAsyncThunk(
       return plantsData;
     } catch (error) {
       console.error("Fetch plants error:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchUserAssociatedPlants = createAsyncThunk(
+  "plants/fetchUserAssociatedPlants",
+  async ({ userId, token }, { rejectWithValue }) => {
+    try {
+      const plants = await fetchUserAssociatedPlantsAPI({ userId, token });
+      return plants;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const associatePlantToUser = createAsyncThunk(
+  "plants/associatePlantToUser",
+  async (
+    { userId, plantId, provider, token },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      await associatePlantToUserAPI({ userId, plantId, provider, token });
+      // After successful association, refresh the user's plants list
+      dispatch(fetchUserAssociatedPlants({ userId, token }));
+      return { userId, plantId };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const dissociatePlantFromUser = createAsyncThunk(
+  "plants/dissociatePlantFromUser",
+  async (
+    { userId, plantId, provider, token },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      await dissociatePlantFromUserAPI({ userId, plantId, provider, token });
+      // After successful dissociation, refresh the user's plants list
+      dispatch(fetchUserAssociatedPlants({ userId, token }));
+      return { userId, plantId };
+    } catch (error) {
       return rejectWithValue(error.message);
     }
   }
@@ -444,6 +493,9 @@ const initialState = {
   },
   alertsLoading: false,
   alertsError: null,
+  associatedPlants: [],
+  loadingAssociatedPlants: false,
+  errorAssociatedPlants: null,
 };
 
 const plantsSlice = createSlice({
@@ -537,6 +589,33 @@ const plantsSlice = createSlice({
         state.environmentalBenefits = null;
         state.errorBenefits =
           action.payload || "Failed to fetch environmental benefits";
+      })
+      .addCase(fetchUserAssociatedPlants.pending, (state) => {
+        state.loadingAssociatedPlants = true;
+        state.errorAssociatedPlants = null;
+      })
+      .addCase(fetchUserAssociatedPlants.fulfilled, (state, action) => {
+        state.loadingAssociatedPlants = false;
+        state.associatedPlants = action.payload;
+        state.errorAssociatedPlants = null;
+      })
+      .addCase(fetchUserAssociatedPlants.rejected, (state, action) => {
+        state.loadingAssociatedPlants = false;
+        state.errorAssociatedPlants = action.payload;
+        state.associatedPlants = [];
+      });
+    builder
+      .addCase(dissociatePlantFromUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(dissociatePlantFromUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(dissociatePlantFromUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
 
       // Goodwe
@@ -867,6 +946,11 @@ export const selectEquipmentError = (state) => state.plants.equipmentError;
 export const selectAlerts = (state) => state.plants.alerts;
 export const selectAlertsLoading = (state) => state.plants.alertsLoading;
 export const selectAlertsError = (state) => state.plants.alertsError;
+export const selectAssociatedPlants = (state) => state.plants.associatedPlants;
+export const selectLoadingAssociatedPlants = (state) =>
+  state.plants.loadingAssociatedPlants;
+export const selectErrorAssociatedPlants = (state) =>
+  state.plants.errorAssociatedPlants;
 
 export const {
   clearPlants,

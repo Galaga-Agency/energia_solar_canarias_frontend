@@ -33,6 +33,7 @@ import { selectTheme } from "@/store/slices/themeSlice";
 
 const INITIAL_FILTERS = {
   role: ["all"],
+  activeStatus: ["all"],
   search: "",
 };
 
@@ -64,6 +65,7 @@ const UsersTab = () => {
     users?.filter((user) => {
       const currentFilters = filters || INITIAL_FILTERS;
 
+      // Search filter
       if (
         currentFilters.search &&
         !user.usuario_nombre
@@ -73,9 +75,18 @@ const UsersTab = () => {
         return false;
       }
 
+      // Role filter
       const userRoles = currentFilters.role || ["all"];
       if (!userRoles.includes("all") && !userRoles.includes(user.clase)) {
         return false;
+      }
+
+      // Active status filter
+      const activeStatus = currentFilters.activeStatus || ["all"];
+      if (!activeStatus.includes("all")) {
+        const isActive = user.activo === 1;
+        if (activeStatus.includes("active") && !isActive) return false;
+        if (activeStatus.includes("inactive") && isActive) return false;
       }
 
       return true;

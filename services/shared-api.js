@@ -477,3 +477,111 @@ export const fetchEnvironmentalBenefitsAPI = async ({
     return { gasEmissionSaved: { co2: 0 }, treesPlanted: 0 };
   }
 };
+
+export const fetchUserAssociatedPlantsAPI = async ({ userId, token }) => {
+  try {
+    console.log("Fetching user's associated plants:", { userId, token });
+    const response = await fetch(`${API_BASE_URL}/plants?usuarioId=${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to fetch user's associated plants"
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching user's associated plants:", error);
+    throw error;
+  }
+};
+
+export const dissociatePlantFromUserAPI = async ({
+  userId,
+  plantId,
+  provider,
+  token,
+}) => {
+  try {
+    console.log("Dissociating plant from user:", {
+      userId,
+      plantId,
+      provider,
+      token,
+    });
+    const response = await fetch(
+      `${API_BASE_URL}/usuarios/relacionar?idplanta=${plantId}&idusuario=${userId}&proveedor=${provider}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to dissociate plant from user"
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error dissociating plant from user:", error);
+    throw error;
+  }
+};
+
+export const associatePlantToUserAPI = async ({
+  userId,
+  plantId,
+  provider,
+  token,
+}) => {
+  try {
+    console.log("Associating plant to user:", {
+      userId,
+      plantId,
+      provider,
+      token,
+    });
+    const response = await fetch(
+      `${API_BASE_URL}/usuarios/relacionar?idplanta=${plantId}&idusuario=${userId}&proveedor=${provider}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to associate plant to user");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error associating plant to user:", error);
+    throw error;
+  }
+};

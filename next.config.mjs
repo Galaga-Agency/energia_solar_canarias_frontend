@@ -124,6 +124,11 @@ const nextConfig = {
         hostname: "cuv.upc.edu",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "example.com",
+        pathname: "/**",
+      },
     ],
   },
   webpack: (config) => {

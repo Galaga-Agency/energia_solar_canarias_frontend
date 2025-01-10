@@ -210,7 +210,13 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
 
           {/* Desktop Battery - Only shown on 2xl */}
           <div className="hidden 2xl:flex bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg items-center justify-center flex-col gap-4 w-[200px]">
-            <BatteryIndicator soc={goodwePlant?.soc[0]?.power || 0} />
+            <BatteryIndicator
+              soc={
+                Array.isArray(goodwePlant?.soc)
+                  ? goodwePlant.soc[0]?.power || 0
+                  : 0
+              }
+            />
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
@@ -325,7 +331,13 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
         {/* Mobile Battery */}
         {isMobile && (
           <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4 mb-6">
-            <BatteryIndicator soc={goodwePlant?.soc[0]?.power || 0} />
+            <BatteryIndicator
+              soc={
+                Array.isArray(goodwePlant?.soc)
+                  ? goodwePlant.soc[0]?.power || 0
+                  : 0
+              }
+            />
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">

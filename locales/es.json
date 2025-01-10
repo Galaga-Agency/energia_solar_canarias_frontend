@@ -1726,7 +1726,8 @@
   "roles": {
     "all": "Todos los roles",
     "admin": "Administrador",
-    "cliente": "Cliente"
+    "cliente": "Cliente",
+    "usuario": "Cliente"
   },
   "active_status": "Estado de actividad",
   "all": "Todos",
@@ -1756,5 +1757,18 @@
   "failedToUpdateUser": "Error al actualizar el usuario",
   "passwordResetEmailSent": "Correo de restablecimiento de contraseña enviado",
   "failedToSendPasswordReset": "Error al enviar el correo de restablecimiento",
-  "sendingReset": "Enviando correo de restablecimiento..."
+  "sendingReset": "Enviando correo de restablecimiento...",
+  "dangerZone": "Zona Peligrosa",
+  "deleteAccountWarning": "Esta acción no se puede deshacer. Eliminará permanentemente esta cuenta de usuario y todos los datos asociados.",
+  "resetPasswordEmail": "Enviar Enlace de Restablecimiento",
+  "security": "Seguridad",
+  "searchPlants": "Buscar plantas",
+  "enterNewPassword": "Introduce nueva contraseña",
+  "confirmNewPassword": "Confirma nueva contraseña",
+  "administrarUsuario": "Administrar Usuario",
+  "searchPlaceholder": "Buscar...",
+  "confirmDeleteUser": "Confirmar Eliminación de Usuario",
+  "confirmDeleteUserMessage": "¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.",
+  "confirmAction": "Confirmar Acción",
+  "confirmRemovePlant": "¿Estás seguro de que deseas eliminar esta planta?"
 }

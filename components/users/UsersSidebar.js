@@ -140,7 +140,7 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
             {t("role")}
           </h3>
           <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-            {["all", "admin", "cliente"].map((role) => (
+            {["all", "admin", "usuario"].map((role) => (
               <CustomCheckbox
                 key={role}
                 label={t(`roles.${role}`)}
@@ -161,7 +161,7 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
               <CustomCheckbox
                 key={status}
                 label={t(`${status}`)}
-                checked={filters?.activeStatus?.includes(status)}
+                checked={filters.activeStatus.includes(status)}
                 onChange={() => handleActiveStatusChange(status)}
               />
             ))}

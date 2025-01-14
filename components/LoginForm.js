@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import CustomCheckbox from "./ui/CustomCheckbox";
 import FormInput from "@/components/ui/FormInput";
 import PrimaryButton from "@/components/ui/PrimaryButton";
@@ -56,46 +56,30 @@ const LoginForm = ({
     handleSubmit(data, "login");
   };
 
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 },
-  };
-
   return (
-    <div className="relative h-full flex flex-col justify-between">
-      <motion.div
-        className="flex-1 relative z-10"
-        initial="hidden"
-        animate="visible"
-        variants={formVariants}
-      >
-        <motion.h2
-          className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-8"
-          variants={itemVariants}
-        >
+    <motion.div
+      className="relative h-full flex flex-col justify-between"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        transition: {
+          duration: 0.6,
+          ease: [0.16, 1, 0.3, 1], // Custom ease with nice deceleration
+        },
+      }}
+    >
+      <div className="flex-1 relative z-10">
+        <h2 className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-8">
           {t("login")}
-        </motion.h2>
+        </h2>
 
         <form
           onSubmit={handleLoginSubmit(onSubmit)}
           noValidate
           className="space-y-6"
         >
-          {/* Email Input */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className={`transform transition-all duration-200 ${
               focusedField === "email" ? "scale-[1.02]" : "scale-100"
             }`}
@@ -118,14 +102,12 @@ const LoginForm = ({
                 },
               }}
             />
-          </motion.div>
+          </div>
 
-          {/* Password Input */}
-          <motion.div
+          <div
             className={`relative transform transition-all duration-200 ${
               focusedField === "password" ? "scale-[1.02]" : "scale-100"
             }`}
-            variants={itemVariants}
           >
             <FormInput
               label={t("password")}
@@ -150,10 +132,9 @@ const LoginForm = ({
             >
               {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
             </motion.button>
-          </motion.div>
+          </div>
 
-          {/* Custom Checkbox */}
-          <motion.div variants={itemVariants}>
+          <div>
             <CustomCheckbox
               checked={acceptTerms}
               onChange={(e) => {
@@ -206,10 +187,9 @@ const LoginForm = ({
                 {t("acceptTermsFeedback")}
               </motion.p>
             )}
-          </motion.div>
+          </div>
 
-          {/* Forgot Password */}
-          <motion.div className="text-center py-4" variants={itemVariants}>
+          <div className="text-center py-4">
             <motion.button
               type="button"
               className="text-custom-dark-blue hover:text-custom-dark-blue/80 font-secondary dark:text-custom-yellow dark:hover:text-custom-yellow/80 underline underline-offset-2 transition-colors duration-200 font-medium"
@@ -219,22 +199,23 @@ const LoginForm = ({
             >
               {t("forgotPassword")}
             </motion.button>
-          </motion.div>
+          </div>
 
-          {/* Submit Button */}
-          <PrimaryButton
-            type="submit"
-            className={`w-full transform transition-all duration-200 hover:scale-[1.02] ${
-              !isFormFilled || isSubmitting || !acceptTerms
-                ? "bg-gray-400 cursor-not-allowed opacity-70"
-                : "bg-custom-yellow hover:bg-custom-yellow/80 cursor-pointer"
-            }`}
-          >
-            {isSubmitting ? t("loading") : t("signIn")}
-          </PrimaryButton>
+          <div>
+            <PrimaryButton
+              type="submit"
+              className={`w-full transform transition-all duration-200 hover:scale-[1.02] ${
+                !isFormFilled || isSubmitting || !acceptTerms
+                  ? "bg-gray-400 cursor-not-allowed opacity-70"
+                  : "bg-custom-yellow hover:bg-custom-yellow/80 cursor-pointer"
+              }`}
+            >
+              {isSubmitting ? t("loading") : t("signIn")}
+            </PrimaryButton>
+          </div>
         </form>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 

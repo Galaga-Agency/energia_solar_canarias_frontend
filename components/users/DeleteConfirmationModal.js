@@ -20,8 +20,9 @@ const DeleteConfirmationModal = ({ user, isOpen, onClose }) => {
   }, [isOpen]);
 
   const handleDelete = async () => {
+    const userId = user.usuario_id;
     try {
-      await dispatch(deleteUser(user.usuario_id)).unwrap();
+      await dispatch(deleteUser(userId)).unwrap();
       onClose();
     } catch (error) {
       console.error("Failed to delete user:", error);
@@ -62,7 +63,7 @@ const DeleteConfirmationModal = ({ user, isOpen, onClose }) => {
                       {t("deleteUserConfirmation")}
                     </h3>
                     <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      {t("deleteUserWarning", { name: user.usuario_nombre })}
+                      {t("deleteUserWarning", { name: user.nombre })}
                     </p>
                   </div>
 

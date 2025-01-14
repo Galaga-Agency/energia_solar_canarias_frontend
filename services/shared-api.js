@@ -66,7 +66,11 @@ export const validateTokenRequestAPI = async (id, token) => {
 
 export const updateUserAPI = async ({ userId, userData, token }) => {
   try {
-    console.log("Updating user with data:", userData); // Debug log
+    console.log("updateUserAPI - Request payload:", {
+      userId,
+      userData: JSON.stringify(userData),
+      endpoint: `${API_BASE_URL}/usuarios/${userId}`,
+    });
 
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "PUT",
@@ -80,14 +84,12 @@ export const updateUserAPI = async ({ userId, userData, token }) => {
     });
 
     const responseData = await response.json();
-
-    console.log("API Response:", responseData); // Debug log
+    console.log("updateUserAPI - Raw response:", responseData);
 
     if (!response.ok) {
       throw new Error(responseData.message || "Failed to update user");
     }
 
-    // Return the response data directly without expecting a .data property
     return responseData;
   } catch (error) {
     console.error("Error updating user:", error);
@@ -197,6 +199,7 @@ export const fetchUserByIdAPI = async ({ userId, token }) => {
 
 export const deleteUserAPI = async ({ userId, token }) => {
   try {
+    console.log("Deleting user with ID:", userId);
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "DELETE",
       headers: {

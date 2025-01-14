@@ -26,7 +26,7 @@ const UserEditModal = ({ user, isOpen, onClose }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      usuario_nombre: user?.usuario_nombre || "",
+      nombre: user?.nombre || "",
       apellido: user?.apellido || "",
       email: user?.email || "",
       movil: user?.movil || "",
@@ -94,7 +94,7 @@ const UserEditModal = ({ user, isOpen, onClose }) => {
                         {t("name")}*
                       </label>
                       <input
-                        {...register("usuario_nombre", {
+                        {...register("nombre", {
                           required: t("nameRequired"),
                         })}
                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-yellow focus:ring-2 focus:ring-custom-yellow/20 outline-none"

@@ -22,6 +22,7 @@ const AssociatedPlantsSection = ({
   selectedUser,
   onAddPlantClick,
   token,
+  userClass,
 }) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,6 +77,20 @@ const AssociatedPlantsSection = ({
   const filteredPlants = associatedPlants.filter((plant) =>
     plant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // If user is admin, show special message instead of the plants list
+  if (userClass === "admin") {
+    return (
+      <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm flex flex-col flex-grow h-[620px]">
+        <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
+          {t("associatedPlants")}
+        </h3>
+        <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 text-center p-4">
+          {t("adminAllPlantsAccess")}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm flex flex-col flex-grow h-[620px]">

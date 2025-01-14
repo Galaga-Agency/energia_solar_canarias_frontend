@@ -31,7 +31,7 @@ const ConfirmDeleteUserModal = ({ isOpen, user, onClose, onConfirm, t }) => {
               {t("confirmDeleteUser")}
             </h3>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {t("confirmDeleteUserMessage", { name: user.usuario_nombre })}
+              {t("confirmDeleteUserMessage", { name: user.nombre })}
             </p>
             <div className="mt-6 flex justify-center gap-4">
               <motion.button

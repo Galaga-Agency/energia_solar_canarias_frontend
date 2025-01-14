@@ -64,7 +64,7 @@ const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
                 >
                   <Image
                     src={user.imagen || "/assets/default-profile.png"}
-                    alt={user.usuario_nombre}
+                    alt={user.nombre}
                     layout="fill"
                     objectFit="cover"
                     className="rounded-full border-2 border-white dark:border-gray-800"
@@ -81,7 +81,7 @@ const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                      {user.usuario_nombre} {user.apellido}
+                      {user.nombre} {user.apellido}
                     </h3>
                     {user.clase === "admin" && (
                       <span className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-custom-yellow/20 text-custom-dark-blue dark:text-custom-yellow">

@@ -2,78 +2,46 @@ import React from "react";
 import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 import useDeviceType from "@/hooks/useDeviceType";
 
-const UsersListSkeleton = ({ theme, rows }) => {
+const UsersListSkeleton = ({ theme, rows = 10 }) => {
   const { isMobile } = useDeviceType();
 
   return (
-    <div className="my-12 overflow-hidden">
-      <table className="min-w-full border-collapse border border-gray-300 bg-white dark:bg-gray-800 shadow-md mb-12">
-        <thead>
-          <tr className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300">
-            <th className="py-3 px-4 lg:pl-12 lg:pr-4 text-left">
-              <CustomSkeleton width="120px" height="20px" theme={theme} />
-            </th>
-            {!isMobile && (
-              <th className="py-3 px-4 lg:pr-12 lg:pl-4 text-left">
-                <CustomSkeleton width="150px" height="20px" theme={theme} />
-              </th>
-            )}
-            <th className="py-3 px-4 text-left">
-              <CustomSkeleton width="100px" height="20px" theme={theme} />
-            </th>
-            <th className="py-3 px-6 text-right">
-              <CustomSkeleton width="80px" height="20px" theme={theme} />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {[...Array(rows)].map((_, index) => (
-            <tr
-              key={index}
-              className="hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-200 border-b border-gray-300"
-            >
-              <td className="py-3 px-4 lg:pl-12 lg:pr-4">
-                <div className="flex items-center gap-4">
-                  <CustomSkeleton
-                    width="40px"
-                    height="40px"
-                    circle
-                    theme={theme}
-                  />
-                  <CustomSkeleton width="150px" height="24px" theme={theme} />
-                </div>
-              </td>
-              {!isMobile && (
-                <td className="py-3 px-4 lg:pr-12 lg:pl-4">
-                  <CustomSkeleton width="200px" height="24px" theme={theme} />
-                </td>
-              )}
-              <td className="py-3 px-4">
-                <div className="flex items-center gap-2">
-                  <CustomSkeleton width="80px" height="24px" theme={theme} />
-                  <CustomSkeleton width="60px" height="24px" theme={theme} />
-                </div>
-              </td>
-              <td className="py-3 px-6 text-right">
-                <div className="flex items-center justify-end gap-4">
-                  <CustomSkeleton
-                    width="32px"
-                    height="32px"
-                    circle
-                    theme={theme}
-                  />
-                  <CustomSkeleton
-                    width="32px"
-                    height="32px"
-                    circle
-                    theme={theme}
-                  />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="mb-8 space-y-4">
+      {[...Array(rows)].map((_, index) => (
+        <div
+          key={index}
+          className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 p-4 grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_250px_auto] gap-4 max-w-[85vw] md:max-w-[92vw] mx-auto"
+        >
+          {/* Avatar Skeleton */}
+          <div className="relative flex-shrink-0 w-[48px] h-[48px] md:w-[64px] md:h-[64px]">
+            <CustomSkeleton width="100%" height="100%" circle theme={theme} />
+            <div className="absolute -bottom-0 -right-0 w-4 h-4 rounded-full bg-gray-400"></div>
+          </div>
+
+          {/* User Info Skeleton */}
+          <div className="flex flex-col min-w-0 space-y-2">
+            <CustomSkeleton width="60%" height="20px" theme={theme} />
+            <CustomSkeleton width="80%" height="14px" theme={theme} />
+          </div>
+
+          {/* Last Login Skeleton */}
+          {!isMobile && (
+            <div className="flex items-center gap-2">
+              <CustomSkeleton width="16px" height="16px" circle theme={theme} />
+              <div className="flex flex-col space-y-1">
+                <CustomSkeleton width="80px" height="14px" theme={theme} />
+                <CustomSkeleton width="100px" height="10px" theme={theme} />
+              </div>
+            </div>
+          )}
+
+          {/* Actions Skeleton */}
+          <div className="flex items-center justify-end gap-2">
+            <CustomSkeleton width="32px" height="32px" circle theme={theme} />
+            <CustomSkeleton width="32px" height="32px" circle theme={theme} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

@@ -11,6 +11,7 @@ import {
   updateUser,
   sendPasswordResetEmail,
   selectUser,
+  deleteUser,
 } from "@/store/slices/userSlice";
 import PasswordForm from "./PasswordForm";
 import UserDetailsSection from "./UserDetailsSection";
@@ -19,7 +20,12 @@ import AssociatePlantModal from "./AssociatePlantModal";
 import DangerZone from "./DangerZone";
 import ConfirmRemoveModal from "./ConfirmRemoveModal";
 import ConfirmDeleteUserModal from "./ConfirmDeleteUserModal";
-import { updateUserInList } from "@/store/slices/usersListSlice";
+import {
+  fetchUserById,
+  fetchUsers,
+  updateUserInList,
+} from "@/store/slices/usersListSlice";
+import UserDetailsModalHeader from "./UserDetailsModalHeader";
 
 const mockAssociatedPlants = [
   {
@@ -82,7 +88,7 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(() => ({
     usuario_id: user.usuario_id,
-    usuario_nombre: user.usuario_nombre,
+    nombre: user.nombre,
     apellido: user.apellido,
     email: user.email,
     movil: user.movil,
@@ -138,27 +144,35 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
     setIsSaving(true);
 
     try {
-      console.log("Sending update with data:", formData);
-
-      // Send all the data including the ID
-      const result = await dispatch(
+      // First update the user
+      await dispatch(
         updateUser({
           userId: formData.usuario_id,
           userData: {
             ...formData,
-            activo: formData.activo || editedUser.activo, // Preserve active status
-            clase: formData.clase || editedUser.clase, // Preserve user role
+            activo: formData.activo || editedUser.activo,
+            clase: formData.clase || editedUser.clase,
           },
           token: userAdmin?.tokenIdentificador,
         })
       ).unwrap();
 
-      // Update local state with the API response
-      setEditedUser(result);
+      // Then fetch the updated user data
+      const updatedUser = await dispatch(
+        fetchUserById({
+          userId: formData.usuario_id,
+          token: userAdmin?.tokenIdentificador,
+        })
+      ).unwrap();
 
-      // Update the parent list
+      // Update local state with the fresh data
+      setEditedUser(updatedUser);
+
+      // Update the parent list with the fresh data
+      dispatch(updateUserInList(updatedUser));
+
       if (typeof onSave === "function") {
-        onSave(result);
+        onSave(updatedUser);
       }
 
       toast.success(t("userUpdatedSuccessfully"));
@@ -222,11 +236,21 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
 
   const confirmDeleteUser = async () => {
     try {
-      await dispatch(updateUser({ ...editedUser, eliminado: 1 })).unwrap();
+      await dispatch(
+        deleteUser({
+          userId: editedUser.usuario_id,
+          token: userAdmin?.tokenIdentificador,
+        })
+      ).unwrap();
+
+      // Refresh the users list after deletion
+      await dispatch(fetchUsers(userAdmin?.tokenIdentificador));
+
       toast.success(t("userDeletedSuccessfully"));
       setIsDeleteModalOpen(false);
-      onClose(); // Close the modal after deletion
+      onClose();
     } catch (error) {
+      console.error("Delete error:", error);
       toast.error(t("failedToDeleteUser"));
     }
   };
@@ -257,45 +281,12 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
               <Texture className="opacity-30" />
 
               <div className="relative z-10 flex flex-col h-full max-h-[75vh]">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <Image
-                        src={user.imagen || "/assets/default-profile.png"}
-                        alt={user.usuario_nombre}
-                        width={80}
-                        height={80}
-                        className="rounded-full border-4 border-white dark:border-gray-800"
-                      />
-                      {user.clase === "admin" && (
-                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-custom-yellow text-custom-dark-blue px-3 py-0.5 rounded-full text-sm flex items-center gap-1 shadow-lg">
-                          <FaUserTie className="w-3 h-3" />
-                          {t("admin")}
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <h2 className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                          {`${editedUser.usuario_nombre} ${editedUser.apellido}`}
-                        </h2>
-                      </div>
-                      <p className="text-gray-600 dark:text-gray-300 mt-1">
-                        {editedUser.email}
-                      </p>
-                    </div>
-                  </div>
-
-                  <motion.button
-                    whileHover={{ scale: 1.1, rotate: 90 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={onClose}
-                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
-                  >
-                    <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow" />
-                  </motion.button>
-                </div>
+                <UserDetailsModalHeader
+                  user={user}
+                  editedUser={editedUser}
+                  onClose={handleClose}
+                  t={t}
+                />
 
                 <div className="overflow-y-auto max-h-[calc(100vh-12rem)] custom-scrollbar">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -379,6 +370,7 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
                         t={t}
                         selectedUser={editedUser.usuario_id}
                         token={userAdmin?.tokenIdentificador}
+                        userClass={editedUser.clase}
                       />
 
                       <DangerZone onDelete={handleDeleteUser} t={t} />

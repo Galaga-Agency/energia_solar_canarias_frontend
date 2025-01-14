@@ -12,14 +12,14 @@ const UserCard = ({ user, onEdit, onDelete }) => {
       <div className="flex items-center gap-4">
         <Image
           src={user.imagen || "/assets/default-profile.png"}
-          alt={user.usuario_nombre}
+          alt={user.nombre}
           width={60}
           height={60}
           className="rounded-full border-2 border-custom-dark-blue dark:border-custom-yellow"
         />
         <div>
           <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-            {user.usuario_nombre}
+            {user.nombre}
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-300">
             {user.email}

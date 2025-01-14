@@ -8,12 +8,15 @@ import {
   updateUserAPI,
 } from "@/services/shared-api";
 
-// Existing thunks
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
-  async (userToken, { rejectWithValue }) => {
+  async ({ userToken, currentUserId }, { rejectWithValue }) => {
     try {
-      return await fetchUsersAPI(userToken);
+      const users = await fetchUsersAPI(userToken);
+      // Filter here before returning
+      return users.filter(
+        (user) => user.eliminado === 0 && user.usuario_id !== currentUserId
+      );
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -42,12 +45,13 @@ export const updateUserClase = createAsyncThunk(
   }
 );
 
-// Add new updateUser thunk
 export const updateUser = createAsyncThunk(
   "users/updateUser",
   async ({ userId, userData, token }, { rejectWithValue }) => {
     try {
+      console.log("updateUser thunk - sending data:", userData);
       const response = await updateUserAPI({ userId, userData, token });
+      console.log("updateUser thunk - received response:", response);
       return response.data || response;
     } catch (error) {
       return rejectWithValue(error.message || "Failed to update user");
@@ -172,8 +176,11 @@ const usersListSlice = createSlice({
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.isLoading = false;
+        // Filter out the deleted user using the userId from the action payload
+        state.users = state.users.filter(
+          (user) => user.usuario_id !== action.meta.arg.userId
+        );
         state.userDetails = null;
-        state.users = state.users.filter((user) => user.id !== action.meta.arg);
         state.error = null;
       })
       .addCase(deleteUser.rejected, (state, action) => {

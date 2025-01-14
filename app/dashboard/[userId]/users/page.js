@@ -52,13 +52,24 @@ const UsersTab = () => {
   const [viewMode, setViewMode] = useState("list");
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile && !isTablet);
-
-  const usersPerPage = isMobile ? 6 : isTablet ? 7 : 5;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const usersPerPage = isMobile
+    ? 6
+    : isTablet
+    ? 7
+    : viewMode === "grid"
+    ? 6 // Show 6 items in grid view on desktop
+    : 5; // Keep 5 items in list view on desktop
 
   useEffect(() => {
     if (currentUser) {
-      dispatch(fetchUsers(currentUser.tokenIdentificador));
+      console.log("currentUser ------->", currentUser);
+      dispatch(
+        fetchUsers({
+          userToken: currentUser.tokenIdentificador,
+          currentUserId: currentUser.id,
+        })
+      );
     }
   }, [dispatch, currentUser]);
 
@@ -76,9 +87,7 @@ const UsersTab = () => {
       // Search filter
       if (
         currentFilters.search &&
-        !user.usuario_nombre
-          .toLowerCase()
-          .includes(currentFilters.search.toLowerCase())
+        !user.nombre.toLowerCase().includes(currentFilters.search.toLowerCase())
       ) {
         return false;
       }
@@ -113,18 +122,7 @@ const UsersTab = () => {
     router.push(`/dashboard/${currentUser.id}/users/${userId}`);
   };
 
-  if (error) {
-    return (
-      <div className="min-h-screen p-6 w-auto">
-        <div className="h-auto w-full flex flex-col justify-center items-center">
-          <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
-          <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
-            {t("noUsersFound")}
-          </p>
-        </div>
-      </div>
-    );
-  }
+  console.log("users", users);
 
   return (
     <>
@@ -208,6 +206,13 @@ const UsersTab = () => {
                 ) : (
                   <UsersGridSkeleton theme={theme} rows={usersPerPage} />
                 )
+              ) : !users ? (
+                <div className="h-auto w-full flex flex-col justify-center items-center">
+                  <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
+                  <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
+                    {t("noUsersFound")}
+                  </p>
+                </div>
               ) : viewMode === "list" ? (
                 <UsersListView
                   users={paginatedUsers}

@@ -24,11 +24,13 @@ const UserDetailsSection = ({
   // Only update parent state when form is submitted
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleSave(localFormData);
+    console.log("Form data being sent:", localFormData);
+    const result = await handleSave(localFormData);
+    console.log("Result after save:", result);
   };
 
   const formFields = [
-    { key: "name", name: "usuario_nombre", label: t("name") },
+    { key: "name", name: "nombre", label: t("name") },
     { key: "surname", name: "apellido", label: t("surname") },
     { key: "email", name: "email", label: t("email") },
     { key: "mobile", name: "movil", label: t("mobile") },
@@ -36,7 +38,6 @@ const UserDetailsSection = ({
     { key: "address", name: "direccion", label: t("address") },
     { key: "city", name: "ciudad", label: t("city") },
     { key: "postcode", name: "codigo_postal", label: t("postcode") },
-    { key: "region", name: "region", label: t("region") },
     { key: "country", name: "pais", label: t("country") },
     { key: "cifNif", name: "cif_nif", label: t("cifNif") },
   ];
@@ -115,7 +116,7 @@ const UserDetailsSection = ({
               </motion.button>
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {formFields.map(({ key, name, label }) => (
               <div
                 key={key}
@@ -126,11 +127,11 @@ const UserDetailsSection = ({
                 </span>
                 <input
                   type="text"
-                  defaultValue={localFormData[name] || ""}
+                  value={localFormData[name] || ""}
                   onChange={(e) => handleFormChange(name, e.target.value)}
                   className="w-48 py-1 px-2 text-right bg-transparent border-b border-gray-300 dark:border-gray-700 
-                          text-custom-dark-blue dark:text-custom-yellow text-sm
-                          focus:outline-none focus:border-custom-yellow focus:ring-0"
+          text-custom-dark-blue dark:text-custom-yellow text-sm
+          focus:outline-none focus:border-custom-yellow focus:ring-0"
                 />
               </div>
             ))}

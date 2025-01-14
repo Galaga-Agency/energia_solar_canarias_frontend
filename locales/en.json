@@ -905,5 +905,8 @@
   "updatePasswordError": "Failed to update password. Please try again.",
   "acceptTerms": "I accept the",
   "acceptTermsFeedback": "You must accept the terms to proceed.",
-  "tokenRequired": "The code is required."
+  "tokenRequired": "The code is required.",
+  "plantDissociatedSuccessfully": "The plant was dissociated successfully.",
+  "failedToDissociatePlant": "Failed to dissociate the plant. Please try again.",
+  "adminAllPlantsAccess": "Administrators have access to all plants by default, so no specific plants need to be associated with their account."
 }

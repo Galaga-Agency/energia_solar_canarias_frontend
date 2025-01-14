@@ -109,7 +109,7 @@ const UsersGridView = ({ users, isLoading, onUserClick, onUserSave }) => {
             <div className="relative mb-4">
               <Image
                 src={user.imagen || "/assets/default-profile.png"}
-                alt={user.usuario_nombre}
+                alt={user.nombre}
                 width={80}
                 height={80}
                 className="rounded-full border-4 border-white dark:border-gray-800 mx-auto"
@@ -130,7 +130,7 @@ const UsersGridView = ({ users, isLoading, onUserClick, onUserSave }) => {
             {/* User Info Section */}
             <div className="text-center mb-4">
               <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {user.usuario_nombre} {user.apellido}
+                {user.nombre} {user.apellido}
               </h3>
               <p className="text-sm text-custom-dark-blue/70 dark:text-custom-light-gray/70">
                 {user.email}

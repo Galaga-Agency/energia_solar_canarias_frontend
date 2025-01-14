@@ -98,11 +98,9 @@ export const updateUserPassword = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
   "users/deleteUser",
-  async (userId, { getState, rejectWithValue }) => {
+  async ({ userId, token }, { rejectWithValue }) => {
     try {
-      const token = getState().user.user?.tokenIdentificador;
-      const response = await deleteUserAPI({ userId, token });
-      return { userId, ...response.data };
+      return await deleteUserAPI({ userId, token });
     } catch (error) {
       return rejectWithValue(error.message);
     }

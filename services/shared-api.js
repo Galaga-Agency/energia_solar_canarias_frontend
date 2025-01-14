@@ -65,6 +65,8 @@ export const validateTokenRequestAPI = async (id, token) => {
 
 export const updateUserAPI = async ({ userId, userData, token }) => {
   try {
+    console.log("Updating user with data:", userData); // Debug log
+
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "PUT",
       headers: {
@@ -76,12 +78,16 @@ export const updateUserAPI = async ({ userId, userData, token }) => {
       body: JSON.stringify(userData),
     });
 
+    const responseData = await response.json();
+
+    console.log("API Response:", responseData); // Debug log
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update user");
+      throw new Error(responseData.message || "Failed to update user");
     }
 
-    return await response.json();
+    // Return the response data directly without expecting a .data property
+    return responseData;
   } catch (error) {
     console.error("Error updating user:", error);
     throw error;
@@ -112,8 +118,6 @@ export const deleteNotificationAPI = async (notificationId) => {
     throw error;
   }
 };
-
-export const sendPasswordResetEmail = async (email) => {};
 
 export const fetchUsersAPI = async (userToken) => {
   try {
@@ -582,6 +586,87 @@ export const associatePlantToUserAPI = async ({
     return data;
   } catch (error) {
     console.error("Error associating plant to user:", error);
+    throw error;
+  }
+};
+
+export const sendPasswordResetEmailAPI = async (email) => {
+  try {
+    console.log("Sending password reset email to:", email);
+    const response = await fetch(`${API_BASE_URL}/forgot/password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to send password reset email"
+      );
+    }
+    console.log("respuesta sservidor", response.json);
+    return await response.json();
+  } catch (error) {
+    console.error("Password reset error:", error);
+    throw error;
+  }
+};
+
+export const updatePasswordAPI = async (token, newPassword) => {
+  try {
+    console.log("Updating password with token:", token);
+    const response = await fetch(`${API_BASE_URL}/change/password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+      },
+      body: JSON.stringify({
+        token,
+        password: newPassword,
+        // Add any other required fields your API expects
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update password");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Password update error:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfileAPI = async ({ userId, userData, token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}/profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update user profile");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("User profile update error:", error);
     throw error;
   }
 };

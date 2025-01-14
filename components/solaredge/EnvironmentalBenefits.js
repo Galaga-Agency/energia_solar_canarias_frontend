@@ -197,7 +197,9 @@ const EnvironmentalBenefits = ({ t, plantId, provider, batteryLevel }) => {
             </div>
             <div className="flex items-center">
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow text-center">
-                {benefits?.treesPlanted.toFixed(0) || 0}
+                {(typeof benefits?.treesPlanted === "number" &&
+                  benefits?.treesPlanted.toFixed(0)) ||
+                  0}
               </p>
               {isMobile && (
                 <TooltipProvider>

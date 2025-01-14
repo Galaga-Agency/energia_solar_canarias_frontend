@@ -13,7 +13,7 @@ import UserDetailsModal from "@/components/users/UserDetailsModal";
 import DeleteConfirmationModal from "@/components/users/DeleteConfirmationModal";
 import useDeviceType from "@/hooks/useDeviceType";
 
-const UsersListView = ({ users, isLoading, onUserClick }) => {
+const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
   const { t } = useTranslation();
   const isTouchDevice = useTouchDevice();
   const getLoginStatus = useFormattedDate();
@@ -148,6 +148,7 @@ const UsersListView = ({ users, isLoading, onUserClick }) => {
           user={selectedUser}
           isOpen={showDetailsModal}
           onClose={() => setShowDetailsModal(false)}
+          onSave={onUserSave}
           onEdit={() => {
             setShowDetailsModal(false);
             setShowEditModal(true);

@@ -1,7 +1,13 @@
 import React from "react";
 import { Check } from "lucide-react";
 
-const CustomCheckbox = ({ checked, onChange, label, className = "" }) => {
+const CustomCheckbox = ({
+  checked,
+  onChange,
+  label,
+  className = "",
+  registerProps,
+}) => {
   return (
     <label className="flex items-center cursor-pointer group">
       <div className="relative">
@@ -10,6 +16,7 @@ const CustomCheckbox = ({ checked, onChange, label, className = "" }) => {
           checked={checked}
           onChange={onChange}
           className="sr-only peer"
+          {...registerProps}
         />
         <div
           className={`
@@ -28,7 +35,6 @@ const CustomCheckbox = ({ checked, onChange, label, className = "" }) => {
           group-hover:border-custom-yellow/70
         `}
         />
-
         <div
           className={`
           absolute inset-0 flex items-center justify-center

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useTranslation } from "next-i18next";
 import Loading from "@/components/ui/Loading";
@@ -11,17 +11,46 @@ const ResultContent = ({
   setTokenInput,
   handleTokenSubmit,
   setCurrentFace,
+  resendTokenRequest, // Function to resend the token request
 }) => {
   const { t } = useTranslation();
-  const [isVisible, setIsVisible] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [hasSubmittedToken, setHasSubmittedToken] = useState(false);
+  const [canResend, setCanResend] = useState(false);
+  const [countdown, setCountdown] = useState(60); // 60 seconds countdown
 
   const { handleSubmit, register, reset } = useForm({
     defaultValues: {
       token: tokenInput,
     },
   });
+
+  useEffect(() => {
+    if (!canResend) {
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [canResend]);
+
+  const handleResend = async () => {
+    setCanResend(false);
+    setCountdown(60);
+    try {
+      await resendTokenRequest();
+    } catch (error) {
+      console.error("Error resending token:", error);
+      setCanResend(true); // Allow retry in case of failure
+    }
+  };
 
   const onSubmit = async (data) => {
     setHasSubmittedToken(true);
@@ -30,7 +59,6 @@ const ResultContent = ({
     const result = await handleTokenSubmit();
 
     if (result === false) {
-      console.log("4. Validation failed, resetting states");
       setHasSubmittedToken(false);
       setTokenInput("");
       reset({ token: "" });
@@ -38,18 +66,15 @@ const ResultContent = ({
   };
 
   if (hasSubmittedToken) {
-    console.log("Showing loading because hasSubmittedToken is true");
     return <Loading />;
   }
 
   const renderSuccessContent = () => (
-    <div className="space-y-4">
-      <h2 className="text-gray-800 dark:text-gray-200 text-2xl text-center">
+    <div className="text-center space-y-4">
+      <h2 className="text-gray-800 dark:text-gray-200 text-2xl">
         {t("enterCode")}
       </h2>
-      <p className="text-gray-600 dark:text-gray-400 text-center">
-        {t("codeSentMessage")}
-      </p>
+      <p className="text-gray-600 dark:text-gray-400">{t("codeSentMessage")}</p>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <input
           {...register("token")}
@@ -61,15 +86,32 @@ const ResultContent = ({
         />
         <PrimaryButton type="submit">{t("validateCode")}</PrimaryButton>
       </form>
+      <div className="mt-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t("didNotReceiveCode")}{" "}
+          <span className="text-custom-dark-blue dark:text-custom-yellow">
+            {canResend ? (
+              <button
+                onClick={handleResend}
+                className="underline underline-offset-2 hover:text-custom-dark-blue/80 dark:hover:text-custom-yellow/80"
+              >
+                {t("resend")}
+              </button>
+            ) : (
+              t("retryIn", { seconds: countdown })
+            )}
+          </span>
+        </p>
+      </div>
     </div>
   );
 
   const renderErrorContent = () => (
-    <div className="text-center text-red-500">
+    <div className="text-center text-red-500 space-y-4">
       <p>{submissionResult.message}</p>
       <button
         onClick={() => setCurrentFace("login")}
-        className="text-gray-800 dark:text-gray-200 underline mt-4"
+        className="text-gray-800 dark:text-gray-200 underline"
       >
         {t("backToLogin")}
       </button>
@@ -77,14 +119,8 @@ const ResultContent = ({
   );
 
   return (
-    <div
-      className={`transition-opacity duration-300 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      {submissionResult?.status === "loginSuccess" &&
-        !hasSubmittedToken &&
-        renderSuccessContent()}
+    <div className="h-full w-full flex items-center justify-center">
+      {submissionResult?.status === "loginSuccess" && renderSuccessContent()}
       {submissionResult?.status === "loginError" && renderErrorContent()}
     </div>
   );

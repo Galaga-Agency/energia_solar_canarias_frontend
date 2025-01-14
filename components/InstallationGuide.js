@@ -6,111 +6,79 @@ const InstallationGuide = () => {
   const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
-  const [debugInfo, setDebugInfo] = useState({
-    isPWA: false,
-    userAgent: "",
-    platform: "",
-  });
+  const [isPWAInstalled, setIsPWAInstalled] = useState(false);
+  const [debugInfo, setDebugInfo] = useState({});
 
   useEffect(() => {
-    // Check platform
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isAndroidDevice = /android/.test(userAgent);
-    setIsAndroid(isAndroidDevice);
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches;
+    setIsPWAInstalled(isStandalone);
 
-    const isIOSDevice =
-      /ipad|iphone|ipod/.test(userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    setIsIOS(isIOSDevice);
-
-    // Set debug info
-    setDebugInfo({
-      isPWA: window.matchMedia("(display-mode: standalone)").matches,
-      userAgent: navigator.userAgent,
-      platform: navigator.platform,
-      isAndroid: isAndroidDevice,
-    });
-
-    // Handle beforeinstallprompt
-    const handleBeforeInstallPrompt = (e) => {
+    window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setIsInstallable(true);
-      console.log("Install prompt event captured");
-    };
+      console.log("beforeinstallprompt event fired");
+    });
 
-    // For Android Chrome, we want to be more aggressive in checking
-    if (
-      isAndroidDevice &&
-      !window.matchMedia("(display-mode: standalone)").matches
-    ) {
-      setIsInstallable(true);
-    }
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    setDebugInfo({
+      isStandalone,
+      manifest: document.querySelector('link[rel="manifest"]')?.href,
+      serviceWorker: !!navigator.serviceWorker.controller,
+    });
 
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
+      window.removeEventListener("beforeinstallprompt", () => {});
     };
   }, []);
 
   const handleInstallClick = async () => {
-    console.log("Install clicked:", { deferredPrompt, isAndroid, isIOS });
-
     if (deferredPrompt) {
       try {
-        const result = await deferredPrompt.prompt();
-        console.log("Install prompt result:", result);
+        await deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the install prompt");
+        } else {
+          console.log("User dismissed the install prompt");
+        }
         setDeferredPrompt(null);
         setIsInstallable(false);
       } catch (error) {
         console.error("Error showing install prompt:", error);
       }
-    } else if (isAndroid) {
-      // If we're on Android but don't have a deferredPrompt,
-      // we can show instructions
-      alert(t("androidInstallInstructions"));
+    } else {
+      alert(t("notInstallable"));
     }
   };
 
-  // Hide if already installed
-  if (window.matchMedia("(display-mode: standalone)").matches) {
+  if (isPWAInstalled) {
+    return null;
+  }
+
+  if (!isInstallable) {
     return null;
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div>
       <button
         onClick={handleInstallClick}
         className="flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all"
       >
         <FaDownload className="text-lg" />
-        <span>{isIOS ? t("addToHomeScreen") : t("installApp")}</span>
+        <span>{t("installApp")}</span>
       </button>
 
-      {/* Debug info - you can remove this in production */}
-      {/* <div className="text-xs text-gray-500">
+      {/* Debug Info */}
+      {/* <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <div>Is installable: {isInstallable ? "Yes" : "No"}</div>
+        <div>Is standalone: {isPWAInstalled ? "Yes" : "No"}</div>
+        <div>Manifest linked: {debugInfo.manifest ? "Yes" : "No"}</div>
         <div>
-          {t("installable")}: {isInstallable ? t("yes") : t("no")}
+          Service Worker active: {debugInfo.serviceWorker ? "Yes" : "No"}
         </div>
-        <div>
-          {t("iosDevice")}: {isIOS ? t("yes") : t("no")}
-        </div>
-        <div>
-          {t("androidDevice")}: {isAndroid ? t("yes") : t("no")}
-        </div>
-        <div>
-          {t("pwaMode")}: {debugInfo.isPWA ? t("yes") : t("no")}
-        </div>
-        <div>
-          {t("platform")}: {debugInfo.platform}
-        </div>
-        <div>UA: {debugInfo.userAgent.slice(0, 50)}...</div>
       </div> */}
     </div>
   );

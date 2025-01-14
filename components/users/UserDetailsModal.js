@@ -19,6 +19,7 @@ import AssociatePlantModal from "./AssociatePlantModal";
 import DangerZone from "./DangerZone";
 import ConfirmRemoveModal from "./ConfirmRemoveModal";
 import ConfirmDeleteUserModal from "./ConfirmDeleteUserModal";
+import { updateUserInList } from "@/store/slices/usersListSlice";
 
 const mockAssociatedPlants = [
   {
@@ -128,45 +129,52 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
     };
   }, [isOpen]);
 
-  const handleSave = async () => {
-    if (!editedUser?.usuario_id) {
+  const handleSave = async (formData) => {
+    if (!formData?.usuario_id) {
       toast.error(t("invalidUserData"));
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      toast.error(t("passwordsDoNotMatch"));
       return;
     }
 
     setIsSaving(true);
 
     try {
+      console.log("Sending update with data:", formData);
+
+      // Send all the data including the ID
       const result = await dispatch(
         updateUser({
-          userId: editedUser.usuario_id,
-          ...editedUser,
-          password: newPassword || undefined,
+          userId: formData.usuario_id,
+          userData: {
+            ...formData,
+            activo: formData.activo || editedUser.activo, // Preserve active status
+            clase: formData.clase || editedUser.clase, // Preserve user role
+          },
+          token: userAdmin?.tokenIdentificador,
         })
       ).unwrap();
 
-      // Clear passwords after saving
-      setNewPassword("");
-      setConfirmPassword("");
+      // Update local state with the API response
+      setEditedUser(result);
 
-      setIsEditing(false);
-      toast.success(t("userUpdatedSuccessfully"));
-
+      // Update the parent list
       if (typeof onSave === "function") {
         onSave(result);
       }
+
+      toast.success(t("userUpdatedSuccessfully"));
     } catch (error) {
       console.error("Failed to update user:", error);
-      setIsEditing(false);
       toast.error(t("failedToUpdateUser"));
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedUser((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleClose = () => {
@@ -188,13 +196,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
     } finally {
       setIsPasswordResetSent(false);
     }
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditedUser((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
   };
 
   const handleRemovePlant = (plant) => {
@@ -311,12 +312,12 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
                       />
 
                       {/* Security Section */}
-                      <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
+                      <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
                         <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
                           {t("security")}
                         </h3>
                         <div className="space-y-6">
-                          <PasswordForm handleSave={handleSave} t={t} />
+                          <PasswordForm userId={editedUser.usuario_id} t={t} />
 
                           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
@@ -345,7 +346,7 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
 
                     {/* Right Column */}
                     <div className="space-y-6">
-                      <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
+                      <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm mt-2">
                         <div className="flex justify-between items-center mb-4">
                           <span className="text-gray-600 dark:text-gray-300">
                             {t("state")}

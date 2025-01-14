@@ -11,7 +11,7 @@ import UserEditModal from "@/components/users/UserEditModal";
 import UserDetailsModal from "@/components/users/UserDetailsModal";
 import DeleteConfirmationModal from "@/components/users/DeleteConfirmationModal";
 
-const UsersGridView = ({ users, isLoading, onUserClick }) => {
+const UsersGridView = ({ users, isLoading, onUserClick, onUserSave }) => {
   const { t } = useTranslation();
   const isTouchDevice = useTouchDevice();
   const [selectedUser, setSelectedUser] = useState(null);
@@ -189,6 +189,7 @@ const UsersGridView = ({ users, isLoading, onUserClick }) => {
             setShowDetailsModal(false);
             setShowEditModal(true);
           }}
+          onSave={onUserSave}
           onDelete={() => {
             setShowDetailsModal(false);
             setShowDeleteModal(true);

@@ -253,13 +253,18 @@ export const fetchGoodweAlerts = createAsyncThunk(
 
 export const fetchSolarEdgeGraphData = createAsyncThunk(
   "plants/fetchSolarEdgeGraphData",
-  async (
-    { plantId, dia, fechaFin, fechaInicio, token },
-    { rejectWithValue }
-  ) => {
+  async ({ id, dia, fechaFin, fechaInicio, token }, { rejectWithValue }) => {
     try {
+      console.log(
+        "fetchSolarEdgeGraphData: ",
+        id,
+        dia,
+        fechaFin,
+        fechaInicio,
+        token
+      );
       const response = await fetchSolarEdgeGraphDataAPI({
-        id: plantId,
+        id,
         dia,
         fechaFin,
         fechaInicio,

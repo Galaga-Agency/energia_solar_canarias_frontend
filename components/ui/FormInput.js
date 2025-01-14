@@ -4,8 +4,8 @@ const FormInput = ({
   label,
   name,
   type = "text",
-  value,
-  onChange,
+  register,
+  validation = {},
   error,
   className = "",
   placeholder,
@@ -25,8 +25,7 @@ const FormInput = ({
         id={name}
         name={name}
         type={type}
-        value={value}
-        onChange={onChange}
+        {...register(name, validation)}
         disabled={disabled}
         placeholder={placeholder}
         className={`w-full p-2 rounded-lg transition-colors
@@ -42,7 +41,7 @@ const FormInput = ({
           focus:outline-none focus:ring-2
         `}
       />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
     </div>
   );
 };

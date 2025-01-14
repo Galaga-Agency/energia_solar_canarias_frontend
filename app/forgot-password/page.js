@@ -5,30 +5,32 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/navigation";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import { sendPasswordResetEmail } from "@/services/shared-api";
 import TransitionEffect from "@/components/TransitionEffect";
 import { motion } from "framer-motion";
 import RetroGrid from "@/components/RetroGrid";
 import LanguageSelector from "@/components/LanguageSelector";
 import { BiArrowBack } from "react-icons/bi";
 import ThemeToggle from "@/components/ThemeToggle";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { IoArrowBackCircle } from "react-icons/io5";
+import Texture from "@/components/Texture";
+import { sendPasswordResetEmail } from "@/store/slices/userSlice";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
   const router = useRouter();
+
   const [isFlipped, setIsFlipped] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
-
-  // Use Redux to get the current theme
+  const dispatch = useDispatch();
   const theme = useSelector(selectTheme);
 
   const onSubmit = async (data) => {
@@ -36,9 +38,10 @@ const ForgotPassword = () => {
     const { email } = data;
 
     try {
-      await sendPasswordResetEmail(email);
+      await dispatch(sendPasswordResetEmail({ email })).unwrap();
       setSubmissionResult("success");
     } catch (error) {
+      console.error("Password reset error:", error);
       setSubmissionResult("error");
     }
     setIsSubmitting(false);
@@ -64,6 +67,7 @@ const ForgotPassword = () => {
           <LanguageSelector />
         </div>
       </div>
+
       <div
         className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8 h-[60vh] z-10"
         style={{ perspective: "1000px" }}
@@ -76,11 +80,29 @@ const ForgotPassword = () => {
             transition: "transform 0.8s ease-in-out",
           }}
         >
+          {/* Glow effect */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[130%] animate-pulse">
+            {/* Primary glow */}
+            <div
+              className="absolute inset-0 bg-gradient-to-br from-custom-yellow/10 via-green-400/15 to-transparent rounded-[100%] blur-[80px]"
+              style={{
+                animation: "glow 8s ease-in-out infinite alternate",
+              }}
+            />
+            {/* Secondary subtle glow */}
+            <div
+              className="absolute inset-0 bg-gradient-to-tr from-custom-yellow/10 via-green-400/10 to-transparent rounded-[100%] blur-[90px]"
+              style={{
+                animation: "glow 8s ease-in-out infinite alternate-reverse",
+              }}
+            />
+          </div>
           {/* Front (Forgot Password Form) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 z-40 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
+            className="absolute w-full h-full p-6 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm  rounded-lg flex flex-col justify-center space-y-4 z-40  "
             style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
           >
+            <Texture />
             <h2 className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-4">
               {t("forgotPassword")}
             </h2>
@@ -113,7 +135,7 @@ const ForgotPassword = () => {
               </div>
               <PrimaryButton
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !!errors.email || !watch("email")}
                 isLoading={isSubmitting}
                 className="w-full py-3 text-center text-custom-dark-blue font-secondary"
               >

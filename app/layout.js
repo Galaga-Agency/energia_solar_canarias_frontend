@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
             <TranslationProvider>
               {children}
               <Toaster
-                position="top-right"
+                position="top-center"
                 theme="system" // This will follow your app's theme
                 richColors // For better-looking toasts
                 closeButton // Adds a close button to toasts

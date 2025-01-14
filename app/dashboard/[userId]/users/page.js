@@ -27,6 +27,7 @@ import {
   selectUsers,
   selectUsersLoading,
   selectUsersError,
+  updateUserInList,
 } from "@/store/slices/usersListSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
@@ -60,6 +61,13 @@ const UsersTab = () => {
       dispatch(fetchUsers(currentUser.tokenIdentificador));
     }
   }, [dispatch, currentUser]);
+
+  const handleUserSave = (updatedUser) => {
+    // Update the user in Redux store
+    dispatch(updateUserInList(updatedUser));
+    // Optionally refresh the list
+    dispatch(fetchUsers(currentUser.tokenIdentificador));
+  };
 
   const filteredUsers =
     users?.filter((user) => {
@@ -118,8 +126,6 @@ const UsersTab = () => {
     );
   }
 
-  console.log("users", users);
-
   return (
     <>
       <TransitionEffect />
@@ -138,6 +144,7 @@ const UsersTab = () => {
               src={companyIcon}
               alt="Company Icon"
               className="w-12 h-12 mr-2 z-10"
+              priority
             />
             <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
               {t("usersList")}
@@ -205,11 +212,13 @@ const UsersTab = () => {
                 <UsersListView
                   users={paginatedUsers}
                   onUserClick={handleUserClick}
+                  onUserSave={handleUserSave}
                 />
               ) : (
                 <UsersGridView
                   users={paginatedUsers}
                   onUserClick={handleUserClick}
+                  onUserSave={handleUserSave}
                 />
               )}
 

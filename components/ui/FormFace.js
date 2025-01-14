@@ -1,18 +1,29 @@
 import React from "react";
 import { motion } from "framer-motion";
+import Texture from "../Texture";
 
-const FormFace = ({ isActive, rotation, children }) => (
+const FormFace = ({ isActive, rotation, children, formType }) => (
   <motion.div
-    className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 z-40 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
+    className={`absolute w-full h-full rounded-2xl p-0 md:p-4 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm shadow-xl ${
+      isActive ? "pointer-events-auto" : "pointer-events-none"
+    }`}
     style={{
       backfaceVisibility: "hidden",
+      WebkitBackfaceVisibility: "hidden",
       transform: `rotateY(${rotation}deg)`,
       opacity: isActive ? 1 : 0,
-      pointerEvents: isActive ? "auto" : "none",
-      transition: "opacity 0.5s ease-in-out",
+      transition: "opacity 0.3s ease-in-out",
     }}
   >
-    {children}
+    <div
+      className={`h-full flex flex-col justify-start md:justify-center px-6 py-8 overflow-y-auto custom-scrollbar`}
+      style={{ maxHeight: "100vh" }}
+    >
+      <div className="space-y-5 flex flex-col">
+        <Texture />
+        {children}
+      </div>
+    </div>
   </motion.div>
 );
 

@@ -9,6 +9,9 @@ import {
   updateUserAPI,
   deleteUserAPI,
   getUserPlantsAPI,
+  sendPasswordResetEmailAPI,
+  updateUserProfileAPI,
+  updatePasswordAPI,
 } from "@/services/shared-api";
 
 // Async Thunks
@@ -50,13 +53,45 @@ export const validateToken = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "users/updateUser",
-  async ({ userId, ...userData }, { getState, rejectWithValue }) => {
+  async ({ userId, userData }, { getState, rejectWithValue }) => {
     try {
       const token = getState().user.user?.tokenIdentificador;
       const response = await updateUserAPI({ userId, userData, token });
-      return response.data;
+
+      // Handle both possible response formats
+      const updatedUser = response.data || response;
+
+      if (!updatedUser) {
+        throw new Error("No user data in response");
+      }
+
+      return updatedUser;
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.error("Update user error:", error);
+      return rejectWithValue(error.message || "Failed to update user");
+    }
+  }
+);
+
+export const updateUserPassword = createAsyncThunk(
+  "users/updateUserPassword",
+  async ({ userId, password }, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await updateUserAPI({
+        userId,
+        userData: { password },
+        token,
+      });
+
+      if (!response?.data) {
+        throw new Error("Invalid response format");
+      }
+
+      return { userId, success: true };
+    } catch (error) {
+      console.error("Password update error:", error);
+      return rejectWithValue(error.message || "Failed to update password");
     }
   }
 );
@@ -83,6 +118,57 @@ export const getUserPlants = createAsyncThunk(
       return { userId, plants: response.data };
     } catch (error) {
       return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const sendPasswordResetEmail = createAsyncThunk(
+  "user/sendPasswordResetEmail",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const data = await sendPasswordResetEmailAPI(email);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.message || "Error sending password reset email"
+      );
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await updatePasswordAPI(token, newPassword);
+
+      // Handle successful password reset
+      if (response.status === "success" || response.ok) {
+        return response;
+      }
+
+      return rejectWithValue(response.message || "Failed to reset password");
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to reset password");
+    }
+  }
+);
+
+export const updateUserProfile = createAsyncThunk(
+  "user/updateUserProfile",
+  async ({ userId, userData }, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await updateUserProfileAPI({ userId, userData, token });
+
+      if (!response?.data) {
+        throw new Error("Invalid response format");
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Profile update error:", error);
+      return rejectWithValue(error.message || "Failed to update profile");
     }
   }
 );
@@ -171,9 +257,9 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = state.users.map((user) =>
-          user.usuario_id === action.payload.usuario_id ? action.payload : user
-        );
+        if (state.user?.usuario_id === action.payload.usuario_id) {
+          state.user = { ...state.user, ...action.payload };
+        }
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
@@ -207,6 +293,49 @@ const userSlice = createSlice({
         state.userPlants[action.payload.userId] = action.payload.plants;
       })
       .addCase(getUserPlants.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // update passsword
+      .addCase(updateUserPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        // We don't need to update any user data here since only the password changed
+      })
+      .addCase(updateUserPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // reset password email
+      .addCase(sendPasswordResetEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(sendPasswordResetEmail.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(sendPasswordResetEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = { ...state.user, ...action.payload };
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

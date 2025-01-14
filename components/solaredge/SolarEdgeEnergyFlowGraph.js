@@ -178,6 +178,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const handleFetch = useCallback(
     async (params) => {
       try {
+        console.log("params", params);
         await dispatch(fetchSolarEdgeGraphData(params));
       } catch (error) {
         console.error("Error fetching data:", error);

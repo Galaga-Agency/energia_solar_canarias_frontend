@@ -9,14 +9,16 @@ export const fetchSolarEdgeGraphDataAPI = async ({
   fechaFin,
   token,
 }) => {
-  // console.log("Token used for API call:", {
-  //   id,
-  //   dia,
-  //   fechaInicio,
-  //   fechaFin,
-  // });
+  console.log("Token used for API call:", {
+    id,
+    dia,
+    fechaInicio,
+    fechaFin,
+  });
 
   try {
+    const body = { id, dia, fechaInicio, fechaFin };
+    console.log("Body passed to API:", body);
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=solaredge`,
       {
@@ -27,12 +29,7 @@ export const fetchSolarEdgeGraphDataAPI = async ({
           apiKey: API_KEY,
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          id,
-          dia,
-          fechaInicio,
-          fechaFin,
-        }),
+        body: JSON.stringify(body),
       }
     );
 

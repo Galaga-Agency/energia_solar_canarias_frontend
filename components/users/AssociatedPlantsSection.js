@@ -14,6 +14,7 @@ import {
   selectErrorAssociatedPlants,
 } from "@/store/slices/plantsSlice";
 import ConfirmRemoveModal from "./ConfirmRemoveModal";
+import Loading from "../ui/Loading";
 
 const AssociatedPlantsSection = ({
   onRemovePlant,
@@ -76,16 +77,8 @@ const AssociatedPlantsSection = ({
     plant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (isLoading) {
-    return (
-      <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm flex items-center justify-center h-[620px]">
-        <Loader2 className="w-8 h-8 animate-spin text-custom-yellow" />
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm flex flex-col flex-grow h-[620px]">
+    <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm flex flex-col flex-grow h-[620px]">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
           {t("associatedPlants")}
@@ -107,7 +100,9 @@ const AssociatedPlantsSection = ({
         className="w-full px-4 py-2 rounded-lg bg-white/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 mb-4 text-gray-500 dark:text-gray-400 focus:outline-none focus:border-custom-yellow focus:ring-2 focus:ring-custom-yellow"
       />
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3">
-        {filteredPlants.length > 0 ? (
+        {isLoading ? (
+          <Loading />
+        ) : filteredPlants.length > 0 ? (
           filteredPlants.map((plant) => (
             <div key={plant.id} className="relative group">
               <SimplePlantsListItem

@@ -4,7 +4,7 @@ import Texture from "../Texture";
 
 const FormFace = ({ isActive, rotation, children, formType }) => (
   <motion.div
-    className={`absolute w-full h-full rounded-2xl p-0 md:p-4 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm shadow-xl ${
+    className={`absolute w-full h-full rounded-2xl p-0 md:p-4 bg-white/80 dark:bg-custom-dark-blue backdrop-blur-sm shadow-xl ${
       isActive ? "pointer-events-auto" : "pointer-events-none"
     }`}
     style={{

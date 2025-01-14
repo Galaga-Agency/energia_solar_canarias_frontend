@@ -50,7 +50,7 @@ const ForgotPassword = () => {
 
   return (
     <div
-      className={`min-h-screen w-auto flex items-center light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900
+      className={`min-h-screen w-auto flex items-center light:bg-gradient-to-b bg-white/80 dark:bg-custom-dark-blue backdrop-blur-sm
       relative`}
     >
       <TransitionEffect />
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
       </div>
 
       <div
-        className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8 h-[60vh] z-10"
+        className="relative w-[min(100%-2rem,470px)] mx-auto mt-8 h-[72vh] z-10"
         style={{ perspective: "1000px" }}
       >
         <motion.div
@@ -134,10 +134,39 @@ const ForgotPassword = () => {
                 </div>
               </div>
               <PrimaryButton
-                type="submit"
-                disabled={isSubmitting || !!errors.email || !watch("email")}
+                type="button" // Use type="button" to prevent default submission
                 isLoading={isSubmitting}
-                className="w-full py-3 text-center text-custom-dark-blue font-secondary"
+                className={`w-full py-3 text-center font-secondary ${
+                  !watch("email") || !!errors.email || isSubmitting
+                    ? "bg-gray-400 text-gray-700 cursor-not-allowed opacity-70"
+                    : "bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 cursor-pointer"
+                }`}
+                onClick={async () => {
+                  // Validate the form when the button is clicked
+                  const isValid = await handleSubmit(onSubmit)();
+
+                  // Display errors if validation fails
+                  if (!isValid) {
+                    return;
+                  }
+
+                  // Proceed with form submission if validation passes
+                  if (isSubmitting) return;
+                  setIsSubmitting(true);
+
+                  try {
+                    await dispatch(
+                      sendPasswordResetEmail({ email: watch("email") })
+                    ).unwrap();
+                    setSubmissionResult("success");
+                  } catch (error) {
+                    console.error("Password reset error:", error);
+                    setSubmissionResult("error");
+                  } finally {
+                    setIsSubmitting(false);
+                    setIsFlipped(true);
+                  }
+                }}
               >
                 {t("sendResetLink")}
               </PrimaryButton>
@@ -146,12 +175,13 @@ const ForgotPassword = () => {
 
           {/* Back (Result Face) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-gradient-to-b from-gray-200 to-custom-dark-gray rounded-lg flex flex-col justify-center space-y-4 z-40 dark:from-gray-800 dark:to-gray-900 shadow-dark-shadow dark:shadow-white-shadow"
+            className="absolute w-full h-full p-6 bg-gradient-to-b y rounded-lg flex flex-col justify-center space-y-4 z-40 bg-white/80 dark:bg-custom-dark-blue backdrop-blur-sm "
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
             }}
           >
+            <Texture />
             {submissionResult === "success" ? (
               <div className="text-green-500 font-semibold text-xl text-center">
                 {t("resetLinkSent")}
@@ -161,9 +191,9 @@ const ForgotPassword = () => {
                 {t("resetError")}
               </div>
             )}
-            <PrimaryButton onClick={() => router.push("/")}>
+            {/* <PrimaryButton onClick={() => router.push("/")}>
               {t("goBackHome")}
-            </PrimaryButton>
+            </PrimaryButton> */}
           </motion.div>
         </motion.div>
       </div>

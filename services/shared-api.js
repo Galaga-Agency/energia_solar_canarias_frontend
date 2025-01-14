@@ -4,6 +4,7 @@ const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const loginRequestAPI = async (userData) => {
   try {
+    console.log("Logging in with data:", userData);
     const response = await fetch(`${API_BASE_URL}/esc-backend/login`, {
       method: "POST",
       headers: {

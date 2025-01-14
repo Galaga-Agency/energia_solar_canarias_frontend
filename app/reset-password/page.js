@@ -16,7 +16,8 @@ import PasswordRequirements from "@/components/PasswordRequirements";
 import FormFace from "@/components/ui/FormFace";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { toast } from "sonner";
-import { updateUserPassword } from "@/store/slices/userSlice";
+import { updatePasswordAPI } from "@/services/shared-api";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const ResetPassword = () => {
   const { t } = useTranslation();
@@ -26,6 +27,8 @@ const ResetPassword = () => {
   const [submissionResult, setSubmissionResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -62,7 +65,7 @@ const ResetPassword = () => {
     setIsSubmitting(true);
 
     try {
-      await updateUserPassword(token, data.password);
+      await updatePasswordAPI(token, data.password);
       setSubmissionResult("success");
       setIsFlipped(true);
 
@@ -81,7 +84,7 @@ const ResetPassword = () => {
   if (!token) return null;
 
   return (
-    <div className="min-h-screen w-auto flex items-center light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative">
+    <div className="min-h-screen w-auto flex items-center bg-white/80 dark:bg-custom-dark-blue backdrop-blur-sm relative">
       <TransitionEffect />
       <IoArrowBackCircle
         onClick={() => router.push("/")}
@@ -93,7 +96,7 @@ const ResetPassword = () => {
       </div>
 
       <div
-        className="relative w-full max-w-[90vw] md:max-w-[50vw] lg:max-w-[35vw] xl:max-w-[30vw] 2xl:max-w-[20vw] mx-auto mt-8 h-[70vh] z-10"
+        className="relative w-[min(100%-2rem,470px)] mx-auto mt-8 h-[70vh] z-10"
         style={{ perspective: "1000px" }}
       >
         <motion.div
@@ -133,7 +136,7 @@ const ResetPassword = () => {
                   {t("newPassword")}
                 </label>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder={t("newPasswordPlaceholder")}
                   className={`w-full px-4 py-2 border rounded-md bg-opacity-100 bg-white text-custom-dark-blue font-secondary ${
                     errors.password ? "border-red-500" : "border-gray-300"
@@ -153,6 +156,15 @@ const ResetPassword = () => {
                     },
                   })}
                 />
+                <motion.button
+                  type="button"
+                  className="absolute right-3 top-[43px] text-xl text-custom-dark-blue dark:text-gray-400 hover:text-custom-yellow transition-colors duration-200"
+                  onClick={() => setShowPassword(!showPassword)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                </motion.button>
                 <PasswordRequirements password={password} t={t} />
                 {errors.password && (
                   <p className="text-red-500 text-sm mt-1">
@@ -166,7 +178,7 @@ const ResetPassword = () => {
                   {t("confirmPassword")}
                 </label>
                 <input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder={t("confirmPasswordPlaceholder")}
                   className={`w-full px-4 py-2 border rounded-md bg-opacity-100 bg-white text-custom-dark-blue font-secondary ${
                     errors.confirmPassword
@@ -179,6 +191,19 @@ const ResetPassword = () => {
                       value === password || t("passwordsDoNotMatch"),
                   })}
                 />
+                <motion.button
+                  type="button"
+                  className="absolute right-3 top-[43px] text-xl text-custom-dark-blue dark:text-gray-400 hover:text-custom-yellow transition-colors duration-200"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showConfirmPassword ? (
+                    <AiOutlineEyeInvisible />
+                  ) : (
+                    <AiOutlineEye />
+                  )}
+                </motion.button>
                 {errors.confirmPassword && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.confirmPassword.message}
@@ -188,15 +213,15 @@ const ResetPassword = () => {
 
               <PrimaryButton
                 type="submit"
-                disabled={
-                  isSubmitting ||
+                isLoading={isSubmitting}
+                className={`w-full py-3 text-center font-secondary ${
                   !password ||
                   errors.password ||
                   errors.confirmPassword ||
-                  watch("confirmPassword") !== password
-                }
-                isLoading={isSubmitting}
-                className="w-full py-3 text-center text-custom-dark-blue font-secondary"
+                  isSubmitting
+                    ? "bg-gray-400 text-gray-700 cursor-not-allowed opacity-70"
+                    : "bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 cursor-pointer"
+                }`}
               >
                 {t("updatePassword")}
               </PrimaryButton>

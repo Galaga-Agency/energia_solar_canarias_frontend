@@ -1815,5 +1815,6 @@
   "passwordMismatchMessage": "Las contraseñas que ingresaste no coinciden.",
   "updatePasswordError": "Error al actualizar la contraseña. Por favor, inténtalo de nuevo.",
   "acceptTerms": "Acepto la",
-  "acceptTermsFeedback": "Debes aceptar los términos para continuar."
+  "acceptTermsFeedback": "Debes aceptar los términos para continuar.",
+  "tokenRequired": "El código es obligatorio."
 }

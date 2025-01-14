@@ -11,14 +11,19 @@ const ResultContent = ({
   setTokenInput,
   handleTokenSubmit,
   setCurrentFace,
-  resendTokenRequest, // Function to resend the token request
+  resendTokenRequest,
 }) => {
   const { t } = useTranslation();
   const [hasSubmittedToken, setHasSubmittedToken] = useState(false);
   const [canResend, setCanResend] = useState(false);
   const [countdown, setCountdown] = useState(60); // 60 seconds countdown
 
-  const { handleSubmit, register, reset } = useForm({
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       token: tokenInput,
     },
@@ -75,18 +80,50 @@ const ResultContent = ({
         {t("enterCode")}
       </h2>
       <p className="text-gray-600 dark:text-gray-400">{t("codeSentMessage")}</p>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <input
-          {...register("token")}
-          type="text"
-          value={tokenInput}
-          onChange={(e) => setTokenInput(e.target.value)}
-          placeholder={t("codePlaceholder")}
-          className="w-full px-4 py-2 border rounded-md dark:text-black"
-        />
-        <PrimaryButton type="submit">{t("validateCode")}</PrimaryButton>
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+        <div>
+          <input
+            {...register("token", {
+              required: t("tokenRequired"),
+              pattern: {
+                value: /^[a-fA-F0-9]{32}$/, // Assuming a 6-digit numeric code
+                message: t("invalidToken"),
+              },
+            })}
+            type="text"
+            value={tokenInput}
+            onChange={(e) => setTokenInput(e.target.value)}
+            placeholder={t("codePlaceholder")}
+            className={`w-full px-4 py-2 border rounded-md dark:text-black ${
+              errors.token ? "border-red-500" : "border-gray-300"
+            } focus:outline-none focus:border-custom-yellow`}
+          />
+          {errors.token && (
+            <p className="text-red-500 text-sm mt-2">{errors.token.message}</p>
+          )}
+        </div>
+        <div>
+          <PrimaryButton
+            type="button"
+            className={`w-full py-3 text-center ${
+              !tokenInput || errors.token
+                ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                : "bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 cursor-pointer"
+            }`}
+            onClick={async () => {
+              const isValid = await handleSubmit(onSubmit)();
+              if (!isValid) {
+                // Validation failed; ensure errors are shown
+                return;
+              }
+              // Proceed with token validation
+            }}
+          >
+            {t("validateCode")}
+          </PrimaryButton>
+        </div>
       </form>
-      <div className="mt-4">
+      <div className="pt-12">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {t("didNotReceiveCode")}{" "}
           <span className="text-custom-dark-blue dark:text-custom-yellow">

@@ -147,12 +147,25 @@ const AuthenticationForm = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[105%] h-[105%]"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%]"
           >
-            {/* Primary glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-custom-yellow/10 via-green-400/15 to-transparent rounded-[50%] blur-[80px] animate-pulse" />
-            {/* Secondary subtle glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-custom-yellow/10 via-green-400/10 to-transparent rounded-[50%] blur-[90px] " />
+            {/* Glow effect */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[130%] animate-pulse">
+              {/* Primary glow */}
+              <div
+                className="absolute inset-0 bg-gradient-to-br from-custom-yellow/10 via-green-400/15 to-transparent rounded-[100%] blur-[80px]"
+                style={{
+                  animation: "glow 8s ease-in-out infinite alternate",
+                }}
+              />
+              {/* Secondary subtle glow */}
+              <div
+                className="absolute inset-0 bg-gradient-to-tr from-custom-yellow/10 via-green-400/10 to-transparent rounded-[100%] blur-[90px]"
+                style={{
+                  animation: "glow 8s ease-in-out infinite alternate-reverse",
+                }}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

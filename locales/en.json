@@ -904,5 +904,6 @@
   "passwordMismatchMessage": "The passwords you entered do not match.",
   "updatePasswordError": "Failed to update password. Please try again.",
   "acceptTerms": "I accept the",
-  "acceptTermsFeedback": "You must accept the terms to proceed."
+  "acceptTermsFeedback": "You must accept the terms to proceed.",
+  "tokenRequired": "The code is required."
 }

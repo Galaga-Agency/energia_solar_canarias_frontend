@@ -86,7 +86,7 @@ const LoginForm = ({
         variants={formVariants}
       >
         <motion.h2
-          className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-8 font-bold"
+          className="text-gray-800 dark:text-gray-200 text-2xl text-center mb-8"
           variants={itemVariants}
         >
           {t("login")}
@@ -201,9 +201,8 @@ const LoginForm = ({
                   </motion.a>
                 </span>
               }
-              {...register("acceptTerms")}
             />
-            {!acceptTerms && checkboxError && (
+            {(!acceptTerms || checkboxError) && (
               <motion.p
                 className="text-red-500 text-sm mt-2 ml-10"
                 initial={{ opacity: 0, y: -10 }}
@@ -235,19 +234,19 @@ const LoginForm = ({
                 ? "bg-gray-400 cursor-not-allowed opacity-70"
                 : "bg-custom-yellow hover:bg-custom-yellow/80 cursor-pointer"
             }`}
-            onClick={async () => {
+            onClick={handleLoginSubmit((data) => {
               if (!isFormFilled) {
                 // Trigger validation for all fields and handle errors
-                const results = await trigger();
+                trigger();
                 if (!acceptTerms) {
                   setCheckboxError(true);
                 }
                 return; // Prevent further actions if validation fails
               }
 
-              // If everything is valid, handle form submission
-              handleSubmit();
-            }}
+              // If everything is valid, handle form submission with data
+              handleSubmit(data, "login");
+            })}
           >
             {isSubmitting ? t("loading") : t("signIn")}
           </PrimaryButton>

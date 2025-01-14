@@ -4,7 +4,9 @@ const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const loginRequestAPI = async (userData) => {
   try {
-    console.log("Logging in with data:", userData);
+    // console.log("Logging in with data:", userData);
+    const email = userData.email;
+    const password = userData.password;
     const response = await fetch(`${API_BASE_URL}/esc-backend/login`, {
       method: "POST",
       headers: {
@@ -12,7 +14,7 @@ export const loginRequestAPI = async (userData) => {
         usuario: USUARIO,
         apiKey: API_KEY,
       },
-      body: JSON.stringify(userData),
+      body: JSON.stringify({ email, password }),
     });
 
     if (!response.ok) {
@@ -66,11 +68,11 @@ export const validateTokenRequestAPI = async (id, token) => {
 
 export const updateUserAPI = async ({ userId, userData, token }) => {
   try {
-    console.log("updateUserAPI - Request payload:", {
-      userId,
-      userData: JSON.stringify(userData),
-      endpoint: `${API_BASE_URL}/usuarios/${userId}`,
-    });
+    // console.log("updateUserAPI - Request payload:", {
+    //   userId,
+    //   userData: JSON.stringify(userData),
+    //   endpoint: `${API_BASE_URL}/usuarios/${userId}`,
+    // });
 
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "PUT",
@@ -84,7 +86,7 @@ export const updateUserAPI = async ({ userId, userData, token }) => {
     });
 
     const responseData = await response.json();
-    console.log("updateUserAPI - Raw response:", responseData);
+    // console.log("updateUserAPI - Raw response:", responseData);
 
     if (!response.ok) {
       throw new Error(responseData.message || "Failed to update user");
@@ -173,9 +175,9 @@ export const deactivateUserAPI = async (userId) => {
   }
 };
 
-export const fetchUserByIdAPI = async ({ userId, token }) => {
+export const fetchUserByIdAPI = async ({ token }) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/usuario`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -190,6 +192,7 @@ export const fetchUserByIdAPI = async ({ userId, token }) => {
     }
 
     const data = await response.json();
+    console.log("data", data);
     return data;
   } catch (error) {
     console.error("Error fetching user by ID:", error);
@@ -199,7 +202,7 @@ export const fetchUserByIdAPI = async ({ userId, token }) => {
 
 export const deleteUserAPI = async ({ userId, token }) => {
   try {
-    console.log("Deleting user with ID:", userId);
+    // console.log("Deleting user with ID:", userId);
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "DELETE",
       headers: {
@@ -488,7 +491,7 @@ export const fetchEnvironmentalBenefitsAPI = async ({
 
 export const fetchUserAssociatedPlantsAPI = async ({ userId, token }) => {
   try {
-    console.log("Fetching user's associated plants:", { userId, token });
+    // console.log("Fetching user's associated plants:", { userId, token });
     const response = await fetch(`${API_BASE_URL}/plants?usuarioId=${userId}`, {
       method: "GET",
       headers: {
@@ -521,12 +524,12 @@ export const dissociatePlantFromUserAPI = async ({
   token,
 }) => {
   try {
-    console.log("Dissociating plant from user:", {
-      userId,
-      plantId,
-      provider,
-      token,
-    });
+    // console.log("Dissociating plant from user:", {
+    //   userId,
+    //   plantId,
+    //   provider,
+    //   token,
+    // });
     const response = await fetch(
       `${API_BASE_URL}/usuarios/relacionar?idplanta=${plantId}&idusuario=${userId}&proveedor=${provider}`,
       {
@@ -562,12 +565,12 @@ export const associatePlantToUserAPI = async ({
   token,
 }) => {
   try {
-    console.log("Associating plant to user:", {
-      userId,
-      plantId,
-      provider,
-      token,
-    });
+    // console.log("Associating plant to user:", {
+    //   userId,
+    //   plantId,
+    //   provider,
+    //   token,
+    // });
     const response = await fetch(
       `${API_BASE_URL}/usuarios/relacionar?idplanta=${plantId}&idusuario=${userId}&proveedor=${provider}`,
       {
@@ -596,7 +599,7 @@ export const associatePlantToUserAPI = async ({
 
 export const sendPasswordResetEmailAPI = async (email) => {
   try {
-    console.log("Sending password reset email to:", email);
+    // console.log("Sending password reset email to:", email);
     const response = await fetch(`${API_BASE_URL}/forgot/password`, {
       method: "POST",
       headers: {
@@ -613,7 +616,7 @@ export const sendPasswordResetEmailAPI = async (email) => {
         errorData.message || "Failed to send password reset email"
       );
     }
-    console.log("respuesta sservidor", response.json);
+    // console.log("respuesta sservidor", response.json);
     return await response.json();
   } catch (error) {
     console.error("Password reset error:", error);
@@ -623,7 +626,7 @@ export const sendPasswordResetEmailAPI = async (email) => {
 
 export const updatePasswordAPI = async (token, newPassword) => {
   try {
-    console.log("Updating password with token:", token);
+    // console.log("Updating password with token:", token);
     const response = await fetch(`${API_BASE_URL}/change/password`, {
       method: "POST",
       headers: {

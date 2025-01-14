@@ -107,17 +107,17 @@ const ProviderPage = () => {
   }, [plants, loading, provider, providerPassed]);
 
   const handleFilterChange = useCallback((newFilteredPlants) => {
-    console.log("New filtered plants:", newFilteredPlants);
+    // console.log("New filtered plants:", newFilteredPlants);
     setFilteredPlants([...newFilteredPlants]);
     setCurrentPage(1);
   }, []);
 
   const handleSortChange = (criteria, order) => {
-    console.log("Before sorting:", {
-      criteria,
-      order,
-      plantsCount: filteredPlants.length,
-    });
+    // console.log("Before sorting:", {
+    //   criteria,
+    //   order,
+    //   plantsCount: filteredPlants.length,
+    // });
 
     const sorted = [...filteredPlants].sort((a, b) => {
       let valueA, valueB;
@@ -204,7 +204,7 @@ const ProviderPage = () => {
         : (valueB ?? 0) - (valueA ?? 0);
     });
 
-    console.log("After sorting:", { plantsCount: sorted.length });
+    // console.log("After sorting:", { plantsCount: sorted.length });
 
     setFilteredPlants(sorted);
   };
@@ -272,7 +272,7 @@ const ProviderPage = () => {
       alertsCount =
         alerts?.goodwe?.data?.list?.filter((alert) => alert.status === 0)
           ?.length || 0;
-      console.log("alertsCount: ", alertsCount);
+      // console.log("alertsCount: ", alertsCount);
       break;
     case "victronenergy":
       alertsCount =

@@ -123,7 +123,7 @@ const AuthenticationForm = () => {
     try {
       const data = { email: userEmail, password: userPassword };
       await dispatch(authenticateUser(data));
-      console.log("Token resent successfully!");
+      // console.log("Token resent successfully!");
     } catch (error) {
       console.error("Failed to resend token:", error);
     }

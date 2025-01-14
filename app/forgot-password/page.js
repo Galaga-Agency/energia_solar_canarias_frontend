@@ -68,10 +68,7 @@ const ForgotPassword = () => {
         </div>
       </div>
 
-      <div
-        className="relative w-[min(100%-2rem,470px)] mx-auto mt-8 h-[72vh] z-10"
-        style={{ perspective: "1000px" }}
-      >
+      <div className="relative w-[min(100%-2rem,470px)] mx-auto mt-8 h-[72vh] z-10 perspective ">
         <motion.div
           className="absolute w-full h-full"
           style={{
@@ -99,7 +96,7 @@ const ForgotPassword = () => {
           </div>
           {/* Front (Forgot Password Form) */}
           <motion.div
-            className="absolute w-full h-full p-6 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm  rounded-lg flex flex-col justify-center space-y-4 z-40  "
+            className="absolute w-full h-full p-6 bg-white/80 dark:bg-custom-dark-blue backdrop-blur-sm rounded-lg flex flex-col justify-center space-y-4 z-40  "
             style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
           >
             <Texture />

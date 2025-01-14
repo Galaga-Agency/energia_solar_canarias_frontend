@@ -46,7 +46,7 @@ const ActionDropdown = ({ selectedCount }) => {
   const handleSave = (e) => {
     if (e) e.stopPropagation();
     setIsOpen(false);
-    console.log("saved");
+    // console.log("saved");
   };
 
   const handleCloseModal = (e) => {

@@ -19,7 +19,7 @@ const InstallationGuide = () => {
       e.preventDefault();
       setDeferredPrompt(e);
       setIsInstallable(true);
-      console.log("beforeinstallprompt event fired");
+      // console.log("beforeinstallprompt event fired");
     });
 
     setDebugInfo({

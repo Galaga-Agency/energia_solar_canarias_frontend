@@ -12,6 +12,7 @@ import {
   sendPasswordResetEmailAPI,
   updateUserProfileAPI,
   updatePasswordAPI,
+  fetchUserByIdAPI,
 } from "@/services/shared-api";
 
 // Async Thunks
@@ -19,6 +20,7 @@ export const authenticateUser = createAsyncThunk(
   "user/authenticateUser",
   async (userData, { rejectWithValue }) => {
     try {
+      console.log("userData", userData);
       const response = await loginRequestAPI(userData);
       if (!response) throw new Error("Authentication failed");
       return response;
@@ -28,12 +30,33 @@ export const authenticateUser = createAsyncThunk(
   }
 );
 
+export const fetchUserById = createAsyncThunk(
+  "user/fetchUserById",
+  async ({ token }, { rejectWithValue }) => {
+    try {
+      const response = await fetchUserByIdAPI({ token });
+
+      if (!response.status || response.code !== 200) {
+        throw new Error(response.message || "Failed to fetch user");
+      }
+      console.log("API Response:", response); // Add this log
+      // Keep the tokenIdentificador from the current state
+      return {
+        ...response.data,
+        tokenIdentificador: token,
+      };
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to fetch user");
+    }
+  }
+);
+
 export const validateToken = createAsyncThunk(
   "user/validateToken",
   async ({ id, token }, { rejectWithValue }) => {
     try {
       const response = await validateTokenRequestAPI(id, token);
-      console.log("API Response:", response); // Add this log
+      // console.log("API Response:", response); // Add this log
 
       // If the response indicates an error or is not successful
       if (
@@ -223,6 +246,23 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.isLoggedIn = false;
+      })
+      // get logged in user data
+      .addCase(fetchUserById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = {
+          ...action.payload,
+          id: action.payload.usuario_id,
+          tokenIdentificador: state.user?.tokenIdentificador,
+        };
+      })
+      .addCase(fetchUserById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       // Token validation cases
       .addCase(validateToken.pending, (state) => {

@@ -49,9 +49,9 @@ export const updateUser = createAsyncThunk(
   "users/updateUser",
   async ({ userId, userData, token }, { rejectWithValue }) => {
     try {
-      console.log("updateUser thunk - sending data:", userData);
+      // console.log("updateUser thunk - sending data:", userData);
       const response = await updateUserAPI({ userId, userData, token });
-      console.log("updateUser thunk - received response:", response);
+      // console.log("updateUser thunk - received response:", response);
       return response.data || response;
     } catch (error) {
       return rejectWithValue(error.message || "Failed to update user");

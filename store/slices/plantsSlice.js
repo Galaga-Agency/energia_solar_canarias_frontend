@@ -255,14 +255,14 @@ export const fetchSolarEdgeGraphData = createAsyncThunk(
   "plants/fetchSolarEdgeGraphData",
   async ({ id, dia, fechaFin, fechaInicio, token }, { rejectWithValue }) => {
     try {
-      console.log(
-        "fetchSolarEdgeGraphData: ",
-        id,
-        dia,
-        fechaFin,
-        fechaInicio,
-        token
-      );
+      // console.log(
+      //   "fetchSolarEdgeGraphData: ",
+      //   id,
+      //   dia,
+      //   fechaFin,
+      //   fechaInicio,
+      //   token
+      // );
       const response = await fetchSolarEdgeGraphDataAPI({
         id,
         dia,

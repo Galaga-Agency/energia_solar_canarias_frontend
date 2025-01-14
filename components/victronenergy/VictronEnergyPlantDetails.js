@@ -65,7 +65,7 @@ const VictronEnergyPlantDetails = () => {
     }
   }, [latitude, longitude]);
 
-  console.log("plant:", plant);
+  // console.log("plant:", plant);
 
   // Extract latitude and longitude from plant data
   useEffect(() => {

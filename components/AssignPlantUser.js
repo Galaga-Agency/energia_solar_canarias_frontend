@@ -45,7 +45,7 @@ const AssignPlantUser = ({ isOpen, onClose, userId, plants }) => {
         },
         body: JSON.stringify({ userId, plantIds: assignedPlantIds }),
       });
-      console.log(`Assigned plants ${assignedPlantIds} to user ${userId}`);
+      // console.log(`Assigned plants ${assignedPlantIds} to user ${userId}`);
       onClose();
     } catch (error) {
       console.error("Error assigning plants:", error);

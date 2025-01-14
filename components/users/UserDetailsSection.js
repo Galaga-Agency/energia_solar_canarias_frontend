@@ -48,7 +48,7 @@ const UserDetailsSection = ({
   }, [editedUser]);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full perspective">
       <div
         className={`relative h-[530px] transition-transform duration-700 transform-style-3d ${
           isFlipped ? "rotate-y-180" : ""

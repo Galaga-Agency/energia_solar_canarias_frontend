@@ -60,7 +60,7 @@ export const useDataFetchWithRetry = ({
       if (retryCount < maxRetries) {
         setHasEmptyData(true);
         const retryTimer = setTimeout(() => {
-          console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
+          // console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
           setRetryCount((prev) => prev + 1);
         }, retryDelay);
 

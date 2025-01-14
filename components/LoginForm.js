@@ -17,7 +17,7 @@ const LoginForm = ({
   const {
     handleSubmit: handleLoginSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitted },
     watch,
     setValue,
     trigger,
@@ -32,7 +32,6 @@ const LoginForm = ({
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [checkboxError, setCheckboxError] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [showGlow, setShowGlow] = useState(false);
   const router = useRouter();
@@ -48,15 +47,12 @@ const LoginForm = ({
   const password = watch("password");
   const acceptTerms = watch("acceptTerms");
 
-  const isFormFilled = email?.length > 0 && password?.length > 0 && acceptTerms;
+  const isFormFilled = email?.length > 0 && password?.length > 0;
 
-  const handleFormSubmit = (data) => {
+  const onSubmit = (data) => {
     if (!acceptTerms) {
-      setCheckboxError(true);
-      trigger("acceptTerms");
       return;
     }
-    setCheckboxError(false);
     handleSubmit(data, "login");
   };
 
@@ -93,9 +89,9 @@ const LoginForm = ({
         </motion.h2>
 
         <form
-          onSubmit={handleLoginSubmit(handleFormSubmit)}
+          onSubmit={handleLoginSubmit(onSubmit)}
           noValidate
-          className="space-y-6 "
+          className="space-y-6"
         >
           {/* Email Input */}
           <motion.div
@@ -162,7 +158,6 @@ const LoginForm = ({
               checked={acceptTerms}
               onChange={(e) => {
                 setValue("acceptTerms", e.target.checked);
-                setCheckboxError(!e.target.checked);
               }}
               registerProps={register("acceptTerms", {
                 required: t("acceptTermsFeedback"),
@@ -202,7 +197,7 @@ const LoginForm = ({
                 </span>
               }
             />
-            {(!acceptTerms || checkboxError) && (
+            {isSubmitted && !acceptTerms && (
               <motion.p
                 className="text-red-500 text-sm mt-2 ml-10"
                 initial={{ opacity: 0, y: -10 }}
@@ -228,25 +223,12 @@ const LoginForm = ({
 
           {/* Submit Button */}
           <PrimaryButton
-            type="button"
+            type="submit"
             className={`w-full transform transition-all duration-200 hover:scale-[1.02] ${
-              !isFormFilled || isSubmitting
+              !isFormFilled || isSubmitting || !acceptTerms
                 ? "bg-gray-400 cursor-not-allowed opacity-70"
                 : "bg-custom-yellow hover:bg-custom-yellow/80 cursor-pointer"
             }`}
-            onClick={handleLoginSubmit((data) => {
-              if (!isFormFilled) {
-                // Trigger validation for all fields and handle errors
-                trigger();
-                if (!acceptTerms) {
-                  setCheckboxError(true);
-                }
-                return; // Prevent further actions if validation fails
-              }
-
-              // If everything is valid, handle form submission with data
-              handleSubmit(data, "login");
-            })}
           >
             {isSubmitting ? t("loading") : t("signIn")}
           </PrimaryButton>

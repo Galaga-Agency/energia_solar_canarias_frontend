@@ -6,6 +6,7 @@ import {
   selectUser,
   logoutUser,
   selectLoading,
+  fetchUserById,
 } from "@/store/slices/userSlice";
 import { useTranslation } from "next-i18next";
 import ProfileOverviewCard from "@/components/ProfileOverviewCard";
@@ -27,16 +28,15 @@ import BottomNavbar from "@/components/BottomNavbar";
 import TransitionEffect from "@/components/TransitionEffect";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
-import Loading from "@/components/ui/Loading";
+import { toast } from "sonner";
+import { FaUserTie } from "react-icons/fa";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const avatarPlaceholder = "/assets/img/avatar.webp";
   const { t } = useTranslation();
-  const [profilePic, setProfilePic] = useState(
-    user?.imagen || avatarPlaceholder
-  );
+  const [profilePic, setProfilePic] = useState(avatarPlaceholder);
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,6 +45,39 @@ const SettingsTab = () => {
   const pathname = usePathname();
   const [shouldFlashAndScroll, setShouldFlashAndScroll] = useState(false);
   const isLoading = useSelector(selectLoading);
+  const [isSaving, setIsSaving] = useState(false);
+
+  console.log("user", user);
+
+  // Fetch fresh user data when component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user?.id && user?.tokenIdentificador) {
+        try {
+          await dispatch(
+            fetchUserById({
+              userId: user.id,
+              token: user.tokenIdentificador,
+            })
+          ).unwrap();
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+          toast.error(t("failedToFetchUserData"));
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [dispatch, user?.id, user?.tokenIdentificador, t]);
+
+  // Update profile pic when user data changes
+  useEffect(() => {
+    if (user?.imagen) {
+      setProfilePic(user.imagen);
+    } else {
+      setProfilePic(avatarPlaceholder);
+    }
+  }, [user?.imagen]);
 
   const handleDeleteAccount = async () => {
     try {
@@ -52,10 +85,10 @@ const SettingsTab = () => {
       dispatch(logoutUser());
       Cookies.remove("user");
       router.push("/");
-      alert(t("accountDeleted"));
+      toast.success(t("accountDeletedSuccessfully"));
     } catch (error) {
       console.error("Error deleting account:", error);
-      alert(t("errorDeletingAccount"));
+      toast.error(t("failedToDeleteAccount"));
     }
   };
 
@@ -69,7 +102,7 @@ const SettingsTab = () => {
   useEffect(() => {
     if (
       user &&
-      pathname === `/dashboard/${user.id}/settings` &&
+      pathname === `/dashboard/${user.usuario_id}/settings` &&
       notificationsRef.current
     ) {
       if (shouldFlashAndScroll) {
@@ -103,6 +136,8 @@ const SettingsTab = () => {
     router.push("/");
   };
 
+  if (!user) return null;
+
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
@@ -114,21 +149,30 @@ const SettingsTab = () => {
       <Texture />
       <div className="relative h-auto z-10 p-8">
         {/* Profile Header */}
-        <div className="relative z-10 flex items-start md:items-end mb-10">
+        <div className="relative z-10 flex items-center md:items-end mb-10">
           <Image
             src={companyIcon}
             alt="Company Icon"
-            className="w-12 h-12 mr-2 z-10"
+            className="w-12 h-12 mr-2 z-10 mb-1"
           />
-          <div className="flex flex-wrap">
-            <h2 className="text-4xl font-extrabold text-custom-dark-blue dark:text-custom-yellow ml-4 leading-tight">
+          <div className="flex flex-wrap items-center">
+            <h2 className="text-4xl font-extrabold text-custom-dark-blue dark:text-custom-yellow leading-tight">
               {`${t("welcome")},`}
             </h2>
-            <span className="font-secondary ml-4 md:ml-2 -mt-[2px] text-4xl font-thin text-custom-dark-blue dark:text-custom-yellow">
-              {user?.nombre}
-            </span>
+            <div className="flex items-center gap-4">
+              <span className="font-secondary md:ml-2 mb-3 text-4xl font-thin text-custom-dark-blue dark:text-custom-yellow">
+                {user?.nombre}
+              </span>
+              {user?.clase === "admin" && (
+                <div className="bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue px-3 py-0.5 rounded-full text-sm flex items-center gap-1">
+                  <FaUserTie className="w-3 h-3" />
+                  {t("admin")}
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
         {/* Profile Content */}
         <div className="w-full space-y-6 transition-all duration-500 grid grid-cols-1 md:grid-cols-2 md:gap-6">
           <div className="flex flex-col gap-6">
@@ -136,22 +180,14 @@ const SettingsTab = () => {
               user={user}
               profilePic={profilePic}
               setProfilePic={setProfilePic}
-              onUpdateProfile={(data) =>
-                console.log("Profile updated with data:", data)
-              }
+              isSaving={isSaving}
             />
-            <MetricsConfigCard />
+            {/* <MetricsConfigCard /> */}
           </div>
 
           <div className="flex flex-col gap-6">
-            <PasswordChangeCard
-              onChangePassword={(password) =>
-                console.log("Password changed:", password)
-              }
-            />
-            <ApiKeyRequestCard
-              onRequestApiKey={() => console.log("API key requested")}
-            />
+            <PasswordChangeCard />
+            <ApiKeyRequestCard />
             <div ref={notificationsRef} className="rounded-lg">
               <NotificationsCard />
             </div>
@@ -159,6 +195,7 @@ const SettingsTab = () => {
           </div>
         </div>
         {isTablet && <CompanyDocumentsCard />}
+
         {/* Logout and Delete Account Buttons */}
         <div className="pt-6 flex flex-col gap-4 justify-between mb-16">
           <button
@@ -188,7 +225,7 @@ const SettingsTab = () => {
         />
       </div>
 
-      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
+      <BottomNavbar userId={user?.usuario_id} userClass={user?.clase} />
     </div>
   );
 };

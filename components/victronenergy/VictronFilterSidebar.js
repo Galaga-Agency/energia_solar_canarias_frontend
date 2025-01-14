@@ -66,21 +66,21 @@ const VictronFilterSidebar = ({
     (currentFilters) => {
       if (!plants) return [];
 
-      console.log("Current filters:", currentFilters);
+      // console.log("Current filters:", currentFilters);
 
       return plants.filter((plant) => {
-        console.log(
-          "Checking plant:",
-          plant.name,
-          "Alert quantity:",
-          plant.alert_quantity
-        );
+        // console.log(
+        //   "Checking plant:",
+        //   plant.name,
+        //   "Alert quantity:",
+        //   plant.alert_quantity
+        // );
 
         // Alert Filter - Updated logic
         if (currentFilters.hasAlerts) {
           // Only keep plants that have alert_quantity > 0
           if (!plant.alert_quantity || plant.alert_quantity <= 0) {
-            console.log("Filtering out plant due to no alerts:", plant.name);
+            // console.log("Filtering out plant due to no alerts:", plant.name);
             return false;
           }
         }
@@ -146,7 +146,7 @@ const VictronFilterSidebar = ({
             ...prevFilters,
             hasAlerts: !prevFilters.hasAlerts,
           };
-          console.log("Alert filter changed to:", !prevFilters.hasAlerts);
+          // console.log("Alert filter changed to:", !prevFilters.hasAlerts);
         } else {
           updatedFilters = {
             ...prevFilters,
@@ -157,7 +157,7 @@ const VictronFilterSidebar = ({
         }
 
         const filteredPlants = filterPlants(updatedFilters);
-        console.log("Filtered plants:", filteredPlants);
+        // console.log("Filtered plants:", filteredPlants);
         onFilterChange(filteredPlants);
         return updatedFilters;
       });

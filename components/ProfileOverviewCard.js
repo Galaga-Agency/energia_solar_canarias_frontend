@@ -1,28 +1,43 @@
-"use client";
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { BiPencil } from "react-icons/bi";
 import Image from "next/image";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { useForm } from "react-hook-form";
 import { useTranslation } from "next-i18next";
 import useLocalStorageState from "use-local-storage-state";
-import PrimaryButton from "@/components/ui/PrimaryButton";
-import SecondaryButton from "@/components/ui/SecondaryButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { updateUserProfile } from "@/store/slices/userSlice";
+import { updateUser, fetchUserById } from "@/store/slices/userSlice";
+import { motion } from "framer-motion";
+import { FaPencilAlt } from "react-icons/fa";
+import { Check, Loader2, X } from "lucide-react";
+import { toast } from "sonner";
 
 const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [isFlipped, setIsFlipped] = useState(false);
-  const { register, handleSubmit } = useForm();
-  const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
-
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef(null);
+  const [localFormData, setLocalFormData] = useState(user);
+
+  const formFields = [
+    { key: "name", name: "nombre", label: t("name") },
+    { key: "surname", name: "apellido", label: t("surname") },
+    { key: "email", name: "email", label: t("email") },
+    { key: "mobile", name: "movil", label: t("mobile") },
+    { key: "company", name: "empresa", label: t("company") },
+    { key: "address", name: "direccion", label: t("address") },
+    { key: "city", name: "ciudad", label: t("city") },
+    { key: "postcode", name: "codigo_postal", label: t("postcode") },
+    { key: "country", name: "pais", label: t("country") },
+    { key: "cifNif", name: "cif_nif", label: t("cifNif") },
+  ];
+
+  useEffect(() => {
+    if (user) {
+      setLocalFormData(user);
+    }
+  }, [user]);
 
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
@@ -35,231 +50,168 @@ const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
     }
   };
 
-  const handleEditClick = () => {
-    setIsFlipped(true);
+  const handleFormChange = (name, value) => {
+    setLocalFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleCancelEdit = () => {
-    setIsFlipped(false);
-  };
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setIsSaving(true);
+    try {
+      await dispatch(
+        updateUser({
+          userId: user.usuario_id || user.id,
+          userData: {
+            ...localFormData,
+            imagen: profilePic,
+          },
+          token: user?.tokenIdentificador,
+        })
+      ).unwrap();
 
-  const onSubmit = (data) => {
-    dispatch(updateUserProfile({ ...data, imagen: profilePic }));
-    setIsFlipped(false);
+      await dispatch(
+        fetchUserById({
+          token: user.tokenIdentificador,
+        })
+      ).unwrap();
+
+      toast.success(t("userUpdatedSuccessfully"));
+      setIsFlipped(false);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      toast.error(t("failedToUpdateUser"));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="relative w-full perspective">
       <div
-        className={`relative h-[900px] transition-transform duration-700 transform-style-3d ${
+        className={`relative h-[650px] transition-transform duration-700 transform-style-3d ${
           isFlipped ? "rotate-y-180" : ""
         }`}
       >
-        {/* Front Face */}
-        <div className="absolute w-full h-full bg-white/50 dark:bg-gray-800/50 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-lg backdrop-filter backface-hidden">
-          <h2 className="text-xl font-semibold mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
-            {t("profileOverview")}
-          </h2>
-          <button
-            type="button"
-            onClick={handleEditClick}
-            className="absolute top-3 right-2 p-2 text-custom-dark-blue dark:text-custom-yellow transition-colors"
-            aria-label="Edit profile"
-          >
-            <FontAwesomeIcon icon={faPen} className="text-xl" />
-          </button>
-          <div className="flex flex-col items-center mb-8">
-            <div className="relative w-48 h-48 my-4">
-              <Image
-                src={profilePic}
-                alt="Profile"
-                fill
-                className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow shadow-dark-shadow"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handleProfilePicChange}
-                className="hidden"
-              />
-            </div>
+        {/* Front Face - Display Mode */}
+        <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+              {t("profileOverview")}
+            </h3>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsFlipped(true)}
+              className="p-2 rounded-full bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/30 transition-colors"
+            >
+              <FaPencilAlt className="w-4 h-4" />
+            </motion.button>
           </div>
-          <div className="space-y-4 text-gray-700 dark:text-gray-300 mb-2">
-            {/* Profile Info */}
-            {[
-              { label: t("name"), value: user?.nombre || "" },
-              { label: t("surname"), value: user?.apellido || "" },
-              { label: t("email"), value: user?.email || "" },
-              { label: t("mobile"), value: user?.movil || "" },
-              { label: t("company"), value: user?.company || "" },
-              { label: t("userAdress"), value: user?.address || "" },
-              { label: t("city"), value: user?.city || "" },
-              { label: t("postcode"), value: user?.postcode || "" },
-              { label: t("regionState"), value: user?.region || "" },
-              { label: t("country"), value: user?.country || "" },
-              { label: t("cifNif"), value: user?.cifNif || "" },
-              {
-                label: t("userStatus"),
-                value: user?.clase
-                  ? user.clase.charAt(0).toUpperCase() + user.clase.slice(1)
-                  : "",
-              },
-            ].map((field, index) => (
-              <p key={index} className="flex justify-between gap-2">
-                <span className="block text-gray-500 dark:text-custom-dark-gray">
-                  {field.label}:
+
+          <div className="relative w-32 h-32 mx-auto mb-6">
+            <Image
+              src={profilePic}
+              alt="Profile"
+              fill
+              className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow shadow-dark-shadow object-cover"
+            />
+          </div>
+
+          <div className="space-y-4">
+            {formFields.map(({ key, name, label }) => (
+              <div key={key} className="flex justify-between items-center">
+                <span className="text-gray-500 dark:text-custom-dark-gray">
+                  {label}:
                 </span>
                 <span className="text-custom-dark-blue dark:text-custom-yellow text-right">
-                  {field.value || ""}
+                  {localFormData[name] || "-"}
                 </span>
-              </p>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Back Face - Edit Form */}
-        <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/30 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-lg backdrop-filter backface-hidden rotate-y-180">
-          <h2 className="text-xl font-semibold mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
-            {t("editProfile")}
-          </h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-            {/* Form Fields */}
-            <div className="flex flex-col items-center">
-              <div className="relative w-48 h-48">
-                <Image
-                  src={profilePic}
-                  alt="Profile"
-                  fill
-                  className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow shadow-lg"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current.click()}
-                  className="group absolute backdrop-blur-lg backdrop-filter top-2 right-2 bg-custom-light-gray/90 dark:bg-custom-dark-blue p-2 rounded-full shadow-md border-4 border-custom-dark-blue dark:border-custom-yellow hover:bg-custom-dark-blue hover:dark:bg-custom-yellow transition-colors duration-300"
-                  aria-label="Edit profile"
-                >
-                  <BiPencil className="text-2xl text-custom-dark-blue dark:text-custom-yellow group-hover:text-custom-light-gray group-hover:dark:text-custom-dark-blue transition-colors duration-300" />
-                </button>
+        {/* Back Face - Edit Mode */}
+        <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden rotate-y-180">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+              {t("editProfile")}
+            </h3>
+            <div className="flex gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  setIsFlipped(false);
+                  setLocalFormData(user);
+                }}
+                className="p-2 rounded-full bg-gray-200 text-custom-dark-blue hover:bg-gray-300 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSubmit}
+                disabled={isSaving}
+                className="p-2 rounded-full bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/30 transition-colors disabled:opacity-50"
+              >
+                {isSaving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Check className="w-4 h-4" />
+                )}
+              </motion.button>
+            </div>
+          </div>
 
+          <div className="relative w-32 h-32 mx-auto mb-6">
+            <Image
+              src={profilePic}
+              alt="Profile"
+              fill
+              className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow shadow-lg object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="group absolute backdrop-blur-lg backdrop-filter top-2 right-2 bg-custom-light-gray/90 dark:bg-custom-dark-blue p-2 rounded-full shadow-md border-2 border-custom-dark-blue dark:border-custom-yellow hover:bg-custom-dark-blue hover:dark:bg-custom-yellow transition-colors duration-300"
+            >
+              <BiPencil className="text-xl text-custom-dark-blue dark:text-custom-yellow group-hover:text-custom-light-gray group-hover:dark:text-custom-dark-blue transition-colors duration-300" />
+            </button>
+
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleProfilePicChange}
+              className="hidden"
+            />
+          </div>
+
+          <div className="space-y-3">
+            {formFields.map(({ key, name, label }) => (
+              <div
+                key={key}
+                className="flex justify-between items-center group relative"
+              >
+                <span className="text-gray-500 dark:text-custom-dark-gray">
+                  {label}:
+                </span>
                 <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleProfilePicChange}
-                  className="hidden"
+                  type={name === "email" ? "email" : "text"}
+                  value={localFormData[name] || ""}
+                  onChange={(e) => handleFormChange(name, e.target.value)}
+                  className="w-48 py-1 px-2 text-right bg-transparent border-b border-gray-300 dark:border-gray-700 
+                    text-custom-dark-blue dark:text-custom-yellow text-sm
+                    focus:outline-none focus:border-custom-yellow focus:ring-0"
                 />
               </div>
-            </div>
-            <input
-              type="text"
-              defaultValue={user?.nombre}
-              {...register("name")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("name")}
-              required
-            />
-            <input
-              type="text"
-              defaultValue={user?.apellido}
-              {...register("surname")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("surname")}
-              required
-            />
-            <input
-              type="email"
-              defaultValue={user?.email}
-              {...register("email")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("email")}
-              required
-            />
-            <PhoneInput
-              country="es"
-              defaultValue={user?.movil}
-              onChange={(phone) => register("mobile").onChange(phone)}
-              inputStyle={{
-                width: "100%",
-                background:
-                  theme === "dark"
-                    ? "rgb(17 24 39 / 0.5)"
-                    : "rgb(249 250 251 / 0.5)",
-                color: theme === "dark" ? "#FFD57A" : "#002C3F",
-                border: "none",
-                borderRadius: "4px 4px 0 0",
-                borderBottom: "1px solid",
-                borderBottomColor:
-                  theme === "dark" ? "rgb(55 65 81)" : "#d1d5db ",
-                paddingBlock: "0.5rem",
-                height: "2.5rem",
-                fontSize: "16px",
-                fontFamily: "'Corbert', sans-serif",
-              }}
-              buttonStyle={{
-                background:
-                  theme === "dark"
-                    ? "rgb(17 24 39 / 0.5)"
-                    : "rgb(249 250 251 / 0.5)",
-              }}
-            />
-
-            <input
-              type="text"
-              defaultValue={user?.company}
-              {...register("company")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("company")}
-            />
-            <input
-              type="text"
-              defaultValue={user?.address}
-              {...register("address")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("address")}
-            />
-            <input
-              type="text"
-              defaultValue={user?.city}
-              {...register("city")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("city")}
-            />
-            <input
-              type="text"
-              defaultValue={user?.postcode}
-              {...register("postcode")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("postcode")}
-            />
-            <input
-              type="text"
-              defaultValue={user?.region}
-              {...register("region")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("regionState")}
-            />
-            <input
-              type="text"
-              defaultValue={user?.country}
-              {...register("country")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("country")}
-            />
-            <input
-              type="text"
-              defaultValue={user?.cifNif}
-              {...register("cifNif")}
-              className="w-full px-4 py-2 bg-gray-50/50 dark:bg-gray-900/50 text-gray-800 dark:text-custom-yellow border-b border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow transition"
-              placeholder={t("cifNif")}
-            />
-            <div className="flex mt-6 pt-4 justify-center">
-              <SecondaryButton type="SecondaryB" onClick={handleCancelEdit}>
-                {t("cancel")}
-              </SecondaryButton>
-              <PrimaryButton type="submit">{t("save")}</PrimaryButton>
-            </div>
-          </form>
+            ))}
+          </div>
         </div>
       </div>
     </div>

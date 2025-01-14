@@ -63,7 +63,7 @@ const UsersTab = () => {
 
   useEffect(() => {
     if (currentUser) {
-      console.log("currentUser ------->", currentUser);
+      // console.log("currentUser ------->", currentUser);
       dispatch(
         fetchUsers({
           userToken: currentUser.tokenIdentificador,
@@ -122,7 +122,7 @@ const UsersTab = () => {
     router.push(`/dashboard/${currentUser.id}/users/${userId}`);
   };
 
-  console.log("users", users);
+  // console.log("users", users);
 
   return (
     <>

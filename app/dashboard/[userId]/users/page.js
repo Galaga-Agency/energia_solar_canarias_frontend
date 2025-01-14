@@ -31,6 +31,8 @@ import {
 } from "@/store/slices/usersListSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
+import AddUserForm from "@/components/AddUserForm";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const INITIAL_FILTERS = {
   role: ["all"],
@@ -48,7 +50,7 @@ const UsersTab = () => {
   const isLoading = useSelector(selectUsersLoading);
   const error = useSelector(selectUsersError);
   const { isMobile, isTablet } = useDeviceType();
-
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list");
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [currentPage, setCurrentPage] = useState(1);
@@ -250,6 +252,22 @@ const UsersTab = () => {
             onClose={() => setIsSidebarOpen(false)}
           />
         )}
+
+        <AddUserForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
+
+        <button
+          onClick={() => setIsFormOpen(true)}
+          className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-colors duration-300 button-shadow flex items-center z-40"
+        >
+          {!isMobile ? (
+            <>
+              <PlusIcon className="w-5 h-5 mt-1 mr-2" />
+              <span className="font-semibold">{t("addUser")}</span>
+            </>
+          ) : (
+            <PlusIcon className="w-4 h-6" />
+          )}
+        </button>
 
         <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
       </div>

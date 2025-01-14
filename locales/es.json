@@ -1820,5 +1820,12 @@
   "plantDissociatedSuccessfully": "La planta se disoció correctamente.",
   "failedToDissociatePlant": "No se pudo disociar la planta. Por favor, inténtelo de nuevo.",
   "adminAllPlantsAccess": "Los administradores tienen acceso a todas las plantas por defecto, por lo que no es necesario asociar plantas específicas a su cuenta.",
-  "updating": "Actualizando..."
+  "updating": "Actualizando...",
+  "submitNewuser": "Crear Usuario",
+  "addUser": "Añadir Usuario",
+  "lastName": "Apellido",
+  "postalCode": "Código Postal",
+  "requiredFields": "Campos requeridos",
+  "selectRole": "Seleccionar Rol",
+  "provider": "Proveedor"
 }

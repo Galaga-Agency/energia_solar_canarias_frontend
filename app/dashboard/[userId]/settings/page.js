@@ -182,11 +182,10 @@ const SettingsTab = () => {
               setProfilePic={setProfilePic}
               isSaving={isSaving}
             />
-            {/* <MetricsConfigCard /> */}
+            {/* <MetricsConfigCard /> */} <PasswordChangeCard />
           </div>
 
           <div className="flex flex-col gap-6">
-            <PasswordChangeCard />
             <ApiKeyRequestCard />
             <div ref={notificationsRef} className="rounded-lg">
               <NotificationsCard />

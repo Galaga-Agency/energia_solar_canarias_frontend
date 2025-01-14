@@ -146,8 +146,9 @@ export const getUserPlants = createAsyncThunk(
 export const sendPasswordResetEmail = createAsyncThunk(
   "user/sendPasswordResetEmail",
   async ({ email }, { rejectWithValue }) => {
+    console.log("email", email);
     try {
-      const data = await sendPasswordResetEmailAPI(email);
+      const data = await sendPasswordResetEmailAPI({ email });
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -190,6 +191,19 @@ export const updateUserProfile = createAsyncThunk(
     } catch (error) {
       console.error("Profile update error:", error);
       return rejectWithValue(error.message || "Failed to update profile");
+    }
+  }
+);
+
+export const addUser = createAsyncThunk(
+  "users/addUser",
+  async (userData, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await createUserAPI({ userData, token });
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -374,6 +388,18 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users.push(action.payload);
+      })
+      .addCase(addUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -599,7 +599,7 @@ export const associatePlantToUserAPI = async ({
 
 export const sendPasswordResetEmailAPI = async (email) => {
   try {
-    // console.log("Sending password reset email to:", email);
+    console.log("Sending password reset email to:", email);
     const response = await fetch(`${API_BASE_URL}/forgot/password`, {
       method: "POST",
       headers: {
@@ -607,7 +607,7 @@ export const sendPasswordResetEmailAPI = async (email) => {
         usuario: USUARIO,
         apiKey: API_KEY,
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify(email),
     });
 
     if (!response.ok) {
@@ -674,6 +674,32 @@ export const updateUserProfileAPI = async ({ userId, userData, token }) => {
     return await response.json();
   } catch (error) {
     console.error("User profile update error:", error);
+    throw error;
+  }
+};
+
+export const createUserAPI = async ({ userData, token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create user");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error creating user:", error);
     throw error;
   }
 };

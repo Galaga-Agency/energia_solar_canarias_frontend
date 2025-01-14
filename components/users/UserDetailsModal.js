@@ -198,11 +198,13 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   };
 
   const handlePasswordReset = async () => {
+    console.log("editedUser.email", editedUser.email);
     if (!editedUser?.email) return;
-
     setIsPasswordResetSent(true);
     try {
-      await dispatch(sendPasswordResetEmail(editedUser.email)).unwrap();
+      await dispatch(
+        sendPasswordResetEmail({ email: editedUser.email })
+      ).unwrap();
       toast.success(t("passwordResetEmailSent"));
     } catch (error) {
       console.error("Failed to send password reset:", error);

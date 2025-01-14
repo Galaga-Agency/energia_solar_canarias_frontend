@@ -909,5 +909,12 @@
   "plantDissociatedSuccessfully": "The plant was dissociated successfully.",
   "failedToDissociatePlant": "Failed to dissociate the plant. Please try again.",
   "adminAllPlantsAccess": "Administrators have access to all plants by default, so no specific plants need to be associated with their account.",
-  "updating": "Updating..."
+  "updating": "Updating...",
+  "submitNewuser": "Create User",
+  "addUser": "Add User",
+  "lastName": "Last Name",
+  "postalCode": "Postal Code",
+  "requiredFields": "Required fields",
+  "selectRole": "Select Role",
+  "provider": "Provider"
 }

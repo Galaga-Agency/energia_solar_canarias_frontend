@@ -129,6 +129,11 @@ const nextConfig = {
         hostname: "example.com",
         pathname: "/**",
       },
+      {
+        protocol: "http",
+        hostname: "app-energiasolarcanarias-backend.com",
+        pathname: "/**",
+      },
     ],
   },
   webpack: (config) => {

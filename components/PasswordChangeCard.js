@@ -114,9 +114,9 @@ const PasswordChangeCard = () => {
 
   return (
     <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
+      <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
         {t("security")}
-      </h3>
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">

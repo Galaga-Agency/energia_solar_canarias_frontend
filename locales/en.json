@@ -919,5 +919,14 @@
   "provider": "Provider",
   "retryingIn": "Retrying...",
   "missingWeatherData": "Missing location data",
-  "noWeatherDataAvailable": "No weather data available"
+  "noWeatherDataAvailable": "No weather data available",
+  "emailAlreadyExists": "This email is already registered",
+  "userAddedSuccessfully": "User added successfully",
+  "failedToAddUser": "Failed to add user",
+  "generating": "Generating...",
+  "failedToGenerateApiKey": "Failed to generate API key.",
+  "failedToCopyApiKey": "Failed to copy API key.",
+  "apiKeyCopied": "API key copied to clipboard!",
+  "accountActions": "Account Actions",
+  "logoutDescription": "You can log out of your account from here."
 }

@@ -12,6 +12,15 @@ module.exports = {
         primary: ['"Adam Bold"', "sans-serif"],
         secondary: ['"Corbert"', "sans-serif"],
       },
+      animationDelay: {
+        300: "300ms",
+        500: "500ms",
+        700: "700ms",
+        900: "900ms",
+        1100: "1100ms",
+        1300: "1300ms",
+        1500: "1500ms",
+      },
       animation: {
         slideDown: "slideDown 600ms ease-in-out",
         slideUp: "slideUp 600ms ease-in-out",
@@ -48,6 +57,10 @@ module.exports = {
         "orbit-path-4": "orbit-path-4 3.5s linear infinite reverse",
         "circle-flow": "circle-flow 3s infinite ease-in-out",
         grid: "grid 150s linear infinite",
+        "fade-in-up": "fade-in-up 0.5s ease-out",
+        "fade-in-up-slow": "fade-in-up 0.7s ease-out",
+        wiggle: "wiggle 1s ease-in-out infinite",
+        "slide-in": "fade-in-up 0.5s ease-out",
         textBlink: "textBlink 0.5s ease-in-out",
         "double-blink":
           "doubleBlink 1.2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite",
@@ -110,6 +123,24 @@ module.exports = {
           "100%": {
             opacity: "0",
             transform: "scale(0.8)",
+          },
+        },
+        "fade-in-up": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        wiggle: {
+          "0%, 100%": {
+            transform: "rotate(-3deg)",
+          },
+          "50%": {
+            transform: "rotate(3deg)",
           },
         },
         energyFlow: {

@@ -32,7 +32,7 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
 import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { motion } from "framer-motion";
 import useDeviceType from "@/hooks/useDeviceType";
 import usePlantSort from "@/hooks/usePlantSort";
 import { HiViewGrid, HiViewList } from "react-icons/hi";
@@ -57,7 +57,7 @@ const AdminDashboard = () => {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("list");
-  const plantsPerPage = 12;
+  const plantsPerPage = 9;
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = filteredPlants.slice(
@@ -142,17 +142,32 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div
+    <motion.div
       className={`min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.4 }}
     >
       <TransitionEffect />
-      <div className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]">
+
+      <motion.div
+        className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      >
         <ThemeToggle />
         <LanguageSelector />
-      </div>
+      </motion.div>
+
       <Texture />
       <div className="relative h-auto z-10 p-8">
-        <div className="flex items-center mb-10 md:mb-2 z-10">
+        <motion.div
+          className="flex items-center mb-10 md:mb-2 z-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+        >
           <Image
             src={companyIcon}
             alt="Company Icon"
@@ -161,55 +176,113 @@ const AdminDashboard = () => {
           <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
             {view === "providers" ? t("selectProvider") : t("selectPlant")}
           </h2>
-        </div>
+        </motion.div>
 
-        {/* <AddPlantForm
-          onClose={() => setIsFormOpen(false)}
-          isOpen={isFormOpen}
-        /> */}
         <PlantsMapModal
           isOpen={isMapOpen}
           onClose={() => setIsMapOpen(false)}
           plants={plants}
         />
 
-        <div className="flex justify-start my-8">
+        <motion.div
+          className="flex justify-start my-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.5 }}
+        >
           <ViewChangeDropdown onChange={handleViewChange} view={view} />
-        </div>
+        </motion.div>
 
-        <div className="flex">
-          {view === "plants" && (
-            <FilterSidebar
-              ref={sidebarRef}
-              plants={plants}
-              onFilterChange={handleFilterChange}
-            />
-          )}
+        <motion.div
+          className="flex"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+        >
+          {view === "plants" &&
+            (isMobile ? (
+              <FilterSidebar
+                ref={sidebarRef}
+                plants={plants}
+                onFilterChange={handleFilterChange}
+              />
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.4, duration: 0.5 }}
+              >
+                <FilterSidebar
+                  ref={sidebarRef}
+                  plants={plants}
+                  onFilterChange={handleFilterChange}
+                />
+              </motion.div>
+            ))}
 
-          <div className={`flex-grow ${view === "plants" && "lg:px-8"}`}>
+          <motion.div
+            className={`flex-grow ${view === "plants" && "lg:px-8"}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0 }}
+          >
             {view === "providers" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.0 }}
+              >
                 {providers.map((provider, index) => (
-                  <ProviderCard
+                  <motion.div
                     key={index}
-                    provider={provider}
-                    onClick={() => handleProviderClick(provider)}
-                  />
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.0 + index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <ProviderCard
+                      provider={provider}
+                      onClick={() => handleProviderClick(provider)}
+                    />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : (
               <>
-                <div className="mb-4 text-lg text-custom-dark-blue dark:text-custom-yellow">
-                  <p>
-                    {t("plantsFound")}: {filteredPlants.length} {t("plants")}
-                  </p>
-                </div>
+                <motion.p
+                  className="mb-4 text-lg text-custom-dark-blue dark:text-custom-yellow"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.0, duration: 0.5 }}
+                >
+                  {t("plantsFound")}: {filteredPlants.length} {t("plants")}
+                </motion.p>
 
-                <div className="flex items-center justify-between mb-4">
-                  <SortMenu onSortChange={handleSortChange} />
-                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
-                    <button
+                <motion.div
+                  className="flex items-center justify-between mb-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.0, duration: 0.5 }}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.1, duration: 0.5 }}
+                  >
+                    <SortMenu onSortChange={handleSortChange} />
+                  </motion.div>
+                  <motion.div
+                    className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.1, duration: 0.5 }}
+                  >
+                    <motion.button
                       onClick={() => setViewMode("list")}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`p-2 rounded-lg transition-colors ${
                         viewMode === "list"
                           ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
@@ -217,9 +290,11 @@ const AdminDashboard = () => {
                       }`}
                     >
                       <HiViewList className="w-5 h-5" />
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
                       onClick={() => setViewMode("grid")}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`p-2 rounded-lg transition-colors ${
                         viewMode === "grid"
                           ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
@@ -227,78 +302,87 @@ const AdminDashboard = () => {
                       }`}
                     >
                       <HiViewGrid className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
 
-                {loading ? (
-                  <div className="py-8">
-                    <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
-                  </div>
-                ) : filteredPlants.length > 0 ? (
-                  viewMode === "list" ? (
-                    paginatedPlants.map((plant) => (
-                      <PlantsListTableItem
-                        key={plant.id}
-                        plant={{
-                          ...plant,
-                          id: plant.id?.toString(),
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
-                      {paginatedPlants.map((plant) => (
-                        <PlantCard key={plant.id} plant={plant} />
-                      ))}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.1 }}
+                >
+                  {loading ? (
+                    <div className="py-8">
+                      <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
                     </div>
-                  )
-                ) : (
-                  <div className="h-auto w-full flex flex-col justify-center items-center">
-                    <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
-                    <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
-                      {t("noPlantsFound")}
-                    </p>
-                  </div>
-                )}
+                  ) : filteredPlants.length > 0 ? (
+                    viewMode === "list" ? (
+                      <div>
+                        {paginatedPlants.map((plant, index) => (
+                          <motion.div
+                            key={plant.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1.2 + index * 0.05 }}
+                          >
+                            <PlantsListTableItem
+                              plant={{
+                                ...plant,
+                                id: plant.id?.toString(),
+                              }}
+                            />
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
+                        {paginatedPlants.map((plant, index) => (
+                          <motion.div
+                            key={plant.id}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 1.2 + index * 0.05 }}
+                          >
+                            <PlantCard plant={plant} />
+                          </motion.div>
+                        ))}
+                      </div>
+                    )
+                  ) : (
+                    <motion.div
+                      className="h-auto w-full flex flex-col justify-center items-center"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.2, duration: 0.5 }}
+                    >
+                      <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+                      <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
+                        {t("noPlantsFound")}
+                      </p>
+                    </motion.div>
+                  )}
 
-                {totalPages > 1 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                  />
-                )}
+                  {totalPages > 1 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.4, duration: 0.5 }}
+                    >
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                      />
+                    </motion.div>
+                  )}
+                </motion.div>
               </>
             )}
-          </div>
-        </div>
-
-        {/* <button
-          onClick={() => setIsFormOpen(true)}
-          className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-colors duration-300 button-shadow flex items-center z-40"
-        >
-          {!isMobile ? (
-            <>
-              <PlusIcon className="w-5 h-5 mt-1 mr-2" />
-              <span className="font-semibold">{t("addPlant")}</span>
-            </>
-          ) : (
-            <PlusIcon className="w-4 h-6" />
-          )}
-        </button> */}
+          </motion.div>
+        </motion.div>
       </div>
-
       <BottomNavbar userId={user?.id} userClass={user?.clase} />
-
-      {/* <InfoModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onConfirm={closeModal}
-        title={t("loadingPlants")}
-        message={t("loadingPlantsMessage")}
-      /> */}
-    </div>
+    </motion.div>
   );
 };
 

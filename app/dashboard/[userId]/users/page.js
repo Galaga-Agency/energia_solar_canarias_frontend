@@ -8,6 +8,7 @@ import Image from "next/image";
 import { IoFilter } from "react-icons/io5";
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import { FaUserAltSlash } from "react-icons/fa";
+import { motion } from "framer-motion";
 import Pagination from "@/components/ui/Pagination";
 import Texture from "@/components/Texture";
 import BottomNavbar from "@/components/BottomNavbar";
@@ -21,7 +22,6 @@ import UsersListView from "@/components/users/UsersListView";
 import UsersGridView from "@/components/users/UsersGridView";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import useDeviceType from "@/hooks/useDeviceType";
-
 import {
   fetchUsers,
   selectUsers,
@@ -132,116 +132,177 @@ const UsersTab = () => {
       <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
         <Texture />
 
-        <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+        <motion.div
+          className="fixed top-4 right-4 flex items-center gap-2 z-50"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+        >
           <ThemeToggle />
           <LanguageSelector />
-        </div>
+        </motion.div>
 
-        <div className="p-8">
+        <motion.div
+          className="p-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
           {/* Title Section */}
-          <div className="flex items-center">
+          <motion.div
+            className="flex items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 0.5 }}
+          >
             <Image
               src={companyIcon}
               alt="Company Icon"
-              className="w-12 h-12 mr-2 z-10"
+              className="w-12 h-12 mr-2 z-10 transition-transform duration-300 hover:scale-110"
               priority
             />
             <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
               {t("usersList")}
             </h2>
-          </div>
+          </motion.div>
 
           {/* Filter Button - Mobile/Tablet Only */}
-          <button
-            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
+          <motion.button
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-all duration-300 button-shadow flex items-center hover:scale-105"
             onClick={() => setIsSidebarOpen(true)}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.8 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <IoFilter className="text-xl text-custom-dark-blue" />
-          </button>
+          </motion.button>
 
-          <div className="flex mt-8 gap-6">
+          <motion.div
+            className="flex mt-8 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.5 }}
+          >
             {/* Sidebar - Desktop */}
             {!isMobile && !isTablet && (
-              <UsersSidebar
-                filters={filters}
-                onFilterChange={setFilters}
-                isOpen={isSidebarOpen}
-              />
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.4, duration: 0.5 }}
+              >
+                <UsersSidebar
+                  filters={filters}
+                  onFilterChange={setFilters}
+                  isOpen={isSidebarOpen}
+                />
+              </motion.div>
             )}
 
             {/* Main Content */}
-            <div className="flex-1">
+            <motion.div
+              className="flex-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.6, duration: 0.5 }}
+            >
               {/* View Controls */}
-              <div className="flex justify-between items-center mb-6">
+              <motion.div
+                className="flex justify-between items-center mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.4, duration: 0.5 }}
+              >
                 <span className="text-custom-dark-blue dark:text-custom-yellow">
                   {t("usersFound")}: {filteredUsers.length}
                 </span>
 
                 <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
-                  <button
+                  <motion.button
                     onClick={() => setViewMode("list")}
                     className={`p-2 rounded-lg transition-colors ${
                       viewMode === "list"
                         ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
                         : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
                     }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <HiViewList className="w-5 h-5" />
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     onClick={() => setViewMode("grid")}
                     className={`p-2 rounded-lg transition-colors ${
                       viewMode === "grid"
                         ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
                         : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
                     }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <HiViewGrid className="w-5 h-5" />
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Users List/Grid */}
-              {isLoading ? (
-                viewMode === "list" ? (
-                  <UsersListSkeleton theme={theme} rows={usersPerPage} />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.6, duration: 0.5 }}
+              >
+                {isLoading ? (
+                  viewMode === "list" ? (
+                    <UsersListSkeleton theme={theme} rows={usersPerPage} />
+                  ) : (
+                    <UsersGridSkeleton theme={theme} rows={usersPerPage} />
+                  )
+                ) : !users ? (
+                  <motion.div
+                    className="h-auto w-full flex flex-col justify-center items-center"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 1.8, duration: 0.5 }}
+                  >
+                    <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
+                    <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
+                      {t("noUsersFound")}
+                    </p>
+                  </motion.div>
+                ) : viewMode === "list" ? (
+                  <UsersListView
+                    users={paginatedUsers}
+                    onUserClick={handleUserClick}
+                    onUserSave={handleUserSave}
+                  />
                 ) : (
-                  <UsersGridSkeleton theme={theme} rows={usersPerPage} />
-                )
-              ) : !users ? (
-                <div className="h-auto w-full flex flex-col justify-center items-center">
-                  <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
-                  <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
-                    {t("noUsersFound")}
-                  </p>
-                </div>
-              ) : viewMode === "list" ? (
-                <UsersListView
-                  users={paginatedUsers}
-                  onUserClick={handleUserClick}
-                  onUserSave={handleUserSave}
-                />
-              ) : (
-                <UsersGridView
-                  users={paginatedUsers}
-                  onUserClick={handleUserClick}
-                  onUserSave={handleUserSave}
-                />
-              )}
+                  <UsersGridView
+                    users={paginatedUsers}
+                    onUserClick={handleUserClick}
+                    onUserSave={handleUserSave}
+                  />
+                )}
+              </motion.div>
 
               {/* Pagination */}
               {filteredUsers.length > usersPerPage && (
-                <div className="mt-6">
+                <motion.div
+                  className="mt-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2, duration: 0.5 }}
+                >
                   <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
                     onPageChange={setCurrentPage}
                   />
-                </div>
+                </motion.div>
               )}
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* Mobile Sidebar */}
         {(isMobile || isTablet) && isSidebarOpen && (
@@ -255,9 +316,14 @@ const UsersTab = () => {
 
         <AddUserForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
 
-        <button
+        <motion.button
           onClick={() => setIsFormOpen(true)}
-          className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-colors duration-300 button-shadow flex items-center z-40"
+          className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-all duration-300 button-shadow flex items-center z-40"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.8 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           {!isMobile ? (
             <>
@@ -267,7 +333,7 @@ const UsersTab = () => {
           ) : (
             <PlusIcon className="w-4 h-6" />
           )}
-        </button>
+        </motion.button>
 
         <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
       </div>

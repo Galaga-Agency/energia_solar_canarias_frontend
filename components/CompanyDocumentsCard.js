@@ -23,8 +23,8 @@ const CompanyDocumentsCard = () => {
   ];
 
   return (
-    <div className="w-full h-full bg-white/50 dark:bg-gray-800/60 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-sm backdrop-filter md:mt-6 xl:mt-0">
-      <h2 className="text-xl mb-4 border-b border-b-custom-dark-blue dark:border-b-custom-light-gray pb-2 text-gray-800 dark:text-gray-200">
+    <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter">
+      <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
         {t("companyDocuments")}
       </h2>
       <ul className="space-y-3">

@@ -13,6 +13,7 @@ import {
   updateUserProfileAPI,
   updatePasswordAPI,
   fetchUserByIdAPI,
+  generateApiKeyAPI,
 } from "@/services/shared-api";
 
 // Async Thunks
@@ -213,6 +214,24 @@ export const addUser = createAsyncThunk(
   }
 );
 
+export const generateApiKey = createAsyncThunk(
+  "user/generateApiKey",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await generateApiKeyAPI({ token });
+
+      if (!response?.data) {
+        throw new Error("Invalid response format");
+      }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to generate API key");
+    }
+  }
+);
+
 // Initial State
 const initialState = {
   user: null,
@@ -380,10 +399,14 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // update user profile
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.user = { ...state.user, ...action.payload };
       })
+
+      // reset password
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -396,6 +419,8 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // create user
       .addCase(addUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -406,6 +431,23 @@ const userSlice = createSlice({
         state.users.push(action.payload);
       })
       .addCase(addUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // generating api key
+      .addCase(generateApiKey.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(generateApiKey.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = {
+          ...state.user,
+          apiKey: action.payload,
+        };
+      })
+      .addCase(generateApiKey.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

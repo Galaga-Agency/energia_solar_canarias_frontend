@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { FaPencilAlt } from "react-icons/fa";
 import { Check, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
+import defaultAvatar from "@/public/assets/img/avatar.webp";
 
 const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
   const { t } = useTranslation();
@@ -98,9 +99,9 @@ const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
         {/* Front Face - Display Mode */}
         <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
               {t("profileOverview")}
-            </h3>
+            </h2>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -113,10 +114,17 @@ const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
 
           <div className="relative w-32 h-32 mx-auto mb-6">
             <Image
-              src={profilePic}
-              alt="Profile"
+              src={profilePic !== null ? profilePic : defaultAvatar.src}
+              alt={"User"}
               fill
+              objectFit="cover"
               className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow shadow-dark-shadow object-cover"
+              loading="eager"
+              priority={true}
+              unoptimized={true}
+              onError={(e) => {
+                e.currentTarget.src = defaultAvatar.src;
+              }}
             />
           </div>
 
@@ -170,15 +178,22 @@ const ProfileOverviewCard = ({ user, profilePic, setProfilePic }) => {
 
           <div className="relative w-32 h-32 mx-auto mb-6">
             <Image
-              src={profilePic}
-              alt="Profile"
+              src={profilePic !== null ? profilePic : defaultAvatar.src}
+              alt={"User"}
               fill
+              objectFit="cover"
               className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow shadow-lg object-cover"
+              loading="eager"
+              priority={true}
+              unoptimized={true}
+              onError={(e) => {
+                e.currentTarget.src = defaultAvatar.src;
+              }}
             />
             <button
               type="button"
               onClick={() => fileInputRef.current.click()}
-              className="group absolute backdrop-blur-lg backdrop-filter top-2 right-2 bg-custom-light-gray/90 dark:bg-custom-dark-blue p-2 rounded-full shadow-md border-2 border-custom-dark-blue dark:border-custom-yellow hover:bg-custom-dark-blue hover:dark:bg-custom-yellow transition-colors duration-300"
+              className="group absolute backdrop-blur-lg backdrop-filter top-0 right-0 bg-custom-light-gray/90 dark:bg-custom-dark-blue p-2 rounded-full shadow-md border-2 border-custom-dark-blue dark:border-custom-yellow hover:bg-custom-dark-blue hover:dark:bg-custom-yellow transition-colors duration-300"
             >
               <BiPencil className="text-xl text-custom-dark-blue dark:text-custom-yellow group-hover:text-custom-light-gray group-hover:dark:text-custom-dark-blue transition-colors duration-300" />
             </button>

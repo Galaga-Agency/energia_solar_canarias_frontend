@@ -1830,5 +1830,14 @@
   "provider": "Proveedor",
   "retryingIn": "Reintentando...",
   "missingWeatherData": "Faltan datos de ubicación",
-  "noWeatherDataAvailable": "No hay datos meteorológicos disponibles"
+  "noWeatherDataAvailable": "No hay datos meteorológicos disponibles",
+  "emailAlreadyExists": "Este correo electrónico ya está registrado",
+  "userAddedSuccessfully": "Usuario añadido correctamente",
+  "failedToAddUser": "Error al añadir el usuario",
+  "generating": "Generando...",
+  "failedToGenerateApiKey": "No se pudo generar la clave API.",
+  "apiKeyCopied": "¡Clave API copiada al portapapeles!",
+  "failedToCopyApiKey": "No se pudo copiar la clave API.",
+  "accountActions": "Acciones de la cuenta",
+  "logoutDescription": "Puedes cerrar sesión desde aquí."
 }

@@ -94,7 +94,7 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
               isOpen ? "translate-x-0" : "-translate-x-full"
             }`
           : "w-80"
-      } bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg`}
+      } bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700  backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg`}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">

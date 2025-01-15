@@ -119,7 +119,7 @@ const PlantCard = ({ plant }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="p-6 relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer transform hover:-translate-y-1"
+      className="p-6 relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer transform hover:-translate-y-1 w-full h-full"
     >
       {/* Status or Battery Icon */}
       {provider === "victronenergy" ? (

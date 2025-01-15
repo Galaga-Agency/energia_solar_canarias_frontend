@@ -706,3 +706,28 @@ export const createUserAPI = async ({ userData, token }) => {
     throw error;
   }
 };
+
+export const generateApiKeyAPI = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuario/bearerToken`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to generate API key");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error generating API key:", error);
+    throw error;
+  }
+};

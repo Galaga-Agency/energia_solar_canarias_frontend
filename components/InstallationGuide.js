@@ -15,12 +15,11 @@ const InstallationGuide = () => {
     ).matches;
     setIsPWAInstalled(isStandalone);
 
-    window.addEventListener("beforeinstallprompt", (e) => {
+    const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setIsInstallable(true);
-      // console.log("beforeinstallprompt event fired");
-    });
+    };
 
     setDebugInfo({
       isStandalone,
@@ -28,8 +27,13 @@ const InstallationGuide = () => {
       serviceWorker: !!navigator.serviceWorker.controller,
     });
 
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
     return () => {
-      window.removeEventListener("beforeinstallprompt", () => {});
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
     };
   }, []);
 
@@ -70,16 +74,6 @@ const InstallationGuide = () => {
         <FaDownload className="text-lg" />
         <span>{t("installApp")}</span>
       </button>
-
-      {/* Debug Info */}
-      {/* <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-        <div>Is installable: {isInstallable ? "Yes" : "No"}</div>
-        <div>Is standalone: {isPWAInstalled ? "Yes" : "No"}</div>
-        <div>Manifest linked: {debugInfo.manifest ? "Yes" : "No"}</div>
-        <div>
-          Service Worker active: {debugInfo.serviceWorker ? "Yes" : "No"}
-        </div>
-      </div> */}
     </div>
   );
 };

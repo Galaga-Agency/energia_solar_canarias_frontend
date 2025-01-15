@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus, FiEye, FiEyeOff } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "next-i18next";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "@/store/slices/usersListSlice";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
@@ -17,15 +17,39 @@ const AddUserForm = ({ onClose, isOpen }) => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get existing users from Redux store
+  const existingUsers = useSelector((state) => state.usersList.users);
+
   const {
     register,
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
-  } = useForm();
+    formState: { errors, isValid, dirtyFields },
+    setError,
+  } = useForm({
+    mode: "onChange", // Enable real-time validation
+  });
 
-  const password = watch("password", "");
+  const REQUIRED_FIELDS = [
+    "email",
+    "password",
+    "confirmPassword",
+    "nombre",
+    "clase",
+  ];
+  const watchedFields = watch(REQUIRED_FIELDS);
+  const password = watch("password");
+
+  // Check if all required fields are filled and valid
+  const areRequiredFieldsFilled = REQUIRED_FIELDS.every(
+    (field) => watchedFields[field] && dirtyFields[field]
+  );
+
+  const isFormValid =
+    isValid && areRequiredFieldsFilled && Object.keys(errors).length === 0;
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
@@ -34,10 +58,37 @@ const AddUserForm = ({ onClose, isOpen }) => {
     };
   }, [isOpen]);
 
+  // Email validation with existing users check
+  const validateEmail = async (email) => {
+    const emailExists = existingUsers.some(
+      (user) => user.email.toLowerCase() === email.toLowerCase()
+    );
+    if (emailExists) {
+      return t("emailAlreadyExists");
+    }
+    return true;
+  };
+
   const handleFormSubmit = async (data) => {
     try {
-      const { confirmPassword, ...userData } = data;
+      setIsSubmitting(true);
 
+      // Check for existing email one more time before submission
+      const emailExists = existingUsers.some(
+        (user) => user.email.toLowerCase() === data.email.toLowerCase()
+      );
+
+      if (emailExists) {
+        setError("email", {
+          type: "manual",
+          message: t("emailAlreadyExists"),
+        });
+        toast.error(t("emailAlreadyExists"));
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { confirmPassword, ...userData } = data;
       const result = await dispatch(addUser(userData)).unwrap();
       toast.success(t("userAddedSuccessfully"));
       reset();
@@ -45,9 +96,22 @@ const AddUserForm = ({ onClose, isOpen }) => {
     } catch (error) {
       console.error("Failed to add user:", error);
       toast.error(error.message || t("failedToAddUser"));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  // Email field registration
+  const emailField = register("email", {
+    required: t("emailRequired"),
+    pattern: {
+      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+      message: t("invalidEmail"),
+    },
+    validate: validateEmail,
+  });
+
+  // In your original form JSX, update the email input like this:
   return (
     <AnimatePresence>
       {isOpen && (
@@ -81,14 +145,13 @@ const AddUserForm = ({ onClose, isOpen }) => {
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="flex items-center justify-between gap-2 py-4 px-6 bg-gradient-to-r from-custom-yellow to-custom-yellow/90 rounded-xl text-custom-dark-blue mb-6"
+                  className="flex items-center justify-between gap-2 py-4 px-6 bg-gradient-to-r from-custom-yellow to-custom-yellow/90 rounded-xl text-custom-dark-blue"
                 >
                   <div className="flex items-center gap-2">
                     <FiPlus className="text-2xl" />
                     <h2 className="text-xl md:text-2xl">{t("addUser")}</h2>
                   </div>
 
-                  {/* Close Button */}
                   <motion.button
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
@@ -118,13 +181,7 @@ const AddUserForm = ({ onClose, isOpen }) => {
                     </label>
                     <input
                       type="email"
-                      {...register("email", {
-                        required: t("emailRequired"),
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: t("invalidEmail"),
-                        },
-                      })}
+                      {...emailField}
                       className={`w-full px-4 py-2 rounded-lg border ${
                         errors.email
                           ? "border-red-500"
@@ -132,7 +189,7 @@ const AddUserForm = ({ onClose, isOpen }) => {
                       } bg-white dark:bg-gray-800 text-custom-dark-blue dark:text-custom-light-gray focus:ring-2 focus:ring-custom-yellow/20 outline-none transition-all`}
                     />
                     {errors.email && (
-                      <p className="text-red-500 mt-1 text-sm">
+                      <p className="text-red-500 mt-1 text-sm animate-fadeIn">
                         {errors.email.message}
                       </p>
                     )}
@@ -430,30 +487,30 @@ const AddUserForm = ({ onClose, isOpen }) => {
                     * {t("requiredFields")}
                   </motion.div>
 
-                  {/* Form buttons */}
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 1.4 }}
-                    className="flex justify-end items-center gap-4 pt-4"
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                  {/* Form Actions */}
+                  <div className="flex justify-end gap-4 mt-6">
+                    <SecondaryButton
+                      type="button"
+                      onClick={() => {
+                        reset();
+                        onClose();
+                      }}
+                      disabled={isSubmitting}
                     >
-                      <SecondaryButton type="button" onClick={onClose}>
-                        {t("cancel")}
-                      </SecondaryButton>
-                    </motion.div>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      {t("cancel")}
+                    </SecondaryButton>
+                    <PrimaryButton
+                      type="submit"
+                      disabled={!isFormValid || isSubmitting}
+                      className={
+                        !isFormValid || isSubmitting
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }
                     >
-                      <PrimaryButton type="submit">
-                        {t("addUser")}
-                      </PrimaryButton>
-                    </motion.div>
-                  </motion.div>
+                      {isSubmitting ? t("adding") : t("addUser")}
+                    </PrimaryButton>
+                  </div>
                 </form>
               </motion.div>
             </div>

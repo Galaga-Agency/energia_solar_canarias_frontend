@@ -30,6 +30,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import { toast } from "sonner";
 import { FaUserTie } from "react-icons/fa";
+import DangerZone from "@/components/users/DangerZone";
+import { motion } from "framer-motion";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();
@@ -46,8 +48,6 @@ const SettingsTab = () => {
   const [shouldFlashAndScroll, setShouldFlashAndScroll] = useState(false);
   const isLoading = useSelector(selectLoading);
   const [isSaving, setIsSaving] = useState(false);
-
-  console.log("user", user);
 
   // Fetch fresh user data when component mounts
   useEffect(() => {
@@ -141,19 +141,36 @@ const SettingsTab = () => {
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
-      <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+
+      <motion.div
+        className="fixed top-4 right-4 flex items-center gap-2 z-50"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+      >
         <ThemeToggle />
         <LanguageSelector />
-      </div>
+      </motion.div>
 
       <Texture />
-      <div className="relative h-auto z-10 p-8">
+
+      <motion.div
+        className="relative h-auto z-10 p-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+      >
         {/* Profile Header */}
-        <div className="relative z-10 flex items-center md:items-end mb-10">
+        <motion.div
+          className="relative z-10 flex items-center md:items-end mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.5 }}
+        >
           <Image
             src={companyIcon}
             alt="Company Icon"
-            className="w-12 h-12 mr-2 z-10 mb-1"
+            className="w-12 h-12 mr-2 z-10 mb-1 transition-transform duration-300 hover:scale-110"
           />
           <div className="flex flex-wrap items-center">
             <h2 className="text-4xl font-extrabold text-custom-dark-blue dark:text-custom-yellow leading-tight">
@@ -164,54 +181,77 @@ const SettingsTab = () => {
                 {user?.nombre}
               </span>
               {user?.clase === "admin" && (
-                <div className="bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue px-3 py-0.5 rounded-full text-sm flex items-center gap-1">
+                <div className="bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue px-3 py-0.5 rounded-full text-sm flex items-center gap-1 hover:scale-105 transition-transform duration-200">
                   <FaUserTie className="w-3 h-3" />
                   {t("admin")}
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Profile Content */}
-        <div className="w-full space-y-6 transition-all duration-500 grid grid-cols-1 md:grid-cols-2 md:gap-6">
-          <div className="flex flex-col gap-6">
+        <div className="w-full space-y-6 transition-all duration-500 flex flex-col max-w-full lg:max-w-[70vw] 2xl:max-w-[60vw] mx-auto mb-16">
+          <motion.div
+            className="flex flex-col gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.5 }}
+          >
             <ProfileOverviewCard
               user={user}
               profilePic={profilePic}
               setProfilePic={setProfilePic}
               isSaving={isSaving}
             />
-            {/* <MetricsConfigCard /> */} <PasswordChangeCard />
-          </div>
+            <PasswordChangeCard />
+          </motion.div>
 
-          <div className="flex flex-col gap-6">
+          <motion.div
+            className="flex flex-col gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4, duration: 0.5 }}
+          >
             <ApiKeyRequestCard />
-            <div ref={notificationsRef} className="rounded-lg">
-              <NotificationsCard />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.6, duration: 0.5 }}
+          >
+            <CompanyDocumentsCard />
+          </motion.div>
+
+          {/* Logout and Delete Account Buttons */}
+          <motion.div
+            className="flex flex-col gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.8, duration: 0.5 }}
+          >
+            <div className="bg-gray-100 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
+              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
+                {t("accountActions")}
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {t("logoutDescription")}
+              </p>
+              <motion.button
+                onClick={handleLogout}
+                className="w-full bg-gray-800 text-white hover:bg-gray-900 py-2.5 px-4 rounded-lg transition-all duration-200 mb-6"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {t("logout")}
+              </motion.button>
+
+              <DangerZone onDelete={() => setIsModalOpen(true)} t={t} />
             </div>
-            {!isTablet && <CompanyDocumentsCard />}
-          </div>
-        </div>
-        {isTablet && <CompanyDocumentsCard />}
-
-        {/* Logout and Delete Account Buttons */}
-        <div className="pt-6 flex flex-col gap-4 justify-between mb-16">
-          <button
-            onClick={handleLogout}
-            className="glow-on-hover text-red-500 dark:text-red-400 hover:opacity-80 transition-opacity font-secondary text-lg"
-          >
-            {t("logout")}
-          </button>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-red-600 text-white hover:opacity-80 transition-opacity py-2 rounded text-lg font-semibold"
-          >
-            {t("deleteAccount")}
-          </button>
+          </motion.div>
         </div>
 
-        {/* Confirmation Modal */}
         <ConfirmationModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -222,7 +262,7 @@ const SettingsTab = () => {
           title={t("confirmDeletion")}
           message={t("areYouSureDeleteAccount")}
         />
-      </div>
+      </motion.div>
 
       <BottomNavbar userId={user?.usuario_id} userClass={user?.clase} />
     </div>

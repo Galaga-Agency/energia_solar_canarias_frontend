@@ -84,7 +84,7 @@ const AuthenticationForm = () => {
         validateToken({ id: userToValidate, token: tokenInput })
       );
 
-      console.log("Token validation response:", response);
+      // console.log("Token validation response:", response);
 
       if (
         response.type?.includes("rejected") ||

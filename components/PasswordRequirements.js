@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Check, X } from "lucide-react";
 
-const PasswordRequirements = ({ password }) => {
+const PasswordRequirements = ({ password = "" }) => {
   const requirements = {
     minLength: {
       test: (pass) => pass.length >= 8,
@@ -26,7 +26,7 @@ const PasswordRequirements = ({ password }) => {
   };
 
   return (
-    <div className="mt-2 space-y-1  p-3">
+    <div className="space-y-1 p-3">
       {Object.entries(requirements).map(([key, requirement]) => {
         const isMet = requirement.test(password);
         return (

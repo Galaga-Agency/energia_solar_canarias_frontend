@@ -113,13 +113,13 @@ const PasswordChangeCard = () => {
   };
 
   return (
-    <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
+    <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter">
       <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
         {t("security")}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <h4 className="text-sm font-secondary text-gray-700 dark:text-gray-300">
           {t("changePassword")}
         </h4>
 

@@ -13,6 +13,7 @@ import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { motion } from "framer-motion";
 import { RotateCcw, X } from "lucide-react";
+import { IoFilter } from "react-icons/io5";
 
 const STATUS_OPTIONS = [
   "working",
@@ -326,7 +327,7 @@ const FilterSidebar = forwardRef(
           className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
           onClick={toggleSidebar}
         >
-          <span className="text-custom-dark-blue">{t("filter")}</span>
+          <IoFilter className="text-xl text-custom-dark-blue" />
         </button>
       </div>
     );

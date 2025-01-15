@@ -12,6 +12,7 @@ import UserEditModal from "@/components/users/UserEditModal";
 import UserDetailsModal from "@/components/users/UserDetailsModal";
 import DeleteConfirmationModal from "@/components/users/DeleteConfirmationModal";
 import useDeviceType from "@/hooks/useDeviceType";
+import defaultAvatar from "@/public/assets/img/avatar.webp";
 
 const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
   const { t } = useTranslation();
@@ -63,12 +64,17 @@ const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
                   style={{ minWidth: "48px" }} // Prevents shrinking
                 >
                   <Image
-                    src={user.imagen || "/assets/default-profile.png"}
-                    alt={user.nombre}
+                    src={user.imagen !== null ? user.imagen : defaultAvatar.src}
+                    alt={user?.nombre || "User"}
                     layout="fill"
                     objectFit="cover"
                     className="rounded-full border-2 border-white dark:border-gray-800"
                     loading="eager"
+                    priority={true}
+                    unoptimized={true}
+                    onError={(e) => {
+                      e.currentTarget.src = defaultAvatar.src;
+                    }}
                   />
                   <div
                     className={`absolute -bottom-0 -right-0 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${

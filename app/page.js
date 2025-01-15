@@ -29,7 +29,7 @@ export default function Home() {
       // console.log("tokenValidated:", tokenValidated);
 
       if (redirectAttempted.current) {
-        console.log("Redirect already attempted");
+        // console.log("Redirect already attempted");
         return;
       }
 
@@ -39,7 +39,7 @@ export default function Home() {
       if (storedUser && storedToken) {
         try {
           const user = JSON.parse(storedUser);
-          console.log("Parsed user:", user);
+          // console.log("Parsed user:", user);
 
           if (user?.id && user?.tokenIdentificador) {
             // console.log("Valid user data found, redirecting...");

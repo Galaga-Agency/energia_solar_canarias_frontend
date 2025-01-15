@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
 import { FaUserTie } from "react-icons/fa";
-import { AiOutlineEdit } from "react-icons/ai";
-import { IoTrashOutline } from "react-icons/io5";
+import defaultAvatar from "@/public/assets/img/avatar.webp";
 import { BsClockHistory } from "react-icons/bs";
 import UsersListSkeleton from "@/components/loadingSkeletons/UsersListSkeleton";
 import useTouchDevice from "@/hooks/useTouchDevice";
@@ -108,10 +107,16 @@ const UsersGridView = ({ users, isLoading, onUserClick, onUserSave }) => {
             {/* User Profile Section */}
             <div className="relative mb-4">
               <Image
-                src={user.imagen || "/assets/default-profile.png"}
-                alt={user.nombre}
+                src={user.imagen !== null ? user.imagen : defaultAvatar.src}
+                alt={user?.nombre || "User"}
+                loading="eager"
                 width={80}
                 height={80}
+                priority={true}
+                unoptimized={true}
+                onError={(e) => {
+                  e.currentTarget.src = defaultAvatar.src;
+                }}
                 className="rounded-full border-4 border-white dark:border-gray-800 mx-auto"
               />
               <div

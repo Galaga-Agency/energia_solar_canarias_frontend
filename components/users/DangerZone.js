@@ -5,9 +5,9 @@ import { Trash2 } from "lucide-react";
 const DangerZone = ({ onDelete, t }) => {
   return (
     <div className="bg-red-50 dark:bg-red-900/10 rounded-xl p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">
+      <h2 className="text-xl text-red-600/80 dark:text-red-400/80 mb-4">
         {t("dangerZone")}
-      </h3>
+      </h2>
       <p className="text-sm text-red-600/80 dark:text-red-400/80 mb-4">
         {t("deleteAccountWarning")}
       </p>

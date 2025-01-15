@@ -142,7 +142,9 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16">
+    <div
+      className={`min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16`}
+    >
       <TransitionEffect />
       <div className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]">
         <ThemeToggle />
@@ -161,10 +163,10 @@ const AdminDashboard = () => {
           </h2>
         </div>
 
-        <AddPlantForm
+        {/* <AddPlantForm
           onClose={() => setIsFormOpen(false)}
           isOpen={isFormOpen}
-        />
+        /> */}
         <PlantsMapModal
           isOpen={isMapOpen}
           onClose={() => setIsMapOpen(false)}
@@ -272,7 +274,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <button
+        {/* <button
           onClick={() => setIsFormOpen(true)}
           className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-colors duration-300 button-shadow flex items-center z-40"
         >
@@ -284,7 +286,7 @@ const AdminDashboard = () => {
           ) : (
             <PlusIcon className="w-4 h-6" />
           )}
-        </button>
+        </button> */}
       </div>
 
       <BottomNavbar userId={user?.id} userClass={user?.clase} />

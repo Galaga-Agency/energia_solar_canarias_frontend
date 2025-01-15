@@ -9,7 +9,7 @@ const ProviderCard = ({ provider, onClick }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="relative w-full h-[30vh] group">
+    <div className="relative w-full h-[30vh] 2xl:h-[32vh] group">
       <div
         className="relative w-full h-full overflow-hidden cursor-pointer 
                    bg-white/50 dark:bg-custom-dark-blue/50

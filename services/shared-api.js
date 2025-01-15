@@ -30,20 +30,23 @@ export const loginRequestAPI = async (userData) => {
 };
 
 export const validateTokenRequestAPI = async (id, token) => {
-  const requestBody = JSON.stringify({ id, token });
-
   try {
+    console.log("API calll ----- Validating token with data:", { id, token });
     const response = await fetch(`${API_BASE_URL}/token`, {
       method: "POST",
-      body: requestBody,
       headers: {
         "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
       },
+      body: JSON.stringify({
+        id,
+        token,
+      }),
     });
 
     const data = await response.json();
 
-    // For any non-200 response, return a standardized error format
     if (!response.ok) {
       return {
         status: false,

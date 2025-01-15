@@ -13,6 +13,7 @@ import {
   selectTokenValidated,
 } from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
+import { storage } from "@/utils/storage";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -22,29 +23,45 @@ export default function Home() {
   const redirectAttempted = useRef(false);
 
   useEffect(() => {
-    if (redirectAttempted.current || !tokenValidated) {
-      return;
-    }
+    const handleInitialRedirect = async () => {
+      // console.log("Checking for redirect...");
+      // console.log("isLoggedIn:", isLoggedIn);
+      // console.log("tokenValidated:", tokenValidated);
 
-    const userCookie = Cookies.get("user");
-    if (userCookie && !isLoggedIn) {
-      try {
-        const user = JSON.parse(userCookie);
-        if (user && user.id && user.tokenIdentificador) {
-          dispatch(setUser(user));
-          redirectAttempted.current = true;
-          router.push(`/dashboard/${user.id}/plants`);
-        } else {
-          console.warn("User cookie data is invalid or incomplete:", user);
-          Cookies.remove("user");
-          Cookies.remove("authToken");
-        }
-      } catch (error) {
-        console.error("Error parsing user cookie:", error);
-        Cookies.remove("user");
-        Cookies.remove("authToken");
+      if (redirectAttempted.current) {
+        console.log("Redirect already attempted");
+        return;
       }
-    }
+
+      const storedUser = storage.getItem("user");
+      const storedToken = storage.getItem("authToken");
+
+      if (storedUser && storedToken) {
+        try {
+          const user = JSON.parse(storedUser);
+          console.log("Parsed user:", user);
+
+          if (user?.id && user?.tokenIdentificador) {
+            // console.log("Valid user data found, redirecting...");
+            dispatch(setUser(user));
+            redirectAttempted.current = true;
+            user?.clase === "admin"
+              ? router.push(`/dashboard/${user.id}/admin`)
+              : router.push(`/dashboard/${user.id}/plants`);
+          } else {
+            console.warn("Invalid user data in storage");
+            storage.removeItem("user");
+            storage.removeItem("authToken");
+          }
+        } catch (error) {
+          console.error("Error handling redirect:", error);
+          storage.removeItem("user");
+          storage.removeItem("authToken");
+        }
+      }
+    };
+
+    handleInitialRedirect();
   }, [dispatch, router, isLoggedIn, tokenValidated]);
 
   return (

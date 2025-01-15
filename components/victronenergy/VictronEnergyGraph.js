@@ -42,6 +42,9 @@ import useDeviceType from "@/hooks/useDeviceType";
 import { selectTheme } from "@/store/slices/themeSlice";
 import VictronGraphSkeleton from "../loadingSkeletons/VictronGraphSkeleton";
 import { FiAlertCircle } from "react-icons/fi";
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import useCSVExport from "@/hooks/useCSVExport";
+import ExportModal from "../ExportModal";
 
 const getColors = (theme) => ({
   consumption: theme === "dark" ? "#FFD57B" : "#BDBFC0",
@@ -197,7 +200,13 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
+const VictronEnergyGraph = ({
+  plantId,
+  currentRange,
+  setIsDateModalOpen,
+  onExportClick,
+  onDataChange,
+}) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useSelector(selectTheme);
@@ -219,7 +228,6 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
   const user = useSelector(selectUser);
   const { isMobile } = useDeviceType();
 
-  // Update the validation function as well
   const validateGraphData = useCallback((data) => {
     if (!data?.records) return false;
     const records = data.records;
@@ -860,6 +868,12 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     chartData.length === 0 ||
     (!hasConsumption && !hasSolar && !hasBatteryState);
 
+  useEffect(() => {
+    if (onDataChange) {
+      onDataChange(chartData);
+    }
+  }, [chartData, onDataChange]);
+
   return (
     <>
       <div className="space-y-6">
@@ -879,12 +893,20 @@ const VictronEnergyGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
               </button>
             )}
           </div>
-          <button
-            className="select-none px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto ml-auto"
-            onClick={() => setIsDateModalOpen(true)}
-          >
-            {t(currentRange.type)}
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              className="select-none px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto"
+              onClick={() => setIsDateModalOpen(true)}
+            >
+              {t(currentRange.type)}
+            </button>
+            <button
+              onClick={onExportClick}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+            </button>
+          </div>
         </div>
 
         <div className="bg-white dark:bg-custom-dark-blue p-6 rounded-xl shadow-lg">

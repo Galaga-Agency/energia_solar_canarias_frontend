@@ -6,6 +6,7 @@ import {
   deactivateUserAPI,
   deleteUserAPI,
   updateUserAPI,
+  createUserAPI,
 } from "@/services/shared-api";
 
 export const fetchUsers = createAsyncThunk(
@@ -75,6 +76,19 @@ export const deleteUser = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       return await deleteUserAPI(userId);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const addUser = createAsyncThunk(
+  "users/addUser",
+  async (userData, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await createUserAPI({ userData, token });
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -184,6 +198,18 @@ const usersListSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(addUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(addUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.users.push(action.payload);
+      })
+      .addCase(addUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

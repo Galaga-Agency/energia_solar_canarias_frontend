@@ -43,14 +43,16 @@ const AuthenticationForm = () => {
   const handleSubmit = async (data, type) => {
     setIsSubmitting(true);
     try {
-      const user = await dispatch(authenticateUser(data)).unwrap();
-      saveAuthData(user.data.tokenIdentificador || "mockAuthToken", user.data);
+      const response = await dispatch(authenticateUser(data)).unwrap();
+      console.log("User data --------------", response);
+
+      saveAuthData(response.data.tokenIdentificador, response.data);
 
       if (type === "login") {
         setUserEmail(data.email);
         setUserPassword(data.password);
         setSubmissionResult({ status: "loginSuccess" });
-        setUserToValidate(user.data.id);
+        setUserToValidate(response.data.id);
         setCurrentFace("result");
       } else {
         setSubmissionResult({ status: "registerSuccess" });
@@ -81,6 +83,8 @@ const AuthenticationForm = () => {
       const response = await dispatch(
         validateToken({ id: userToValidate, token: tokenInput })
       );
+
+      console.log("Token validation response:", response);
 
       if (
         response.type?.includes("rejected") ||

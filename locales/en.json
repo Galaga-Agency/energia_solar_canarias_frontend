@@ -916,5 +916,8 @@
   "postalCode": "Postal Code",
   "requiredFields": "Required fields",
   "selectRole": "Select Role",
-  "provider": "Provider"
+  "provider": "Provider",
+  "retryingIn": "Retrying...",
+  "missingWeatherData": "Missing location data",
+  "noWeatherDataAvailable": "No weather data available"
 }

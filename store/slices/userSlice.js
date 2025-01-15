@@ -20,10 +20,16 @@ export const authenticateUser = createAsyncThunk(
   "user/authenticateUser",
   async (userData, { rejectWithValue }) => {
     try {
-      console.log("userData", userData);
       const response = await loginRequestAPI(userData);
-      if (!response) throw new Error("Authentication failed");
-      return response;
+      if (!response || !response.data) throw new Error("Authentication failed");
+
+      return {
+        ...response,
+        data: {
+          ...response.data,
+          tokenIdentificador: response.data.tokenIdentificador,
+        },
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -56,20 +62,19 @@ export const validateToken = createAsyncThunk(
   async ({ id, token }, { rejectWithValue }) => {
     try {
       const response = await validateTokenRequestAPI(id, token);
-      // console.log("API Response:", response); // Add this log
 
-      // If the response indicates an error or is not successful
-      if (
-        !response ||
-        response.status === false ||
-        response.status === "error"
-      ) {
-        return rejectWithValue(response?.message || "Token validation failed");
+      if (!response.status || !response.data) {
+        return rejectWithValue(response.message || "Token validation failed");
       }
 
-      return response;
+      return {
+        status: true,
+        data: {
+          ...response.data,
+        },
+      };
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || "Token validation failed");
     }
   }
 );
@@ -397,6 +402,7 @@ const userSlice = createSlice({
       })
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false;
+        state.users = state.users || [];
         state.users.push(action.payload);
       })
       .addCase(addUser.rejected, (state, action) => {

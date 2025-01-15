@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { setUser as setReduxUser } from "@/store/slices/userSlice";
+import {
+  setUser as setReduxUser,
+  validateToken,
+} from "@/store/slices/userSlice";
+import Cookies from "js-cookie";
 
 const useAuth = () => {
   const [token, setToken] = useState(null);
@@ -16,26 +19,11 @@ const useAuth = () => {
       if (storedUser && storedToken) {
         try {
           const parsedUser = JSON.parse(storedUser);
-
-          // Validate token with your backend
-          const response = await dispatch(
-            validateToken({
-              id: parsedUser.id,
-              token: storedToken,
-            })
-          ).unwrap();
-
-          if (response.status === true) {
-            setUser(response.data);
-            setToken(storedToken);
-            dispatch(setReduxUser(response.data));
-          } else {
-            // If token is invalid, clear everything
-            clearAuthData();
-          }
         } catch (error) {
-          clearAuthData();
+          console.error(error);
         }
+      } else {
+        console.log("No existe sesión del usuario");
       }
     };
 
@@ -48,15 +36,19 @@ const useAuth = () => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      domain: window.location.hostname,
     };
 
-    Cookies.set("authToken", token, cookieOptions);
-    Cookies.set("user", JSON.stringify(user), cookieOptions);
+    const userData = {
+      ...user,
+      tokenIdentificador: user.tokenIdentificador,
+    };
 
-    setToken(token);
-    setUser(user);
-    dispatch(setReduxUser(user));
+    Cookies.set("authToken", user.tokenIdentificador, cookieOptions);
+    Cookies.set("user", JSON.stringify(userData), cookieOptions);
+
+    setToken(user.tokenIdentificador);
+    setUser(userData);
+    dispatch(setReduxUser(userData));
   };
 
   const clearAuthData = () => {

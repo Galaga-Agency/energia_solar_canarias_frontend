@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "next-i18next";
@@ -23,41 +21,43 @@ import {
   BsSnow,
   BsCloudLightningRain,
   BsCloudFog,
+  BsExclamationTriangle,
 } from "react-icons/bs";
 import { WiDayFog, WiNightAltThunderstorm } from "react-icons/wi";
+
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherSkeleton from "@/components/loadingSkeletons/WeatherSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const WEATHER_ICONS = {
-  0: BsSun, // Clear sky
-  1: BsSun, // Mainly clear
-  2: BsCloudSun, // Partly cloudy
-  3: BsCloudSun, // Overcast
-  45: WiDayFog, // Fog
-  48: WiDayFog, // Depositing rime fog
-  51: BsCloudDrizzle, // Light drizzle
-  53: BsCloudDrizzle, // Moderate drizzle
-  55: BsCloudDrizzle, // Dense drizzle
-  56: BsCloudRain, // Light freezing drizzle
-  57: BsCloudRain, // Dense freezing drizzle
-  61: BsCloudRain, // Slight rain
-  63: BsCloudRainHeavy, // Moderate rain
-  65: BsCloudRainHeavy, // Heavy rain
-  66: BsCloudRain, // Light freezing rain
-  67: BsCloudRainHeavy, // Heavy freezing rain
-  71: BsSnow, // Slight snowfall
-  73: BsCloudSnow, // Moderate snowfall
-  75: BsCloudSnow, // Heavy snowfall
-  77: BsSnow, // Snow grains
-  80: BsCloudRain, // Slight rain showers
-  81: BsCloudRainHeavy, // Moderate rain showers
-  82: BsCloudLightningRain, // Violent rain showers
-  85: BsCloudSnow, // Slight snow showers
-  86: BsCloudSnow, // Heavy snow showers
-  95: WiNightAltThunderstorm, // Thunderstorm
-  96: WiNightAltThunderstorm, // Thunderstorm with light hail
-  99: WiNightAltThunderstorm, // Thunderstorm with heavy hail
+  0: BsSun,
+  1: BsSun,
+  2: BsCloudSun,
+  3: BsCloudSun,
+  45: WiDayFog,
+  48: WiDayFog,
+  51: BsCloudDrizzle,
+  53: BsCloudDrizzle,
+  55: BsCloudDrizzle,
+  56: BsCloudRain,
+  57: BsCloudRain,
+  61: BsCloudRain,
+  63: BsCloudRainHeavy,
+  65: BsCloudRainHeavy,
+  66: BsCloudRain,
+  67: BsCloudRainHeavy,
+  71: BsSnow,
+  73: BsCloudSnow,
+  75: BsCloudSnow,
+  77: BsSnow,
+  80: BsCloudRain,
+  81: BsCloudRainHeavy,
+  82: BsCloudLightningRain,
+  85: BsCloudSnow,
+  86: BsCloudSnow,
+  95: WiNightAltThunderstorm,
+  96: WiNightAltThunderstorm,
+  99: WiNightAltThunderstorm,
 };
 
 const MAX_RETRY_COUNT = 5;
@@ -75,16 +75,20 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
   const { isDesktop } = useDeviceType();
   const [retryCount, setRetryCount] = useState(0);
 
+  const hasRequiredData = useMemo(() => {
+    if (provider === "victronenergy") {
+      return lat && lng && token;
+    }
+    return address && provider && token;
+  }, [provider, lat, lng, token, address]);
+
   const fetchWeatherData = useCallback(() => {
-    if (
-      (provider === "victronenergy" && (!lat || !lng || !token)) ||
-      (provider !== "victronenergy" && (!address || !provider || !token))
-    ) {
+    if (!hasRequiredData) {
       console.warn("Missing required data. Waiting for user data...");
       return;
     }
 
-    switch (provider.toLowerCase()) {
+    switch (provider?.toLowerCase()) {
       case "goodwe":
       case "energia y calor solar del atlantico sl":
         dispatch(fetchGoodweWeatherData({ name: address, token }));
@@ -98,14 +102,12 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
       default:
         console.warn(`Unsupported provider: ${provider}`);
     }
-  }, [dispatch, address, token, provider, lat, lng]);
+  }, [dispatch, address, token, provider, lat, lng, hasRequiredData]);
 
-  // Initial fetch
   useEffect(() => {
-    if (retryCount === 0) fetchWeatherData();
-  }, [fetchWeatherData, retryCount]);
+    if (retryCount === 0 && hasRequiredData) fetchWeatherData();
+  }, [fetchWeatherData, retryCount, hasRequiredData]);
 
-  // Retry logic
   useEffect(() => {
     let retryTimeout;
     if (weatherError && retryCount < MAX_RETRY_COUNT) {
@@ -119,7 +121,6 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
     };
   }, [weatherError, retryCount, fetchWeatherData]);
 
-  // Reset retry count when dependencies change
   useEffect(() => {
     setRetryCount(0);
   }, [address, token, provider, lat, lng]);
@@ -131,9 +132,33 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
     const commonClass = `${sizeClass} text-custom-dark-blue dark:text-custom-yellow`;
 
     const IconComponent = WEATHER_ICONS[code] || BsCloud;
-
     return <IconComponent className={commonClass} />;
   }, []);
+
+  const renderErrorState = () => (
+    <div className="flex items-start gap-3 p-4 mb-4 text-red-800 bg-red-100 dark:bg-red-900/50 dark:text-red-200 rounded-lg">
+      <BsExclamationTriangle className="h-5 w-5 mt-0.5" />
+      <div>
+        <p>{t("failedToFetchWeather")}</p>
+        {retryCount > 0 && retryCount < MAX_RETRY_COUNT && (
+          <p className="mt-2 text-sm">
+            {t("retryingIn", { count: Math.ceil(RETRY_DELAY / 1000) })}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderEmptyState = () => (
+    <div className="flex flex-col items-center justify-center p-6 text-center bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+      <BsCloud className="text-4xl mb-4 text-custom-dark-blue dark:text-custom-yellow" />
+      <p className="text-slate-600 dark:text-slate-300">
+        {!hasRequiredData
+          ? t("missingWeatherData")
+          : t("noWeatherDataAvailable")}
+      </p>
+    </div>
+  );
 
   if (weatherLoading) {
     return <WeatherSkeleton theme={theme} />;
@@ -145,87 +170,83 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
         {t("weatherForecast")}
       </h2>
 
-      {weatherError ? (
-        <p className="text-center text-red-500">{t("failedToFetchWeather")}</p>
-      ) : (
-        weatherData && (
-          <div className="flex flex-1 flex-col">
-            {/* Today's Weather */}
-            <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex items-center justify-between flex-1 relative group overflow-hidden">
-              <div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">
-                <div
-                  className="absolute w-full h-full blur-2xl transition-opacity duration-700"
-                  style={{
-                    background:
-                      theme === "dark"
-                        ? "linear-gradient(45deg, rgba(255, 213, 122, 0.2), rgba(0, 44, 63, 0.1))"
-                        : "linear-gradient(45deg, rgba(0, 44, 63, 0.1), rgba(255, 213, 122, 0.2))",
-                  }}
-                />
-              </div>
+      {weatherError && renderErrorState()}
 
-              <div className="flex relative z-10">
-                <p className="text-xl text-left text-slate-600 dark:text-slate-300">
-                  {t("today")}
-                </p>
-                <div className="flex justify-center h-full items-center">
-                  {getWeatherIcon(weatherData?.daily?.weather_code?.[0], true)}
-                </div>
-              </div>
+      {!weatherError && !weatherData && renderEmptyState()}
 
-              <div className="relative z-10">
-                <p className="text-4xl font-bold text-custom-dark-blue dark:text-custom-yellow">
-                  {Math.round(weatherData?.current?.temperature_2m || 0)}°C
-                </p>
-                <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
-                  {t("wind")}:{" "}
-                  {Math.round(weatherData?.current?.wind_speed_10m)} km/h
-                </p>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  {t("humidity")}:{" "}
-                  {Math.round(weatherData?.current?.relative_humidity_2m)}%
-                </p>
+      {!weatherError && weatherData && (
+        <div className="flex flex-1 flex-col">
+          <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex items-center justify-between flex-1 relative group overflow-hidden">
+            <div className="absolute inset-0 z-0 overflow-hidden rounded-lg pointer-events-none">
+              <div
+                className="absolute w-full h-full blur-2xl transition-opacity duration-700"
+                style={{
+                  background:
+                    theme === "dark"
+                      ? "linear-gradient(45deg, rgba(255, 213, 122, 0.2), rgba(0, 44, 63, 0.1))"
+                      : "linear-gradient(45deg, rgba(0, 44, 63, 0.1), rgba(255, 213, 122, 0.2))",
+                }}
+              />
+            </div>
+
+            <div className="flex relative z-10">
+              <p className="text-xl text-left text-slate-600 dark:text-slate-300">
+                {t("today")}
+              </p>
+              <div className="flex justify-center h-full items-center">
+                {getWeatherIcon(weatherData?.daily?.weather_code?.[0], true)}
               </div>
             </div>
 
-            {/* Forecast */}
-            <div className="flex-1 grid grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
-              {weatherData?.daily?.time
-                ?.slice(1, isDesktop ? 4 : 3)
-                .map((date, index) => (
-                  <div
-                    key={date}
-                    className="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex-1"
-                  >
-                    <div className="flex flex-col">
-                      <p className="text-sm text-slate-600 dark:text-slate-300">
-                        {new Date(date).toLocaleDateString("es-ES", {
-                          weekday: "short",
-                        })}
-                      </p>
-                      <p className="text-md font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                        {Math.round(
-                          weatherData?.daily?.temperature_2m_min?.[index + 1] ||
-                            0
-                        )}
-                        °/
-                        {Math.round(
-                          weatherData?.daily?.temperature_2m_max?.[index + 1] ||
-                            0
-                        )}
-                        °C
-                      </p>
-                    </div>
-                    <div className="flex justify-center mt-2">
-                      {getWeatherIcon(
-                        weatherData?.daily?.weather_code?.[index + 1]
-                      )}
-                    </div>
-                  </div>
-                ))}
+            <div className="relative z-10">
+              <p className="text-4xl font-bold text-custom-dark-blue dark:text-custom-yellow">
+                {Math.round(weatherData?.current?.temperature_2m || 0)}°C
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+                {t("wind")}: {Math.round(weatherData?.current?.wind_speed_10m)}{" "}
+                km/h
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                {t("humidity")}:{" "}
+                {Math.round(weatherData?.current?.relative_humidity_2m)}%
+              </p>
             </div>
           </div>
-        )
+
+          <div className="flex-1 grid grid-cols-2 2xl:grid-cols-3 gap-4 mt-4">
+            {weatherData?.daily?.time
+              ?.slice(1, isDesktop ? 4 : 3)
+              .map((date, index) => (
+                <div
+                  key={date}
+                  className="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center shadow-md flex-1"
+                >
+                  <div className="flex flex-col">
+                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                      {new Date(date).toLocaleDateString("es-ES", {
+                        weekday: "short",
+                      })}
+                    </p>
+                    <p className="text-md font-semibold text-custom-dark-blue dark:text-custom-yellow">
+                      {Math.round(
+                        weatherData?.daily?.temperature_2m_min?.[index + 1] || 0
+                      )}
+                      °/
+                      {Math.round(
+                        weatherData?.daily?.temperature_2m_max?.[index + 1] || 0
+                      )}
+                      °C
+                    </p>
+                  </div>
+                  <div className="flex justify-center mt-2">
+                    {getWeatherIcon(
+                      weatherData?.daily?.weather_code?.[index + 1]
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
       )}
     </div>
   );

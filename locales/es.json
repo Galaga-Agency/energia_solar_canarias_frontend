@@ -1827,5 +1827,8 @@
   "postalCode": "Código Postal",
   "requiredFields": "Campos requeridos",
   "selectRole": "Seleccionar Rol",
-  "provider": "Proveedor"
+  "provider": "Proveedor",
+  "retryingIn": "Reintentando...",
+  "missingWeatherData": "Faltan datos de ubicación",
+  "noWeatherDataAvailable": "No hay datos meteorológicos disponibles"
 }

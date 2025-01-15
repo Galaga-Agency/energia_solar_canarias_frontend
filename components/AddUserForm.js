@@ -425,7 +425,7 @@ const AddUserForm = ({ onClose, isOpen }) => {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 1.3 }}
-                    className="text-sm text-gray-600 dark:text-gray-400 mt-4"
+                    className="text-sm text-gray-600 dark:text-gray-400 mt-4 font-secondary"
                   >
                     * {t("requiredFields")}
                   </motion.div>

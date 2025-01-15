@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectPlantDetails,
@@ -23,6 +23,8 @@ import DateRangeModal from "./DateRangeModal";
 import VictronEnergyAlerts from "./VictronEnergyAlerts";
 import VictronAlertsModal from "./VictronAlertsModal";
 import { selectAlerts } from "@/store/slices/plantsSlice";
+import useCSVExport from "@/hooks/useCSVExport";
+import ExportModal from "../ExportModal";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
@@ -53,6 +55,9 @@ const VictronEnergyPlantDetails = () => {
   const [currentRange, setCurrentRange] = useState({ type: "today" });
   const alertsData = useSelector(selectAlerts);
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const { downloadCSV } = useCSVExport();
+  const [graphChartData, setGraphChartData] = useState([]);
 
   const handleRangeSelect = (range) => {
     setCurrentRange(range);
@@ -75,6 +80,30 @@ const VictronEnergyPlantDetails = () => {
       setLongitude(extended.find((attr) => attr.code === "lg")?.rawValue);
     }
   }, [plant]);
+
+  const handleExportCSV = useCallback(
+    (chartData) => {
+      if (!chartData?.length) return;
+
+      const exportData = chartData.map((dataPoint) => ({
+        Timestamp: new Date(dataPoint.timestamp).toISOString(),
+        "Consumo (kWh)": dataPoint.consumption || 0,
+        "Solar (kWh)": dataPoint.solar || 0,
+        "Batería (%)": dataPoint.battery || 0,
+        ...(dataPoint.batteryVoltage
+          ? {
+              "Tensión Batería (V)": dataPoint.batteryVoltage,
+              "Tensión Min (V)": dataPoint.batteryMin,
+              "Tensión Max (V)": dataPoint.batteryMax,
+            }
+          : {}),
+      }));
+
+      downloadCSV(exportData, "victron_energy_data.csv");
+      setIsExportModalOpen(false);
+    },
+    [downloadCSV]
+  );
 
   const tankData = {
     tc: plant?.data?.records?.[0]?.extended?.find((item) => item.code === "tc"),
@@ -207,6 +236,8 @@ const VictronEnergyPlantDetails = () => {
             plantId={plantId}
             currentRange={currentRange}
             setIsDateModalOpen={setIsDateModalOpen}
+            onExportClick={() => setIsExportModalOpen(true)}
+            onDataChange={setGraphChartData}
           />
         </section>
 
@@ -222,6 +253,15 @@ const VictronEnergyPlantDetails = () => {
         onClose={() => setIsAlertsModalOpen(false)}
         alerts={alertsData?.victronenergy?.records || []}
         plantId={plantId}
+      />
+
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        onExport={() => handleExportCSV(graphChartData)}
+        t={t}
+        isLoading={isLoadingDetails}
+        hasData={!!graphChartData?.length}
       />
     </PageTransition>
   );

@@ -1,13 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
 import Modal from "@/components/ui/Modal";
 import Texture from "@/components/Texture";
 import UserListItem from "@/components/UserListItem";
+import { selectUsers, fetchUsers } from "@/store/slices/usersListSlice";
+import { selectUser } from "@/store/slices/userSlice";
 
 const AddUserToPlantModal = ({ isOpen, onClose, users, onAddUser, t }) => {
+  const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
+  const allUsers = useSelector(selectUsers);
+  const currentUser = useSelector(selectUser);
 
-  const filteredUsers = users.filter(
+  useEffect(() => {
+    if (currentUser?.tokenIdentificador) {
+      dispatch(
+        fetchUsers({
+          userToken: currentUser.tokenIdentificador,
+          currentUserId: currentUser.usuario_id,
+        })
+      );
+    }
+  }, [dispatch, currentUser]);
+
+  const availableUsers = allUsers.filter(
+    (user) =>
+      !users.some((existingUser) => existingUser.usuario_id === user.usuario_id)
+  );
+
+  const filteredUsers = availableUsers.filter(
     (user) =>
       (user.nombre || user.name || "")
         .toLowerCase()

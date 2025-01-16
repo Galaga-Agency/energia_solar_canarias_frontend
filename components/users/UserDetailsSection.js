@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { FaPencilAlt } from "react-icons/fa";
 import { Check, Loader2, X } from "lucide-react";
@@ -6,14 +6,13 @@ import { Check, Loader2, X } from "lucide-react";
 const UserDetailsSection = ({
   editedUser,
   handleInputChange,
-  handleSave, // Passed as a prop
+  handleSave,
   isSaving,
   t,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [localFormData, setLocalFormData] = useState(editedUser);
 
-  // Handle input changes without triggering parent updates
   const handleFormChange = (name, value) => {
     setLocalFormData((prev) => ({
       ...prev,
@@ -21,20 +20,20 @@ const UserDetailsSection = ({
     }));
   };
 
-  // Rename the function to avoid conflict with the prop
   const handleLocalSave = async (formData) => {
-    const result = await handleSave(formData); // Call the prop function
+    const result = await handleSave(formData);
     if (result) {
-      setLocalFormData(result); // Update local form data
+      setLocalFormData(result);
     }
   };
 
-  // Only update parent state when form is submitted
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data being sent:", localFormData);
     const result = await handleLocalSave(localFormData);
-    console.log("Result after save:", result);
+    if (result) {
+      setIsFlipped(false);
+    }
   };
 
   const formFields = [
@@ -50,7 +49,6 @@ const UserDetailsSection = ({
     { key: "cifNif", name: "cif_nif", label: t("cifNif") },
   ];
 
-  // Reset form data when editedUser changes
   useEffect(() => {
     setLocalFormData(editedUser);
   }, [editedUser]);
@@ -138,8 +136,8 @@ const UserDetailsSection = ({
                   value={localFormData[name] || ""}
                   onChange={(e) => handleFormChange(name, e.target.value)}
                   className="w-48 py-1 px-2 text-right bg-transparent border-b border-gray-300 dark:border-gray-700 
-          text-custom-dark-blue dark:text-custom-yellow text-sm
-          focus:outline-none focus:border-custom-yellow focus:ring-0"
+                    text-custom-dark-blue dark:text-custom-yellow text-sm
+                    focus:outline-none focus:border-custom-yellow focus:ring-0"
                 />
               </div>
             ))}

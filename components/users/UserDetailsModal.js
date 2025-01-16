@@ -21,29 +21,25 @@ import ConfirmDeleteUserModal from "./ConfirmDeleteUserModal";
 import { fetchUsers, updateUserInList } from "@/store/slices/usersListSlice";
 import UserDetailsModalHeader from "./UserDetailsModalHeader";
 
-const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
+const UserDetailsModal = ({ user, isOpen, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const userAdmin = useSelector(selectUser);
+  const updatedUser = useSelector((state) =>
+    state.usersList.users.find((u) => u.usuario_id === user.usuario_id)
+  );
+  const [editedUser, setEditedUser] = useState(() => ({ ...user }));
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [plantToRemove, setPlantToRemove] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isPasswordResetSent, setIsPasswordResetSent] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const userAdmin = useSelector(selectUser);
-  const updatedUser = useSelector((state) =>
-    state.usersList.users.find((u) => u.usuario_id === user.usuario_id)
-  );
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState(() => ({ ...user }));
 
   useEffect(() => {
-    if (user) {
-      setEditedUser({
-        ...JSON.parse(JSON.stringify(user)),
-      });
+    if (user && user.usuario_id !== editedUser.usuario_id) {
+      setEditedUser({ ...user });
     }
   }, [user]);
 
@@ -56,7 +52,7 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   const handleSave = async (formData) => {
     if (!formData?.usuario_id) {
       toast.error(t("invalidUserData"));
-      return;
+      return null;
     }
 
     setIsSaving(true);
@@ -74,23 +70,31 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
         })
       ).unwrap();
 
+      // Update only the local state without triggering a modal remount
+      setEditedUser((prevUser) => ({
+        ...prevUser,
+        ...updatedUser,
+      }));
+
+      // Update Redux store in the background
       dispatch(updateUserInList(updatedUser));
 
-      const currentUserToken = userAdmin?.tokenIdentificador;
-      if (!currentUserToken) {
-        throw new Error("User token is missing");
+      // Update the list in the background without affecting the modal
+      if (userAdmin?.tokenIdentificador) {
+        dispatch(
+          fetchUsers({
+            userToken: userAdmin.tokenIdentificador,
+            currentUserId: userAdmin.id,
+          })
+        );
       }
-      await dispatch(
-        fetchUsers({
-          userToken: currentUserToken,
-          currentUserId: userAdmin?.id,
-        })
-      );
 
       toast.success(t("userUpdatedSuccessfully"));
+      return updatedUser;
     } catch (error) {
       console.error("Failed to update user:", error);
       toast.error(t("failedToUpdateUser"));
+      return null;
     } finally {
       setIsSaving(false);
     }
@@ -104,8 +108,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   };
 
   const handleClose = () => {
-    setNewPassword("");
-    setConfirmPassword("");
     onClose();
   };
 
@@ -131,16 +133,8 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   };
 
   const confirmRemovePlant = () => {
-    setAssociatedPlants((prev) =>
-      prev.filter((p) => p.id !== plantToRemove.id)
-    );
     setPlantToRemove(null);
     setIsConfirmModalOpen(false);
-  };
-
-  const handleAddPlant = (plant) => {
-    setAssociatedPlants((prev) => [...prev, plant]);
-    setIsAddModalOpen(false);
   };
 
   const handleDeleteUser = () => {
@@ -156,7 +150,12 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
         })
       ).unwrap();
 
-      await dispatch(fetchUsers(userAdmin?.tokenIdentificador));
+      await dispatch(
+        fetchUsers({
+          userToken: userAdmin?.tokenIdentificador,
+          currentUserId: userAdmin?.id,
+        })
+      );
 
       toast.success(t("userDeletedSuccessfully"));
       setIsDeleteModalOpen(false);
@@ -179,7 +178,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
       >
         <div className="relative w-full max-w-6xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg p-6 rounded-xl">
           <Texture className="opacity-30" />
-
           <div className="relative z-10 flex flex-col h-full max-h-[75vh]">
             <UserDetailsModalHeader
               user={user}
@@ -190,7 +188,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
 
             <div className="overflow-y-auto max-h-[calc(100vh-12rem)] custom-scrollbar">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Left Column */}
                 <div className="space-y-6">
                   <UserDetailsSection
                     editedUser={editedUser}
@@ -202,7 +199,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
                     t={t}
                   />
 
-                  {/* Security Section */}
                   <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
                     <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
                       {t("security")}
@@ -233,7 +229,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
                   </div>
                 </div>
 
-                {/* Right Column */}
                 <div className="space-y-6">
                   <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm mt-2">
                     <div className="flex justify-between items-center mb-4">

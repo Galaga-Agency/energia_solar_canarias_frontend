@@ -276,7 +276,7 @@ const UsersTab = () => {
 
               {/* Pagination */}
               {filteredUsers.length > usersPerPage && (
-                <motion.div className="mt-6">
+                <motion.div className="mt-6 mb-16">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(filteredUsers.length / usersPerPage)}

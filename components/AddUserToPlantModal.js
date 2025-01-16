@@ -6,8 +6,16 @@ import Texture from "@/components/Texture";
 import UserListItem from "@/components/UserListItem";
 import { selectUsers, fetchUsers } from "@/store/slices/usersListSlice";
 import { selectUser } from "@/store/slices/userSlice";
+import { motion } from "framer-motion";
 
-const AddUserToPlantModal = ({ isOpen, onClose, users, onAddUser, t }) => {
+const AddUserToPlantModal = ({
+  isOpen,
+  onClose,
+  users,
+  onAddUser,
+  t,
+  isAddingUser,
+}) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const allUsers = useSelector(selectUsers);
@@ -26,7 +34,9 @@ const AddUserToPlantModal = ({ isOpen, onClose, users, onAddUser, t }) => {
 
   const availableUsers = allUsers.filter(
     (user) =>
-      !users.some((existingUser) => existingUser.usuario_id === user.usuario_id)
+      !users.some(
+        (existingUser) => existingUser.usuario_id === user.usuario_id
+      ) && user.clase !== "admin"
   );
 
   const filteredUsers = availableUsers.filter(
@@ -41,22 +51,25 @@ const AddUserToPlantModal = ({ isOpen, onClose, users, onAddUser, t }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="relative w-full max-w-lg rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 backdrop-blur-lg shadow-xl"
+      className="relative w-auto min-w-[80vw] md:min-w-[70vw] lg:min-w-[40vw] min-h-[50vh] rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 backdrop-blur-lg shadow-xl"
     >
       <Texture className="opacity-30" />
 
       <div className="relative z-10">
-        <button
-          onClick={onClose}
-          className="absolute top-0 right-4 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
-        >
-          <X className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-        </button>
+        <div className="flex items-center justify-between mb-6">
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onClose}
+            className="absolute top-0 right-0 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
+          >
+            <X className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+          </motion.button>
 
-        <h3 className="text-xl font-bold mb-4 text-custom-dark-blue dark:text-custom-yellow">
-          {t("selectUser")}
-        </h3>
-
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mt-2">
+            {t("selectUser")}
+          </h2>
+        </div>
         <input
           type="text"
           placeholder={t("searchUsersByNameOrEmail")}
@@ -75,6 +88,7 @@ const AddUserToPlantModal = ({ isOpen, onClose, users, onAddUser, t }) => {
                 isAssociatedUser={false}
                 onAdd={() => onAddUser(user)}
                 t={t}
+                buttonType="add"
               />
             ))
           ) : (

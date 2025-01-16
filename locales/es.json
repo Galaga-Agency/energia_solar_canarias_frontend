@@ -1846,5 +1846,7 @@
   "associatedUsers": "Usuarios Asociados",
   "manageUsers": "Administrar Usuarios",
   "searchUsers": "Buscar usuarios",
-  "noAssociatedUsers": "No se encontraron usuarios asociados."
+  "noAssociatedUsers": "No se encontraron usuarios asociados.",
+  "selectUser": "Seleccionar un usuario",
+  "searchUsersByNameOrEmail": "Buscar usuarios por nombre o correo electrónico"
 }

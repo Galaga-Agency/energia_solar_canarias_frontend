@@ -93,7 +93,7 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
           ? `fixed z-50 top-0 left-0 h-screen transform transition-all duration-300 ease-in-out ${
               isOpen ? "translate-x-0" : "-translate-x-full"
             }`
-          : "w-80 h-full "
+          : "w-80 h-[calc(100%-64px)] "
       } bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700  backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg`}
     >
       <div className="flex justify-between items-center mb-6">

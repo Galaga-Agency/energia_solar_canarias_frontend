@@ -934,5 +934,7 @@
   "removeUserWarning": "Are you sure you want to remove {{name}} from this plant? This action cannot be undone.",
   "associatedUsers": "Associated Users",
   "manageUsers": "Manage Users",
-  "noAssociatedUsers": "No associated users found."
+  "noAssociatedUsers": "No associated users found.",
+  "selectUser": "Select a User",
+  "searchUsersByNameOrEmail": "Search users by name or email"
 }

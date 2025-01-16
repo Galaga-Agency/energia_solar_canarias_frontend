@@ -50,23 +50,25 @@ const ManageUsersModal = ({
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        className="relative w-full max-w-lg rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 backdrop-blur-lg shadow-xl"
+        className="relative w-auto min-w-[80vw] md:min-w-[70vw] lg:min-w-[40vw] min-h-[50vh] rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 backdrop-blur-lg shadow-xl"
       >
         <Texture className="opacity-30" />
 
         <div className="relative z-10">
-          <motion.button
-            whileHover={{ scale: 1.1, rotate: 90 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={onClose}
-            className="absolute top-0 right-4 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
-          >
-            <X className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
-          </motion.button>
+          <div className="flex items-center justify-between mb-6">
+            <motion.button
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onClose}
+              className="absolute top-0 right-0 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
+            >
+              <X className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
+            </motion.button>
 
-          <h3 className="text-xl font-bold mb-4 text-custom-dark-blue dark:text-custom-yellow">
-            {t("manageUsers")}
-          </h3>
+            <h2 className="text-xl  text-custom-dark-blue dark:text-custom-yellow mt-2">
+              {t("manageUsers")}
+            </h2>
+          </div>
 
           <input
             type="text"
@@ -79,7 +81,7 @@ const ManageUsersModal = ({
             <div className="flex items-center justify-center h-64">
               <Loading />
             </div>
-          ) : (
+          ) : filteredUsers.length > 0 ? (
             <div className="max-h-64 overflow-y-auto custom-scrollbar space-y-2">
               {filteredUsers.map((user) => (
                 <UserListItem
@@ -89,27 +91,33 @@ const ManageUsersModal = ({
                   isAssociatedUser={true}
                   onRemove={() => onRemoveUser(user.id)}
                   t={t}
+                  buttonType="remove"
                 />
               ))}
             </div>
+          ) : (
+            <div className="font-secondary flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+              {t("noUsersFound")}
+            </div>
           )}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleAddNewUser}
-            disabled={isAdding}
-            className="mt-4 w-full bg-custom-yellow text-custom-dark-blue py-2 px-4 rounded-lg font-medium hover:bg-custom-yellow/80 transition-colors flex items-center justify-center gap-2"
-          >
-            {isAdding ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                <Plus className="w-5 h-5" />
-                {t("addUser")}
-              </>
-            )}
-          </motion.button>
         </div>
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handleAddNewUser}
+          disabled={isAdding}
+          className="absolute bottom-6 left-6 right-6 bg-custom-yellow text-custom-dark-blue py-2 px-4 rounded-lg font-medium hover:bg-custom-yellow/80 transition-colors flex items-center justify-center gap-2"
+        >
+          {isAdding ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <>
+              <Plus className="w-5 h-5" />
+              {t("addUser")}
+            </>
+          )}
+        </motion.button>
       </Modal>
 
       <AddUserToPlantModal

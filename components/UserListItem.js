@@ -10,13 +10,13 @@ import ConfirmRemoveUserModal from "@/components/ConfirmRemoveUserModal";
 const UserListItem = ({
   user,
   loginStatus,
-  isMobile = false,
-  isTouchDevice = false,
   onUserClick,
+  onAdd,
   onRemove,
   t,
   showLoginStatus = true,
   isAssociatedUser = false,
+  buttonType = "remove", // Default to "remove"
 }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -39,6 +39,11 @@ const UserListItem = ({
     setShowConfirmModal(false);
   };
 
+  const handleAddClick = (e) => {
+    e.stopPropagation();
+    onAdd?.(user);
+  };
+
   const modals = (
     <>
       {showDetailsModal && (
@@ -48,7 +53,6 @@ const UserListItem = ({
           onClose={() => setShowDetailsModal(false)}
         />
       )}
-
       {showConfirmModal && (
         <ConfirmRemoveUserModal
           user={user}
@@ -65,59 +69,42 @@ const UserListItem = ({
     <>
       <div
         onClick={handleClick}
-        className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer group max-w-[85vw] md:max-w-[92vw] mx-auto"
+        className="bg-white dark:bg-custom-dark-blue backdrop-blur-sm rounded-lg hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300 cursor-pointer group px-4 py-2 mx-auto max-w-full"
       >
-        <div className="grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_250px_auto] items-center gap-4 p-4">
+        <div className="flex items-center gap-4 w-auto">
           {/* Avatar */}
-          <div
-            className="relative flex-shrink-0 w-[48px] h-[48px] md:w-[64px] md:h-[64px]"
-            style={{ minWidth: "48px" }}
-          >
+          <div className="relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20">
             <Image
-              src={user.imagen !== null ? user.imagen : defaultAvatar.src}
+              src={user.imagen || defaultAvatar.src}
               alt={user?.nombre || user?.name || "User"}
               layout="fill"
               objectFit="cover"
               className="rounded-full border-2 border-white dark:border-gray-800"
-              loading="eager"
-              priority={true}
-              unoptimized={true}
               onError={(e) => {
                 e.currentTarget.src = defaultAvatar.src;
               }}
             />
             <div
-              className={`absolute -bottom-0 -right-0 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${
+              className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${
                 user.activo === 1 ? "bg-green-500" : "bg-gray-400"
               }`}
             />
           </div>
 
           {/* User Info */}
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {user?.nombre || ""}
-              </h3>
-              <h3 className="font-semibold text-custom-dark-blue dark:text-custom-yellow">
-                {user?.apellido || ""}
-              </h3>
-              {user.clase === "admin" && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-custom-yellow/20 text-custom-dark-blue dark:text-custom-yellow">
-                  <FaUserTie className="w-3 h-3" />
-                  {t("admin")}
-                </span>
-              )}
-            </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">
+          <div className="flex-grow min-w-0">
+            <h3 className="font-semibold text-custom-dark-blue dark:text-custom-yellow truncate">
+              {user?.nombre || ""} {user?.apellido || ""}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
               {user.email}
             </p>
           </div>
 
           {/* Last Login Block */}
-          {!isMobile && showLoginStatus && loginStatus && (
-            <div className="flex items-center gap-2">
-              <BsClockHistory className={`w-4 h-4 text-${loginStatus.color}`} />
+          {showLoginStatus && loginStatus && (
+            <div className="hidden md:flex items-center gap-2">
+              <BsClockHistory className={`w-5 h-5 text-${loginStatus.color}`} />
               <div>
                 <div className={`text-sm text-${loginStatus.color}`}>
                   {loginStatus.text}
@@ -129,17 +116,25 @@ const UserListItem = ({
             </div>
           )}
 
-          {/* Remove Button - Only shown for AssociatedUsers */}
-          {isAssociatedUser && (
-            <div className="flex justify-end">
+          {/* Action Button */}
+          <div className="flex justify-end w-auto">
+            {buttonType === "remove" && isAssociatedUser && (
               <button
                 onClick={handleRemoveClick}
-                className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
+                className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors md:w-auto"
               >
                 {t("remove")}
               </button>
-            </div>
-          )}
+            )}
+            {buttonType === "add" && (
+              <button
+                onClick={handleAddClick}
+                className="px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors md:w-auto"
+              >
+                {t("add")}
+              </button>
+            )}
+          </div>
         </div>
       </div>
       {typeof window !== "undefined" && createPortal(modals, document.body)}

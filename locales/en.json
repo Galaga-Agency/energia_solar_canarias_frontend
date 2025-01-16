@@ -928,5 +928,11 @@
   "failedToCopyApiKey": "Failed to copy API key.",
   "apiKeyCopied": "API key copied to clipboard!",
   "accountActions": "Account Actions",
-  "logoutDescription": "You can log out of your account from here."
+  "logoutDescription": "You can log out of your account from here.",
+  "userDeletedSuccessfully": "User deleted successfully.",
+  "removeUserConfirmation": "Remove Associated User",
+  "removeUserWarning": "Are you sure you want to remove {{name}} from this plant? This action cannot be undone.",
+  "associatedUsers": "Associated Users",
+  "manageUsers": "Manage Users",
+  "noAssociatedUsers": "No associated users found."
 }

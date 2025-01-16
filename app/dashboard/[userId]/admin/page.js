@@ -57,7 +57,7 @@ const AdminDashboard = () => {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("list");
-  const plantsPerPage = 9;
+  const plantsPerPage = viewMode === "grid" ? 9 : 7;
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = filteredPlants.slice(
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
             className={`flex-grow ${view === "plants" && "lg:px-8"}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.0 }}
+            transition={{ delay: 0.7 }}
           >
             {view === "providers" ? (
               <motion.div
@@ -323,7 +323,7 @@ const AdminDashboard = () => {
                             key={plant.id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1.2 + index * 0.05 }}
+                            transition={{ delay: 0.8 + index * 0.05 }}
                           >
                             <PlantsListTableItem
                               plant={{

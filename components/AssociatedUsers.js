@@ -1,0 +1,90 @@
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { useTranslation } from "next-i18next";
+import { UserPlus } from "lucide-react";
+import UserAvatarChain from "./UserAvatarChain";
+import ManageUsersModal from "./ManageUsersModal";
+import {
+  fetchAssociatedUsers,
+  selectAssociatedUsers,
+} from "@/store/slices/plantsSlice";
+import { selectUser } from "@/store/slices/userSlice";
+import { useParams } from "next/navigation";
+
+const AssociatedUsers = ({ isAdmin, plantId }) => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const associatedUsers = useSelector(selectAssociatedUsers);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const user = useSelector(selectUser);
+  const token = user?.tokenIdentificador;
+  const { provider } = useParams();
+
+  // Fetch associated users on mount if admin
+  useEffect(() => {
+    if (isAdmin && plantId && provider && token) {
+      setIsLoading(true);
+      dispatch(fetchAssociatedUsers({ plantId, provider, token })).finally(() =>
+        setIsLoading(false)
+      );
+    }
+  }, [dispatch, isAdmin, plantId, provider, token]);
+
+  const handleAddUser = (newUser) => {
+    console.log("Adding user:", newUser);
+    setAssociatedUsers((prev) => [...prev, newUser]);
+  };
+
+  const handleRemoveUser = (userId) => {
+    console.log("Removing user:", userId);
+    setAssociatedUsers((prev) => prev.filter((user) => user.id !== userId));
+  };
+
+  if (!isAdmin) return null;
+
+  return (
+    <>
+      <div className="relative bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 rounded-xl shadow-md backdrop-blur-lg mb-6 overflow-hidden">
+        <div className="relative z-10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+                {t("associatedUsers")}
+              </h2>
+              {isLoading ? (
+                <div className="text-gray-500">{t("loading")}</div>
+              ) : associatedUsers.length > 0 ? (
+                <UserAvatarChain users={associatedUsers} maxDisplay={10} />
+              ) : (
+                <div className="text-gray-500 italic">
+                  {t("noAssociatedUsers")}
+                </div>
+              )}
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsModalOpen(true)}
+              className="p-2 rounded-full bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 transition-colors"
+            >
+              <UserPlus className="w-5 h-5" />
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
+      <ManageUsersModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        users={associatedUsers}
+        onAddUser={handleAddUser}
+        onRemoveUser={handleRemoveUser}
+        t={t}
+      />
+    </>
+  );
+};
+
+export default AssociatedUsers;

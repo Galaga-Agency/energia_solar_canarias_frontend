@@ -7,6 +7,7 @@ import {
   associatePlantToUserAPI,
   dissociatePlantFromUserAPI,
   fetchAllPlantsAPI,
+  fetchAssociatedUsersAPI,
   fetchEnvironmentalBenefitsAPI,
   fetchPlantDetailsAPI,
   fetchPlantsByProviderAPI,
@@ -150,6 +151,20 @@ export const fetchEnvironmentalBenefits = createAsyncThunk(
         token,
       });
       return benefits;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchAssociatedUsers = createAsyncThunk(
+  "plants/fetchAssociatedUsers",
+  async ({ plantId, provider, token }, { rejectWithValue }) => {
+    try {
+      const users = await fetchAssociatedUsersAPI({ plantId, provider, token });
+
+      console.log("Associated users in redux:", users);
+      return users;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -599,6 +614,8 @@ const plantsSlice = createSlice({
         state.loadingAssociatedPlants = true;
         state.errorAssociatedPlants = null;
       })
+
+      //fetch plants associated to a user
       .addCase(fetchUserAssociatedPlants.fulfilled, (state, action) => {
         state.loadingAssociatedPlants = false;
         state.associatedPlants = action.payload;
@@ -608,8 +625,7 @@ const plantsSlice = createSlice({
         state.loadingAssociatedPlants = false;
         state.errorAssociatedPlants = action.payload;
         state.associatedPlants = [];
-      });
-    builder
+      })
       .addCase(dissociatePlantFromUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -621,6 +637,22 @@ const plantsSlice = createSlice({
       .addCase(dissociatePlantFromUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // fetch users associated to a given plant
+      .addCase(fetchAssociatedUsers.pending, (state) => {
+        state.loadingAssociatedUsers = true;
+        state.errorAssociatedUsers = null;
+      })
+      .addCase(fetchAssociatedUsers.fulfilled, (state, action) => {
+        state.loadingAssociatedUsers = false;
+        state.associatedUsers = action.payload;
+        state.errorAssociatedUsers = null;
+      })
+      .addCase(fetchAssociatedUsers.rejected, (state, action) => {
+        state.loadingAssociatedUsers = false;
+        state.errorAssociatedUsers = action.payload || "Failed to fetch users";
+        state.associatedUsers = [];
       })
 
       // Goodwe
@@ -956,6 +988,10 @@ export const selectLoadingAssociatedPlants = (state) =>
   state.plants.loadingAssociatedPlants;
 export const selectErrorAssociatedPlants = (state) =>
   state.plants.errorAssociatedPlants;
+export const selectAssociatedUsers = createSelector(
+  (state) => state.plants,
+  (plants) => plants.associatedUsers || []
+);
 
 export const {
   clearPlants,

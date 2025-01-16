@@ -34,12 +34,6 @@ const UsersListSkeleton = ({ theme, rows = 10 }) => {
               </div>
             </div>
           )}
-
-          {/* Actions Skeleton */}
-          <div className="flex items-center justify-end gap-2">
-            <CustomSkeleton width="32px" height="32px" circle theme={theme} />
-            <CustomSkeleton width="32px" height="32px" circle theme={theme} />
-          </div>
         </div>
       ))}
     </div>

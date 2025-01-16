@@ -1839,5 +1839,12 @@
   "apiKeyCopied": "¡Clave API copiada al portapapeles!",
   "failedToCopyApiKey": "No se pudo copiar la clave API.",
   "accountActions": "Acciones de la cuenta",
-  "logoutDescription": "Puedes cerrar sesión desde aquí."
+  "logoutDescription": "Puedes cerrar sesión desde aquí.",
+  "userDeletedSuccessfully": "Usuario eliminado con éxito.",
+  "removeUserConfirmation": "Eliminar Usuario Asociado",
+  "removeUserWarning": "¿Estás seguro de que deseas eliminar a {{name}} de esta planta? Esta acción no se puede deshacer.",
+  "associatedUsers": "Usuarios Asociados",
+  "manageUsers": "Administrar Usuarios",
+  "searchUsers": "Buscar usuarios",
+  "noAssociatedUsers": "No se encontraron usuarios asociados."
 }

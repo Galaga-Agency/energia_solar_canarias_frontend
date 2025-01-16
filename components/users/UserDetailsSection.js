@@ -6,7 +6,7 @@ import { Check, Loader2, X } from "lucide-react";
 const UserDetailsSection = ({
   editedUser,
   handleInputChange,
-  handleSave,
+  handleSave, // Passed as a prop
   isSaving,
   t,
 }) => {
@@ -21,11 +21,19 @@ const UserDetailsSection = ({
     }));
   };
 
+  // Rename the function to avoid conflict with the prop
+  const handleLocalSave = async (formData) => {
+    const result = await handleSave(formData); // Call the prop function
+    if (result) {
+      setLocalFormData(result); // Update local form data
+    }
+  };
+
   // Only update parent state when form is submitted
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data being sent:", localFormData);
-    const result = await handleSave(localFormData);
+    const result = await handleLocalSave(localFormData);
     console.log("Result after save:", result);
   };
 

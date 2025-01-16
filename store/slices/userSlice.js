@@ -15,6 +15,7 @@ import {
   fetchUserByIdAPI,
   generateApiKeyAPI,
 } from "@/services/shared-api";
+import { updateUserInList } from "./usersListSlice";
 
 // Async Thunks
 export const authenticateUser = createAsyncThunk(
@@ -82,21 +83,16 @@ export const validateToken = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "users/updateUser",
-  async ({ userId, userData }, { getState, rejectWithValue }) => {
+  async ({ userId, userData, token }, { dispatch, rejectWithValue }) => {
     try {
-      const token = getState().user.user?.tokenIdentificador;
       const response = await updateUserAPI({ userId, userData, token });
-
-      // Handle both possible response formats
       const updatedUser = response.data || response;
 
-      if (!updatedUser) {
-        throw new Error("No user data in response");
-      }
+      // Update the user in the Redux store
+      dispatch(updateUserInList(updatedUser));
 
       return updatedUser;
     } catch (error) {
-      console.error("Update user error:", error);
       return rejectWithValue(error.message || "Failed to update user");
     }
   }
@@ -207,8 +203,10 @@ export const addUser = createAsyncThunk(
     try {
       const token = getState().user.user?.tokenIdentificador;
       const response = await createUserAPI({ userData, token });
+      console.log("addUser API response:", response);
       return response;
     } catch (error) {
+      console.error("addUser error:", error);
       return rejectWithValue(error.message);
     }
   }
@@ -426,9 +424,16 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(addUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.users = state.users || [];
-        state.users.push(action.payload);
+        state.isLoading = false;
+
+        const newUser = action.payload; // This should now be the user object
+        console.log("New user added:", newUser);
+
+        if (newUser && newUser.usuario_id) {
+          state.users.push(newUser);
+        } else {
+          console.warn("Incomplete user data returned:", newUser);
+        }
       })
       .addCase(addUser.rejected, (state, action) => {
         state.loading = false;

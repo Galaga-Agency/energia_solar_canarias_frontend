@@ -88,12 +88,12 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
   return (
     <div
       ref={sidebarRef}
-      className={`h-auto overflow-auto filter-sidebar-selector ${
+      className={`overflow-auto filter-sidebar-selector ${
         isMobile || isTablet
           ? `fixed z-50 top-0 left-0 h-screen transform transition-all duration-300 ease-in-out ${
               isOpen ? "translate-x-0" : "-translate-x-full"
             }`
-          : "w-80"
+          : "w-80 h-full "
       } bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700  backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg`}
     >
       <div className="flex justify-between items-center mb-6">

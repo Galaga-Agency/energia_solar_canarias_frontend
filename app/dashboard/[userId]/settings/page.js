@@ -30,7 +30,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import { toast } from "sonner";
 import { FaUserTie } from "react-icons/fa";
-import DangerZone from "@/components/users/DangerZone";
+import DangerZone from "@/components/DangerZone";
 import { motion } from "framer-motion";
 
 const SettingsTab = () => {

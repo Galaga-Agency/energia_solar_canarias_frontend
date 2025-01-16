@@ -42,6 +42,7 @@ import GoodweEquipmentDetails from "./GoodweEquipmentDetails";
 import GoodweEnergyStatisticsSkeleton from "../loadingSkeletons/GoodweEnergyStatisticsSkeleton";
 import GoodweAlerts from "@/components/goodwe/GoodweAlerts";
 import AlertsModal from "../AlertsModal";
+import AssociatedUsers from "../AssociatedUsers";
 
 const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
@@ -180,6 +181,8 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
             />
           </div>
         </header>
+
+        {isAdmin && <AssociatedUsers plantId={plantId} isAdmin={isAdmin} />}
 
         {/* Top Section Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-[1fr_auto_1fr] gap-6 mb-6">

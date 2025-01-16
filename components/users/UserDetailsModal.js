@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
-import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { FaUserTie } from "react-icons/fa";
-import { X, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import Modal from "@/components/ui/Modal";
 import Texture from "@/components/Texture";
 import {
   updateUser,
@@ -17,108 +15,30 @@ import PasswordForm from "./PasswordForm";
 import UserDetailsSection from "./UserDetailsSection";
 import AssociatedPlantsSection from "./AssociatedPlantsSection";
 import AssociatePlantModal from "./AssociatePlantModal";
-import DangerZone from "./DangerZone";
+import DangerZone from "@/components/DangerZone";
 import ConfirmRemoveModal from "./ConfirmRemoveModal";
 import ConfirmDeleteUserModal from "./ConfirmDeleteUserModal";
-import {
-  fetchUserById,
-  fetchUsers,
-  updateUserInList,
-} from "@/store/slices/usersListSlice";
+import { fetchUsers, updateUserInList } from "@/store/slices/usersListSlice";
 import UserDetailsModalHeader from "./UserDetailsModalHeader";
-
-const mockAssociatedPlants = [
-  {
-    id: 1,
-    name: "Solar Farm A",
-    location: "Madrid, Spain",
-    organization: "SolarPower Inc",
-  },
-  {
-    id: 2,
-    name: "Solar Farm A",
-    location: "Madrid, Spain",
-    organization: "SolarPower Inc",
-  },
-  {
-    id: 3,
-    name: "Solar Farm A",
-    location: "Madrid, Spain",
-    organization: "SolarPower Inc",
-  },
-  {
-    id: 4,
-    name: "Solar Farm A",
-    location: "Madrid, Spain",
-    organization: "SolarPower Inc",
-  },
-  {
-    id: 5,
-    name: "Solar Farm A",
-    location: "Madrid, Spain",
-    organization: "SolarPower Inc",
-  },
-];
-
-const mockAllPlants = [
-  ...mockAssociatedPlants,
-  {
-    id: 11,
-    name: "Solar City K",
-    location: "Seville, Spain",
-    organization: "SunTech",
-  },
-  {
-    id: 12,
-    name: "Solar Farm L",
-    location: "Madrid, Spain",
-    organization: "EnergyMax",
-  },
-  {
-    id: 13,
-    name: "Solar Park M",
-    location: "Barcelona, Spain",
-    organization: "PowerSun",
-  },
-];
 
 const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState(() => ({
-    usuario_id: user.usuario_id,
-    nombre: user.nombre,
-    apellido: user.apellido,
-    email: user.email,
-    movil: user.movil,
-    empresa: user.empresa || "",
-    direccion: user.direccion || "",
-    ciudad: user.ciudad || "",
-    codigo_postal: user.codigo_postal || "",
-    region: user.region || "",
-    pais: user.pais || "",
-    cif_nif: user.cif_nif || "",
-    clase: user.clase,
-    activo: user.activo,
-    ultimo_login: user.ultimo_login,
-  }));
-
-  const [associatedPlants, setAssociatedPlants] =
-    useState(mockAssociatedPlants);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [plantToRemove, setPlantToRemove] = useState(null);
-  const [allPlants] = useState(mockAllPlants);
   const [isSaving, setIsSaving] = useState(false);
   const [isPasswordResetSent, setIsPasswordResetSent] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const userAdmin = useSelector(selectUser);
+  const updatedUser = useSelector((state) =>
+    state.usersList.users.find((u) => u.usuario_id === user.usuario_id)
+  );
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState(() => ({ ...user }));
 
-  // Initialize editedUser when modal opens or user changes
   useEffect(() => {
     if (user) {
       setEditedUser({
@@ -127,13 +47,11 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
     }
   }, [user]);
 
-  // Lock body scroll when modal is open
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
+    if (updatedUser) {
+      setEditedUser({ ...updatedUser });
+    }
+  }, [updatedUser]);
 
   const handleSave = async (formData) => {
     if (!formData?.usuario_id) {
@@ -144,8 +62,7 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
     setIsSaving(true);
 
     try {
-      // First update the user
-      await dispatch(
+      const updatedUser = await dispatch(
         updateUser({
           userId: formData.usuario_id,
           userData: {
@@ -157,23 +74,18 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
         })
       ).unwrap();
 
-      // Then fetch the updated user data
-      const updatedUser = await dispatch(
-        fetchUserById({
-          userId: formData.usuario_id,
-          token: userAdmin?.tokenIdentificador,
-        })
-      ).unwrap();
-
-      // Update local state with the fresh data
-      setEditedUser(updatedUser);
-
-      // Update the parent list with the fresh data
       dispatch(updateUserInList(updatedUser));
 
-      if (typeof onSave === "function") {
-        onSave(updatedUser);
+      const currentUserToken = userAdmin?.tokenIdentificador;
+      if (!currentUserToken) {
+        throw new Error("User token is missing");
       }
+      await dispatch(
+        fetchUsers({
+          userToken: currentUserToken,
+          currentUserId: userAdmin?.id,
+        })
+      );
 
       toast.success(t("userUpdatedSuccessfully"));
     } catch (error) {
@@ -198,7 +110,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   };
 
   const handlePasswordReset = async () => {
-    console.log("editedUser.email", editedUser.email);
     if (!editedUser?.email) return;
     setIsPasswordResetSent(true);
     try {
@@ -245,7 +156,6 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
         })
       ).unwrap();
 
-      // Refresh the users list after deletion
       await dispatch(fetchUsers(userAdmin?.tokenIdentificador));
 
       toast.success(t("userDeletedSuccessfully"));
@@ -260,161 +170,143 @@ const UserDetailsModal = ({ user, isOpen, onClose, onDelete, onSave }) => {
   if (!editedUser) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleClose}
-            className="fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm"
-          />
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        className="p-0"
+        backdropClass="backdrop-blur-sm"
+      >
+        <div className="relative w-full max-w-6xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg p-6 rounded-xl">
+          <Texture className="opacity-30" />
 
-          <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-6xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 backdrop-blur-lg shadow-xl"
-            >
-              <Texture className="opacity-30" />
+          <div className="relative z-10 flex flex-col h-full max-h-[75vh]">
+            <UserDetailsModalHeader
+              user={user}
+              editedUser={editedUser}
+              onClose={handleClose}
+              t={t}
+            />
 
-              <div className="relative z-10 flex flex-col h-full max-h-[75vh]">
-                <UserDetailsModalHeader
-                  user={user}
-                  editedUser={editedUser}
-                  onClose={handleClose}
-                  t={t}
-                />
+            <div className="overflow-y-auto max-h-[calc(100vh-12rem)] custom-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-6">
+                  <UserDetailsSection
+                    editedUser={editedUser}
+                    isEditing={isEditing}
+                    handleInputChange={handleInputChange}
+                    handleSave={handleSave}
+                    setIsEditing={setIsEditing}
+                    isSaving={isSaving}
+                    t={t}
+                  />
 
-                <div className="overflow-y-auto max-h-[calc(100vh-12rem)] custom-scrollbar">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Left Column */}
+                  {/* Security Section */}
+                  <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
+                      {t("security")}
+                    </h3>
                     <div className="space-y-6">
-                      <UserDetailsSection
-                        editedUser={editedUser}
-                        isEditing={isEditing}
-                        handleInputChange={handleInputChange}
-                        handleSave={handleSave}
-                        setIsEditing={setIsEditing}
-                        isSaving={isSaving}
-                        t={t}
-                      />
+                      <PasswordForm userId={editedUser.usuario_id} t={t} />
 
-                      {/* Security Section */}
-                      <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
-                        <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
-                          {t("security")}
-                        </h3>
-                        <div className="space-y-6">
-                          <PasswordForm userId={editedUser.usuario_id} t={t} />
-
-                          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-                              {t("resetPasswordEmail")}
-                            </h4>
-                            <motion.button
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={handlePasswordReset}
-                              disabled={isPasswordResetSent}
-                              className="w-full bg-custom-yellow text-custom-dark-blue  py-2.5 px-4 rounded-lg hover:bg-custom-yellow/50 disabled:opacity-50 flex items-center justify-center gap-2"
-                            >
-                              {isPasswordResetSent ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                  {t("sendingReset")}
-                                </>
-                              ) : (
-                                t("sendResetLink")
-                              )}
-                            </motion.button>
-                          </div>
-                        </div>
+                      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                          {t("resetPasswordEmail")}
+                        </h4>
+                        <button
+                          onClick={handlePasswordReset}
+                          disabled={isPasswordResetSent}
+                          className="w-full bg-custom-yellow text-custom-dark-blue py-2.5 px-4 rounded-lg hover:bg-custom-yellow/50 disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {isPasswordResetSent ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              {t("sendingReset")}
+                            </>
+                          ) : (
+                            t("sendResetLink")
+                          )}
+                        </button>
                       </div>
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="space-y-6">
-                      <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm mt-2">
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="text-gray-600 dark:text-gray-300">
-                            {t("state")}
-                          </span>
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm ${
-                              editedUser.activo
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
-                                : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
-                            }`}
-                          >
-                            {editedUser.activo ? t("active") : t("inactive")}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 dark:text-gray-300">
-                            {t("lastLogin")}
-                          </span>
-                          <span className="text-custom-dark-blue dark:text-custom-yellow">
-                            {new Date(
-                              editedUser.ultimo_login
-                            ).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      <AssociatedPlantsSection
-                        onRemovePlant={handleRemovePlant}
-                        onAddPlantClick={() => setIsAddModalOpen(true)}
-                        t={t}
-                        selectedUser={editedUser.usuario_id}
-                        token={userAdmin?.tokenIdentificador}
-                        userClass={editedUser.clase}
-                      />
-
-                      <DangerZone onDelete={handleDeleteUser} t={t} />
                     </div>
                   </div>
                 </div>
+
+                {/* Right Column */}
+                <div className="space-y-6">
+                  <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm mt-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        {t("state")}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm ${
+                          editedUser.activo
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
+                            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                        }`}
+                      >
+                        {editedUser.activo ? t("active") : t("inactive")}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        {t("lastLogin")}
+                      </span>
+                      <span className="text-custom-dark-blue dark:text-custom-yellow">
+                        {new Date(editedUser.ultimo_login).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <AssociatedPlantsSection
+                    onRemovePlant={handleRemovePlant}
+                    onAddPlantClick={() => setIsAddModalOpen(true)}
+                    t={t}
+                    selectedUser={editedUser.usuario_id}
+                    token={userAdmin?.tokenIdentificador}
+                    userClass={editedUser.clase}
+                  />
+
+                  <DangerZone onDelete={handleDeleteUser} t={t} />
+                </div>
               </div>
-            </motion.div>
+            </div>
           </div>
+        </div>
+      </Modal>
 
-          {isAddModalOpen && (
-            <AssociatePlantModal
-              isOpen={isAddModalOpen}
-              onClose={() => setIsAddModalOpen(false)}
-              selectedUser={editedUser.usuario_id}
-              token={userAdmin?.tokenIdentificador}
-              t={t}
-            />
-          )}
-
-          {isConfirmModalOpen && (
-            <ConfirmRemoveModal
-              isOpen={isConfirmModalOpen}
-              plant={plantToRemove}
-              onClose={() => setIsConfirmModalOpen(false)}
-              onConfirm={confirmRemovePlant}
-              t={t}
-            />
-          )}
-
-          {isDeleteModalOpen && (
-            <ConfirmDeleteUserModal
-              isOpen={isDeleteModalOpen}
-              user={editedUser}
-              onClose={() => setIsDeleteModalOpen(false)}
-              onConfirm={confirmDeleteUser}
-              t={t}
-            />
-          )}
-        </>
+      {isAddModalOpen && (
+        <AssociatePlantModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          selectedUser={editedUser.usuario_id}
+          token={userAdmin?.tokenIdentificador}
+          t={t}
+        />
       )}
-    </AnimatePresence>
+
+      {isConfirmModalOpen && (
+        <ConfirmRemoveModal
+          isOpen={isConfirmModalOpen}
+          plant={plantToRemove}
+          onClose={() => setIsConfirmModalOpen(false)}
+          onConfirm={confirmRemovePlant}
+          t={t}
+        />
+      )}
+
+      {isDeleteModalOpen && (
+        <ConfirmDeleteUserModal
+          isOpen={isDeleteModalOpen}
+          user={editedUser}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={confirmDeleteUser}
+          t={t}
+        />
+      )}
+    </>
   );
 };
 

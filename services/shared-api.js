@@ -205,7 +205,7 @@ export const fetchUserByIdAPI = async ({ token }) => {
 
 export const deleteUserAPI = async ({ userId, token }) => {
   try {
-    // console.log("Deleting user with ID:", userId);
+    console.log("Deleting user with ID:", { userId, token });
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "DELETE",
       headers: {
@@ -658,6 +658,11 @@ export const updatePasswordAPI = async (token, newPassword) => {
 
 export const updateUserProfileAPI = async ({ userId, userData, token }) => {
   try {
+    console.log("Updating user profile with data:", {
+      userId,
+      userData,
+      token,
+    });
     const response = await fetch(`${API_BASE_URL}/usuarios/${userId}/profile`, {
       method: "PUT",
       headers: {
@@ -700,6 +705,7 @@ export const createUserAPI = async ({ userData, token }) => {
     }
 
     const data = await response.json();
+    console.log("API response for createUserAPI:", data);
     return data.data;
   } catch (error) {
     console.error("Error creating user:", error);
@@ -728,6 +734,40 @@ export const generateApiKeyAPI = async ({ token }) => {
     return data;
   } catch (error) {
     console.error("Error generating API key:", error);
+    throw error;
+  }
+};
+
+export const fetchAssociatedUsersAPI = async ({ plantId, provider, token }) => {
+  try {
+    // console.log("Fetching associated users for plant:", {
+    //   plantId,
+    //   provider,
+    //   token,
+    // });
+    const response = await fetch(
+      `${API_BASE_URL}/plants?plantId=${plantId}&proveedor=${provider}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch associated users");
+    }
+
+    const data = await response.json();
+    console.log("data", data);
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching associated users:", error);
     throw error;
   }
 };

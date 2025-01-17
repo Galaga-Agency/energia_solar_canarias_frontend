@@ -12,9 +12,7 @@ import { useTranslation } from "next-i18next";
 import ProfileOverviewCard from "@/components/ProfileOverviewCard";
 import PasswordChangeCard from "@/components/PasswordChangeCard";
 import ApiKeyRequestCard from "@/components/ApiKeyRequestCard";
-import MetricsConfigCard from "@/components/MetricsConfigCard";
 import CompanyDocumentsCard from "@/components/CompanyDocumentsCard";
-import NotificationsCard from "@/components/NotificationsCard";
 import axios from "axios";
 import Cookies from "js-cookie";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
@@ -43,20 +41,17 @@ const SettingsTab = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isTablet } = useDeviceType();
-  const notificationsRef = useRef(null);
   const pathname = usePathname();
-  const [shouldFlashAndScroll, setShouldFlashAndScroll] = useState(false);
   const isLoading = useSelector(selectLoading);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch fresh user data when component mounts
+  // Fetch fresh user data when component mounts or token changes
   useEffect(() => {
     const fetchUserData = async () => {
-      if (user?.id && user?.tokenIdentificador) {
+      if (user?.tokenIdentificador) {
         try {
           await dispatch(
             fetchUserById({
-              userId: user.id,
               token: user.tokenIdentificador,
             })
           ).unwrap();
@@ -68,17 +63,28 @@ const SettingsTab = () => {
     };
 
     fetchUserData();
-  }, [dispatch, user?.id, user?.tokenIdentificador, t]);
+  }, [dispatch, user?.tokenIdentificador, t]);
 
   // Update profile pic when user data changes
   useEffect(() => {
-    if (user?.imagen) {
-      setProfilePic(user.imagen);
-    } else {
-      setProfilePic(avatarPlaceholder);
-    }
+    setProfilePic(user?.imagen);
   }, [user?.imagen]);
 
+  // Handle user profile updates
+  const handleUserUpdate = async () => {
+    try {
+      await dispatch(
+        fetchUserById({
+          token: user.tokenIdentificador,
+        })
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to fetch updated user data:", error);
+      toast.error(t("failedToFetchUserData"));
+    }
+  };
+
+  // Handle account deletion
   const handleDeleteAccount = async () => {
     try {
       await axios.delete(`/api/delete-account/${user?.id}`);
@@ -92,48 +98,17 @@ const SettingsTab = () => {
     }
   };
 
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash === "#notifications") {
-      setShouldFlashAndScroll(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (
-      user &&
-      pathname === `/dashboard/${user.usuario_id}/settings` &&
-      notificationsRef.current
-    ) {
-      if (shouldFlashAndScroll) {
-        const rect = notificationsRef.current.getBoundingClientRect();
-        const offset = 80;
-
-        window.scrollTo({
-          top: rect.top + window.scrollY - offset,
-          behavior: "smooth",
-        });
-
-        const flashTimer = setTimeout(() => {
-          notificationsRef.current.classList.add("animate-flash");
-
-          const removeFlashTimer = setTimeout(() => {
-            notificationsRef.current.classList.remove("animate-flash");
-            setShouldFlashAndScroll(false);
-          }, 1500);
-
-          return () => clearTimeout(removeFlashTimer);
-        }, 1000);
-
-        return () => clearTimeout(flashTimer);
-      }
-    }
-  }, [user, pathname, shouldFlashAndScroll]);
-
+  // Handle logout
   const handleLogout = () => {
     dispatch(logoutUser());
     Cookies.remove("user");
     router.push("/");
+  };
+
+  // Profile picture update handler
+  const handleProfilePicUpdate = (newImageUrl) => {
+    setProfilePic(newImageUrl);
+    handleUserUpdate();
   };
 
   if (!user) return null;
@@ -142,6 +117,7 @@ const SettingsTab = () => {
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
 
+      {/* Theme and Language Controls */}
       <motion.div
         className="fixed top-4 right-4 flex items-center gap-2 z-50"
         initial={{ opacity: 0, y: -20 }}
@@ -190,8 +166,9 @@ const SettingsTab = () => {
           </div>
         </motion.div>
 
-        {/* Profile Content */}
+        {/* Settings Content */}
         <div className="w-full space-y-6 transition-all duration-500 flex flex-col max-w-full lg:max-w-[70vw] 2xl:max-w-[60vw] mx-auto mb-16">
+          {/* Profile Section */}
           <motion.div
             className="flex flex-col gap-6"
             initial={{ opacity: 0, y: 20 }}
@@ -201,12 +178,14 @@ const SettingsTab = () => {
             <ProfileOverviewCard
               user={user}
               profilePic={profilePic}
-              setProfilePic={setProfilePic}
+              setProfilePic={handleProfilePicUpdate}
               isSaving={isSaving}
+              onProfileUpdate={handleUserUpdate}
             />
             <PasswordChangeCard />
           </motion.div>
 
+          {/* API Key Section */}
           <motion.div
             className="flex flex-col gap-6"
             initial={{ opacity: 0, y: 20 }}
@@ -216,6 +195,7 @@ const SettingsTab = () => {
             <ApiKeyRequestCard />
           </motion.div>
 
+          {/* Company Documents Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -224,7 +204,7 @@ const SettingsTab = () => {
             <CompanyDocumentsCard />
           </motion.div>
 
-          {/* Logout and Delete Account Buttons */}
+          {/* Account Actions Section */}
           <motion.div
             className="flex flex-col gap-6"
             initial={{ opacity: 0, y: 20 }}
@@ -252,6 +232,7 @@ const SettingsTab = () => {
           </motion.div>
         </div>
 
+        {/* Confirmation Modal */}
         <ConfirmationModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

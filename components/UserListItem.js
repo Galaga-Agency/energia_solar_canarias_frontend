@@ -71,7 +71,7 @@ const UserListItem = ({
         onClick={handleClick}
         className="bg-white dark:bg-custom-dark-blue backdrop-blur-sm rounded-lg hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300 cursor-pointer group px-4 py-2 mx-auto max-w-full"
       >
-        <div className="flex items-center gap-4 w-auto">
+        <div className="flex items-center justify-between w-full gap-4">
           {/* Avatar */}
           <div className="relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20">
             <Image
@@ -103,13 +103,15 @@ const UserListItem = ({
 
           {/* Last Login Block */}
           {showLoginStatus && loginStatus && (
-            <div className="hidden md:flex items-center gap-2">
-              <BsClockHistory className={`w-5 h-5 text-${loginStatus.color}`} />
-              <div>
-                <div className={`text-sm text-${loginStatus.color}`}>
+            <div className="hidden md:flex items-center gap-2 w-64 justify-start">
+              <BsClockHistory
+                className={`w-5 h-5 text-${loginStatus.color} flex-shrink-0`}
+              />
+              <div className="flex flex-col">
+                <div className={`text-sm text-${loginStatus.color} truncate`}>
                   {loginStatus.text}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                   {loginStatus.description}
                 </div>
               </div>
@@ -117,7 +119,7 @@ const UserListItem = ({
           )}
 
           {/* Action Button */}
-          <div className="flex justify-end w-auto">
+          <div className="flex justify-end">
             {buttonType === "remove" && isAssociatedUser && (
               <button
                 onClick={handleRemoveClick}
@@ -137,6 +139,7 @@ const UserListItem = ({
           </div>
         </div>
       </div>
+
       {typeof window !== "undefined" && createPortal(modals, document.body)}
     </>
   );

@@ -1853,5 +1853,8 @@
   "userRemovedSuccessfully": "¡Usuario eliminado con éxito!",
   "failedToRemoveUser": "No se pudo eliminar el usuario.",
   "confirmRemoveUser": "¿Estás seguro de que quieres eliminar a este usuario?",
-  "missingParameters": "Faltan parámetros requeridos."
+  "missingParameters": "Faltan parámetros requeridos.",
+  "profilePicUpdated": "¡Foto de perfil actualizada con éxito!",
+  "failedToUpdateProfilePic": "Error al actualizar la foto de perfil.",
+  "userProfilePic": "Foto de Perfil"
 }

@@ -189,6 +189,7 @@ export const fetchUserByIdAPI = async ({ token }) => {
         Authorization: `Bearer ${token}`,
       },
     });
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to fetch user details");
@@ -766,6 +767,33 @@ export const fetchAssociatedUsersAPI = async ({ plantId, provider, token }) => {
     return data.data;
   } catch (error) {
     console.error("Error fetching associated users:", error);
+    throw error;
+  }
+};
+
+export const uploadProfilePictureAPI = async ({ formData, token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuario/imagen`, {
+      method: "POST",
+      headers: {
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+    console.log("Response data:", data);
+
+    if (!response.ok) {
+      console.error("API error response:", data);
+      throw new Error(data.message || "Failed to upload profile picture");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error in uploadProfilePictureAPI:", error);
     throw error;
   }
 };

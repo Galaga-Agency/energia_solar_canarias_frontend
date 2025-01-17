@@ -116,15 +116,19 @@ const AddUserForm = ({ onClose, isOpen }) => {
           <FiPlus className="text-2xl" />
           <h2 className="text-xl md:text-2xl">{t("addUser")}</h2>
         </div>
-        <button
+
+        {/* Close Button */}
+        <motion.button
+          whileHover={{ scale: 1.1, rotate: 90 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => {
             reset();
             onClose();
           }}
           className="flex-shrink-0 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
         >
-          <X className="h-6 w-6 text-custom-dark-blue" />
-        </button>
+          <X className="h-6 w-6 text-custom-dark-blue " />
+        </motion.button>
       </div>
       <form
         onSubmit={handleSubmit(handleFormSubmit)}

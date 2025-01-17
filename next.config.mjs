@@ -103,6 +103,7 @@ const withPWA = withPWAInit({
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    domains: ["app-energiasolarcanarias-backend.com"],
     remotePatterns: [
       {
         protocol: "https",

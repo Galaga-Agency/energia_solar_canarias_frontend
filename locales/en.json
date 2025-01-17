@@ -941,5 +941,8 @@
   "userRemovedSuccessfully": "User removed successfully!",
   "failedToRemoveUser": "Failed to remove user.",
   "confirmRemoveUser": "Are you sure you want to remove this user?",
-  "missingParameters": "Missing required parameters."
+  "missingParameters": "Missing required parameters.",
+  "profilePicUpdated": "Profile picture updated successfully!",
+  "failedToUpdateProfilePic": "Failed to update profile picture.",
+  "userProfilePic": "User Profile Picture"
 }

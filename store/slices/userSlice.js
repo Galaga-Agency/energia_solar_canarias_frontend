@@ -14,6 +14,7 @@ import {
   updatePasswordAPI,
   fetchUserByIdAPI,
   generateApiKeyAPI,
+  uploadProfilePictureAPI,
 } from "@/services/shared-api";
 import { updateUserInList } from "./usersListSlice";
 
@@ -226,6 +227,32 @@ export const generateApiKey = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message || "Failed to generate API key");
+    }
+  }
+);
+
+export const uploadProfilePicture = createAsyncThunk(
+  "user/uploadProfilePicture",
+  async ({ formData, token }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await uploadProfilePictureAPI({ formData, token });
+
+      if (!response.status || response.code !== 200) {
+        console.error("API returned error status:", response);
+        throw new Error(response.message || "Upload failed");
+      }
+
+      // Check for path in response
+      if (!response?.data?.path) {
+        console.error("No image path in response:", response);
+        throw new Error("No image path received");
+      }
+
+      console.log("Upload successful, image path:", response.data.path);
+      return response;
+    } catch (error) {
+      console.error("Error in uploadProfilePicture thunk:", error);
+      return rejectWithValue(error.message || "Upload failed");
     }
   }
 );
@@ -453,6 +480,25 @@ const userSlice = createSlice({
         };
       })
       .addCase(generateApiKey.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // update profile picture
+      .addCase(uploadProfilePicture.pending, (state) => {
+        console.log("Upload pending");
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(uploadProfilePicture.fulfilled, (state, action) => {
+        console.log("Upload fulfilled with:", action.payload);
+        state.loading = false;
+        if (state.user) {
+          state.user.imagen = action.payload.data.path;
+        }
+      })
+      .addCase(uploadProfilePicture.rejected, (state, action) => {
+        console.log("Upload rejected with:", action.payload);
         state.loading = false;
         state.error = action.payload;
       });

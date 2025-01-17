@@ -88,13 +88,9 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
   return (
     <div
       ref={sidebarRef}
-      className={`overflow-auto filter-sidebar-selector ${
-        isMobile || isTablet
-          ? `fixed z-50 top-0 left-0 h-screen transform transition-all duration-300 ease-in-out ${
-              isOpen ? "translate-x-0" : "-translate-x-full"
-            }`
-          : "w-80 h-[calc(100%-64px)] "
-      } bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700  backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg`}
+      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
@@ -121,7 +117,6 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
           )}
         </div>
       </div>
-
       <div className="space-y-6">
         {/* Search */}
         <div className="mb-6">

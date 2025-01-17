@@ -10,6 +10,11 @@ export const providers = [
     imgDark: "/assets/logos/SOLAR EDGE - BLANCO.png",
   },
   {
+    name: "Victron Energy",
+    imgLight: "/assets/logos/VICTRON - NEGRO.png",
+    imgDark: "/assets/logos/VICTRON - BLANCO.png",
+  },
+  {
     name: "Bluetti",
     imgLight: "/assets/logos/BLUETTY - NEGRO.png",
     imgDark: "/assets/logos/BLUETTY - BLANCO.png",
@@ -18,11 +23,6 @@ export const providers = [
     name: "Sungrow",
     imgLight: "/assets/logos/SUNGROW.png",
     imgDark: "/assets/logos/SUNGROW.png",
-  },
-  {
-    name: "Victron Energy",
-    imgLight: "/assets/logos/VICTRON - NEGRO.png",
-    imgDark: "/assets/logos/VICTRON - BLANCO.png",
   },
   {
     name: "Sigenergy",

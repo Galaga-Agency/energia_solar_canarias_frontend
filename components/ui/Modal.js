@@ -44,6 +44,7 @@ const Modal = ({
             className={`relative z-10 rounded-lg p-6 shadow-lg ${className}`}
             onClick={(e) => e.stopPropagation()} // Prevent click propagation to backdrop
           >
+            {" "}
             {children}
           </motion.div>
         </div>

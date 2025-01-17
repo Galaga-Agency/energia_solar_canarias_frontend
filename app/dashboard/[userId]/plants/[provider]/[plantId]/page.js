@@ -277,7 +277,7 @@ const PlantDetailsPage = ({ params }) => {
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
       {renderContent}
-      {/* <BottomNavbar userId={user && user.id} userClass={user && user.clase} /> */}
+      <BottomNavbar userId={user && user.id} userClass={user && user.clase} />
     </div>
   );
 };

@@ -3,15 +3,16 @@ import Modal from "@/components/ui/Modal";
 import { FiAlertTriangle } from "react-icons/fi";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
+import Texture from "./Texture";
 
 const ConfirmRemoveUserModal = ({ isOpen, onClose, onConfirm, user, t }) => {
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900"
+      className="relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-lg overflow-hidden"
     >
-      <div className="text-center">
+      <div className="relative text-center z-10">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
           <FiAlertTriangle className="h-6 w-6 text-red-600 dark:text-red-200" />
         </div>

@@ -200,9 +200,9 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
                   />
 
                   <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
+                    <h2 className="text-lg  text-custom-dark-blue dark:text-custom-yellow mb-4">
                       {t("security")}
-                    </h3>
+                    </h2>
                     <div className="space-y-6">
                       <PasswordForm userId={editedUser.usuario_id} t={t} />
 
@@ -250,7 +250,12 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
                         {t("lastLogin")}
                       </span>
                       <span className="text-custom-dark-blue dark:text-custom-yellow">
-                        {new Date(editedUser.ultimo_login).toLocaleDateString()}
+                        {editedUser?.ultimo_login &&
+                        !isNaN(new Date(editedUser.ultimo_login))
+                          ? new Date(
+                              editedUser.ultimo_login
+                            ).toLocaleDateString("es-ES")
+                          : "-"}
                       </span>
                     </div>
                   </div>

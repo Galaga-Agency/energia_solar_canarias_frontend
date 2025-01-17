@@ -20,10 +20,14 @@ const ManageUsersModal = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isUserListModalOpen, setIsUserListModalOpen] = useState(false);
 
-  const filteredUsers = users.filter((user) =>
-    (user.nombre || user.name).toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter users based on the search term
+  const filteredUsers = users?.filter((user) =>
+    (user.nombre || user.name || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
+  // Open Add User modal
   const handleAddNewUser = () => {
     setIsAdding(true);
     setTimeout(() => {
@@ -32,6 +36,26 @@ const ManageUsersModal = ({
     }, 500);
   };
 
+  // Add a user from the list
+  const handleAddUserFromList = (selectedUser) => {
+    if (!selectedUser?.id && !selectedUser?.usuario_id) {
+      console.error("Missing user ID for association.");
+      return;
+    }
+    onAddUser(selectedUser);
+    setIsUserListModalOpen(false);
+  };
+
+  // Remove a user
+  const handleRemoveUser = (userId) => {
+    if (!userId) {
+      console.error("Missing user ID for dissociation.");
+      return;
+    }
+    onRemoveUser(userId);
+  };
+
+  // Simulate initial loading state
   useEffect(() => {
     const loadingDelay = setTimeout(() => {
       setIsLoading(false);
@@ -39,11 +63,6 @@ const ManageUsersModal = ({
 
     return () => clearTimeout(loadingDelay);
   }, []);
-
-  const handleAddUserFromList = (selectedUser) => {
-    onAddUser(selectedUser);
-    setIsUserListModalOpen(false);
-  };
 
   return (
     <>
@@ -55,6 +74,7 @@ const ManageUsersModal = ({
         <Texture className="opacity-30" />
 
         <div className="relative z-10">
+          {/* Modal Header */}
           <div className="flex items-center justify-between mb-6">
             <motion.button
               whileHover={{ scale: 1.1, rotate: 90 }}
@@ -65,11 +85,12 @@ const ManageUsersModal = ({
               <X className="w-5 h-5 text-custom-dark-blue dark:text-custom-yellow" />
             </motion.button>
 
-            <h2 className="text-xl  text-custom-dark-blue dark:text-custom-yellow mt-2">
+            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mt-2">
               {t("manageUsers")}
             </h2>
           </div>
 
+          {/* Search Input */}
           <input
             type="text"
             placeholder={t("searchUsers")}
@@ -77,19 +98,21 @@ const ManageUsersModal = ({
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full mb-4 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-custom-yellow focus:border-custom-yellow"
           />
+
+          {/* User List */}
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
               <Loading />
             </div>
-          ) : filteredUsers.length > 0 ? (
+          ) : filteredUsers?.length > 0 ? (
             <div className="max-h-64 overflow-y-auto custom-scrollbar space-y-2">
               {filteredUsers.map((user) => (
                 <UserListItem
-                  key={user.id}
+                  key={user.id || user.usuario_id}
                   user={user}
                   showLoginStatus={false}
                   isAssociatedUser={true}
-                  onRemove={() => onRemoveUser(user.id)}
+                  onRemove={() => handleRemoveUser(user.id || user.usuario_id)}
                   t={t}
                   buttonType="remove"
                 />
@@ -102,6 +125,7 @@ const ManageUsersModal = ({
           )}
         </div>
 
+        {/* Add User Button */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -120,6 +144,7 @@ const ManageUsersModal = ({
         </motion.button>
       </Modal>
 
+      {/* Add User Modal */}
       <AddUserToPlantModal
         isOpen={isUserListModalOpen}
         onClose={() => setIsUserListModalOpen(false)}

@@ -6,11 +6,14 @@ import { UserPlus } from "lucide-react";
 import UserAvatarChain from "./UserAvatarChain";
 import ManageUsersModal from "./ManageUsersModal";
 import {
+  associatePlantToUser,
+  dissociatePlantFromUser,
   fetchAssociatedUsers,
   selectAssociatedUsers,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 const AssociatedUsers = ({ isAdmin, plantId }) => {
   const { t } = useTranslation();
@@ -30,16 +33,66 @@ const AssociatedUsers = ({ isAdmin, plantId }) => {
         setIsLoading(false)
       );
     }
-  }, [dispatch, isAdmin, plantId, provider, token]);
+  }, [dispatch, isAdmin, plantId, provider, token, associatedUsers]);
 
   const handleAddUser = (newUser) => {
-    console.log("Adding user:", newUser);
-    setAssociatedUsers((prev) => [...prev, newUser]);
+    const { usuario_id: userId } = newUser;
+
+    if (!plantId || !provider || !token || !userId) {
+      console.error(
+        "Missing required parameters for associating user to plant"
+      );
+      return;
+    }
+
+    dispatch(
+      associatePlantToUser({
+        userId,
+        plantId,
+        provider,
+        token,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(fetchAssociatedUsers({ plantId, provider, token }));
+        console.log("User successfully associated with the plant");
+      })
+      .catch((error) => {
+        console.error("Error associating user to plant:", error);
+      });
   };
 
   const handleRemoveUser = (userId) => {
-    console.log("Removing user:", userId);
-    setAssociatedUsers((prev) => prev.filter((user) => user.id !== userId));
+    if (!plantId || !provider || !token || !userId) {
+      toast.error(t("missingParameters"));
+      return;
+    }
+
+    // Dispatch the action and store the promise
+    const dissociatePromise = dispatch(
+      dissociatePlantFromUser({
+        userId,
+        plantId,
+        provider,
+        token,
+      })
+    ).unwrap();
+
+    // Use toast.promise to track the promise state
+    toast.promise(dissociatePromise, {
+      loading: t("removingUser"),
+      success: t("userRemovedSuccessfully"),
+      error: (error) => error?.message || t("failedToRemoveUser"),
+    });
+
+    dissociatePromise
+      .then(() => {
+        dispatch(fetchAssociatedUsers({ plantId, provider, token }));
+      })
+      .catch((error) => {
+        console.error("Error dissociating user:", error);
+      });
   };
 
   if (!isAdmin) return null;

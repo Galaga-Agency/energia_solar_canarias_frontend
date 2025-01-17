@@ -82,7 +82,7 @@ const AssociatedPlantsSection = ({
   if (userClass === "admin") {
     return (
       <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm flex flex-col flex-grow h-[620px]">
-        <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow mb-4">
+        <h3 className="text-lg font-semibold font-secondary text-custom-dark-blue dark:text-custom-yellow mb-4">
           {t("associatedPlants")}
         </h3>
         <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 text-center p-4">
@@ -95,9 +95,9 @@ const AssociatedPlantsSection = ({
   return (
     <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm flex flex-col flex-grow h-[620px]">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+        <h2 className="text-lg  text-custom-dark-blue dark:text-custom-yellow">
           {t("associatedPlants")}
-        </h3>
+        </h2>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -136,7 +136,7 @@ const AssociatedPlantsSection = ({
             </div>
           ))
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+          <div className="flex items-center font-secondary justify-center h-full text-gray-500 dark:text-gray-400">
             {t("noAssociatedPlants")}
           </div>
         )}

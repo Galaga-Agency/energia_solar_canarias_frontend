@@ -56,16 +56,16 @@ const UserDetailsSection = ({
   return (
     <div className="relative w-full perspective">
       <div
-        className={`relative h-[530px] transition-transform duration-700 transform-style-3d ${
+        className={`relative h-[500px] transition-transform duration-700 transform-style-3d ${
           isFlipped ? "rotate-y-180" : ""
         }`}
       >
         {/* Front Face - Display Mode */}
         <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+            <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
               {t("administrarUsuario")}
-            </h3>
+            </h2>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

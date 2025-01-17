@@ -1848,5 +1848,10 @@
   "searchUsers": "Buscar usuarios",
   "noAssociatedUsers": "No se encontraron usuarios asociados.",
   "selectUser": "Seleccionar un usuario",
-  "searchUsersByNameOrEmail": "Buscar usuarios por nombre o correo electrónico"
+  "searchUsersByNameOrEmail": "Buscar usuarios por nombre o correo electrónico",
+  "removingUser": "Eliminando usuario...",
+  "userRemovedSuccessfully": "¡Usuario eliminado con éxito!",
+  "failedToRemoveUser": "No se pudo eliminar el usuario.",
+  "confirmRemoveUser": "¿Estás seguro de que quieres eliminar a este usuario?",
+  "missingParameters": "Faltan parámetros requeridos."
 }

@@ -111,7 +111,7 @@ const PasswordForm = ({ userId, t }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <h4 className="text-sm font-secondary font-medium text-gray-700 dark:text-gray-300">
         {t("changePassword")}
       </h4>
 

@@ -195,7 +195,6 @@ export const fetchUserByIdAPI = async ({ token }) => {
     }
 
     const data = await response.json();
-    console.log("data", data);
     return data;
   } catch (error) {
     console.error("Error fetching user by ID:", error);
@@ -764,7 +763,6 @@ export const fetchAssociatedUsersAPI = async ({ plantId, provider, token }) => {
     }
 
     const data = await response.json();
-    console.log("data", data);
     return data.data;
   } catch (error) {
     console.error("Error fetching associated users:", error);

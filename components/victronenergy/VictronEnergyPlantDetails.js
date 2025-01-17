@@ -25,6 +25,7 @@ import VictronAlertsModal from "./VictronAlertsModal";
 import { selectAlerts } from "@/store/slices/plantsSlice";
 import useCSVExport from "@/hooks/useCSVExport";
 import ExportModal from "../ExportModal";
+import AssociatedUsers from "../AssociatedUsers";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
@@ -167,7 +168,7 @@ const VictronEnergyPlantDetails = () => {
         }`}
       >
         <Texture />
-        <header className="flex justify-between items-center">
+        <header className="flex justify-between items-center mb-6">
           <IoArrowBackCircle
             className="text-4xl text-custom-dark-blue dark:text-custom-yellow cursor-pointer"
             onClick={() => window.history.back()}
@@ -181,7 +182,10 @@ const VictronEnergyPlantDetails = () => {
             </span>
           </div>
         </header>
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 w-full mb-6">
+
+        {isAdmin && <AssociatedUsers plantId={plantId} isAdmin={isAdmin} />}
+
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 w-full">
           {/* {hasCoordinates && (
             <WeatherWidget
               lat={latitude}

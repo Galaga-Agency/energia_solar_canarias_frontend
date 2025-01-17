@@ -7,6 +7,11 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import Texture from "@/components/Texture";
 import { deleteUser } from "@/store/slices/userSlice";
+import {
+  dissociatePlantFromUser,
+  fetchUserAssociatedPlants,
+} from "@/store/slices/plantsSlice";
+import { PiColumnsPlusLeftDuotone } from "react-icons/pi";
 
 const DeleteConfirmationModal = ({ user, isOpen, onClose }) => {
   const { t } = useTranslation();
@@ -22,10 +27,32 @@ const DeleteConfirmationModal = ({ user, isOpen, onClose }) => {
   const handleDelete = async () => {
     const userId = user.usuario_id;
     try {
+      // Fetch associated plants
+      const associatedPlants = await dispatch(
+        fetchUserAssociatedPlants({ userId, token })
+      ).unwrap();
+
+      // Dissociate all plants
+      for (const plant of associatedPlants) {
+        console.log("plant from user deleteed ------>", plant);
+        await dispatch(
+          dissociatePlantFromUser({
+            userId,
+            plantId: plant.id,
+            provider: plant.provider,
+            token,
+          })
+        ).unwrap();
+      }
+
+      // Delete the user
       await dispatch(deleteUser(userId)).unwrap();
+
+      toast.success(t("userDeletedSuccessfully"));
       onClose();
     } catch (error) {
-      console.error("Failed to delete user:", error);
+      console.error("Failed to delete user or dissociate plants:", error);
+      toast.error(error.message || t("failedToDeleteUser"));
     }
   };
 

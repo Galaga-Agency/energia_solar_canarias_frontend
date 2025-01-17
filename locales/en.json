@@ -936,5 +936,10 @@
   "manageUsers": "Manage Users",
   "noAssociatedUsers": "No associated users found.",
   "selectUser": "Select a User",
-  "searchUsersByNameOrEmail": "Search users by name or email"
+  "searchUsersByNameOrEmail": "Search users by name or email",
+  "removingUser": "Removing user...",
+  "userRemovedSuccessfully": "User removed successfully!",
+  "failedToRemoveUser": "Failed to remove user.",
+  "confirmRemoveUser": "Are you sure you want to remove this user?",
+  "missingParameters": "Missing required parameters."
 }

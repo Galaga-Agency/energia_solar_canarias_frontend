@@ -163,8 +163,10 @@ export const fetchAssociatedUsers = createAsyncThunk(
     try {
       const users = await fetchAssociatedUsersAPI({ plantId, provider, token });
 
-      console.log("Associated users in redux:", users);
-      return users;
+      // Filter out users where `eliminado !== 0`
+      const activeUsers = users.filter((user) => user.eliminado === 0);
+
+      return activeUsers;
     } catch (error) {
       return rejectWithValue(error.message);
     }

@@ -38,6 +38,7 @@ import AlertsOverview from "./AlertsOverview";
 import EnergyComparisonChart from "./EnergyComparisonChart";
 import useDeviceType from "@/hooks/useDeviceType";
 import BatteryChargingGraph from "./BatteryChargingGraph";
+import AssociatedUsers from "../AssociatedUsers";
 
 const mockAlerts = [
   {
@@ -321,6 +322,11 @@ const SolarEdgePlantDetails = React.memo(
               />
             </div>
           </header>
+
+          {isAdmin && (
+            <AssociatedUsers plantId={solaredgePlant.id} isAdmin={isAdmin} />
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <WeatherWidget
               plant={solaredgePlant}

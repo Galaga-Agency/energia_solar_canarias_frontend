@@ -99,9 +99,6 @@ export const updateUser = createAsyncThunk(
       });
       const updatedUser = response.data || response;
 
-      // Update the user in the Redux store
-      dispatch(updateUserInList(updatedUser));
-
       return updatedUser;
     } catch (error) {
       return rejectWithValue(error.message || "Failed to update user");
@@ -194,8 +191,14 @@ export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async ({ userId, userData }, { getState, rejectWithValue }) => {
     try {
+      const isAdmin = getState().user.user?.clase === "admin";
       const token = getState().user.user?.tokenIdentificador;
-      const response = await updateUserProfileAPI({ userId, userData, token });
+      const response = await updateUserProfileAPI({
+        userId,
+        userData,
+        token,
+        isAdmin,
+      });
 
       if (!response?.data) {
         throw new Error("Invalid response format");

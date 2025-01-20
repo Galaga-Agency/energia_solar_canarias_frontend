@@ -1,17 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaPencilAlt } from "react-icons/fa";
 import { Check, Loader2, X } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import { selectUser } from "@/store/slices/userSlice";
+import { updateUser } from "@/store/slices/userSlice";
+import { updateUserInList, fetchUsers } from "@/store/slices/usersListSlice";
 
-const UserDetailsSection = ({
-  editedUser,
-  handleInputChange,
-  handleSave,
-  isSaving,
-  t,
-}) => {
+const UserDetailsSection = ({ editedUser, t }) => {
+  const dispatch = useDispatch();
+  const userAdmin = useSelector(selectUser);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [localFormData, setLocalFormData] = useState(editedUser);
+
+  useEffect(() => {
+    setLocalFormData(editedUser);
+  }, [editedUser]);
 
   const handleFormChange = (name, value) => {
     setLocalFormData((prev) => ({
@@ -20,19 +26,49 @@ const UserDetailsSection = ({
     }));
   };
 
-  const handleLocalSave = async (formData) => {
-    const result = await handleSave(formData);
-    if (result) {
-      setLocalFormData(result);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data being sent:", localFormData);
-    const result = await handleLocalSave(localFormData);
-    if (result) {
-      setIsFlipped(false);
+    if (!localFormData?.usuario_id) {
+      toast.error(t("invalidUserData"));
+      return;
+    }
+
+    setIsSaving(true);
+    setIsFlipped(false);
+    try {
+      const updatedUser = await dispatch(
+        updateUser({
+          userId: localFormData.usuario_id,
+          userData: {
+            ...localFormData,
+            activo: localFormData.activo || editedUser.activo,
+            clase: localFormData.clase || editedUser.clase,
+          },
+          token: userAdmin?.tokenIdentificador,
+        })
+      ).unwrap();
+
+      // Update local state first
+      setLocalFormData(updatedUser);
+
+      // Update Redux in background
+      dispatch(updateUserInList(updatedUser));
+
+      if (userAdmin?.tokenIdentificador) {
+        dispatch(
+          fetchUsers({
+            userToken: userAdmin.tokenIdentificador,
+            currentUserId: userAdmin.id,
+          })
+        );
+      }
+
+      toast.success(t("userUpdatedSuccessfully"));
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      toast.error(t("failedToUpdateUser"));
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -49,10 +85,6 @@ const UserDetailsSection = ({
     { key: "cifNif", name: "cif_nif", label: t("cifNif") },
   ];
 
-  useEffect(() => {
-    setLocalFormData(editedUser);
-  }, [editedUser]);
-
   return (
     <div className="relative w-full perspective">
       <div
@@ -60,11 +92,11 @@ const UserDetailsSection = ({
           isFlipped ? "rotate-y-180" : ""
         }`}
       >
-        {/* Front Face - Display Mode */}
+        {/* Front Face */}
         <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
-              {t("administrarUsuario")}
+              {t("userDetails")}
             </h2>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -82,14 +114,14 @@ const UserDetailsSection = ({
                   {label}:
                 </span>
                 <span className="text-custom-dark-blue dark:text-custom-yellow text-right">
-                  {editedUser[name] || ""}
+                  {localFormData[name] || ""}
                 </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Back Face - Edit Mode */}
+        {/* Back Face */}
         <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden rotate-y-180">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
@@ -97,6 +129,7 @@ const UserDetailsSection = ({
             </h3>
             <div className="flex gap-2">
               <motion.button
+                type="button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
@@ -108,6 +141,7 @@ const UserDetailsSection = ({
                 <X className="w-4 h-4" />
               </motion.button>
               <motion.button
+                type="button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleSubmit}

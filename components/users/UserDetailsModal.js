@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "next-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
@@ -28,6 +28,7 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
   const updatedUser = useSelector((state) =>
     state.usersList.users.find((u) => u.usuario_id === user.usuario_id)
   );
+
   const [editedUser, setEditedUser] = useState(() => ({ ...user }));
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -35,81 +36,21 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isPasswordResetSent, setIsPasswordResetSent] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const userRef = useRef(user);
 
   useEffect(() => {
     if (user && user.usuario_id !== editedUser.usuario_id) {
       setEditedUser({ ...user });
+      userRef.current = user;
     }
   }, [user]);
 
   useEffect(() => {
     if (updatedUser) {
       setEditedUser({ ...updatedUser });
+      userRef.current = updatedUser;
     }
   }, [updatedUser]);
-
-  const handleSave = async (formData) => {
-    if (!formData?.usuario_id) {
-      toast.error(t("invalidUserData"));
-      return null;
-    }
-
-    setIsSaving(true);
-
-    try {
-      const updatedUser = await dispatch(
-        updateUser({
-          userId: formData.usuario_id,
-          userData: {
-            ...formData,
-            activo: formData.activo || editedUser.activo,
-            clase: formData.clase || editedUser.clase,
-          },
-          token: userAdmin?.tokenIdentificador,
-        })
-      ).unwrap();
-
-      // Update only the local state without triggering a modal remount
-      setEditedUser((prevUser) => ({
-        ...prevUser,
-        ...updatedUser,
-      }));
-
-      // Update Redux store in the background
-      dispatch(updateUserInList(updatedUser));
-
-      // Update the list in the background without affecting the modal
-      if (userAdmin?.tokenIdentificador) {
-        dispatch(
-          fetchUsers({
-            userToken: userAdmin.tokenIdentificador,
-            currentUserId: userAdmin.id,
-          })
-        );
-      }
-
-      toast.success(t("userUpdatedSuccessfully"));
-      return updatedUser;
-    } catch (error) {
-      console.error("Failed to update user:", error);
-      toast.error(t("failedToUpdateUser"));
-      return null;
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditedUser((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleClose = () => {
-    onClose();
-  };
 
   const handlePasswordReset = async () => {
     if (!editedUser?.email) return;
@@ -172,7 +113,7 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
     <>
       <Modal
         isOpen={isOpen}
-        onClose={handleClose}
+        onClose={onClose}
         className="p-0"
         backdropClass="backdrop-blur-sm"
       >
@@ -182,25 +123,17 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
             <UserDetailsModalHeader
               user={user}
               editedUser={editedUser}
-              onClose={handleClose}
+              onClose={onClose}
               t={t}
             />
 
             <div className="overflow-y-auto max-h-[calc(100vh-12rem)] custom-scrollbar">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-6">
-                  <UserDetailsSection
-                    editedUser={editedUser}
-                    isEditing={isEditing}
-                    handleInputChange={handleInputChange}
-                    handleSave={handleSave}
-                    setIsEditing={setIsEditing}
-                    isSaving={isSaving}
-                    t={t}
-                  />
+                  <UserDetailsSection editedUser={editedUser} t={t} />
 
                   <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
-                    <h2 className="text-lg  text-custom-dark-blue dark:text-custom-yellow mb-4">
+                    <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-4">
                       {t("security")}
                     </h2>
                     <div className="space-y-6">
@@ -310,4 +243,4 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
   );
 };
 
-export default UserDetailsModal;
+export default React.memo(UserDetailsModal);

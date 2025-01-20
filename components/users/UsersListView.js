@@ -54,7 +54,6 @@ const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
             isMobile={isMobile}
             isTouchDevice={isTouchDevice}
             onUserClick={handleUserClick}
-            onEdit={(e) => handleEditClick(e, user)}
             onDelete={(e) => handleDeleteClick(e, user)}
             t={t}
           />
@@ -66,23 +65,10 @@ const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
           user={selectedUser}
           isOpen={showDetailsModal}
           onClose={() => setShowDetailsModal(false)}
-          onSave={onUserSave}
-          onEdit={() => {
-            setShowDetailsModal(false);
-            setShowEditModal(true);
-          }}
           onDelete={() => {
             setShowDetailsModal(false);
             setShowDeleteModal(true);
           }}
-        />
-      )}
-
-      {showEditModal && (
-        <UserEditModal
-          user={selectedUser}
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
         />
       )}
 

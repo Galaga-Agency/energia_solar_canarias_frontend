@@ -681,32 +681,48 @@ export const updatePasswordAPI = async (token, newPassword) => {
   }
 };
 
-export const updateUserProfileAPI = async ({ userId, userData, token }) => {
+export const updateUserProfileAPI = async ({
+  userId,
+  userData,
+  token,
+  isAdmin,
+}) => {
   try {
-    console.log("Updating user profile with data:", {
-      userId,
-      userData,
-      token,
-    });
-    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}/profile`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        usuario: USUARIO,
-        apiKey: API_KEY,
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(userData),
-    });
+    let response;
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update user profile");
+    if (isAdmin) {
+      response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
+    } else {
+      response = await fetch(`${API_BASE_URL}/usuario`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
     }
 
-    return await response.json();
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || "Failed to update user");
+    }
+
+    return responseData;
   } catch (error) {
-    console.error("User profile update error:", error);
+    console.error("Error updating user:", error);
     throw error;
   }
 };

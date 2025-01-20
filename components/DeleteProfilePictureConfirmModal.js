@@ -1,9 +1,17 @@
 import React from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import Texture from "@/components/Texture";
 import Modal from "@/components/ui/Modal";
 
-const ConfirmRemoveModal = ({ isOpen, plant, onClose, onConfirm, t }) => {
+const DeleteProfilePictureConfirmModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isDeleting,
+  t,
+}) => {
+  if (!isOpen) return null;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -20,25 +28,29 @@ const ConfirmRemoveModal = ({ isOpen, plant, onClose, onConfirm, t }) => {
           <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-200" />
         </div>
         <h3 className="mt-4 text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
-          {t("confirmRemovePlant")}
+          {t("deleteProfilePicture")}
         </h3>
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          {t("removePlantConfirmText", { plantName: plant?.name })}
+          {t("deleteProfilePictureConfirmation")}
         </p>
         <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={onClose}
+            disabled={isDeleting}
             className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-gray-800 
-            dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors
+            disabled:opacity-50"
           >
             {t("cancel")}
           </button>
           <button
             onClick={onConfirm}
+            disabled={isDeleting}
             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 
-            transition-colors"
+            transition-colors flex items-center gap-2 disabled:opacity-50"
           >
-            {t("remove")}
+            {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {t("delete")}
           </button>
         </div>
       </div>
@@ -46,4 +58,4 @@ const ConfirmRemoveModal = ({ isOpen, plant, onClose, onConfirm, t }) => {
   );
 };
 
-export default ConfirmRemoveModal;
+export default DeleteProfilePictureConfirmModal;

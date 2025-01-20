@@ -1,35 +1,45 @@
 import React from "react";
+import { AlertTriangle } from "lucide-react";
+import Texture from "@/components/Texture";
 import Modal from "@/components/ui/Modal";
-import { FiAlertTriangle } from "react-icons/fi";
-import PrimaryButton from "@/components/ui/PrimaryButton";
-import SecondaryButton from "@/components/ui/SecondaryButton";
-import Texture from "./Texture";
 
 const ConfirmRemoveUserModal = ({ isOpen, onClose, onConfirm, user, t }) => {
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-lg overflow-hidden"
+      className="relative max-w-md rounded-2xl bg-gradient-to-br from-white/90 to-white/50 
+      dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 backdrop-blur-lg shadow-xl"
     >
-      <div className="relative text-center z-10">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-          <FiAlertTriangle className="h-6 w-6 text-red-600 dark:text-red-200" />
+      <Texture className="opacity-30" />
+      <div className="relative z-10 text-center">
+        <div
+          className="mx-auto flex h-12 w-12 items-center justify-center rounded-full 
+        bg-red-100 dark:bg-red-900/30"
+        >
+          <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-200" />
         </div>
-        <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+        <h3 className="mt-4 text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
           {t("removeUserConfirmation")}
         </h3>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           {t("removeUserWarning", { name: user.nombre || user.name })}
         </p>
         <div className="mt-6 flex justify-center gap-4">
-          <SecondaryButton onClick={onClose}>{t("cancel")}</SecondaryButton>
-          <PrimaryButton
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-gray-800 
+            dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            {t("cancel")}
+          </button>
+          <button
             onClick={onConfirm}
-            className="!bg-red-500 hover:!bg-red-600"
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 
+            transition-colors"
           >
             {t("remove")}
-          </PrimaryButton>
+          </button>
         </div>
       </div>
     </Modal>

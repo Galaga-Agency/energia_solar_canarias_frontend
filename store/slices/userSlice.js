@@ -15,6 +15,7 @@ import {
   fetchUserByIdAPI,
   generateApiKeyAPI,
   uploadProfilePictureAPI,
+  deleteProfilePictureAPI,
 } from "@/services/shared-api";
 import { updateUserInList } from "./usersListSlice";
 
@@ -84,9 +85,18 @@ export const validateToken = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "users/updateUser",
-  async ({ userId, userData, token }, { dispatch, rejectWithValue }) => {
+  async (
+    { userId, userData, token },
+    { getState, dispatch, rejectWithValue }
+  ) => {
+    const isAdmin = getState().user.user?.clase === "admin";
     try {
-      const response = await updateUserAPI({ userId, userData, token });
+      const response = await updateUserAPI({
+        userId,
+        userData,
+        token,
+        isAdmin,
+      });
       const updatedUser = response.data || response;
 
       // Update the user in the Redux store
@@ -124,9 +134,10 @@ export const updateUserPassword = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
   "users/deleteUser",
-  async ({ userId, token }, { rejectWithValue }) => {
+  async ({ userId, token }, { getState, rejectWithValue }) => {
     try {
-      return await deleteUserAPI({ userId, token });
+      const isAdmin = getState().user.user?.clase === "admin";
+      return await deleteUserAPI({ userId, token, isAdmin });
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -253,6 +264,26 @@ export const uploadProfilePicture = createAsyncThunk(
     } catch (error) {
       console.error("Error in uploadProfilePicture thunk:", error);
       return rejectWithValue(error.message || "Upload failed");
+    }
+  }
+);
+
+export const deleteProfilePicture = createAsyncThunk(
+  "user/deleteProfilePicture",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().user.user?.tokenIdentificador;
+      const response = await deleteProfilePictureAPI({ token });
+
+      if (!response.status || response.code !== 200) {
+        console.error("API returned error status:", response);
+        throw new Error(response.message || "Delete failed");
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Error in deleteProfilePicture thunk:", error);
+      return rejectWithValue(error.message || "Delete failed");
     }
   }
 );
@@ -451,9 +482,9 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(addUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.loading = false;
 
-        const newUser = action.payload; // This should now be the user object
+        const newUser = action.payload;
         console.log("New user added:", newUser);
 
         if (newUser && newUser.usuario_id) {
@@ -499,6 +530,22 @@ const userSlice = createSlice({
       })
       .addCase(uploadProfilePicture.rejected, (state, action) => {
         console.log("Upload rejected with:", action.payload);
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // delete user profile picture
+      .addCase(deleteProfilePicture.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteProfilePicture.fulfilled, (state) => {
+        state.loading = false;
+        if (state.user) {
+          state.user.imagen = null;
+        }
+      })
+      .addCase(deleteProfilePicture.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -4,6 +4,9 @@ import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import useDeviceType from "@/hooks/useDeviceType";
 import { RotateCcw, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { parseISO, isValid, isAfter, isBefore, startOfDay } from "date-fns";
+import DateSelector from "@/components/DateSelector";
+import { BsCalendar3 } from "react-icons/bs";
 
 const SolarEdgeFilterSidebar = ({
   plants,
@@ -18,12 +21,23 @@ const SolarEdgeFilterSidebar = ({
     peakPower: { min: 0, max: 39.15 },
     highestAlert: { min: 0, max: 9 },
     hasAlerts: false,
+    installationDate: { min: "", max: "" },
   };
 
   const [filters, setFilters] = useState(initialFilters);
   const { isMobile, isTablet, isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isMinDateSelectorOpen, setIsMinDateSelectorOpen] = useState(false);
+  const [isMaxDateSelectorOpen, setIsMaxDateSelectorOpen] = useState(false);
+  const minDateInputRef = useRef(null);
+  const maxDateInputRef = useRef(null);
+
+  const isDateValid = (dateString) => {
+    if (!dateString) return false;
+    const date = parseISO(dateString);
+    return isValid(date);
+  };
 
   useEffect(() => {
     if (plants?.length > 0 && !isInitialized) {
@@ -80,10 +94,41 @@ const SolarEdgeFilterSidebar = ({
           return false;
         }
 
+        // Installation Date Filter
+        const installationDate = parseISO(plant.installation_date);
+
+        if (isDateValid(currentFilters.installationDate.min)) {
+          const minDate = parseISO(currentFilters.installationDate.min);
+          if (isBefore(installationDate, startOfDay(minDate))) {
+            return false;
+          }
+        }
+
+        if (isDateValid(currentFilters.installationDate.max)) {
+          const maxDate = parseISO(currentFilters.installationDate.max);
+          if (isAfter(installationDate, startOfDay(maxDate))) {
+            return false;
+          }
+        }
+
         return true;
       });
     },
     [plants]
+  );
+
+  const handleDateChange = useCallback(
+    (type, value) => {
+      setFilters((prevFilters) => {
+        const updatedFilters = {
+          ...prevFilters,
+          installationDate: { ...prevFilters.installationDate, [type]: value },
+        };
+        onFilterChange(filterPlants(updatedFilters));
+        return updatedFilters;
+      });
+    },
+    [filterPlants, onFilterChange]
   );
 
   const handleCheckboxChange = useCallback(
@@ -153,7 +198,9 @@ const SolarEdgeFilterSidebar = ({
   const handleResetFilters = useCallback(() => {
     setFilters(initialFilters);
     onFilterChange(filterPlants(initialFilters));
-  }, [filterPlants, onFilterChange, initialFilters]);
+    setIsMinDateSelectorOpen(false);
+    setIsMaxDateSelectorOpen(false);
+  }, [filterPlants, onFilterChange]);
 
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);
@@ -268,6 +315,84 @@ const SolarEdgeFilterSidebar = ({
               onChange={(e) => handlePeakPowerChange("max", e.target.value)}
               className="w-full p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue dark:text-custom-yellow transition duration-300"
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Installation Date Pickers */}
+      <div className="mb-6 relative">
+        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+          {t("installationDate")}
+        </h3>
+        <div className="flex space-x-2">
+          {/* From Date Picker */}
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-custom-dark-blue dark:text-custom-light-gray mb-1">
+              {t("from")}
+            </label>
+            <div className="relative" ref={minDateInputRef}>
+              <button
+                onClick={() => {
+                  setIsMaxDateSelectorOpen(false);
+                  setIsMinDateSelectorOpen(!isMinDateSelectorOpen);
+                }}
+                className="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                type="button"
+              >
+                <span className="text-custom-dark-blue dark:text-custom-light-gray">
+                  {filters.installationDate.min
+                    ? new Date(
+                        filters.installationDate.min
+                      ).toLocaleDateString()
+                    : t("selectDate")}
+                </span>
+                <BsCalendar3 className="text-custom-dark-blue dark:text-custom-light-gray" />
+              </button>
+              {isMinDateSelectorOpen && (
+                <DateSelector
+                  isOpen={isMinDateSelectorOpen}
+                  onClose={() => setIsMinDateSelectorOpen(false)}
+                  onSelect={(date) => handleDateChange("min", date)}
+                  value={filters.installationDate.min}
+                  parentRef={minDateInputRef}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* To Date Picker */}
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t("to")}
+            </label>
+            <div className="relative" ref={maxDateInputRef}>
+              <button
+                onClick={() => {
+                  setIsMinDateSelectorOpen(false);
+                  setIsMaxDateSelectorOpen(!isMaxDateSelectorOpen);
+                }}
+                className="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                type="button"
+              >
+                <span className="text-custom-dark-blue dark:text-custom-light-gray">
+                  {filters.installationDate.max
+                    ? new Date(
+                        filters.installationDate.max
+                      ).toLocaleDateString()
+                    : t("selectDate")}
+                </span>
+                <BsCalendar3 />
+              </button>
+              {isMaxDateSelectorOpen && (
+                <DateSelector
+                  isOpen={isMaxDateSelectorOpen}
+                  onClose={() => setIsMaxDateSelectorOpen(false)}
+                  onSelect={(date) => handleDateChange("max", date)}
+                  value={filters.installationDate.max}
+                  parentRef={maxDateInputRef}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

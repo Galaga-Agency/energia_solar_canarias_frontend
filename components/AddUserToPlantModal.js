@@ -89,10 +89,11 @@ const AddUserToPlantModal = ({
                 onAdd={() => onAddUser(user)}
                 t={t}
                 buttonType="add"
+                disableClick={true}
               />
             ))
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 italic">
+            <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">
               {t("noUsersFound")}
             </p>
           )}

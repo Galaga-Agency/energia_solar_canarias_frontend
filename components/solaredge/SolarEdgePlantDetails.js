@@ -349,42 +349,20 @@ const SolarEdgePlantDetails = React.memo(
                     }
                     label={t("currentStatus")}
                     value={
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <div className="flex items-center gap-1">
-                              <Info
-                                className={`h-4 w-4 ${
-                                  statusColors[solaredgePlant?.status]?.replace(
-                                    "bg-",
-                                    "text-"
-                                  ) || "text-gray-500"
-                                } cursor-help mt-1`}
-                              />
-                              <span
-                                className={`${
-                                  statusColors[solaredgePlant?.status]?.replace(
-                                    "bg-",
-                                    "text-"
-                                  ) || "text-gray-500"
-                                } cursor-help`}
-                              >
-                                {tStatus}
-                              </span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            side="right"
-                            className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
+                      <div className="ml-auto">
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={`${
+                              statusColors[solaredgePlant?.status]?.replace(
+                                "bg-",
+                                "text-"
+                              ) || "text-gray-500"
+                            }`}
                           >
-                            <p className="font-medium">
-                              {t(
-                                `statusDescriptions.${solaredgePlant?.status}`
-                              ) || "unknown"}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                            {tStatus} || {t("unknown")}
+                          </span>
+                        </div>
+                      </div>
                     }
                   />
                   <DetailRow

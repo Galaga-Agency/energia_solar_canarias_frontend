@@ -103,7 +103,7 @@ const AssociatedUsers = ({ isAdmin, plantId }) => {
         <div className="relative z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow w-min md:w-auto md:pr-4">
                 {t("associatedUsers")}
               </h2>
               {isLoading ? (
@@ -120,7 +120,7 @@ const AssociatedUsers = ({ isAdmin, plantId }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsModalOpen(true)}
-              className="p-2 rounded-full bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 transition-colors"
+              className="ml-4 p-2 rounded-full bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 transition-colors drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]"
             >
               <UserPlus className="w-5 h-5" />
             </motion.button>

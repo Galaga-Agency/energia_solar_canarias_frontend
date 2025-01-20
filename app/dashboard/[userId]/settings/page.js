@@ -30,6 +30,8 @@ import { toast } from "sonner";
 import { FaUserTie } from "react-icons/fa";
 import DangerZone from "@/components/DangerZone";
 import { motion } from "framer-motion";
+import DeleteUserModal from "@/components/DeleteUserModal";
+import { deleteUser } from "@/store/slices/usersListSlice";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();
@@ -87,7 +89,14 @@ const SettingsTab = () => {
   // Handle account deletion
   const handleDeleteAccount = async () => {
     try {
-      await axios.delete(`/api/delete-account/${user?.id}`);
+      await dispatch(
+        deleteUser({
+          userId: user.usuario_id,
+          token: user.tokenIdentificador,
+        })
+      ).unwrap();
+
+      // After successful deletion
       dispatch(logoutUser());
       Cookies.remove("user");
       router.push("/");
@@ -233,15 +242,14 @@ const SettingsTab = () => {
         </div>
 
         {/* Confirmation Modal */}
-        <ConfirmationModal
+        <DeleteUserModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onConfirm={() => {
             handleDeleteAccount();
             setIsModalOpen(false);
           }}
-          title={t("confirmDeletion")}
-          message={t("areYouSureDeleteAccount")}
+          t={t}
         />
       </motion.div>
 

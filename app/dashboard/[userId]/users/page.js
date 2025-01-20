@@ -19,6 +19,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import UsersSidebar from "@/components/users/UsersSidebar";
 import UsersListView from "@/components/users/UsersListView";
 import UsersGridView from "@/components/users/UsersGridView";
+import UserSortMenu from "@/components/users/UserSortMenu";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import useDeviceType from "@/hooks/useDeviceType";
 import {
@@ -38,7 +39,7 @@ const INITIAL_FILTERS = {
   search: "",
 };
 
-const ViewModeButton = ({ isActive, onClick, icon: Icon, label }) => (
+const ViewModeButton = ({ isActive, onClick, icon: Icon }) => (
   <motion.button
     onClick={onClick}
     className={`p-2 rounded-lg transition-colors ${
@@ -69,6 +70,9 @@ const UsersTab = () => {
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [sortPath, setSortPath] = useState("nombre");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const usersPerPage = useMemo(() => {
     if (isMobile) return 6;
@@ -77,15 +81,19 @@ const UsersTab = () => {
   }, [isMobile, isTablet, viewMode]);
 
   const filteredUsers = useMemo(() => {
-    return (
+    // Initial filtering
+    let processedUsers =
       users?.filter((user) => {
+        // Search filter
         if (
           filters.search &&
-          !user.nombre.toLowerCase().includes(filters.search.toLowerCase())
+          !user.nombre.toLowerCase().includes(filters.search.toLowerCase()) &&
+          !user.apellido.toLowerCase().includes(filters.search.toLowerCase())
         ) {
           return false;
         }
 
+        // Role filter
         if (
           !filters.role.includes("all") &&
           !filters.role.includes(user.clase)
@@ -93,6 +101,7 @@ const UsersTab = () => {
           return false;
         }
 
+        // Active status filter
         if (!filters.activeStatus.includes("all")) {
           const isActive = user.activo === 1;
           if (filters.activeStatus.includes("active") && !isActive)
@@ -102,9 +111,32 @@ const UsersTab = () => {
         }
 
         return true;
-      }) || []
-    );
-  }, [users, filters]);
+      }) || [];
+
+    // Sorting logic
+    return processedUsers.sort((a, b) => {
+      let valueA, valueB;
+      switch (sortPath) {
+        case "nombre":
+          // Sort by full name (first name + last name)
+          valueA = `${a.nombre} ${a.apellido}`.toLowerCase();
+          valueB = `${b.nombre} ${b.apellido}`.toLowerCase();
+          break;
+        case "ultimo_login":
+          // Sort by last login date
+          valueA = a.ultimo_login || "";
+          valueB = b.ultimo_login || "";
+          break;
+        default:
+          valueA = `${a.nombre} ${a.apellido}`.toLowerCase();
+          valueB = `${b.nombre} ${b.apellido}`.toLowerCase();
+      }
+
+      if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+      if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [users, filters, sortPath, sortOrder]);
 
   const paginatedUsers = useMemo(() => {
     return filteredUsers.slice(
@@ -114,15 +146,16 @@ const UsersTab = () => {
   }, [filteredUsers, currentPage, usersPerPage]);
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && !isUpdating) {
+      setIsUpdating(true);
       dispatch(
         fetchUsers({
           userToken: currentUser?.tokenIdentificador,
           currentUserId: currentUser?.id,
         })
-      );
+      ).finally(() => setIsUpdating(false));
     }
-  }, [dispatch, currentUser, addUser]);
+  }, [dispatch, currentUser]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -135,6 +168,11 @@ const UsersTab = () => {
 
   const handleUserClick = (userId) => {
     router.push(`/dashboard/${currentUser.id}/users/${userId}`);
+  };
+
+  const handleSortChange = (path, order) => {
+    setSortPath(path);
+    setSortOrder(order);
   };
 
   return (
@@ -220,22 +258,26 @@ const UsersTab = () => {
               transition={{ delay: 1.6, duration: 0.5 }}
             >
               {/* View Controls */}
-              <div className="flex justify-between items-center mb-6">
-                <span className="text-custom-dark-blue dark:text-custom-yellow">
-                  {t("usersFound")}: {filteredUsers.length}
-                </span>
-
-                <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
-                  <ViewModeButton
-                    isActive={viewMode === "list"}
-                    onClick={() => setViewMode("list")}
-                    icon={HiViewList}
-                  />
-                  <ViewModeButton
-                    isActive={viewMode === "grid"}
-                    onClick={() => setViewMode("grid")}
-                    icon={HiViewGrid}
-                  />
+              <div className="flex flex-col justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-custom-dark-blue dark:text-custom-yellow mb-6">
+                    {t("usersFound")}: {filteredUsers.length}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mb-4">
+                  <UserSortMenu onSortChange={handleSortChange} />
+                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
+                    <ViewModeButton
+                      isActive={viewMode === "list"}
+                      onClick={() => setViewMode("list")}
+                      icon={HiViewList}
+                    />
+                    <ViewModeButton
+                      isActive={viewMode === "grid"}
+                      onClick={() => setViewMode("grid")}
+                      icon={HiViewGrid}
+                    />
+                  </div>
                 </div>
               </div>
 

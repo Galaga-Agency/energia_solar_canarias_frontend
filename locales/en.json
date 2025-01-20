@@ -944,5 +944,15 @@
   "missingParameters": "Missing required parameters.",
   "profilePicUpdated": "Profile picture updated successfully!",
   "failedToUpdateProfilePic": "Failed to update profile picture.",
-  "userProfilePic": "User Profile Picture"
+  "userProfilePic": "User Profile Picture",
+  "deleteProfilePicture": "Delete Profile Picture",
+  "deleteProfilePictureConfirmation": "Are you sure you want to delete your profile picture? This action cannot be undone.",
+  "profilePictureDeletedSuccess": "Profile picture deleted successfully",
+  "profilePictureDeleteError": "Failed to delete profile picture",
+  "profilePicture": "Profile Picture",
+  "editProfilePicture": "Edit Profile Picture",
+  "uploadProfilePicture": "Upload Profile Picture",
+  "failedToDeleteAccount": "Failed to delete account",
+  "accountDeletedSuccessfully": "Account deleted successfully",
+  "sortByLastLogin": "Sort by Last Login"
 }

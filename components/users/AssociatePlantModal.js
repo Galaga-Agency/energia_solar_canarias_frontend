@@ -43,7 +43,7 @@ const AssociatePlantModal = ({ isOpen, onClose, selectedUser, token, t }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="relative w-full max-w-lg bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg"
+      className="relative w-full max-w-lg bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg p-6"
       backdropClass="backdrop-blur-sm"
     >
       <Texture className="opacity-30" />

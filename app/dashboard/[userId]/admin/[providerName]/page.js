@@ -44,6 +44,9 @@ import { useOptimalItemsCount } from "@/hooks/useOptimalItemsCount";
 import useDeviceType from "@/hooks/useDeviceType";
 import { PiSolarPanelFill } from "react-icons/pi";
 
+const GRID_ITEMS_PER_PAGE = 6;
+const LIST_ITEMS_PER_PAGE = 6;
+
 const ProviderPage = () => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
@@ -54,17 +57,13 @@ const ProviderPage = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState("list"); // Added view mode toggle
+  const [viewMode, setViewMode] = useState("list");
   const [allPlants, setAllPlants] = useState([]);
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const plantsPerPage = useOptimalItemsCount(
-    ".list-container-selector", // List container CSS selector
-    ".filter-sidebar-selector", // Sidebar CSS selector
-    64, // Height of each list item
-    10 // Max items for mobile
-  );
+  const plantsPerPage =
+    viewMode === "grid" ? GRID_ITEMS_PER_PAGE : LIST_ITEMS_PER_PAGE;
   const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
   const startIndex = (currentPage - 1) * plantsPerPage;
   const paginatedPlants = filteredPlants.slice(
@@ -79,6 +78,8 @@ const ProviderPage = () => {
     (p) => p.name.toLowerCase().replace(/\s+/g, "") === providerPassed
   );
   const { isDesktop } = useDeviceType();
+
+  console.log("plants", plants);
 
   useEffect(() => {
     if (isInitialLoad) {
@@ -158,8 +159,8 @@ const ProviderPage = () => {
               valueB = new Date(b.installation_date || 0);
               return order === "asc" ? valueA - valueB : valueB - valueA;
             case "powerOutput":
-              valueA = parseFloat(a.power_output || 0);
-              valueB = parseFloat(b.power_output || 0);
+              valueA = parseFloat(a.current_power || 0);
+              valueB = parseFloat(b.current_power || 0);
               break;
             case "capacity":
               valueA = parseFloat(a.capacity || 0);

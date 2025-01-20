@@ -1856,5 +1856,15 @@
   "missingParameters": "Faltan parámetros requeridos.",
   "profilePicUpdated": "¡Foto de perfil actualizada con éxito!",
   "failedToUpdateProfilePic": "Error al actualizar la foto de perfil.",
-  "userProfilePic": "Foto de Perfil"
+  "userProfilePic": "Foto de Perfil",
+  "deleteProfilePicture": "Eliminar Foto de Perfil",
+  "deleteProfilePictureConfirmation": "¿Estás seguro de que deseas eliminar tu foto de perfil? Esta acción no se puede deshacer.",
+  "profilePictureDeletedSuccess": "Foto de perfil eliminada con éxito",
+  "profilePictureDeleteError": "Error al eliminar la foto de perfil",
+  "profilePicture": "Foto de Perfil",
+  "editProfilePicture": "Editar Foto de Perfil",
+  "uploadProfilePicture": "Subir Foto de Perfil",
+  "failedToDeleteAccount": "Error al eliminar la cuenta",
+  "accountDeletedSuccessfully": "Cuenta eliminada exitosamente",
+  "sortByLastLogin": "Ordenar por Último Inicio de Sesión"
 }

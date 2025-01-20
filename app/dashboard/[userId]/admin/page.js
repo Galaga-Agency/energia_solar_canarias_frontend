@@ -19,11 +19,9 @@ import SortMenu from "@/components/SortPlantsMenu";
 import Pagination from "@/components/ui/Pagination";
 import ProviderCard from "@/components/ProviderCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
-import AddPlantForm from "@/components/AddPlantForm";
 import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton.js";
 import PlantsListTableItem from "@/components/PlantsListTableItem";
 import Texture from "@/components/Texture";
-import InfoModal from "@/components/InfoModal";
 import FilterSidebar from "@/components/FilterSidebar";
 import ViewChangeDropdown from "@/components/ViewChangeDropdown";
 import { providers } from "@/data/providers";
@@ -38,6 +36,9 @@ import usePlantSort from "@/hooks/usePlantSort";
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import PlantCard from "@/components/PlantCard";
 
+const GRID_ITEMS_PER_PAGE = 9;
+const LIST_ITEMS_PER_PAGE = 7;
+
 const AdminDashboard = () => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -48,24 +49,51 @@ const AdminDashboard = () => {
   const theme = useSelector(selectTheme);
   const { isMobile } = useDeviceType();
   const sidebarRef = useRef(null);
+
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [view, setView] = useState("providers");
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("list");
-  const plantsPerPage = viewMode === "grid" ? 9 : 7;
-  const totalPages = Math.ceil(filteredPlants.length / plantsPerPage);
-  const startIndex = (currentPage - 1) * plantsPerPage;
-  const paginatedPlants = filteredPlants.slice(
-    startIndex,
-    startIndex + plantsPerPage
-  );
+
+  const itemsPerPage =
+    viewMode === "grid" ? GRID_ITEMS_PER_PAGE : LIST_ITEMS_PER_PAGE;
 
   const { sortedItems, sortItems } = usePlantSort(plants);
+
+  // Calculate pagination
+  const getCurrentPageItems = (items, page, perPage) => {
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    return items.slice(startIndex, endIndex);
+  };
+
+  const totalPages = Math.ceil(filteredPlants.length / itemsPerPage);
+  const paginatedPlants = getCurrentPageItems(
+    filteredPlants,
+    currentPage,
+    itemsPerPage
+  );
+
+  // Reset page when view mode changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [viewMode]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredPlants]);
+
+  // Validate current page
+  useEffect(() => {
+    const maxPage = Math.ceil(filteredPlants.length / itemsPerPage);
+    if (currentPage > maxPage && maxPage > 0) {
+      setCurrentPage(maxPage);
+    }
+  }, [filteredPlants, currentPage, itemsPerPage]);
 
   // Initial data fetch
   useEffect(() => {
@@ -75,12 +103,12 @@ const AdminDashboard = () => {
           userId: user.id,
           token: user.tokenIdentificador,
           page: currentPage,
-          pageSize: plantsPerPage,
+          pageSize: itemsPerPage,
         })
       );
       setIsInitialLoad(false);
     }
-  }, [user, dispatch, currentPage, isInitialLoad, plantsPerPage]);
+  }, [user, dispatch, currentPage, isInitialLoad, itemsPerPage]);
 
   // Set filtered plants when view changes
   useEffect(() => {
@@ -90,13 +118,11 @@ const AdminDashboard = () => {
     }
   }, [view, plants]);
 
-  // Update filtered plants on filter change
   const handleFilterChange = (newFilteredPlants) => {
     setFilteredPlants(newFilteredPlants);
     setCurrentPage(1);
   };
 
-  // Handle provider click
   const handleProviderClick = (provider) => {
     const normalizedProviderName = provider.name
       ?.toLowerCase()
@@ -113,32 +139,15 @@ const AdminDashboard = () => {
     router.push(`/dashboard/${user.id}/admin/${normalizedProviderName}`);
   };
 
-  // Close modal
-  // const closeModal = () => {
-  //   setIsModalOpen(false);
-  //   if (selectedProvider) {
-  //     dispatch(
-  //       fetchPlantsByProvider({
-  //         userId: user.id,
-  //         token: user.tokenIdentificador,
-  //         provider: selectedProvider,
-  //       })
-  //     );
-  //   }
-  // };
-
-  // Handle view change (card/list)
   const handleViewChange = (value) => {
-    if (value === "plants") {
-      setIsModalOpen(true);
-    }
     setView(value);
+    setCurrentPage(1);
   };
 
-  // Sort plants
   const handleSortChange = (criteria, order) => {
     sortItems(criteria, order);
     setFilteredPlants(sortedItems);
+    setCurrentPage(1);
   };
 
   return (
@@ -313,7 +322,7 @@ const AdminDashboard = () => {
                 >
                   {loading ? (
                     <div className="py-8">
-                      <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
+                      <PlantsListSkeleton theme={theme} rows={itemsPerPage} />
                     </div>
                   ) : filteredPlants.length > 0 ? (
                     viewMode === "list" ? (

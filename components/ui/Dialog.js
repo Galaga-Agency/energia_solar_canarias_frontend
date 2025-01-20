@@ -1,7 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
-import PrimaryButton from "@/components/ui/PrimaryButton"; // Assuming this is the correct path
-import SecondaryButton from "@/components/ui/SecondaryButton"; // Assuming this is the correct path
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import SecondaryButton from "@/components/ui/SecondaryButton";
 
 const Dialog = ({ open, onOpenChange, children }) => {
   if (!open) return null;

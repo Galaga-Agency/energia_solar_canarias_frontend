@@ -35,13 +35,13 @@ const Modal = ({
           onClick={onClose}
         />
         {/* Modal Content */}
-        <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className="fixed inset-0 flex items-center justify-center max-w-[90vw] mx-auto">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className={`relative z-10 rounded-lg p-6 shadow-lg ${className}`}
+            className={`relative z-10 rounded-lg shadow-lg ${className}`}
             onClick={(e) => e.stopPropagation()} // Prevent click propagation to backdrop
           >
             {" "}

@@ -115,12 +115,13 @@ const ManageUsersModal = ({
                   onRemove={() => handleRemoveUser(user.id || user.usuario_id)}
                   t={t}
                   buttonType="remove"
+                  disableClick={true}
                 />
               ))}
             </div>
           ) : (
             <div className="font-secondary flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
-              {t("noUsersFound")}
+              <p>{t("noUsersFound")}</p>
             </div>
           )}
         </div>
@@ -131,14 +132,14 @@ const ManageUsersModal = ({
           whileTap={{ scale: 0.98 }}
           onClick={handleAddNewUser}
           disabled={isAdding}
-          className="absolute bottom-6 left-6 right-6 bg-custom-yellow text-custom-dark-blue py-2 px-4 rounded-lg font-medium hover:bg-custom-yellow/80 transition-colors flex items-center justify-center gap-2"
+          className="font-secondary absolute bottom-6 left-6 right-6 bg-custom-yellow text-custom-dark-blue py-2 px-4 rounded-lg font-medium hover:bg-custom-yellow/80 transition-colors flex items-center justify-center gap-2"
         >
           {isAdding ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
               <Plus className="w-5 h-5" />
-              {t("addUser")}
+              <p className="font-secondary">{t("addUser")}</p>
             </>
           )}
         </motion.button>

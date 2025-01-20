@@ -69,27 +69,35 @@ export const validateTokenRequestAPI = async (id, token) => {
   }
 };
 
-export const updateUserAPI = async ({ userId, userData, token }) => {
+export const updateUserAPI = async ({ userId, userData, token, isAdmin }) => {
   try {
-    // console.log("updateUserAPI - Request payload:", {
-    //   userId,
-    //   userData: JSON.stringify(userData),
-    //   endpoint: `${API_BASE_URL}/usuarios/${userId}`,
-    // });
+    let response;
 
-    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        usuario: USUARIO,
-        apiKey: API_KEY,
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(userData),
-    });
+    if (isAdmin) {
+      response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
+    } else {
+      response = await fetch(`${API_BASE_URL}/usuario`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
+    }
 
     const responseData = await response.json();
-    // console.log("updateUserAPI - Raw response:", responseData);
 
     if (!response.ok) {
       throw new Error(responseData.message || "Failed to update user");
@@ -145,6 +153,7 @@ export const fetchUsersAPI = async (userToken) => {
     }
 
     const data = await response.json();
+    // console.log("users fetched --->", data.data);
     return data.data;
   } catch (error) {
     console.error("Error fetching clients:", error);
@@ -178,6 +187,47 @@ export const deactivateUserAPI = async (userId) => {
   }
 };
 
+export const deleteUserAPI = async ({ userId, token, isAdmin }) => {
+  try {
+    console.log("Deleting user with ID:", { userId, token, isAdmin });
+
+    let response;
+
+    if (isAdmin) {
+      // Admin endpoint to delete other users
+      response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      response = await fetch(`${API_BASE_URL}/usuario`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to delete user");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw error;
+  }
+};
+
 export const fetchUserByIdAPI = async ({ token }) => {
   try {
     const response = await fetch(`${API_BASE_URL}/usuario`, {
@@ -199,31 +249,6 @@ export const fetchUserByIdAPI = async ({ token }) => {
     return data;
   } catch (error) {
     console.error("Error fetching user by ID:", error);
-    throw error;
-  }
-};
-
-export const deleteUserAPI = async ({ userId, token }) => {
-  try {
-    console.log("Deleting user with ID:", { userId, token });
-    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        usuario: USUARIO,
-        apiKey: API_KEY,
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to delete user");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error deleting user:", error);
     throw error;
   }
 };
@@ -794,6 +819,30 @@ export const uploadProfilePictureAPI = async ({ formData, token }) => {
     return data;
   } catch (error) {
     console.error("Error in uploadProfilePictureAPI:", error);
+    throw error;
+  }
+};
+
+export const deleteProfilePictureAPI = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuario/imagen`, {
+      method: "DELETE",
+      headers: {
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete profile picture");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error in deleteProfilePictureAPI:", error);
     throw error;
   }
 };

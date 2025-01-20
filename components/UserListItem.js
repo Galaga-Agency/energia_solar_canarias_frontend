@@ -16,15 +16,18 @@ const UserListItem = ({
   t,
   showLoginStatus = true,
   isAssociatedUser = false,
-  buttonType = "remove", // Default to "remove"
+  buttonType = "remove",
+  disableClick = false,
 }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleClick = () => {
+    if (disableClick) return;
+
     if (onUserClick) {
       onUserClick(user);
-    } else {
+    } else if (!isAssociatedUser) {
       setShowDetailsModal(true);
     }
   };
@@ -69,7 +72,11 @@ const UserListItem = ({
     <>
       <div
         onClick={handleClick}
-        className="bg-white dark:bg-custom-dark-blue backdrop-blur-sm rounded-lg hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300 cursor-pointer group px-4 py-2 mx-auto max-w-full"
+        className={`bg-white dark:bg-custom-dark-blue backdrop-blur-sm rounded-lg 
+        hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300 
+        ${
+          disableClick ? "" : "cursor-pointer"
+        } group px-4 py-2 mx-auto max-w-full`}
       >
         <div className="flex items-center justify-between w-full gap-4">
           {/* Avatar */}

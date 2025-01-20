@@ -14,8 +14,8 @@ export const useOptimalItemsCount = (
     const calculateOptimalItems = () => {
       const listContainer = document.querySelector(listContainerSelector);
       const sidebar = document.querySelector(sidebarSelector);
-      const header = document.querySelector(".header"); // Add this if you have a header
-      const footer = document.querySelector(".footer"); // Add this if you have a footer
+      const header = document.querySelector(".header");
+      const footer = document.querySelector(".footer");
 
       if (!listContainer) return;
 

@@ -5,7 +5,6 @@ import LanguageSelector from "@/components/LanguageSelector";
 import LogoAnimation from "@/components/LogoAnimation";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useRef } from "react";
-import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setUser,
@@ -14,22 +13,19 @@ import {
 } from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { storage } from "@/utils/storage";
+import { fetchAllUserNotifications } from "@/store/slices/notificationsSlice";
 
 export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const tokenValidated = useSelector(selectTokenValidated);
+  const userData = useSelector((state) => state.user?.user); // Get the nested user data
   const redirectAttempted = useRef(false);
 
   useEffect(() => {
     const handleInitialRedirect = async () => {
-      // console.log("Checking for redirect...");
-      // console.log("isLoggedIn:", isLoggedIn);
-      // console.log("tokenValidated:", tokenValidated);
-
       if (redirectAttempted.current) {
-        // console.log("Redirect already attempted");
         return;
       }
 
@@ -39,15 +35,9 @@ export default function Home() {
       if (storedUser && storedToken) {
         try {
           const user = JSON.parse(storedUser);
-          // console.log("Parsed user:", user);
 
           if (user?.id && user?.tokenIdentificador) {
-            // console.log("Valid user data found, redirecting...");
-            dispatch(setUser(user));
-            redirectAttempted.current = true;
-            user?.clase === "admin"
-              ? router.push(`/dashboard/${user.id}/admin`)
-              : router.push(`/dashboard/${user.id}/plants`);
+            await dispatch(setUser(user));
           } else {
             console.warn("Invalid user data in storage");
             storage.removeItem("user");
@@ -62,7 +52,29 @@ export default function Home() {
     };
 
     handleInitialRedirect();
-  }, [dispatch, router, isLoggedIn, tokenValidated]);
+  }, [dispatch]);
+
+  // Separate effect for handling user state changes
+  useEffect(() => {
+    const handleUserRedirect = async () => {
+      if (userData && !redirectAttempted.current) {
+        console.log("User data loaded:", userData);
+        try {
+          await dispatch(fetchAllUserNotifications());
+
+          redirectAttempted.current = true;
+
+          userData?.clase === "admin"
+            ? router.push(`/dashboard/${userData.id}/admin`)
+            : router.push(`/dashboard/${userData.id}/plants`);
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        }
+      }
+    };
+
+    handleUserRedirect();
+  }, [userData, dispatch, router]);
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">

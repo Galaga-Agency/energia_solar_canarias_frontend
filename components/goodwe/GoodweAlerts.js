@@ -51,6 +51,7 @@ const GoodweAlerts = ({ plantId, onViewAll }) => {
   }
 
   const allRecords = alerts?.goodwe?.data?.list || [];
+  console.log("allRecors", allRecords);
   const activeRecords = allRecords.filter((alert) => alert.status === 0);
 
   const filteredRecords = plantId

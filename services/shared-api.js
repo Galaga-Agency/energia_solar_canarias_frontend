@@ -1,3 +1,6 @@
+import { fetchGoodweAlertsAPI } from "./goodwe-api";
+import { fetchVictronEnergyAlertsAPI } from "./victronenergy-api";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const USUARIO = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;

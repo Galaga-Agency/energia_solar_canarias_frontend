@@ -25,16 +25,19 @@ const BottomNavbar = ({ userId }) => {
         : "/dashboard/[userId]/plants",
     },
     {
-      icon: isAdmin ? (
-        <FontAwesomeIcon icon={faUsers} className="text-2xl" />
-      ) : (
-        <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
-      ),
-      label: isAdmin ? t("users") : t("notifications"),
-      path: isAdmin
-        ? "/dashboard/[userId]/users"
-        : "/dashboard/[userId]/notifications",
+      icon: <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />,
+      label: t("notifications"),
+      path: "/dashboard/[userId]/notifications",
     },
+    ...(isAdmin
+      ? [
+          {
+            icon: <FontAwesomeIcon icon={faUsers} className="text-2xl" />,
+            label: t("users"),
+            path: "/dashboard/[userId]/users",
+          },
+        ]
+      : []),
     {
       icon: isAdmin ? (
         <FontAwesomeIcon icon={faCog} className="text-2xl" />

@@ -157,13 +157,11 @@ export const fetchGoodweEquipmentDetailsAPI = async ({ plantId, token }) => {
 export const fetchGoodweAlertsAPI = async ({
   token,
   pageIndex = 1,
-  pageSize = 10,
+  pageSize = 300,
 }) => {
   try {
-    const url = `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}`;
-    // console.log("fetching con URL ---> ", url);
     const response = await fetch(
-      `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}&status=3`,
       {
         method: "GET",
         headers: {
@@ -181,6 +179,7 @@ export const fetchGoodweAlertsAPI = async ({
     }
 
     const data = await response.json();
+    console.log("goodwe's alerts --->", data.data);
     return data?.data;
   } catch (error) {
     console.error("Alerts fetch error:", error);

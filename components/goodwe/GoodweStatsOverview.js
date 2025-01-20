@@ -26,6 +26,8 @@ const GoodweStatsOverview = ({ plants, t, alerts }) => {
     alerts?.goodwe?.data?.list?.filter((alert) => alert.status === 0)?.length ||
     0;
 
+  console.log("-------------- GOODWE ALERTS RETURNED -------------", alerts);
+
   // console.log("goodwe alerts count in overviw", alerts);
 
   return (

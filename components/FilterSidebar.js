@@ -24,27 +24,20 @@ const STATUS_OPTIONS = [
   "Descargando",
   "En reposo",
 ];
-// const TYPE_OPTIONS = [
-//   "Residential",
-//   "Commercial",
-//   "Ground Mounted",
-//   "Battery Storage",
-//   "Optimizers & Inverters",
-// ];
+
 const ORGANIZATION_OPTIONS = [
-  "Goodwe",
-  "SolarEdge",
-  "Bluetti",
-  "Sungrow",
-  "Victron Energy",
-  "Sigenergy",
-  "SMA",
-  "Solarweb",
+  { name: "Goodwe", isAvailable: true },
+  { name: "SolarEdge", isAvailable: true },
+  { name: "Victron Energy", isAvailable: true },
+  { name: "Bluetti", isAvailable: false },
+  { name: "Sungrow", isAvailable: false },
+  { name: "Sigenergy", isAvailable: false },
+  { name: "SMA", isAvailable: false },
+  { name: "Solar.web - Fronius", isAvailable: false },
 ];
 
 const INITIAL_FILTER_STATE = {
   status: [],
-  // type: [],
   organization: [],
   search: "",
   capacity: { min: 0, max: 10000 },
@@ -73,7 +66,9 @@ const FilterSidebar = forwardRef(
     );
 
     const handleCheckboxChange = useCallback(
-      (filterType, value) => {
+      (filterType, value, isAvailable = true) => {
+        if (!isAvailable) return;
+
         const normalizedValue = normalizeString(value);
         setFilters((prev) => {
           const updatedFilters = {
@@ -141,10 +136,6 @@ const FilterSidebar = forwardRef(
             (plant.status &&
               currentFilters.status.includes(normalizeString(plant.status)));
 
-          // const matchesType =
-          //   currentFilters.type.length === 0 ||
-          //   (plant.type && currentFilters.type.includes(normalizeString(plant.type)));
-
           const matchesOrganization =
             currentFilters.organization.length === 0 ||
             (plant.organization &&
@@ -163,7 +154,6 @@ const FilterSidebar = forwardRef(
           return (
             matchesSearch &&
             matchesStatus &&
-            // matchesType &&
             matchesOrganization &&
             matchesCapacity
           );
@@ -188,7 +178,6 @@ const FilterSidebar = forwardRef(
     useEffect(() => {
       if (initialSearchTerm !== filters.search) {
         setFilters((prev) => ({ ...prev, search: initialSearchTerm }));
-        // Apply initial search filter
         if (initialSearchTerm) {
           const searchTerm = initialSearchTerm.toLowerCase();
           onFilterChange(
@@ -219,24 +208,6 @@ const FilterSidebar = forwardRef(
       onFilterChange(plants);
     }, [plants, onFilterChange]);
 
-    const renderFilterSection = (title, options, filterType) => (
-      <div className="mb-4">
-        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-          {t(title)}
-        </h3>
-        <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-          {options.map((option) => (
-            <CustomCheckbox
-              key={option}
-              label={filterType === "status" ? t(`status.${option}`) : option}
-              checked={filters[filterType].includes(normalizeString(option))}
-              onChange={() => handleCheckboxChange(filterType, option)}
-            />
-          ))}
-        </div>
-      </div>
-    );
-
     return (
       <div>
         <div
@@ -256,7 +227,7 @@ const FilterSidebar = forwardRef(
                 className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
                 title={t("reset_filters")}
               >
-                {isDesktop && <span>{t("reset")}</span>}{" "}
+                {isDesktop && <span>{t("reset")}</span>}
                 <RotateCcw className="w-5 h-5" />
               </button>
               {(isMobile || isTablet) && (
@@ -266,7 +237,7 @@ const FilterSidebar = forwardRef(
                   onClick={closeSidebar}
                   className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                 >
-                  <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow " />
+                  <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow" />
                 </motion.button>
               )}
             </div>
@@ -282,13 +253,58 @@ const FilterSidebar = forwardRef(
             />
           </div>
 
-          {renderFilterSection("plantStatus", STATUS_OPTIONS, "status")}
-          {/* {renderFilterSection("type", TYPE_OPTIONS, "type")} */}
-          {renderFilterSection(
-            "organization",
-            ORGANIZATION_OPTIONS,
-            "organization"
-          )}
+          <div className="mb-4">
+            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+              {t("plantStatus")}
+            </h3>
+            <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+              {STATUS_OPTIONS.map((status) => (
+                <CustomCheckbox
+                  key={status}
+                  label={t(`status.${status}`)}
+                  checked={filters.status.includes(normalizeString(status))}
+                  onChange={() => handleCheckboxChange("status", status)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+              {t("organization")}
+            </h3>
+            <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+              {ORGANIZATION_OPTIONS.map((org) => (
+                <div
+                  key={org.name}
+                  className={!org.isAvailable ? "opacity-50" : undefined}
+                >
+                  <CustomCheckbox
+                    label={
+                      <span className="flex items-center gap-2 text-nowrap">
+                        {org.name}
+                        {!org.isAvailable && (
+                          <span className="text-xs italic text-custom-dark-blue dark:text-custom-light-gray">
+                            ({t("comingSoon")})
+                          </span>
+                        )}
+                      </span>
+                    }
+                    checked={filters.organization.includes(
+                      normalizeString(org.name)
+                    )}
+                    onChange={() =>
+                      handleCheckboxChange(
+                        "organization",
+                        org.name,
+                        org.isAvailable
+                      )
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="mb-4">
             <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">

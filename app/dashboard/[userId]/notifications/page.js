@@ -41,12 +41,12 @@ const NotificationsTab = () => {
   const [notificationToDelete, setNotificationToDelete] = useState(null);
   const [showArchived, setShowArchived] = useState(true);
 
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash === "#notifications") {
-      notificationsRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
+  // useEffect(() => {
+  //   const hash = window.location.hash;
+  //   if (hash === "#notifications") {
+  //     notificationsRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, []);
 
   const handleMarkAsRead = (notificationId, plantId) => {
     router.push(`/dashboard/${userId}/plants/${plantId}`);
@@ -100,11 +100,11 @@ const NotificationsTab = () => {
           {t("notifications")}
         </h2>
         <div className="flex flex-col space-y-4 py-4">
-          <Link href={`/dashboard/${userId}/settings#notifications`}>
+          {/* <Link href={`/dashboard/${userId}/settings#notifications`}>
             <span className="text-custom-dark-blue dark:text-custom-light-gray underline underline-offset-2 hover:opacity-80 cursor-pointer">
               {t("goToNotificationsSettings")}
             </span>
-          </Link>
+          </Link> */}
           <div className="pt-6 md:mr-auto">
             <PrimaryButton
               onClick={handleMarkAllAsRead}

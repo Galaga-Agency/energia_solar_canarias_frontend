@@ -954,5 +954,6 @@
   "uploadProfilePicture": "Upload Profile Picture",
   "failedToDeleteAccount": "Failed to delete account",
   "accountDeletedSuccessfully": "Account deleted successfully",
-  "sortByLastLogin": "Sort by Last Login"
+  "sortByLastLogin": "Sort by Last Login",
+  "comingSoon": "Coming Soon"
 }

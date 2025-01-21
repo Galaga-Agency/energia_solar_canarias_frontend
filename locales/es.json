@@ -1866,5 +1866,6 @@
   "uploadProfilePicture": "Subir Foto de Perfil",
   "failedToDeleteAccount": "Error al eliminar la cuenta",
   "accountDeletedSuccessfully": "Cuenta eliminada exitosamente",
-  "sortByLastLogin": "Ordenar por Último Inicio de Sesión"
+  "sortByLastLogin": "Ordenar por Último Inicio de Sesión",
+  "comingSoon": "Próximamente"
 }

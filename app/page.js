@@ -13,7 +13,10 @@ import {
 } from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { storage } from "@/utils/storage";
-import { fetchAllUserNotifications } from "@/store/slices/notificationsSlice";
+import {
+  fetchActiveNotifications,
+  fetchAllUserNotifications,
+} from "@/store/slices/notificationsSlice";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -60,7 +63,9 @@ export default function Home() {
       if (userData && !redirectAttempted.current) {
         console.log("User data loaded:", userData);
         try {
-          await dispatch(fetchAllUserNotifications());
+          await dispatch(
+            fetchActiveNotifications({ pageIndex: 1, pageSize: 10 })
+          );
 
           redirectAttempted.current = true;
 

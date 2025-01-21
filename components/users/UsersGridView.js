@@ -6,6 +6,7 @@ import UserEditModal from "@/components/users/UserEditModal";
 import UserDetailsModal from "@/components/users/UserDetailsModal";
 import DeleteConfirmationModal from "@/components/users/DeleteConfirmationModal";
 import UserGridItem from "@/components/UserGridItem";
+import { motion, AnimatePresence } from "framer-motion";
 
 const UsersGridView = ({ users = [], isLoading, onUserClick, onUserSave }) => {
   const { t } = useTranslation();
@@ -95,16 +96,22 @@ const UsersGridView = ({ users = [], isLoading, onUserClick, onUserSave }) => {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {users.map((user, key) => (
-          <UserGridItem
-            key={user.usuario_id}
-            user={user}
-            getLoginStatus={getLoginStatus}
-            onClick={() => handleUserClick(user)}
-            onEdit={(e) => handleEditClick(e, user)}
-            onDelete={(e) => handleDeleteClick(e, user)}
-            t={t}
-          />
+        {users.map((user, index) => (
+          <motion.div
+            key={user.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 + index * 0.1 }}
+          >
+            <UserGridItem
+              user={user}
+              getLoginStatus={getLoginStatus}
+              onClick={() => handleUserClick(user)}
+              onEdit={(e) => handleEditClick(e, user)}
+              onDelete={(e) => handleDeleteClick(e, user)}
+              t={t}
+            />
+          </motion.div>
         ))}
       </div>
 

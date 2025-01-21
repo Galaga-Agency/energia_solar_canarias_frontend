@@ -3,13 +3,13 @@ import { useTranslation } from "next-i18next";
 import UsersListSkeleton from "@/components/loadingSkeletons/UsersListSkeleton";
 import useTouchDevice from "@/hooks/useTouchDevice";
 import useFormattedDate from "@/hooks/useFormattedDate";
-import UserEditModal from "@/components/users/UserEditModal";
 import UserDetailsModal from "@/components/users/UserDetailsModal";
 import DeleteConfirmationModal from "@/components/users/DeleteConfirmationModal";
 import useDeviceType from "@/hooks/useDeviceType";
 import UserListItem from "@/components/UserListItem";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
+import { motion, AnimatePresence } from "framer-motion";
 
 const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
   const { t } = useTranslation();
@@ -46,17 +46,23 @@ const UsersListView = ({ users, isLoading, onUserClick, onUserSave }) => {
   return (
     <div className="mb-8">
       <div className="space-y-4">
-        {users.map((user, key) => (
-          <UserListItem
-            key={user.usuario_id}
-            user={user}
-            loginStatus={getLoginStatus(user.ultimo_login)}
-            isMobile={isMobile}
-            isTouchDevice={isTouchDevice}
-            onUserClick={handleUserClick}
-            onDelete={(e) => handleDeleteClick(e, user)}
-            t={t}
-          />
+        {users.map((user, index) => (
+          <motion.div
+            key={user.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + index * 0.1 }}
+          >
+            <UserListItem
+              user={user}
+              loginStatus={getLoginStatus(user.ultimo_login)}
+              isMobile={isMobile}
+              isTouchDevice={isTouchDevice}
+              onUserClick={handleUserClick}
+              onDelete={(e) => handleDeleteClick(e, user)}
+              t={t}
+            />
+          </motion.div>
         ))}
       </div>
 

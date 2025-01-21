@@ -76,11 +76,11 @@ const GoodweEnergyFlowDisplay = memo(() => {
 
       setRealtimeData({
         powerflow: {
-          load: powerflowData.load || "0W",
-          pv: powerflowData.pv || "0W",
-          grid: powerflowData.grid || "0W",
-          soc: powerflowData.soc || "0%",
-          unit: powerflowData.unit || "",
+          load: powerflowData?.load || "0W",
+          pv: powerflowData?.pv || "0W",
+          grid: powerflowData?.grid || "0W",
+          soc: powerflowData?.soc || "0%",
+          unit: powerflowData?.unit || "",
         },
       });
 

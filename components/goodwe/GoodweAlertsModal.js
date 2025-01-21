@@ -1,53 +1,112 @@
-// GoodweAlertsModal.js
+"use client";
+
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiAlertCircle, FiX, FiArchive, FiCheck } from "react-icons/fi";
-import { format, parse } from "date-fns";
-import { es } from "date-fns/locale";
+import { FiAlertCircle, FiX } from "react-icons/fi";
 import { useTranslation } from "next-i18next";
 import Texture from "@/components/Texture";
-import PrimaryButton from "@/components/ui/PrimaryButton";
-import CustomCheckbox from "@/components/ui/CustomCheckbox";
+import NotificationListItem from "@/components/notifications/NotificationListItem";
+import {
+  fetchActiveNotifications,
+  fetchResolvedNotifications,
+  loadAllNotificationsInBackground,
+  selectActiveNotifications,
+  selectResolvedNotifications,
+  selectActiveTotalCount,
+  selectResolvedTotalCount,
+  selectIsLoadingMore,
+  selectIsInitialLoad,
+  selectActiveError,
+  selectResolvedError,
+  selectResolvedFetched,
+  setInitialLoad,
+} from "@/store/slices/notificationsSlice";
+import { selectUser } from "@/store/slices/userSlice";
+import { useParams } from "next/navigation";
 
-const GoodweAlertsModal = ({ isOpen, onClose, alerts }) => {
+const ITEMS_PER_PAGE = 100;
+
+const GoodweAlertsModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
-  const [selectedAlerts, setSelectedAlerts] = useState([]);
-  const [showActive, setShowActive] = useState(true);
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
+  // Redux state
+  const activeNotifications = useSelector(selectActiveNotifications);
+  const resolvedNotifications = useSelector(selectResolvedNotifications);
+  const activeTotalCount = useSelector(selectActiveTotalCount);
+  const resolvedTotalCount = useSelector(selectResolvedTotalCount);
+  const isLoadingMore = useSelector(selectIsLoadingMore);
+  const isInitialLoad = useSelector(selectIsInitialLoad);
+  const activeError = useSelector(selectActiveError);
+  const resolvedError = useSelector(selectResolvedError);
+  const resolvedFetched = useSelector(selectResolvedFetched);
+
+  // Local state
+  const [activeTab, setActiveTab] = useState("active");
+  const [filteredActive, setFilteredActive] = useState([]);
+  const [filteredResolved, setFilteredResolved] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { plantId } = useParams();
+
+  console.log("activeNotifications ---- ", activeNotifications);
+
+  // Load notifications on mount
+  useEffect(() => {
+    if (isOpen && user) {
+      dispatch(
+        fetchActiveNotifications({ pageIndex: 1, pageSize: ITEMS_PER_PAGE })
+      ).then(() => {
+        dispatch(
+          loadAllNotificationsInBackground({
+            status: 0,
+            pageSize: ITEMS_PER_PAGE,
+          })
+        );
+      });
+
+      dispatch(
+        fetchResolvedNotifications({ pageIndex: 1, pageSize: ITEMS_PER_PAGE })
+      ).then(() => {
+        dispatch(
+          loadAllNotificationsInBackground({
+            status: 1,
+            pageSize: ITEMS_PER_PAGE,
+          })
+        );
+      });
+    }
+  }, [dispatch, user, isOpen]);
+
+  // Reset pagination when switching tabs
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  // Update filtered notifications when raw data changes
+  useEffect(() => {
+    if (activeNotifications.length) {
+      const goodweActive = activeNotifications.filter(
+        (n) => n.provider === "goodwe" && n.stationId === plantId
+      );
+      setFilteredActive(goodweActive);
+    }
+    if (resolvedNotifications.length) {
+      const goodweResolved = resolvedNotifications.filter(
+        (n) => n.provider === "goodwe" && n.stationId === plantId
+      );
+      setFilteredResolved(goodweResolved);
+    }
+  }, [activeNotifications, resolvedNotifications, plantId]);
+
+  // Handle body scroll
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
-
-  const formatDateTime = (dateString) => {
-    try {
-      const date = parse(dateString, "MM/dd/yyyy HH:mm:ss", new Date());
-      return format(date, "dd/MM/yyyy HH:mm", { locale: es });
-    } catch (error) {
-      console.error("Error parsing date:", dateString);
-      return dateString;
-    }
-  };
-
-  const getSeverityColor = (warningLevel, status) => {
-    if (status === 0) return "bg-red-500 dark:bg-red-500/80";
-    if (warningLevel === 1) return "bg-yellow-500 dark:bg-yellow-500/80";
-    return "bg-green-500 dark:bg-green-500/80";
-  };
-
-  const filteredAlerts = alerts.filter((alert) =>
-    showActive ? alert.status === 0 : alert.status === 1
-  );
-
-  const handleSelectAlert = (alertId) => {
-    setSelectedAlerts((prev) =>
-      prev.includes(alertId)
-        ? prev.filter((id) => id !== alertId)
-        : [...prev, alertId]
-    );
-  };
 
   return (
     <AnimatePresence mode="wait">
@@ -114,45 +173,26 @@ const GoodweAlertsModal = ({ isOpen, onClose, alerts }) => {
                   >
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setShowActive(true)}
+                        onClick={() => setActiveTab("active")}
                         className={`select-none px-4 py-2 rounded-lg transition-colors ${
-                          showActive
+                          activeTab === "active"
                             ? "bg-custom-yellow text-custom-dark-blue"
                             : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                         }`}
                       >
-                        {t("Active")}
+                        {t("Active")} ({filteredActive.length})
                       </button>
                       <button
-                        onClick={() => setShowActive(false)}
+                        onClick={() => setActiveTab("resolved")}
                         className={`select-none px-4 py-2 rounded-lg transition-colors ${
-                          !showActive
+                          activeTab === "resolved"
                             ? "bg-custom-yellow text-custom-dark-blue"
                             : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                         }`}
                       >
-                        {t("Cleared")}
+                        {t("Cleared")} ({filteredResolved.length})
                       </button>
                     </div>
-
-                    {selectedAlerts.length > 0 && (
-                      <div className="flex gap-2">
-                        <PrimaryButton
-                          onClick={() => {}}
-                          className="flex items-center gap-2"
-                        >
-                          <FiCheck />
-                          <p className="ml-2">{t("Mark as Read")}</p>
-                        </PrimaryButton>
-                        <PrimaryButton
-                          onClick={() => {}}
-                          className="flex items-center gap-2"
-                        >
-                          <FiArchive />
-                          <p className="ml-2">{t("Archive")}</p>
-                        </PrimaryButton>
-                      </div>
-                    )}
                   </motion.div>
 
                   <motion.div
@@ -162,58 +202,29 @@ const GoodweAlertsModal = ({ isOpen, onClose, alerts }) => {
                     transition={{ delay: 0.4 }}
                     className="max-h-[60vh] overflow-y-auto custom-scrollbar space-y-4"
                   >
-                    {filteredAlerts.length === 0 ? (
+                    {activeTab === "active" ? (
+                      filteredActive.length === 0 ? (
+                        <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                          {t("No active alerts")}
+                        </div>
+                      ) : (
+                        filteredActive.map((alert) => (
+                          <NotificationListItem
+                            key={alert.id}
+                            notification={alert}
+                          />
+                        ))
+                      )
+                    ) : filteredResolved.length === 0 ? (
                       <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-                        {showActive
-                          ? t("No active alerts")
-                          : t("No cleared alerts")}
+                        {t("No cleared alerts")}
                       </div>
                     ) : (
-                      filteredAlerts.map((alert) => (
-                        <div
-                          key={alert.warningid}
-                          className="bg-white/50 dark:bg-slate-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
-                        >
-                          <div className="flex items-center gap-4">
-                            <CustomCheckbox
-                              checked={selectedAlerts.includes(alert.warningid)}
-                              onChange={() =>
-                                handleSelectAlert(alert.warningid)
-                              }
-                            />
-                            <div className="flex items-center justify-between flex-1">
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`min-w-3 w-3 h-3 rounded-full ${getSeverityColor(
-                                    alert.warninglevel,
-                                    alert.status
-                                  )}`}
-                                />
-                                <div>
-                                  <p className="text-custom-dark-blue dark:text-custom-yellow font-medium">
-                                    {alert.warningname}
-                                  </p>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {alert.deviceName}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="text-right text-sm text-gray-500 dark:text-gray-400">
-                                <div>{formatDateTime(alert.happentime)}</div>
-                                {alert.status === 1 && alert.recoverytime && (
-                                  <div className="text-green-600 dark:text-green-400">
-                                    {t("Resolved")}:{" "}
-                                    {
-                                      formatDateTime(alert.recoverytime).split(
-                                        " "
-                                      )[1]
-                                    }
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      filteredResolved.map((alert) => (
+                        <NotificationListItem
+                          key={alert.id}
+                          notification={alert}
+                        />
                       ))
                     )}
                   </motion.div>

@@ -9,12 +9,14 @@ import { useTranslation } from "next-i18next";
 import { FaUserCog } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/slices/userSlice";
+import { selectActiveNotificationsCount } from "@/store/slices/notificationsSlice";
 
 const BottomNavbar = ({ userId }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const currentPath = usePathname();
   const isAdmin = useSelector(selectIsAdmin);
+  const activeNotificationsCount = useSelector(selectActiveNotificationsCount);
 
   const icons = [
     {
@@ -25,7 +27,16 @@ const BottomNavbar = ({ userId }) => {
         : "/dashboard/[userId]/plants",
     },
     {
-      icon: <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />,
+      icon: (
+        <div className="relative">
+          <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
+          {activeNotificationsCount > 0 && (
+            <div className="absolute -top-1 -right-3 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              {activeNotificationsCount}
+            </div>
+          )}
+        </div>
+      ),
       label: t("notifications"),
       path: "/dashboard/[userId]/notifications",
     },

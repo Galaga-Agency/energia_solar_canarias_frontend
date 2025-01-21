@@ -250,22 +250,6 @@ export const fetchGoodweEquipmentDetails = createAsyncThunk(
   }
 );
 
-export const fetchGoodweAlerts = createAsyncThunk(
-  "plants/fetchGoodweAlerts",
-  async ({ token, pageIndex, pageSize }, { rejectWithValue }) => {
-    try {
-      const alertsData = await fetchGoodweAlertsAPI({
-        token,
-        pageIndex,
-        pageSize,
-      });
-      return alertsData;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
 // Solaredge
 
 export const fetchSolarEdgeGraphData = createAsyncThunk(
@@ -723,19 +707,6 @@ const plantsSlice = createSlice({
         state.equipmentLoading = false;
         state.equipmentDetails = null;
         state.equipmentError = action.payload;
-      })
-      .addCase(fetchGoodweAlerts.pending, (state) => {
-        state.alertsLoading = true;
-        state.alertsError = null;
-      })
-      .addCase(fetchGoodweAlerts.fulfilled, (state, action) => {
-        state.alertsLoading = false;
-        state.alerts.goodwe = action.payload;
-        state.alertsError = null;
-      })
-      .addCase(fetchGoodweAlerts.rejected, (state, action) => {
-        state.alertsLoading = false;
-        state.alertsError = action.payload || "Failed to fetch Goodwe alerts";
       })
 
       // Solaredge

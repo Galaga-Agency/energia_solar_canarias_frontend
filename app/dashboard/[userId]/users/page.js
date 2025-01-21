@@ -178,15 +178,20 @@ const UsersTab = () => {
   return (
     <>
       <TransitionEffect />
-      <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
+      <motion.div
+        className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+      >
         <Texture />
 
         {/* Header Controls */}
         <motion.div
-          className="fixed top-4 right-4 flex items-center gap-2 z-50"
+          className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
         >
           <ThemeToggle />
           <LanguageSelector />
@@ -200,16 +205,15 @@ const UsersTab = () => {
         >
           {/* Title Section */}
           <motion.div
-            className="flex items-center"
+            className="flex items-center mb-10 md:mb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.5 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
           >
             <Image
               src={companyIcon}
               alt="Company Icon"
-              className="w-12 h-12 mr-2 z-10 transition-transform duration-300 hover:scale-110"
-              priority
+              className="w-12 h-12 mr-2 z-10"
             />
             <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
               {t("usersList")}
@@ -218,22 +222,22 @@ const UsersTab = () => {
 
           {/* Filter Button - Mobile/Tablet Only */}
           <motion.button
-            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-all duration-300 button-shadow flex items-center hover:scale-105"
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
             onClick={() => setIsSidebarOpen(true)}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.8 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            transition={{ delay: 0.8, duration: 0.3 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             <IoFilter className="text-xl text-custom-dark-blue" />
           </motion.button>
 
           <motion.div
             className="flex mt-8 gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
           >
             {/* Sidebar - Desktop */}
             {!isMobile && !isTablet && (
@@ -255,46 +259,91 @@ const UsersTab = () => {
               className="flex-1"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.6, duration: 0.5 }}
+              transition={{ delay: 0.7 }}
             >
               {/* View Controls */}
-              <div className="flex flex-col justify-between">
-                <div className="flex items-center gap-4">
+              <motion.div
+                className="flex flex-col justify-between"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+              >
+                <motion.div
+                  className="flex items-center gap-4"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.1 }}
+                >
                   <span className="text-custom-dark-blue dark:text-custom-yellow mb-6">
                     {t("usersFound")}: {filteredUsers.length}
                   </span>
-                </div>
-                <div className="flex items-center justify-between mb-4">
-                  <UserSortMenu onSortChange={handleSortChange} />
-                  <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
-                    <ViewModeButton
-                      isActive={viewMode === "list"}
+                </motion.div>
+                <motion.div
+                  className="flex items-center justify-between mb-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.1 }}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.2 }}
+                  >
+                    <UserSortMenu onSortChange={handleSortChange} />
+                  </motion.div>
+                  <motion.div
+                    className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.2 }}
+                  >
+                    <motion.button
                       onClick={() => setViewMode("list")}
-                      icon={HiViewList}
-                    />
-                    <ViewModeButton
-                      isActive={viewMode === "grid"}
+                      className={`p-2 rounded-lg transition-colors ${
+                        viewMode === "list"
+                          ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                          : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <HiViewList className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
                       onClick={() => setViewMode("grid")}
-                      icon={HiViewGrid}
-                    />
-                  </div>
-                </div>
-              </div>
-
+                      className={`p-2 rounded-lg transition-colors ${
+                        viewMode === "grid"
+                          ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                          : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <HiViewGrid className="w-5 h-5" />
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
               {/* Users Content */}
               <AnimatePresence mode="wait">
                 {isLoading ? (
-                  viewMode === "list" ? (
-                    <UsersListView isLoading={true} users={[]} />
-                  ) : (
-                    <UsersGridView isLoading={true} users={[]} />
-                  )
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.3 }}
+                  >
+                    {viewMode === "list" ? (
+                      <UsersListView isLoading={true} users={[]} />
+                    ) : (
+                      <UsersGridView isLoading={true} users={[]} />
+                    )}
+                  </motion.div>
                 ) : !users || filteredUsers.length === 0 ? (
                   <motion.div
                     className="h-auto w-full flex flex-col justify-center items-center"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 1.8, duration: 0.5 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 1.2, duration: 0.5 }}
                   >
                     <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
                     <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
@@ -318,7 +367,12 @@ const UsersTab = () => {
 
               {/* Pagination */}
               {filteredUsers.length > usersPerPage && (
-                <motion.div className="mt-6 mb-16">
+                <motion.div
+                  className="mt-6 mb-16"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.4, duration: 0.5 }}
+                >
                   <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
@@ -348,6 +402,9 @@ const UsersTab = () => {
         <motion.button
           onClick={() => setIsFormOpen(true)}
           className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-all duration-300 button-shadow flex items-center z-40"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.6, duration: 0.3 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -362,7 +419,7 @@ const UsersTab = () => {
         </motion.button>
 
         <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
-      </div>
+      </motion.div>
     </>
   );
 };

@@ -1,8 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { AlertTriangle, BarChart2, CircleDollarSign, Sun } from "lucide-react";
 import { MdOutlineEnergySavingsLeaf } from "react-icons/md";
+import {
+  selectActiveNotifications,
+  fetchActiveNotifications,
+} from "@/store/slices/notificationsSlice";
+import { selectUser } from "@/store/slices/userSlice";
 
 const GoodweStatsOverview = ({ plants, t, alerts }) => {
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const activeNotifications = useSelector(selectActiveNotifications);
+
+  // Dispatch fetch on component mount if no notifications
+  useEffect(() => {
+    if (user?.tokenIdentificador && activeNotifications.length === 0) {
+      dispatch(fetchActiveNotifications({ pageIndex: 1, pageSize: 100 }));
+    }
+  }, [dispatch, user, activeNotifications]);
+
+  const goodweActiveAlertsCount = activeNotifications.filter(
+    (notification) => notification.provider === "goodwe"
+  ).length;
+
   const stats = {
     working: plants?.filter((p) => p.status === "working").length || 0,
     disconnected:
@@ -21,14 +42,6 @@ const GoodweStatsOverview = ({ plants, t, alerts }) => {
   const totalMWh = (stats.totalProduction / 1000).toFixed(2);
   // Convert W to kW for current production
   const currentKW = (stats.currentProduction / 1000).toFixed(2);
-
-  const activeAlertsCount =
-    alerts?.goodwe?.data?.list?.filter((alert) => alert.status === 0)?.length ||
-    0;
-
-  console.log("-------------- GOODWE ALERTS RETURNED -------------", alerts);
-
-  // console.log("goodwe alerts count in overviw", alerts);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
@@ -121,10 +134,10 @@ const GoodweStatsOverview = ({ plants, t, alerts }) => {
         <div className="flex justify-center items-center">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-medium text-slate-700 dark:text-slate-200">
-              {activeAlertsCount}
+              {goodweActiveAlertsCount}
             </span>
             <span className="text-sm text-slate-600 dark:text-slate-400">
-              {t("total") || 0}
+              {t("total")}
             </span>
           </div>
         </div>

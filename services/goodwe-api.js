@@ -154,14 +154,14 @@ export const fetchGoodweEquipmentDetailsAPI = async ({ plantId, token }) => {
   }
 };
 
-export const fetchGoodweAlertsAPI = async ({
+export const fetchGoodweActiveNotificationsAPI = async ({
   token,
   pageIndex = 1,
-  pageSize = 300,
+  pageSize,
 }) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}&status=3`,
+      `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}&status=0`,
       {
         method: "GET",
         headers: {
@@ -175,14 +175,45 @@ export const fetchGoodweAlertsAPI = async ({
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to fetch alerts");
+      throw new Error(errorData.message || "Failed to fetch active alerts");
     }
 
     const data = await response.json();
-    console.log("goodwe's alerts --->", data.data);
-    return data?.data;
+    return data.data;
   } catch (error) {
-    console.error("Alerts fetch error:", error);
+    console.error("Active alerts fetch error:", error);
+    throw error;
+  }
+};
+
+export const fetchGoodweResolvedNotificationsAPI = async ({
+  token,
+  pageIndex = 1,
+  pageSize,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plant/alert?proveedor=goodwe&pageIndex=${pageIndex}&pageSize=${pageSize}&status=1`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch resolved alerts");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Resolved alerts fetch error:", error);
     throw error;
   }
 };

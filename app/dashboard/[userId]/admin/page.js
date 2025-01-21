@@ -26,7 +26,6 @@ import FilterSidebar from "@/components/FilterSidebar";
 import ViewChangeDropdown from "@/components/ViewChangeDropdown";
 import { providers } from "@/data/providers";
 import { useTranslation } from "next-i18next";
-import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
 import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";

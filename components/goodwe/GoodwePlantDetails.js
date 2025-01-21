@@ -43,6 +43,7 @@ import GoodweEnergyStatisticsSkeleton from "../loadingSkeletons/GoodweEnergyStat
 import GoodweAlerts from "@/components/goodwe/GoodweAlerts";
 import AlertsModal from "../AlertsModal";
 import AssociatedUsers from "../AssociatedUsers";
+import GoodweAlertsModal from "./GoodweAlertsModal";
 
 const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
@@ -402,14 +403,9 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
         </section>
       </div>
 
-      <AlertsModal
+      <GoodweAlertsModal
         isOpen={isAlertsModalOpen}
         onClose={() => setIsAlertsModalOpen(false)}
-        alerts={
-          alerts?.goodwe?.data?.list?.filter(
-            (alert) => alert.stationId === goodwePlant?.info?.powerstation_id
-          ) || []
-        }
       />
     </PageTransition>
   );

@@ -76,11 +76,11 @@ const UserListItem = ({
         hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300 
         ${
           disableClick ? "" : "cursor-pointer"
-        } group px-4 py-2 mx-auto max-w-full`}
+        } group px-4 py-2 overflow-hidden w-full max-w-[85vw] md:max-w-[92vw] mx-auto`}
       >
         <div className="flex items-center justify-between w-full gap-4">
           {/* Avatar */}
-          <div className="relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20">
+          <div className="relative flex-shrink-0 w-14 h-14 md:w-[70px] md:h-[70px]">
             <Image
               src={user.imagen || defaultAvatar.src}
               alt={user?.nombre || user?.name || "User"}

@@ -77,7 +77,7 @@ const UsersTab = () => {
   const usersPerPage = useMemo(() => {
     if (isMobile) return 6;
     if (isTablet) return 7;
-    return viewMode === "grid" ? 6 : 5;
+    return viewMode === "grid" ? 6 : 6;
   }, [isMobile, isTablet, viewMode]);
 
   const filteredUsers = useMemo(() => {
@@ -176,7 +176,7 @@ const UsersTab = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar mb-12">
       <TransitionEffect />
 
       {/* Theme and Language Controls */}
@@ -217,7 +217,7 @@ const UsersTab = () => {
 
         {/* Filter Button - Mobile/Tablet Only */}
         <motion.button
-          className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
+          className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
           onClick={() => setIsSidebarOpen(true)}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -234,7 +234,7 @@ const UsersTab = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
         >
-          {/* Sidebar - Desktop */}
+          {/* Desktop Sidebar */}
           {!isMobile && !isTablet && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -244,9 +244,20 @@ const UsersTab = () => {
               <UsersSidebar
                 filters={filters}
                 onFilterChange={setFilters}
-                isOpen={isSidebarOpen}
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
               />
             </motion.div>
+          )}
+
+          {/* Mobile Sidebar */}
+          {(isMobile || isTablet) && (
+            <UsersSidebar
+              filters={filters}
+              onFilterChange={setFilters}
+              isSidebarOpen={isSidebarOpen}
+              setIsSidebarOpen={setIsSidebarOpen}
+            />
           )}
 
           {/* Main Content */}

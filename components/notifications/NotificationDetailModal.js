@@ -24,12 +24,17 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
     }
 
     let plantId;
-    const provider = notification.provider.toLowerCase();
+    let provider = notification.provider.toLowerCase();
 
-    // Determine the correct plant ID based on provider
+    // First, handle the provider name conversion
+    if (provider === "victron") {
+      provider = "victronenergy";
+    }
+
+    // Then determine the correct plant ID based on provider
     if (provider === "goodwe") {
       plantId = notification.stationId || notification.stationid;
-    } else if (provider === "victron") {
+    } else if (provider === "victronenergy") {
       plantId = notification.plantId || notification.idSite;
     }
 
@@ -48,7 +53,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
       })
     );
 
-    // Navigate using the correct URL pattern
+    // Navigate using the correct URL pattern with the converted provider name
     const url = `/dashboard/${userId}/plants/${provider}/${plantId}`;
     router.push(url);
     onClose();

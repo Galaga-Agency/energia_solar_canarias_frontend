@@ -348,7 +348,7 @@ const ProviderPage = () => {
         <div className="flex mt-6">
           {/* Button to open sidebar */}
           <button
-            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
             onClick={toggleSidebar}
           >
             <IoFilter />

@@ -1,8 +1,5 @@
-"use client";
-
 import React, {
   useState,
-  useEffect,
   useRef,
   forwardRef,
   useImperativeHandle,
@@ -46,76 +43,18 @@ const INITIAL_FILTER_STATE = {
 const FilterSidebar = forwardRef(
   ({ plants, onFilterChange, initialSearchTerm }, ref) => {
     const { t } = useTranslation();
+    const { isMobile, isTablet, isDesktop } = useDeviceType();
     const sidebarRef = useRef(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [filters, setFilters] = useState({
       ...INITIAL_FILTER_STATE,
       search: initialSearchTerm || "",
     });
-    const { isMobile, isTablet, isDesktop } = useDeviceType();
 
     const normalizeString = (str) => {
       if (!str) return "";
       return str.toLowerCase().replace(/\s+/g, "");
     };
-
-    const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
-    const toggleSidebar = useCallback(
-      () => setIsSidebarOpen((prev) => !prev),
-      []
-    );
-
-    const handleCheckboxChange = useCallback(
-      (filterType, value, isAvailable = true) => {
-        if (!isAvailable) return;
-
-        const normalizedValue = normalizeString(value);
-        setFilters((prev) => {
-          const updatedFilters = {
-            ...prev,
-            [filterType]: prev[filterType].includes(normalizedValue)
-              ? prev[filterType].filter((item) => item !== normalizedValue)
-              : [...prev[filterType], normalizedValue],
-          };
-          onFilterChange(filterPlants(updatedFilters));
-          return updatedFilters;
-        });
-      },
-      [onFilterChange]
-    );
-
-    const handleSearchChange = useCallback(
-      (event) => {
-        const newSearchValue = event.target.value;
-        setFilters((prev) => {
-          const updatedFilters = {
-            ...prev,
-            search: newSearchValue,
-          };
-          onFilterChange(filterPlants(updatedFilters));
-          return updatedFilters;
-        });
-      },
-      [onFilterChange]
-    );
-
-    const handleCapacityChange = useCallback(
-      (type, value) => {
-        if (!value || isNaN(value)) return;
-        setFilters((prev) => {
-          const updatedFilters = {
-            ...prev,
-            capacity: {
-              ...prev.capacity,
-              [type]: Number(value),
-            },
-          };
-          onFilterChange(filterPlants(updatedFilters));
-          return updatedFilters;
-        });
-      },
-      [onFilterChange]
-    );
 
     const filterPlants = useCallback(
       (currentFilters) => {
@@ -162,6 +101,63 @@ const FilterSidebar = forwardRef(
       [plants]
     );
 
+    const handleCheckboxChange = useCallback(
+      (filterType, value, isAvailable = true) => {
+        if (!isAvailable) return;
+
+        const normalizedValue = normalizeString(value);
+        setFilters((prev) => {
+          const updatedFilters = {
+            ...prev,
+            [filterType]: prev[filterType].includes(normalizedValue)
+              ? prev[filterType].filter((item) => item !== normalizedValue)
+              : [...prev[filterType], normalizedValue],
+          };
+          onFilterChange(filterPlants(updatedFilters));
+          return updatedFilters;
+        });
+      },
+      [onFilterChange, filterPlants]
+    );
+
+    const handleSearchChange = useCallback(
+      (event) => {
+        const newSearchValue = event.target.value;
+        setFilters((prev) => {
+          const updatedFilters = {
+            ...prev,
+            search: newSearchValue,
+          };
+          onFilterChange(filterPlants(updatedFilters));
+          return updatedFilters;
+        });
+      },
+      [onFilterChange, filterPlants]
+    );
+
+    const handleCapacityChange = useCallback(
+      (type, value) => {
+        if (!value || isNaN(value)) return;
+        setFilters((prev) => {
+          const updatedFilters = {
+            ...prev,
+            capacity: {
+              ...prev.capacity,
+              [type]: Number(value),
+            },
+          };
+          onFilterChange(filterPlants(updatedFilters));
+          return updatedFilters;
+        });
+      },
+      [onFilterChange, filterPlants]
+    );
+
+    const handleResetFilters = useCallback(() => {
+      setFilters(INITIAL_FILTER_STATE);
+      onFilterChange(plants);
+    }, [plants, onFilterChange]);
+
     useImperativeHandle(
       ref,
       () => ({
@@ -175,52 +171,18 @@ const FilterSidebar = forwardRef(
       []
     );
 
-    useEffect(() => {
-      if (initialSearchTerm !== filters.search) {
-        setFilters((prev) => ({ ...prev, search: initialSearchTerm }));
-        if (initialSearchTerm) {
-          const searchTerm = initialSearchTerm.toLowerCase();
-          onFilterChange(
-            plants.filter(
-              (plant) =>
-                (plant.name && plant.name.toLowerCase().includes(searchTerm)) ||
-                (plant.address &&
-                  plant.address.toLowerCase().includes(searchTerm))
-            )
-          );
-        }
-      }
-    }, [initialSearchTerm, filters.search, plants, onFilterChange]);
-
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-          closeSidebar();
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }, [closeSidebar]);
-
-    const handleResetFilters = useCallback(() => {
-      setFilters(INITIAL_FILTER_STATE);
-      onFilterChange(plants);
-    }, [plants, onFilterChange]);
-
     return (
       <div>
         <div
           ref={sidebarRef}
-          className={`fixed z-50 top-0 left-0 h-screen xl:h-auto transform transition-all duration-300 ease-in-out ${
+          className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+          } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
         >
-          <div className="flex justify-between mb-4">
+          <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
               {t("filter")}
             </h3>
-
             <div className="flex items-center gap-2">
               <button
                 onClick={handleResetFilters}
@@ -234,7 +196,7 @@ const FilterSidebar = forwardRef(
                 <motion.button
                   whileHover={{ rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={closeSidebar}
+                  onClick={() => setIsSidebarOpen(false)}
                   className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                 >
                   <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow" />
@@ -300,6 +262,7 @@ const FilterSidebar = forwardRef(
                         org.isAvailable
                       )
                     }
+                    disabled={!org.isAvailable}
                   />
                 </div>
               ))}
@@ -339,12 +302,19 @@ const FilterSidebar = forwardRef(
           </div>
         </div>
 
-        <button
-          className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center transition-colors duration-300 button-shadow flex items-center"
-          onClick={toggleSidebar}
-        >
-          <IoFilter className="text-xl text-custom-dark-blue" />
-        </button>
+        {(isMobile || isTablet) && (
+          <motion.button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <IoFilter className="text-xl text-custom-dark-blue" />
+          </motion.button>
+        )}
       </div>
     );
   }

@@ -57,16 +57,33 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
   const alerts = useSelector(selectAlerts);
 
-  const token = useMemo(() => user?.tokenIdentificador, [user]);
-  const goodwePlant = useMemo(
-    () => plant?.data?.data || {},
-    [plant?.data?.data]
+  // Memoize the plant data with proper type checking
+  const goodwePlant = useMemo(() => {
+    const data = plant?.data?.data;
+    if (!data) return {};
+    return data;
+  }, [plant?.data?.data]);
+
+  // Helper function to safely get battery power
+  const getBatteryPower = (socData) => {
+    if (!socData) return 0;
+    if (!Array.isArray(socData)) return 0;
+    if (socData.length === 0) return 0;
+    if (!socData[0] || typeof socData[0].power === "undefined") return 0;
+    return socData[0].power;
+  };
+
+  // Memoize the battery power to avoid recalculations
+  const batteryPower = useMemo(
+    () => getBatteryPower(goodwePlant?.soc),
+    [goodwePlant?.soc]
   );
 
-  const plantId = useMemo(
-    () => goodwePlant?.info?.powerstation_id,
-    [goodwePlant]
-  );
+  const plantId = useMemo(() => {
+    return goodwePlant?.info?.powerstation_id || null;
+  }, [goodwePlant]);
+
+  const token = useMemo(() => user?.tokenIdentificador, [user]);
 
   const formattedAddress = useMemo(() => {
     if (!goodwePlant?.location) return "";
@@ -214,13 +231,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
 
           {/* Desktop Battery - Only shown on 2xl */}
           <div className="hidden 2xl:flex bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg items-center justify-center flex-col gap-4 w-[200px]">
-            <BatteryIndicator
-              soc={
-                Array.isArray(goodwePlant?.soc)
-                  ? goodwePlant.soc[0]?.power || 0
-                  : 0
-              }
-            />
+            <BatteryIndicator soc={batteryPower} />
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
@@ -232,6 +243,23 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
               </Tooltip>
             </TooltipProvider>
           </div>
+
+          {/* Mobile Battery */}
+          {isMobile && (
+            <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4 mb-6">
+              <BatteryIndicator soc={batteryPower} />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
+                    <Info className="h-4 w-4" />
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-xs">
+                    <p>{t("batteryTooltipContent")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          )}
 
           {/* Plant Details */}
           <div className="2xl:col-start-3 2xl:col-end-4">
@@ -338,7 +366,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
             <BatteryIndicator
               soc={
                 Array.isArray(goodwePlant?.soc)
-                  ? goodwePlant.soc[0]?.power || 0
+                  ? goodwePlant.soc?.[0]?.power || 0
                   : 0
               }
             />

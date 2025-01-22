@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useRef, useCallback } from "react";
 import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
-import useDeviceType from "@/hooks/useDeviceType";
-import { RotateCcw, X } from "lucide-react";
+import { X, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const INITIAL_FILTERS = {
   role: ["all"],
@@ -11,7 +11,12 @@ const INITIAL_FILTERS = {
   search: "",
 };
 
-const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
+const UsersSidebar = ({
+  filters,
+  onFilterChange,
+  isSidebarOpen,
+  setIsSidebarOpen,
+}) => {
   const { t } = useTranslation();
   const { isMobile, isTablet, isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
@@ -72,25 +77,12 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
     [filters, onFilterChange]
   );
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        onClose?.();
-      }
-    };
-
-    if (isOpen && (isMobile || isTablet)) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, onClose, isMobile, isTablet]);
-
   return (
     <div
       ref={sidebarRef}
       className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 pb-0 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
@@ -109,7 +101,7 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
             <motion.button
               whileHover={{ rotate: 90 }}
               whileTap={{ scale: 0.9 }}
-              onClick={onClose}
+              onClick={() => setIsSidebarOpen(false)}
               className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
               <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow" />
@@ -117,50 +109,46 @@ const UsersSidebar = ({ filters, onFilterChange, isOpen, onClose }) => {
           )}
         </div>
       </div>
-      <div className="space-y-6">
-        {/* Search */}
-        <div className="mb-6">
-          <input
-            type="text"
-            value={filters.search}
-            onChange={handleSearchChange}
-            placeholder={t("filterPlaceholder")}
-            className="w-full p-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
-          />
-        </div>
 
-        {/* Role Filter */}
-        <div>
-          <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-            {t("role")}
-          </h3>
-          <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-            {["all", "admin", "usuario"].map((role) => (
-              <CustomCheckbox
-                key={role}
-                label={t(`roles.${role}`)}
-                checked={filters.role.includes(role)}
-                onChange={() => handleRoleChange(role)}
-              />
-            ))}
-          </div>
-        </div>
+      <div className="mb-4">
+        <input
+          type="text"
+          value={filters.search}
+          onChange={handleSearchChange}
+          placeholder={t("filterPlaceholder")}
+          className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+        />
+      </div>
 
-        {/* Active Status Filter */}
-        <div>
-          <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-            {t("active_status")}
-          </h3>
-          <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-            {["all", "active", "inactive"].map((status) => (
-              <CustomCheckbox
-                key={status}
-                label={t(`${status}`)}
-                checked={filters.activeStatus.includes(status)}
-                onChange={() => handleActiveStatusChange(status)}
-              />
-            ))}
-          </div>
+      <div className="mb-4">
+        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+          {t("role")}
+        </h3>
+        <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+          {["all", "admin", "usuario"].map((role) => (
+            <CustomCheckbox
+              key={role}
+              label={t(`roles.${role}`)}
+              checked={filters.role.includes(role)}
+              onChange={() => handleRoleChange(role)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+          {t("active_status")}
+        </h3>
+        <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+          {["all", "active", "inactive"].map((status) => (
+            <CustomCheckbox
+              key={status}
+              label={t(`${status}`)}
+              checked={filters.activeStatus.includes(status)}
+              onChange={() => handleActiveStatusChange(status)}
+            />
+          ))}
         </div>
       </div>
     </div>

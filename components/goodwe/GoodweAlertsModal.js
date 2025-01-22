@@ -150,7 +150,7 @@ const GoodweAlertsModal = ({ isOpen, onClose }) => {
                   <div className="flex items-center gap-2">
                     <FiAlertCircle className="text-2xl" />
                     <h2 className="text-xl md:text-2xl font-bold">
-                      {t("System Alerts")}
+                      {t("System Alerts Modal")}
                     </h2>
                   </div>
                   <button

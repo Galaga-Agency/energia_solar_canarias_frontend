@@ -34,7 +34,7 @@ const ITEMS_PER_PAGE = 6;
 const NotificationsTab = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { isMobile } = useDeviceType();
+  const { isMobile, isTablet } = useDeviceType();
   const user = useSelector(selectUser);
   const activeNotifications = useSelector(selectActiveNotifications);
   const resolvedNotifications = useSelector(selectResolvedNotifications);
@@ -92,59 +92,44 @@ const NotificationsTab = () => {
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar mb-12">
+      {/* Background effects - lowest layer */}
       <TransitionEffect />
-      <motion.div
-        className="fixed top-4 right-4 flex items-center gap-2 z-50"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-      >
-        <ThemeToggle />
-        <LanguageSelector />
-      </motion.div>
       <Texture />
-      <motion.button
-        className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.8 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        <IoFilter />
-      </motion.button>
-      <div className="relative h-auto z-10 p-8">
-        <motion.h2
-          className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-        >
-          {t("notifications")}
-        </motion.h2>
 
+      {/* Main content wrapper */}
+      <div className="relative z-20">
+        {/* Theme and Language Controls - floating controls layer */}
         <motion.div
-          className="flex gap-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
+          className="fixed top-4 right-4 flex items-center gap-2 z-30"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
         >
-          {isMobile ? (
-            <NotificationFilterSidebar
-              activeNotifications={activeNotifications}
-              resolvedNotifications={resolvedNotifications}
-              onFilterChange={handleFilterChange}
-              isSidebarOpen={isSidebarOpen}
-              setIsSidebarOpen={setIsSidebarOpen}
-              activeTab={activeTab}
-            />
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.4 }}
-            >
+          <ThemeToggle />
+          <LanguageSelector />
+        </motion.div>
+
+        {/* Main content area */}
+        <div className="relative h-auto p-8">
+          {/* Page title */}
+          <motion.h2
+            className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            {t("notifications")}
+          </motion.h2>
+
+          {/* Content layout container */}
+          <motion.div
+            className="flex gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
+            {/* Sidebar section - conditionally rendered based on device */}
+            {isMobile ? (
               <NotificationFilterSidebar
                 activeNotifications={activeNotifications}
                 resolvedNotifications={resolvedNotifications}
@@ -153,102 +138,141 @@ const NotificationsTab = () => {
                 setIsSidebarOpen={setIsSidebarOpen}
                 activeTab={activeTab}
               />
-            </motion.div>
-          )}
-
-          <motion.div
-            className="flex-1 space-y-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-          >
-            <div className="flex space-x-1 mb-6 w-full bg-white/30 dark:bg-gray-800/50 backdrop-blur-sm p-1 rounded-full">
-              <motion.button
-                className={`flex-1 py-2 rounded-full text-sm relative overflow-hidden group ${
-                  activeTab === "active"
-                    ? "bg-custom-yellow text-custom-dark-blue"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-gray-700/50"
-                }`}
-                onClick={() => setActiveTab("active")}
-                whileHover={{ scale: 0.98 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="flex items-center justify-center gap-2 relative z-10">
-                  <span className="font-medium">
-                    <span className="hidden sm:inline">
-                      {t("activeNotifications")}
-                    </span>
-                    <span className="sm:hidden">{t("active")}</span>
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      activeTab === "active"
-                        ? "bg-custom-dark-blue/20 text-custom-dark-blue"
-                        : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
-                    }`}
-                  >
-                    {activeTotalCount}
-                  </span>
-                </div>
-              </motion.button>
-              <motion.button
-                className={`flex-1 py-2 rounded-full text-sm relative overflow-hidden group ${
-                  activeTab === "resolved"
-                    ? "bg-custom-yellow text-custom-dark-blue"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-gray-700/50"
-                }`}
-                onClick={() => setActiveTab("resolved")}
-                whileHover={{ scale: 0.98 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="flex items-center justify-center gap-2 relative z-10">
-                  <span className="font-medium">
-                    <span className="hidden sm:inline">
-                      {t("resolvedNotifications")}
-                    </span>
-                    <span className="sm:hidden">{t("cleared")}</span>
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      activeTab === "resolved"
-                        ? "bg-custom-dark-blue/20 text-custom-dark-blue"
-                        : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
-                    }`}
-                  >
-                    {resolvedTotalCount}
-                  </span>
-                </div>
-              </motion.button>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0 }}
-            >
-              <NotificationSortMenu onSortChange={handleSort} />
-            </motion.div>
-
-            {activeTab === "active" ? (
-              <ActiveNotificationsTab
-                filteredActive={filteredActive}
-                currentPage={currentPage}
-                totalPages={totalActivePages}
-                onPageChange={setCurrentPage}
-              />
             ) : (
-              <ResolvedNotificationsTab
-                filteredResolved={filteredResolved}
-                currentPage={currentPage}
-                totalPages={totalResolvedPages}
-                onPageChange={setCurrentPage}
-              />
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.4 }}
+              >
+                <NotificationFilterSidebar
+                  activeNotifications={activeNotifications}
+                  resolvedNotifications={resolvedNotifications}
+                  onFilterChange={handleFilterChange}
+                  isSidebarOpen={isSidebarOpen}
+                  setIsSidebarOpen={setIsSidebarOpen}
+                  activeTab={activeTab}
+                />
+              </motion.div>
             )}
+
+            {/* Main content area */}
+            <motion.div
+              className="flex-1 space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
+              {/* Tab navigation */}
+              <div className="flex space-x-1 mb-6 w-full bg-white/30 dark:bg-gray-800/50 backdrop-blur-sm p-1 rounded-full">
+                {/* Active tab button */}
+                <motion.button
+                  className={`flex-1 py-2 rounded-full text-sm relative overflow-hidden group ${
+                    activeTab === "active"
+                      ? "bg-custom-yellow text-custom-dark-blue"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-gray-700/50"
+                  }`}
+                  onClick={() => setActiveTab("active")}
+                  whileHover={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="flex items-center justify-center gap-2 relative z-10">
+                    <span className="font-medium">
+                      <span className="hidden sm:inline">
+                        {t("activeNotifications")}
+                      </span>
+                      <span className="sm:hidden">{t("active")}</span>
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        activeTab === "active"
+                          ? "bg-custom-dark-blue/20 text-custom-dark-blue"
+                          : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      {activeTotalCount}
+                    </span>
+                  </div>
+                </motion.button>
+
+                {/* Resolved tab button */}
+                <motion.button
+                  className={`flex-1 py-2 rounded-full text-sm relative overflow-hidden group ${
+                    activeTab === "resolved"
+                      ? "bg-custom-yellow text-custom-dark-blue"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-gray-700/50"
+                  }`}
+                  onClick={() => setActiveTab("resolved")}
+                  whileHover={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="flex items-center justify-center gap-2 relative z-10">
+                    <span className="font-medium">
+                      <span className="hidden sm:inline">
+                        {t("resolvedNotifications")}
+                      </span>
+                      <span className="sm:hidden">{t("cleared")}</span>
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        activeTab === "resolved"
+                          ? "bg-custom-dark-blue/20 text-custom-dark-blue"
+                          : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      {resolvedTotalCount}
+                    </span>
+                  </div>
+                </motion.button>
+              </div>
+
+              {/* Sort menu */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+              >
+                <NotificationSortMenu onSortChange={handleSort} />
+              </motion.div>
+
+              {/* Content tabs */}
+              {activeTab === "active" ? (
+                <ActiveNotificationsTab
+                  filteredActive={filteredActive}
+                  currentPage={currentPage}
+                  totalPages={totalActivePages}
+                  onPageChange={setCurrentPage}
+                />
+              ) : (
+                <ResolvedNotificationsTab
+                  filteredResolved={filteredResolved}
+                  currentPage={currentPage}
+                  totalPages={totalResolvedPages}
+                  onPageChange={setCurrentPage}
+                />
+              )}
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
+
+      {/* Mobile filter button - only shown when sidebar is closed */}
+      {(isMobile || isTablet) && !isSidebarOpen && (
+        <motion.button
+          className="xl:hidden fixed bottom-20 left-5 z-30 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.8 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <IoFilter />
+        </motion.button>
+      )}
+
+      {/* Bottom navigation  */}
       <BottomNavbar userId={user?.id} userClass={user?.clase} />
     </div>
   );

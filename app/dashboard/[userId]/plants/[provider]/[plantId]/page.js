@@ -21,7 +21,7 @@ import TransitionEffect from "@/components/TransitionEffect";
 import BottomNavbar from "@/components/BottomNavbar";
 
 const PlantDetailsPage = ({ params }) => {
-  const { plantId, userId, provider } = params; // We get provider from URL too
+  const { plantId, userId, provider } = params;
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const user = useSelector(selectUser);

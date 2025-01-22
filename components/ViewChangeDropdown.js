@@ -25,7 +25,7 @@ const ViewChangeDropdown = ({ onChange, view }) => {
   };
 
   return (
-    <div className="relative w-full z-50">
+    <div className="relative w-full z-40">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between bg-white/50 backdrop-blur-sm dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"

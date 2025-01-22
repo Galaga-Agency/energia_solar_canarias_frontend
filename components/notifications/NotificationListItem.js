@@ -8,35 +8,93 @@ import { selectUser } from "@/store/slices/userSlice";
 import NotificationDetailModal from "./NotificationDetailModal";
 import { FiAlertCircle } from "react-icons/fi";
 
+// Unified severity mapping
+const SEVERITY_MAPPING = {
+  goodwe: {
+    1: { color: "bg-yellow-500", level: 1 }, // Low severity
+    2: { color: "bg-orange-500", level: 2 }, // Medium severity
+    3: { color: "bg-red-500", level: 3 }, // High severity
+  },
+  victron: {
+    low: { color: "bg-yellow-500", level: 1 },
+    warning: { color: "bg-orange-500", level: 2 },
+    alarm: { color: "bg-red-500", level: 3 },
+  },
+  default: {
+    color: "bg-gray-500",
+    level: 1,
+  },
+};
+
 const NotificationListItem = ({ notification }) => {
   const { t } = useTranslation();
   const user = useSelector(selectUser);
   const [showModal, setShowModal] = useState(false);
 
-  const {
-    stationname,
-    deviceName,
-    devicesn,
-    warningname,
-    warning_code,
-    warninglevel,
-    status,
-    happentime,
-  } = notification;
-
-  const warningLevelColors = {
-    1: "bg-yellow-500",
-    2: "bg-orange-500",
-    3: "bg-red-500",
-  };
-
   const formatDate = (dateString) => {
     try {
-      return new Date(dateString).toLocaleString(ES, es);
+      return new Date(dateString).toLocaleString();
     } catch (error) {
       return dateString;
     }
   };
+
+  const renderNotificationContent = () => {
+    switch (notification.provider) {
+      case "goodwe":
+        // Determine severity color based on warning level
+        const goodweSeverity =
+          SEVERITY_MAPPING.goodwe[notification.warninglevel] ||
+          SEVERITY_MAPPING.default;
+
+        return {
+          title: notification.stationname,
+          deviceInfo: `${notification.deviceName || notification.devicesn}`,
+          alertInfo: `${notification.warningname} ${
+            notification.warning_code ? `(${notification.warning_code})` : ""
+          }`,
+          timestamp: notification.happentime,
+          severityColor: goodweSeverity.color,
+          severityLevel: goodweSeverity.level,
+        };
+
+      case "victron":
+        // Determine severity color based on severity string
+        const victronSeverity =
+          SEVERITY_MAPPING.victron[notification.severity?.toLowerCase()] ||
+          (notification.nameEnum?.toLowerCase() === "alarm"
+            ? SEVERITY_MAPPING.victron.alarm
+            : SEVERITY_MAPPING.default);
+
+        return {
+          title: notification.plantName,
+          deviceInfo: `${notification.device || "Unknown Device"}`,
+          alertInfo: notification.description,
+          timestamp: new Date(notification.started * 1000).toISOString(),
+          severityColor: victronSeverity.color,
+          severityLevel: victronSeverity.level,
+        };
+
+      default:
+        return {
+          title: "Unknown Provider",
+          deviceInfo: "",
+          alertInfo: "",
+          timestamp: new Date().toISOString(),
+          severityColor: SEVERITY_MAPPING.default.color,
+          severityLevel: SEVERITY_MAPPING.default.level,
+        };
+    }
+  };
+
+  const {
+    title,
+    deviceInfo,
+    alertInfo,
+    timestamp,
+    severityColor,
+    severityLevel,
+  } = renderNotificationContent();
 
   return (
     <>
@@ -64,28 +122,25 @@ const NotificationListItem = ({ notification }) => {
             {/* Content Section */}
             <div className="flex-grow min-w-0">
               <div className="flex items-center justify-between mb-1">
-                {/* Station Name and Warning Level */}
                 <div className="flex items-center space-x-2 min-w-0">
                   <h3 className="font-medium text-custom-dark-blue dark:text-custom-yellow truncate">
-                    {stationname}
+                    {title}
                   </h3>
                   <div
-                    className={`flex-shrink-0 h-2 w-2 rounded-full ${
-                      warningLevelColors[warninglevel] || "bg-gray-500"
-                    }`}
-                    title={`Level ${warninglevel}`}
+                    className={`flex-shrink-0 h-2 w-2 rounded-full ${severityColor}`}
+                    title={`Level ${severityLevel}`}
                   />
                 </div>
               </div>
 
-              {/* Device and Alert Info - Single Line on Desktop */}
+              {/* Device and Alert Info */}
               <div className="flex flex-col md:flex-row md:items-center md:space-x-6 text-sm">
                 <div className="flex items-center space-x-1 min-w-0">
                   <span className="text-gray-500 dark:text-gray-400 flex-shrink-0">
                     {t("device")}:
                   </span>
                   <span className="text-custom-dark-blue dark:text-custom-light-gray truncate">
-                    {deviceName || devicesn}
+                    {deviceInfo}
                   </span>
                 </div>
                 <div className="flex items-center space-x-1 min-w-0">
@@ -93,20 +148,20 @@ const NotificationListItem = ({ notification }) => {
                     {t("alert")}:
                   </span>
                   <span className="text-custom-dark-blue dark:text-custom-light-gray truncate">
-                    {warningname} {warning_code && `(${warning_code})`}
+                    {alertInfo}
                   </span>
                 </div>
               </div>
 
               {/* Timestamp - Mobile Only */}
               <div className="xl:hidden text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {formatDate(happentime)}
+                {formatDate(timestamp)}
               </div>
             </div>
 
             {/* Timestamp - Desktop Only */}
             <div className="hidden xl:block flex-shrink-0 text-sm text-gray-500 dark:text-gray-400">
-              {formatDate(happentime)}
+              {formatDate(timestamp)}
             </div>
           </div>
         </div>

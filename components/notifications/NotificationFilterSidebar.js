@@ -13,21 +13,21 @@ const INITIAL_FILTERS = {
   organization: [],
 };
 
-const PW_TYPES = {
-  "battery storage": "Battery Storage",
-  residential: "Residential",
-  commercial: "Commercial",
-};
+const SEVERITY_LEVELS = [
+  { value: "low", level: 1, label: "severity_level_1" },
+  { value: "medium", level: 2, label: "severity_level_2" },
+  { value: "high", level: 3, label: "severity_level_3" },
+];
 
 const ORGANIZATION_OPTIONS = [
-  { name: "Goodwe", isAvailable: true },
-  { name: "SolarEdge", isAvailable: true },
-  { name: "Victron Energy", isAvailable: true },
-  { name: "Bluetti", isAvailable: false },
-  { name: "Sungrow", isAvailable: false },
-  { name: "Sigenergy", isAvailable: false },
-  { name: "SMA", isAvailable: false },
-  { name: "Solar.web - Fronius", isAvailable: false },
+  { name: "Goodwe", value: "goodwe", isAvailable: true },
+  { name: "SolarEdge", value: "solaredge", isAvailable: true },
+  { name: "Victron Energy", value: "victron", isAvailable: true },
+  { name: "Bluetti", value: "bluetti", isAvailable: false },
+  { name: "Sungrow", value: "sungrow", isAvailable: false },
+  { name: "Sigenergy", value: "sigenergy", isAvailable: false },
+  { name: "SMA", value: "sma", isAvailable: false },
+  { name: "Solar.web - Fronius", value: "solarweb", isAvailable: false },
 ];
 
 const NotificationFilterSidebar = ({
@@ -56,50 +56,69 @@ const NotificationFilterSidebar = ({
       // Search filter
       if (currentFilters.search) {
         const searchTerm = currentFilters.search.toLowerCase();
-        const filterBySearch = (notification) =>
-          notification?.stationname?.toLowerCase().includes(searchTerm) ||
-          notification?.warningname?.toLowerCase().includes(searchTerm) ||
-          notification?.deviceName?.toLowerCase().includes(searchTerm);
+        const filterBySearch = (notification) => {
+          const searchFields = [
+            notification?.stationname,
+            notification?.plantName,
+            notification?.warningname,
+            notification?.description,
+            notification?.deviceName,
+            notification?.device,
+          ];
+
+          return searchFields.some((field) =>
+            field?.toLowerCase().includes(searchTerm)
+          );
+        };
 
         filteredActive = filteredActive.filter(filterBySearch);
         filteredResolved = filteredResolved.filter(filterBySearch);
       }
 
-      // PW Type filter
-      if (currentFilters.pw_type.length > 0) {
-        const filterByType = (notification) =>
-          currentFilters.pw_type.includes(notification.pw_type);
-
-        filteredActive = filteredActive.filter(filterByType);
-        filteredResolved = filteredResolved.filter(filterByType);
-      }
-
-      // Recovery Status filter
-      if (currentFilters.recoveryStatus !== "all") {
-        const filterByRecovery = (notification) =>
-          currentFilters.recoveryStatus === "recovered"
-            ? notification.recoverytime !== null
-            : notification.recoverytime === null;
-
-        filteredActive = filteredActive.filter(filterByRecovery);
-        filteredResolved = filteredResolved.filter(filterByRecovery);
-      }
-
       // Severity filter
       if (currentFilters.severity.length > 0) {
-        const filterBySeverity = (notification) =>
-          currentFilters.severity.includes(notification.warninglevel);
+        const filterBySeverity = (notification) => {
+          // If no severity filters selected, show all
+          if (currentFilters.severity.length === 0) return true;
+
+          // For Goodwe
+          if (notification.provider === "goodwe") {
+            return currentFilters.severity.includes(
+              Number(notification.warninglevel)
+            );
+          }
+          // For Victron
+          else if (notification.provider === "victron") {
+            let severityLevel;
+            const nameEnum = notification.nameEnum?.toLowerCase();
+
+            // Map Victron severity levels to numeric values
+            switch (nameEnum) {
+              case "alarm":
+                severityLevel = 3;
+                break;
+              case "warning":
+                severityLevel = 2;
+                break;
+              case "notification":
+              default:
+                severityLevel = 1;
+                break;
+            }
+
+            return currentFilters.severity.includes(severityLevel);
+          }
+          return false;
+        };
 
         filteredActive = filteredActive.filter(filterBySeverity);
         filteredResolved = filteredResolved.filter(filterBySeverity);
       }
 
-      // organization filter
+      // Organization filter
       if (currentFilters.organization.length > 0) {
         const filterByOrganization = (notification) =>
-          currentFilters.organization.includes(
-            normalizeString(notification.provider || notification.organization)
-          );
+          currentFilters.organization.includes(notification.provider);
 
         filteredActive = filteredActive.filter(filterByOrganization);
         filteredResolved = filteredResolved.filter(filterByOrganization);
@@ -132,15 +151,27 @@ const NotificationFilterSidebar = ({
   );
 
   const handleCheckboxChange = useCallback(
-    (filterType, value) => {
+    (filterType, value, isAvailable) => {
+      if (!isAvailable && filterType === "organization") return;
+
       setFilters((prevFilters) => {
+        // Convert value to number for severity
+        const actualValue = filterType === "severity" ? Number(value) : value;
+
         const updatedFilter = [...prevFilters[filterType]];
-        const index = updatedFilter.indexOf(value);
+        const index = updatedFilter.indexOf(actualValue);
+
+        console.log("Checkbox change:", {
+          filterType,
+          value: actualValue,
+          currentFilters: updatedFilter,
+          found: index > -1,
+        });
 
         if (index > -1) {
           updatedFilter.splice(index, 1);
         } else {
-          updatedFilter.push(value);
+          updatedFilter.push(actualValue);
         }
 
         const updatedFilters = {
@@ -148,24 +179,10 @@ const NotificationFilterSidebar = ({
           [filterType]: updatedFilter,
         };
 
+        console.log("Updated filters:", updatedFilters);
         const filtered = filterNotifications(updatedFilters);
         onFilterChange(filtered);
 
-        return updatedFilters;
-      });
-    },
-    [filterNotifications, onFilterChange]
-  );
-
-  const handleRecoveryStatusChange = useCallback(
-    (status) => {
-      setFilters((prevFilters) => {
-        const updatedFilters = {
-          ...prevFilters,
-          recoveryStatus: status,
-        };
-        const filtered = filterNotifications(updatedFilters);
-        onFilterChange(filtered);
         return updatedFilters;
       });
     },
@@ -262,12 +279,12 @@ const NotificationFilterSidebar = ({
           {t("severity")}
         </h3>
         <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-          {[1, 2, 3].map((level) => (
+          {SEVERITY_LEVELS.map((severity) => (
             <CustomCheckbox
-              key={level}
-              label={t(`severity_level_${level}`)}
-              checked={filters.severity.includes(level)}
-              onChange={() => handleCheckboxChange("severity", level)}
+              key={severity.level}
+              label={t(severity.label)}
+              checked={filters.severity.includes(severity.level)}
+              onChange={() => handleCheckboxChange("severity", severity.level)} // Pass the numeric level
             />
           ))}
         </div>
@@ -294,16 +311,15 @@ const NotificationFilterSidebar = ({
                     )}
                   </span>
                 }
-                checked={filters.organization.includes(
-                  normalizeString(org.name)
-                )}
+                checked={filters.organization.includes(org.value)}
                 onChange={() =>
                   handleCheckboxChange(
                     "organization",
-                    org.name,
+                    org.value,
                     org.isAvailable
                   )
                 }
+                disabled={!org.isAvailable}
               />
             </div>
           ))}

@@ -65,7 +65,7 @@ export const fetchActiveNotifications = createAsyncThunk(
             plantId: plant.id,
             token,
           }).then((alerts) => ({
-            alerts,
+            alerts: alerts?.records || [],
             plantName: plant.name,
             plantId: plant.id,
           }))
@@ -102,7 +102,6 @@ export const fetchActiveNotifications = createAsyncThunk(
       const sortedNotifications = allNotifications.sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
-
       return sortedNotifications;
     } catch (error) {
       console.error("Error in fetchActiveNotifications:", error);
@@ -114,43 +113,97 @@ export const fetchActiveNotifications = createAsyncThunk(
 // Initial fetch of resolved notifications
 export const fetchResolvedNotifications = createAsyncThunk(
   "notifications/fetchResolvedNotifications",
-  async ({ pageIndex = 1, pageSize = 50 }, { rejectWithValue }) => {
+  async ({ pageIndex = 1, pageSize = 50 }, { rejectWithValue, getState }) => {
     try {
       const token = storage.getItem("authToken");
       if (!token) throw new Error("No authentication token found");
 
-      const goodweResponse = await fetchGoodweResolvedNotificationsAPI({
-        token,
-        pageIndex,
-        pageSize,
-      });
+      let resolvedNotifications = [];
 
-      if (!goodweResponse?.data?.list) {
-        return [];
+      // Fetch Goodwe resolved notifications
+      try {
+        const goodweResponse = await fetchGoodweResolvedNotificationsAPI({
+          token,
+          pageIndex,
+          pageSize,
+        });
+
+        if (goodweResponse?.data?.list) {
+          resolvedNotifications = goodweResponse.data.list.map((alert) => ({
+            ...alert,
+            id: alert.warningid,
+            read: true,
+            archived: true,
+            provider: "goodwe",
+            severity: (() => {
+              switch (alert.warninglevel) {
+                case 1:
+                  return "low";
+                case 2:
+                  return "medium";
+                case 3:
+                  return "high";
+                default:
+                  return "medium";
+              }
+            })(),
+            timestamp: new Date(alert.happentime).toISOString(),
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching Goodwe resolved notifications:", error);
       }
 
-      const resolvedNotifications = goodweResponse.data.list.map((alert) => ({
-        ...alert,
-        id: alert.warningid,
-        read: true,
-        archived: true,
-        provider: "goodwe",
-        severity: (() => {
-          switch (alert.warninglevel) {
-            case 1:
-              return "low";
-            case 2:
-              return "medium";
-            case 3:
-              return "high";
-            default:
-              return "medium";
-          }
-        })(),
-        timestamp: new Date(alert.happentime).toISOString(),
-      }));
+      // Fetch Victron resolved notifications
+      const state = getState();
+      const victronPlants = state.plants.plants.filter(
+        (plant) => plant.organization === "victronenergy"
+      );
 
-      return resolvedNotifications.sort(
+      const victronResults = await Promise.allSettled(
+        victronPlants.map((plant) =>
+          fetchVictronEnergyAlertsAPI({
+            plantId: plant.id,
+            token,
+          }).then((alerts) => ({
+            alerts: alerts?.records || [],
+            plantName: plant.name,
+            plantId: plant.id,
+          }))
+        )
+      );
+
+      let victronResolvedNotifications = [];
+      victronResults.forEach((result) => {
+        if (result.status === "fulfilled" && result.value?.alerts) {
+          const resolvedAlerts = result.value.alerts
+            .filter((alert) => alert.isActive === 0)
+            .map((alert) => ({
+              ...alert,
+              id: `victron-${alert.idAlarm}`,
+              read: true,
+              archived: true,
+              provider: "victron",
+              plantId: result.value.plantId,
+              plantName: result.value.plantName,
+              severity: alert.nameEnum?.toLowerCase() || "medium",
+              timestamp: alert.started
+                ? new Date(alert.started * 1000).toISOString()
+                : new Date().toISOString(),
+            }));
+          victronResolvedNotifications.push(...resolvedAlerts);
+        }
+      });
+
+      // Combine and sort all resolved notifications
+      const allResolvedNotifications = [
+        ...resolvedNotifications,
+        ...victronResolvedNotifications,
+      ];
+
+      console.log("sortedNotifications", allResolvedNotifications);
+
+      return allResolvedNotifications.sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
     } catch (error) {

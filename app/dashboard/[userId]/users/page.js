@@ -176,251 +176,245 @@ const UsersTab = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
+
+      {/* Theme and Language Controls */}
       <motion.div
-        className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar"
+        className="fixed top-4 right-4 flex items-center gap-2 z-50"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+      >
+        <ThemeToggle />
+        <LanguageSelector />
+      </motion.div>
+
+      <Texture />
+
+      <motion.div
+        className="p-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.8 }}
       >
-        <Texture />
-
-        {/* Header Controls */}
+        {/* Title Section */}
         <motion.div
-          className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]"
-          initial={{ opacity: 0, y: -20 }}
+          className="flex items-center mb-10 md:mb-2"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
         >
-          <ThemeToggle />
-          <LanguageSelector />
+          <Image
+            src={companyIcon}
+            alt="Company Icon"
+            className="w-12 h-12 mr-2 z-10"
+          />
+          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
+            {t("usersList")}
+          </h2>
         </motion.div>
 
+        {/* Filter Button - Mobile/Tablet Only */}
+        <motion.button
+          className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
+          onClick={() => setIsSidebarOpen(true)}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.8, duration: 0.3 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <IoFilter className="text-xl text-custom-dark-blue" />
+        </motion.button>
+
         <motion.div
-          className="p-8"
+          className="flex mt-8 gap-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.9 }}
         >
-          {/* Title Section */}
-          <motion.div
-            className="flex items-center mb-10 md:mb-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-          >
-            <Image
-              src={companyIcon}
-              alt="Company Icon"
-              className="w-12 h-12 mr-2 z-10"
-            />
-            <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
-              {t("usersList")}
-            </h2>
-          </motion.div>
+          {/* Sidebar - Desktop */}
+          {!isMobile && !isTablet && (
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.4, duration: 0.5 }}
+            >
+              <UsersSidebar
+                filters={filters}
+                onFilterChange={setFilters}
+                isOpen={isSidebarOpen}
+              />
+            </motion.div>
+          )}
 
-          {/* Filter Button - Mobile/Tablet Only */}
-          <motion.button
-            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
-            onClick={() => setIsSidebarOpen(true)}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8, duration: 0.3 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <IoFilter className="text-xl text-custom-dark-blue" />
-          </motion.button>
-
+          {/* Main Content */}
           <motion.div
-            className="flex mt-8 gap-6"
+            className="flex-1"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
+            transition={{ delay: 0.7 }}
           >
-            {/* Sidebar - Desktop */}
-            {!isMobile && !isTablet && (
+            {/* View Controls */}
+            <motion.div
+              className="flex flex-col justify-between"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0 }}
+            >
               <motion.div
+                className="flex items-center gap-4"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.1 }}
+              >
+                <span className="text-custom-dark-blue dark:text-custom-yellow mb-6">
+                  {t("usersFound")}: {filteredUsers.length}
+                </span>
+              </motion.div>
+              <motion.div
+                className="flex items-center justify-between mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1 }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.2 }}
+                >
+                  <UserSortMenu onSortChange={handleSortChange} />
+                </motion.div>
+                <motion.div
+                  className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.2 }}
+                >
+                  <motion.button
+                    onClick={() => setViewMode("list")}
+                    className={`p-2 rounded-lg transition-colors ${
+                      viewMode === "list"
+                        ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                        : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <HiViewList className="w-5 h-5" />
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-2 rounded-lg transition-colors ${
+                      viewMode === "grid"
+                        ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                        : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <HiViewGrid className="w-5 h-5" />
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+            {/* Users Content */}
+            <AnimatePresence mode="wait">
+              {isLoading ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.3 }}
+                >
+                  {viewMode === "list" ? (
+                    <UsersListView isLoading={true} users={[]} />
+                  ) : (
+                    <UsersGridView isLoading={true} users={[]} />
+                  )}
+                </motion.div>
+              ) : !users || filteredUsers.length === 0 ? (
+                <motion.div
+                  className="h-auto w-full flex flex-col justify-center items-center"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.2, duration: 0.5 }}
+                >
+                  <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
+                  <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
+                    {t("noUsersFound")}
+                  </p>
+                </motion.div>
+              ) : viewMode === "list" ? (
+                <UsersListView
+                  users={paginatedUsers}
+                  onUserClick={handleUserClick}
+                  onUserSave={handleUserSave}
+                />
+              ) : (
+                <UsersGridView
+                  users={paginatedUsers}
+                  onUserClick={handleUserClick}
+                  onUserSave={handleUserSave}
+                />
+              )}
+            </AnimatePresence>
+
+            {/* Pagination */}
+            {filteredUsers.length > usersPerPage && (
+              <motion.div
+                className="mt-6 mb-16"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.4, duration: 0.5 }}
               >
-                <UsersSidebar
-                  filters={filters}
-                  onFilterChange={setFilters}
-                  isOpen={isSidebarOpen}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
+                  onPageChange={setCurrentPage}
                 />
               </motion.div>
             )}
-
-            {/* Main Content */}
-            <motion.div
-              className="flex-1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-            >
-              {/* View Controls */}
-              <motion.div
-                className="flex flex-col justify-between"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0 }}
-              >
-                <motion.div
-                  className="flex items-center gap-4"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.1 }}
-                >
-                  <span className="text-custom-dark-blue dark:text-custom-yellow mb-6">
-                    {t("usersFound")}: {filteredUsers.length}
-                  </span>
-                </motion.div>
-                <motion.div
-                  className="flex items-center justify-between mb-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.1 }}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.2 }}
-                  >
-                    <UserSortMenu onSortChange={handleSortChange} />
-                  </motion.div>
-                  <motion.div
-                    className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.2 }}
-                  >
-                    <motion.button
-                      onClick={() => setViewMode("list")}
-                      className={`p-2 rounded-lg transition-colors ${
-                        viewMode === "list"
-                          ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
-                          : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <HiViewList className="w-5 h-5" />
-                    </motion.button>
-                    <motion.button
-                      onClick={() => setViewMode("grid")}
-                      className={`p-2 rounded-lg transition-colors ${
-                        viewMode === "grid"
-                          ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
-                          : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <HiViewGrid className="w-5 h-5" />
-                    </motion.button>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-              {/* Users Content */}
-              <AnimatePresence mode="wait">
-                {isLoading ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.3 }}
-                  >
-                    {viewMode === "list" ? (
-                      <UsersListView isLoading={true} users={[]} />
-                    ) : (
-                      <UsersGridView isLoading={true} users={[]} />
-                    )}
-                  </motion.div>
-                ) : !users || filteredUsers.length === 0 ? (
-                  <motion.div
-                    className="h-auto w-full flex flex-col justify-center items-center"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.2, duration: 0.5 }}
-                  >
-                    <FaUserAltSlash className="text-9xl text-custom-dark-blue dark:text-custom-light-gray mt-24" />
-                    <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray mb-4">
-                      {t("noUsersFound")}
-                    </p>
-                  </motion.div>
-                ) : viewMode === "list" ? (
-                  <UsersListView
-                    users={paginatedUsers}
-                    onUserClick={handleUserClick}
-                    onUserSave={handleUserSave}
-                  />
-                ) : (
-                  <UsersGridView
-                    users={paginatedUsers}
-                    onUserClick={handleUserClick}
-                    onUserSave={handleUserSave}
-                  />
-                )}
-              </AnimatePresence>
-
-              {/* Pagination */}
-              {filteredUsers.length > usersPerPage && (
-                <motion.div
-                  className="mt-6 mb-16"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4, duration: 0.5 }}
-                >
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
-                    onPageChange={setCurrentPage}
-                  />
-                </motion.div>
-              )}
-            </motion.div>
           </motion.div>
         </motion.div>
-
-        {/* Mobile Sidebar */}
-        <AnimatePresence>
-          {(isMobile || isTablet) && isSidebarOpen && (
-            <UsersSidebar
-              filters={filters}
-              onFilterChange={setFilters}
-              isOpen={isSidebarOpen}
-              onClose={() => setIsSidebarOpen(false)}
-            />
-          )}
-        </AnimatePresence>
-
-        <AddUserForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
-
-        {/* Action Buttons */}
-        <motion.button
-          onClick={() => setIsFormOpen(true)}
-          className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-all duration-300 button-shadow flex items-center z-40"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1.6, duration: 0.3 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {!isMobile ? (
-            <>
-              <PlusIcon className="w-5 h-5 mt-1 mr-2" />
-              <span className="font-semibold">{t("addUser")}</span>
-            </>
-          ) : (
-            <PlusIcon className="w-4 h-6" />
-          )}
-        </motion.button>
-
-        <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
       </motion.div>
-    </>
+
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {(isMobile || isTablet) && isSidebarOpen && (
+          <UsersSidebar
+            filters={filters}
+            onFilterChange={setFilters}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AddUserForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
+
+      {/* Action Buttons */}
+      <motion.button
+        onClick={() => setIsFormOpen(true)}
+        className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-all duration-300 button-shadow flex items-center z-40"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1.6, duration: 0.3 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        {!isMobile ? (
+          <>
+            <PlusIcon className="w-5 h-5 mt-1 mr-2" />
+            <span className="font-semibold">{t("addUser")}</span>
+          </>
+        ) : (
+          <PlusIcon className="w-4 h-6" />
+        )}
+      </motion.button>
+
+      <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
+    </div>
   );
 };
 

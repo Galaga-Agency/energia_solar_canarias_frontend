@@ -140,15 +140,18 @@ export const deleteNotificationAPI = async (notificationId) => {
 
 export const fetchUsersAPI = async (userToken) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/usuarios`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        usuario: USUARIO,
-        apiKey: API_KEY,
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/usuarios?page=1&limit=20000`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();

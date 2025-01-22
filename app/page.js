@@ -13,24 +13,18 @@ import {
 } from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { storage } from "@/utils/storage";
-import {
-  fetchActiveNotifications,
-  fetchAllUserNotifications,
-} from "@/store/slices/notificationsSlice";
 
 export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const tokenValidated = useSelector(selectTokenValidated);
-  const userData = useSelector((state) => state.user?.user); // Get the nested user data
+  const userData = useSelector((state) => state.user?.user);
   const redirectAttempted = useRef(false);
 
   useEffect(() => {
     const handleInitialRedirect = async () => {
-      if (redirectAttempted.current) {
-        return;
-      }
+      if (redirectAttempted.current) return;
 
       const storedUser = storage.getItem("user");
       const storedToken = storage.getItem("authToken");
@@ -38,7 +32,6 @@ export default function Home() {
       if (storedUser && storedToken) {
         try {
           const user = JSON.parse(storedUser);
-
           if (user?.id && user?.tokenIdentificador) {
             await dispatch(setUser(user));
           } else {
@@ -57,29 +50,21 @@ export default function Home() {
     handleInitialRedirect();
   }, [dispatch]);
 
-  // Separate effect for handling user state changes
+  // Simplified user redirect effect
   useEffect(() => {
-    const handleUserRedirect = async () => {
+    const handleUserRedirect = () => {
       if (userData && !redirectAttempted.current) {
         console.log("User data loaded:", userData);
-        try {
-          await dispatch(
-            fetchActiveNotifications({ pageIndex: 1, pageSize: 10 })
-          );
+        redirectAttempted.current = true;
 
-          redirectAttempted.current = true;
-
-          userData?.clase === "admin"
-            ? router.push(`/dashboard/${userData.id}/admin`)
-            : router.push(`/dashboard/${userData.id}/plants`);
-        } catch (error) {
-          console.error("Error fetching notifications:", error);
-        }
+        userData?.clase === "admin"
+          ? router.push(`/dashboard/${userData.id}/admin`)
+          : router.push(`/dashboard/${userData.id}/plants`);
       }
     };
 
     handleUserRedirect();
-  }, [userData, dispatch, router]);
+  }, [userData, router]);
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">

@@ -150,23 +150,21 @@ const AdminDashboard = () => {
   };
 
   return (
-    <motion.div
-      className={`min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-16`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.4 }}
-    >
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
 
+      {/* Theme and Language Controls */}
       <motion.div
-        className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]"
+        className="fixed top-4 right-4 flex items-center gap-2 z-50"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.5 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
       >
         <ThemeToggle />
         <LanguageSelector />
       </motion.div>
+
+      <Texture />
 
       <Texture />
       <div className="relative h-auto z-10 p-8">
@@ -390,7 +388,7 @@ const AdminDashboard = () => {
         </motion.div>
       </div>
       <BottomNavbar userId={user?.id} userClass={user?.clase} />
-    </motion.div>
+    </div>
   );
 };
 

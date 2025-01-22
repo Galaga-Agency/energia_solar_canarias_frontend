@@ -1907,5 +1907,6 @@
   "sortBySeverity": "Ordenar por Severidad",
   "error_loading_notifications": "Error al cargar las notificaciones",
   "no_notifications_found": "No se encontraron notificaciones",
-  "no_filtered_notifications": "Ninguna notificación coincide con tus filtros"
+  "no_filtered_notifications": "Ninguna notificación coincide con tus filtros",
+  "errorLoadingNotifications": "Error al cargar las notificaciones"
 }

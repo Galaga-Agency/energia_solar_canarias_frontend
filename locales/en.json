@@ -995,5 +995,6 @@
   "sortBySeverity": "Sort by Severity",
   "error_loading_notifications": "Error loading notifications",
   "no_notifications_found": "No notifications found",
-  "no_filtered_notifications": "No notifications match your filters"
+  "no_filtered_notifications": "No notifications match your filters",
+  "errorLoadingNotifications": "Error loading notifications"
 }

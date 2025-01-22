@@ -359,7 +359,7 @@ const SolarEdgePlantDetails = React.memo(
                               ) || "text-gray-500"
                             }`}
                           >
-                            {tStatus} || {t("unknown")}
+                            {tStatus || t("unknown")}
                           </span>
                         </div>
                       </div>

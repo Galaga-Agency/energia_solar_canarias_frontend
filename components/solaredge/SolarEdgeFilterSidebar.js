@@ -261,7 +261,7 @@ const SolarEdgeFilterSidebar = ({
       </div>
 
       {/* Alert Filter */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
           <CustomCheckbox
             label={t("show_only_plants_with_alerts")}
@@ -269,7 +269,7 @@ const SolarEdgeFilterSidebar = ({
             onChange={(checked) => handleCheckboxChange("hasAlerts", checked)}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Status */}
       <div className="mb-4">

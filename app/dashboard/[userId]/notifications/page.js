@@ -5,34 +5,28 @@ import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "next-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoFilter } from "react-icons/io5";
-import NotificationListItem from "@/components/notifications/NotificationListItem";
 import Texture from "@/components/Texture";
 import TransitionEffect from "@/components/TransitionEffect";
 import LanguageSelector from "@/components/LanguageSelector";
 import ThemeToggle from "@/components/ThemeToggle";
 import BottomNavbar from "@/components/BottomNavbar";
-import Pagination from "@/components/ui/Pagination";
 import {
   fetchActiveNotifications,
   fetchResolvedNotifications,
   loadAllNotificationsInBackground,
-  selectActiveNotifications,
-  selectResolvedNotifications,
   selectActiveTotalCount,
   selectResolvedTotalCount,
   selectIsLoadingMore,
-  selectIsInitialLoad,
-  selectActiveError,
-  selectResolvedError,
-  selectResolvedFetched,
   setInitialLoad,
+  selectActiveNotifications,
+  selectResolvedNotifications,
 } from "@/store/slices/notificationsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import NotificationFilterSidebar from "@/components/notifications/NotificationFilterSidebar";
 import NotificationSortMenu from "@/components/notifications/NotificationSortMenu";
-import { AlertCircle, BellIcon, CheckCircleIcon } from "lucide-react";
-import NotificationsListSkeleton from "@/components/loadingSkeletons/NotificationsListSkeleton";
+import ActiveNotificationsTab from "@/components/notifications/ActiveNotificationsTab";
+import ResolvedNotificationsTab from "@/components/notifications/ResolvedNotificationsTab";
 import { selectTheme } from "@/store/slices/themeSlice";
 
 const ITEMS_PER_PAGE = 6;
@@ -46,11 +40,6 @@ const NotificationsTab = () => {
   const resolvedNotifications = useSelector(selectResolvedNotifications);
   const activeTotalCount = useSelector(selectActiveTotalCount);
   const resolvedTotalCount = useSelector(selectResolvedTotalCount);
-  const isLoadingMore = useSelector(selectIsLoadingMore);
-  const isInitialLoad = useSelector(selectIsInitialLoad);
-  const activeError = useSelector(selectActiveError);
-  const resolvedError = useSelector(selectResolvedError);
-  const resolvedFetched = useSelector(selectResolvedFetched);
   const theme = useSelector(selectTheme);
   const [activeTab, setActiveTab] = useState("active");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -96,25 +85,14 @@ const NotificationsTab = () => {
     setCurrentPage(1);
   };
 
-  // Get current notifications based on active tab
-  const currentNotifications =
-    activeTab === "active" ? filteredActive : filteredResolved;
-  const isLoading = activeTab === "active" ? isInitialLoad : !resolvedFetched;
-  const error = activeTab === "active" ? activeError : resolvedError;
-
-  // Calculate pagination
-  const totalPages = Math.ceil(currentNotifications.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedNotifications = currentNotifications.slice(
-    startIndex,
-    endIndex
+  const totalActivePages = Math.ceil(filteredActive.length / ITEMS_PER_PAGE);
+  const totalResolvedPages = Math.ceil(
+    filteredResolved.length / ITEMS_PER_PAGE
   );
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar mb-12">
       <TransitionEffect />
-
       <motion.div
         className="fixed top-4 right-4 flex items-center gap-2 z-50"
         initial={{ opacity: 0, y: -20 }}
@@ -125,7 +103,6 @@ const NotificationsTab = () => {
         <LanguageSelector />
       </motion.div>
       <Texture />
-
       <motion.button
         className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -137,7 +114,6 @@ const NotificationsTab = () => {
       >
         <IoFilter />
       </motion.button>
-
       <div className="relative h-auto z-10 p-8">
         <motion.h2
           className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-8"
@@ -255,89 +231,24 @@ const NotificationsTab = () => {
               <NotificationSortMenu onSortChange={handleSort} />
             </motion.div>
 
-            {isLoading ? (
-              <motion.div
-                className="space-y-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <NotificationsListSkeleton theme={theme} />
-              </motion.div>
-            ) : error ? (
-              <motion.div
-                className="flex flex-col items-center justify-center py-12 px-4 bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-xl shadow-lg"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mb-4 animate-pulse" />
-                <p className="text-red-500 dark:text-red-400 text-lg text-center font-medium">
-                  {t("errorLoadingNotifications")}
-                </p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 text-center">
-                  {t("tryAgainLater")}
-                </p>
-              </motion.div>
-            ) : !currentNotifications?.length ? (
-              <motion.div
-                className="flex flex-col items-center justify-center py-12 px-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-200/30 dark:border-gray-700/30"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {activeTab === "active" ? (
-                  <BellIcon className="w-16 h-16 text-custom-yellow dark:text-custom-yellow/80 mb-4" />
-                ) : (
-                  <CheckCircleIcon className="w-16 h-16 text-custom-yellow dark:text-custom-yellow/80 mb-4" />
-                )}
-                <p className="text-gray-600 dark:text-gray-300 text-lg text-center font-medium">
-                  {activeTab === "active"
-                    ? t("noActiveNotifications")
-                    : t("noResolvedNotifications")}
-                </p>
-              </motion.div>
+            {activeTab === "active" ? (
+              <ActiveNotificationsTab
+                filteredActive={filteredActive}
+                currentPage={currentPage}
+                totalPages={totalActivePages}
+                onPageChange={setCurrentPage}
+              />
             ) : (
-              <div className="space-y-4">
-                <AnimatePresence mode="popLayout">
-                  {paginatedNotifications.map((notification, index) => (
-                    <motion.div
-                      key={notification.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="group"
-                    >
-                      <div className="relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-r from-custom-yellow/10 to-custom-yellow/5 dark:from-custom-dark-blue/20 dark:to-custom-dark-blue/10 transform group-hover:translate-x-full transition-transform duration-500" />
-                        <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-200/30 dark:border-gray-700/30 transition-all duration-300 group-hover:translate-y-px group-hover:shadow-lg overflow-hidden">
-                          <NotificationListItem notification={notification} />
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-
-                {totalPages > 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={setCurrentPage}
-                    />
-                  </motion.div>
-                )}
-              </div>
+              <ResolvedNotificationsTab
+                filteredResolved={filteredResolved}
+                currentPage={currentPage}
+                totalPages={totalResolvedPages}
+                onPageChange={setCurrentPage}
+              />
             )}
           </motion.div>
         </motion.div>
       </div>
-
       <BottomNavbar userId={user?.id} userClass={user?.clase} />
     </div>
   );

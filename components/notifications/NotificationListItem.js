@@ -4,11 +4,10 @@ import React, { useState } from "react";
 import { useTranslation } from "next-i18next";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
-import { selectUser } from "@/store/slices/userSlice";
 import NotificationDetailModal from "./NotificationDetailModal";
 import { FiAlertCircle } from "react-icons/fi";
 
-// Unified severity mapping
+// This mapping helps determine visual indicators based on notification severity
 const SEVERITY_MAPPING = {
   goodwe: {
     1: { color: "bg-yellow-500", level: 1 }, // Low severity
@@ -28,9 +27,9 @@ const SEVERITY_MAPPING = {
 
 const NotificationListItem = ({ notification }) => {
   const { t } = useTranslation();
-  const user = useSelector(selectUser);
   const [showModal, setShowModal] = useState(false);
 
+  // Helper function to format dates consistently
   const formatDate = (dateString) => {
     try {
       return new Date(dateString).toLocaleString();
@@ -39,17 +38,18 @@ const NotificationListItem = ({ notification }) => {
     }
   };
 
+  // Function to process notification content based on provider type
   const renderNotificationContent = () => {
     switch (notification.provider) {
       case "goodwe":
-        // Determine severity color based on warning level
+        // Get severity details from mapping, fallback to default if not found
         const goodweSeverity =
           SEVERITY_MAPPING.goodwe[notification.warninglevel] ||
           SEVERITY_MAPPING.default;
 
         return {
           title: notification.stationname,
-          deviceInfo: `${notification.deviceName || notification.devicesn}`,
+          deviceInfo: notification.deviceName || notification.devicesn,
           alertInfo: `${notification.warningname} ${
             notification.warning_code ? `(${notification.warning_code})` : ""
           }`,
@@ -59,7 +59,7 @@ const NotificationListItem = ({ notification }) => {
         };
 
       case "victron":
-        // Determine severity color based on severity string
+        // Determine severity for Victron notifications
         const victronSeverity =
           SEVERITY_MAPPING.victron[notification.severity?.toLowerCase()] ||
           (notification.nameEnum?.toLowerCase() === "alarm"
@@ -68,7 +68,7 @@ const NotificationListItem = ({ notification }) => {
 
         return {
           title: notification.plantName,
-          deviceInfo: `${notification.device || "Unknown Device"}`,
+          deviceInfo: notification.device || "Unknown Device",
           alertInfo: notification.description,
           timestamp: new Date(notification.started * 1000).toISOString(),
           severityColor: victronSeverity.color,
@@ -167,11 +167,11 @@ const NotificationListItem = ({ notification }) => {
         </div>
       </motion.div>
 
+      {/* Detail Modal */}
       <NotificationDetailModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         notification={notification}
-        userId={user?.id}
       />
     </>
   );

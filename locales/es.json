@@ -100,6 +100,9 @@
   "twoDayForecast": "Pronóstico a Dos Días",
   "high": "Máxima",
   "low": "Mínima",
+  "System Alerts": "Alertas Activas",
+  "System Alerts Modal": "Todas las Alertas",
+  "ClearedAlertas": "Resueltas",
   "lastUpdate": "Última Actualización",
   "status": {
     "working": "Funcionando",
@@ -1908,5 +1911,6 @@
   "error_loading_notifications": "Error al cargar las notificaciones",
   "no_notifications_found": "No se encontraron notificaciones",
   "no_filtered_notifications": "Ninguna notificación coincide con tus filtros",
-  "errorLoadingNotifications": "Error al cargar las notificaciones"
+  "errorLoadingNotifications": "Error al cargar las notificaciones",
+  "View All": "Ver todas"
 }

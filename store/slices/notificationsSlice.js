@@ -201,8 +201,6 @@ export const fetchResolvedNotifications = createAsyncThunk(
         ...victronResolvedNotifications,
       ];
 
-      console.log("sortedNotifications", allResolvedNotifications);
-
       return allResolvedNotifications.sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );

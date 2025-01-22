@@ -386,7 +386,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           />
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col xl:flex-row gap-6">
           <GoodweEquipmentDetails isLoading={isLoading} t={t} />
           <GoodweAlerts
             plantId={goodwePlant?.info?.powerstation_id}

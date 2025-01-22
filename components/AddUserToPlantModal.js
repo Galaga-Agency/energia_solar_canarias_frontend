@@ -80,9 +80,9 @@ const AddUserToPlantModal = ({
 
         <div className="max-h-64 overflow-y-auto custom-scrollbar space-y-2">
           {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
+            filteredUsers.map((user, index) => (
               <UserListItem
-                key={user.id}
+                key={user.id || index}
                 user={user}
                 showLoginStatus={false}
                 isAssociatedUser={false}

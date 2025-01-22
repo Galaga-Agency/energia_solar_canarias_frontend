@@ -1,102 +1,114 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import NotificationListItem from "@/components/notifications/NotificationListItem";
-import Pagination from "@/components/ui/Pagination";
+import React from "react";
+import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  selectResolvedNotifications,
+  selectResolvedTotalCount,
+  selectResolvedFetched,
+  selectResolvedError,
+} from "@/store/slices/notificationsSlice";
+import { selectTheme } from "@/store/slices/themeSlice";
+import NotificationListItem from "@/components/notifications/NotificationListItem";
+import NotificationsListSkeleton from "@/components/loadingSkeletons/NotificationsListSkeleton";
+import { AlertCircle, CheckCircleIcon } from "lucide-react";
+import Pagination from "@/components/ui/Pagination";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 6;
 
 const ResolvedNotificationsTab = ({
-  notifications,
-  isLoading,
-  error,
-  isLoadingMore,
+  filteredResolved,
+  currentPage,
+  totalPages,
+  onPageChange,
 }) => {
   const { t } = useTranslation();
-  const [currentPage, setCurrentPage] = useState(1);
-
-  if (isLoading) {
-    return (
-      <motion.div
-        className="animate-pulse space-y-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-32 bg-gray-200 dark:bg-gray-800 rounded-xl"
-          />
-        ))}
-      </motion.div>
-    );
-  }
-
-  if (error) {
-    return (
-      <motion.p
-        className="text-red-500 text-center py-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        {t("errorLoadingNotifications")}
-      </motion.p>
-    );
-  }
-
-  if (!notifications?.length) {
-    return (
-      <motion.p
-        className="text-gray-500 text-center py-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        {t("noResolvedNotifications")}
-      </motion.p>
-    );
-  }
+  const theme = useSelector(selectTheme);
+  const isLoading = !useSelector(selectResolvedFetched);
+  const error = useSelector(selectResolvedError);
 
   // Calculate pagination
-  const totalPages = Math.ceil(notifications.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedNotifications = notifications.slice(startIndex, endIndex);
+  const paginatedNotifications = filteredResolved.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
-    <div className="space-y-4">
-      <AnimatePresence mode="popLayout">
-        {paginatedNotifications.map((notification, index) => (
-          <motion.div
-            key={notification.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ delay: 0.1 + index * 0.05 }}
-          >
-            <NotificationListItem notification={notification} />
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {isLoadingMore && (
+    <>
+      {isLoading ? (
         <motion.div
+          className="space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center py-4 text-gray-500"
+          transition={{ delay: 0.2 }}
         >
-          {t("loadingMoreNotifications")}
+          <NotificationsListSkeleton theme={theme} />
         </motion.div>
-      )}
+      ) : error ? (
+        <motion.div
+          className="flex flex-col items-center justify-center py-12 px-4 bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-xl shadow-lg"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mb-4 animate-pulse" />
+          <p className="text-red-500 dark:text-red-400 text-lg text-center font-medium">
+            {t("errorLoadingNotifications")}
+          </p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 text-center">
+            {t("tryAgainLater")}
+          </p>
+        </motion.div>
+      ) : !filteredResolved?.length ? (
+        <motion.div
+          className="flex flex-col items-center justify-center py-12 px-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-200/30 dark:border-gray-700/30"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <CheckCircleIcon className="w-16 h-16 text-custom-yellow dark:text-custom-yellow/80 mb-4" />
+          <p className="text-gray-600 dark:text-gray-300 text-lg text-center font-medium">
+            {t("noResolvedNotifications")}
+          </p>
+        </motion.div>
+      ) : (
+        <div className="space-y-4">
+          <AnimatePresence mode="popLayout">
+            {paginatedNotifications.map((notification, index) => (
+              <motion.div
+                key={notification.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: index * 0.05 }}
+                className="group"
+              >
+                <div className="relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-custom-yellow/10 to-custom-yellow/5 dark:from-custom-dark-blue/20 dark:to-custom-dark-blue/10 transform group-hover:translate-x-full transition-transform duration-500" />
+                  <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-200/30 dark:border-gray-700/30 transition-all duration-300 group-hover:translate-y-px group-hover:shadow-lg overflow-hidden">
+                    <NotificationListItem notification={notification} />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
-      {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+          {totalPages > 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+              />
+            </motion.div>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

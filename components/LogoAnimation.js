@@ -11,9 +11,11 @@ import useDeviceType from "@/hooks/useDeviceType";
 import RetroGrid from "@/components/RetroGrid";
 import { useSelector } from "react-redux";
 import { selectTheme } from "@/store/slices/themeSlice";
+import Loading from "./ui/Loading";
 
 const LogoAnimation = () => {
   const [showTransition, setShowTransition] = useState(true);
+  const userData = useSelector((state) => state.user?.user);
   const [showLogo, setShowLogo] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const { isMobile, isTablet } = useDeviceType();
@@ -80,17 +82,20 @@ const LogoAnimation = () => {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {showForm && (
-          <motion.div
-            key="form"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, ease: "easeInOut" }}
-            className="z-30 absolute w-full"
-          >
-            <AuthenticationForm />
-          </motion.div>
-        )}
+        {showForm &&
+          (!userData ? (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, ease: "easeInOut" }}
+              className="z-30 absolute w-full"
+            >
+              <AuthenticationForm />
+            </motion.div>
+          ) : (
+            <Loading theme={theme} />
+          ))}
       </AnimatePresence>
       <RetroGrid />
     </div>

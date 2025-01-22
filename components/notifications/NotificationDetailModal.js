@@ -7,25 +7,50 @@ import Texture from "@/components/Texture";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useRouter } from "next/navigation";
 import { FaBell } from "react-icons/fa";
+import { useParams } from "next/navigation";
 
-const NotificationDetailModal = ({ isOpen, onClose, notification, userId }) => {
+const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { userId } = useParams();
 
   const handleRedirect = () => {
-    // Different routing logic based on provider
-    if (notification.provider === "goodwe") {
-      router.push(
-        `/dashboard/${userId}/plants/${notification.provider}/${notification.stationId}`
-      );
-    } else if (notification.provider === "victron") {
-      // Fallback routing for Victron
-      router.push(
-        `/dashboard/${userId}/plants/${notification.provider}/${
-          notification.plantId || notification.idSite
-        }`
-      );
+    if (!notification?.provider || !userId) {
+      console.warn("Missing required navigation data:", {
+        notification,
+        userId,
+      });
+      return;
     }
+
+    let plantId;
+    const provider = notification.provider.toLowerCase();
+
+    // Determine the correct plant ID based on provider
+    if (provider === "goodwe") {
+      plantId = notification.stationId || notification.stationid;
+    } else if (provider === "victron") {
+      plantId = notification.plantId || notification.idSite;
+    }
+
+    if (!plantId) {
+      console.warn("Could not determine plant ID:", notification);
+      return;
+    }
+
+    // Store navigation context before redirecting
+    localStorage.setItem(
+      "plantNavigationContext",
+      JSON.stringify({
+        from: "notifications",
+        notificationId: notification.id,
+        timestamp: Date.now(),
+      })
+    );
+
+    // Navigate using the correct URL pattern
+    const url = `/dashboard/${userId}/plants/${provider}/${plantId}`;
+    router.push(url);
     onClose();
   };
 
@@ -52,7 +77,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification, userId }) => {
               <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {t("plantInformation")}
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-gray-500 dark:text-gray-400">
                     {t("plantName")}
@@ -82,7 +107,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification, userId }) => {
               <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {t("alertDetails")}
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-gray-500 dark:text-gray-400">
                     {t("alertName")}
@@ -146,7 +171,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification, userId }) => {
               <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {t("timeInformation")}
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-gray-500 dark:text-gray-400">
                     {t("happenTime")}
@@ -181,7 +206,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification, userId }) => {
               <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {t("plantInformation")}
               </h3>
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-gray-500 dark:text-gray-400">
                     {t("plantName")}
@@ -211,7 +236,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification, userId }) => {
               <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {t("alertDetails")}
               </h3>
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-gray-500 dark:text-gray-400">
                     {t("alertName")}
@@ -257,7 +282,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification, userId }) => {
               <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
                 {t("timeInformation")}
               </h3>
-              <div className="flex flex-col md:flex-row justify-between gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-gray-500 dark:text-gray-400">
                     {t("happenTime")}

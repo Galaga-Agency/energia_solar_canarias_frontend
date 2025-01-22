@@ -33,7 +33,7 @@ const AssociatedUsers = ({ isAdmin, plantId }) => {
         setIsLoading(false)
       );
     }
-  }, [dispatch, isAdmin, plantId, provider, token, associatedUsers]);
+  }, []);
 
   const handleAddUser = (newUser) => {
     const { usuario_id: userId } = newUser;

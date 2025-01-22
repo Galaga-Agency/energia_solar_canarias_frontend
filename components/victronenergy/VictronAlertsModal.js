@@ -1,45 +1,110 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiAlertCircle, FiX } from "react-icons/fi";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { useTranslation } from "next-i18next";
 import Texture from "@/components/Texture";
-import { X } from "lucide-react";
+import NotificationListItem from "@/components/notifications/NotificationListItem";
+import {
+  fetchActiveNotifications,
+  fetchResolvedNotifications,
+  loadAllNotificationsInBackground,
+  selectActiveNotifications,
+  selectResolvedNotifications,
+  selectActiveTotalCount,
+  selectResolvedTotalCount,
+  selectIsLoadingMore,
+  selectIsInitialLoad,
+  selectActiveError,
+  selectResolvedError,
+  selectResolvedFetched,
+  setInitialLoad,
+} from "@/store/slices/notificationsSlice";
+import { selectUser } from "@/store/slices/userSlice";
+import { useParams } from "next/navigation";
 
-const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
+const ITEMS_PER_PAGE = 100;
+
+const VictronAlertsModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
-  const [showActive, setShowActive] = useState(true);
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
+  // Redux state
+  const activeNotifications = useSelector(selectActiveNotifications);
+  const resolvedNotifications = useSelector(selectResolvedNotifications);
+  const activeTotalCount = useSelector(selectActiveTotalCount);
+  const resolvedTotalCount = useSelector(selectResolvedTotalCount);
+  const isLoadingMore = useSelector(selectIsLoadingMore);
+  const isInitialLoad = useSelector(selectIsInitialLoad);
+  const activeError = useSelector(selectActiveError);
+  const resolvedError = useSelector(selectResolvedError);
+  const resolvedFetched = useSelector(selectResolvedFetched);
+
+  // Local state
+  const [activeTab, setActiveTab] = useState("active");
+  const [filteredActive, setFilteredActive] = useState([]);
+  const [filteredResolved, setFilteredResolved] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { plantId } = useParams();
+
+  // Load notifications on mount
+  useEffect(() => {
+    if (isOpen && user) {
+      dispatch(
+        fetchActiveNotifications({ pageIndex: 1, pageSize: ITEMS_PER_PAGE })
+      ).then(() => {
+        dispatch(
+          loadAllNotificationsInBackground({
+            status: 0,
+            pageSize: ITEMS_PER_PAGE,
+          })
+        );
+      });
+
+      dispatch(
+        fetchResolvedNotifications({ pageIndex: 1, pageSize: ITEMS_PER_PAGE })
+      ).then(() => {
+        dispatch(
+          loadAllNotificationsInBackground({
+            status: 1,
+            pageSize: ITEMS_PER_PAGE,
+          })
+        );
+      });
+    }
+  }, [dispatch, user, isOpen]);
+
+  // Reset pagination when switching tabs
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  // Update filtered notifications when raw data changes
+  useEffect(() => {
+    if (activeNotifications.length) {
+      const victronActive = activeNotifications.filter(
+        (n) => n.provider === "victron" && n.idSite == plantId
+      );
+      setFilteredActive(victronActive);
+    }
+    if (resolvedNotifications.length) {
+      const victronResolved = resolvedNotifications.filter(
+        (n) => n.provider === "victron" && n.idSite == plantId
+      );
+      setFilteredResolved(victronResolved);
+    }
+  }, [activeNotifications, resolvedNotifications, plantId]);
+
+  // Handle body scroll
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
-
-  const getSeverityColor = (isActive) => {
-    if (!isActive) return "bg-green-500 dark:bg-green-500/80";
-    return "bg-red-500 dark:bg-red-500/80";
-  };
-
-  const filteredAlerts = alerts.filter((alert) =>
-    showActive ? alert.isActive : !alert.isActive
-  );
-
-  const NoAlertsMessage = () => (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <FiAlertCircle className="text-4xl text-gray-400 dark:text-gray-600 mb-4" />
-      <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">
-        {showActive ? t("No active alerts") : t("No cleared alerts")}
-      </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-        {showActive
-          ? t("Everything is running smoothly")
-          : t("No alerts have been cleared yet")}
-      </p>
-    </div>
-  );
 
   return (
     <AnimatePresence mode="wait">
@@ -85,17 +150,15 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
                   <div className="flex items-center gap-2">
                     <FiAlertCircle className="text-2xl" />
                     <h2 className="text-xl md:text-2xl font-bold">
-                      {t("System Alerts")}
+                      {t("System Alerts Modal")}
                     </h2>
                   </div>
-                  <motion.button
-                    whileHover={{ rotate: 90 }}
-                    whileTap={{ scale: 0.9 }}
+                  <button
                     onClick={onClose}
-                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                    className="p-2 hover:bg-black/10 rounded-full transition-colors"
                   >
-                    <X className="h-6 w-6 dark:text-custom-dark-blue " />
-                  </motion.button>
+                    <FiX className="text-2xl" />
+                  </button>
                 </motion.div>
 
                 <div className="p-6 space-y-6">
@@ -108,24 +171,24 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
                   >
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setShowActive(true)}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                          showActive
+                        onClick={() => setActiveTab("active")}
+                        className={`select-none px-4 py-2 rounded-lg transition-colors ${
+                          activeTab === "active"
                             ? "bg-custom-yellow text-custom-dark-blue"
                             : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                         }`}
                       >
-                        {t("Active")}
+                        {t("Active")} ({filteredActive.length})
                       </button>
                       <button
-                        onClick={() => setShowActive(false)}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                          !showActive
+                        onClick={() => setActiveTab("resolved")}
+                        className={`select-none px-4 py-2 rounded-lg transition-colors ${
+                          activeTab === "resolved"
                             ? "bg-custom-yellow text-custom-dark-blue"
                             : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                         }`}
                       >
-                        {t("Cleared")}
+                        {t("ClearedAlertas")} ({filteredResolved.length})
                       </button>
                     </div>
                   </motion.div>
@@ -137,51 +200,29 @@ const VictronAlertsModal = ({ isOpen, onClose, alerts }) => {
                     transition={{ delay: 0.4 }}
                     className="max-h-[60vh] overflow-y-auto custom-scrollbar space-y-4"
                   >
-                    {filteredAlerts.length === 0 ? (
-                      <NoAlertsMessage />
-                    ) : (
-                      filteredAlerts.map((alert) => (
-                        <div
-                          key={alert.idAlarm}
-                          className="bg-white/50 dark:bg-slate-700/50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
-                        >
-                          <div className="flex items-center justify-between flex-1">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={`min-w-3 w-3 h-3 rounded-full ${getSeverityColor(
-                                  alert.isActive
-                                )}`}
-                              />
-                              <div>
-                                <p className="text-custom-dark-blue dark:text-custom-yellow font-medium">
-                                  {alert.description}
-                                </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  {alert.device} - {alert.nameEnum}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="text-right text-sm text-gray-500 dark:text-gray-400">
-                              <div>
-                                {format(
-                                  new Date(alert.started * 1000),
-                                  "dd/MM/yyyy HH:mm",
-                                  { locale: es }
-                                )}
-                              </div>
-                              {alert.cleared && (
-                                <div className="text-green-600 dark:text-green-400">
-                                  {t("Cleared")}:{" "}
-                                  {format(
-                                    new Date(alert.cleared * 1000),
-                                    "HH:mm",
-                                    { locale: es }
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                    {activeTab === "active" ? (
+                      filteredActive.length === 0 ? (
+                        <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                          {t("No active alerts")}
                         </div>
+                      ) : (
+                        filteredActive.map((alert) => (
+                          <NotificationListItem
+                            key={alert.id}
+                            notification={alert}
+                          />
+                        ))
+                      )
+                    ) : filteredResolved.length === 0 ? (
+                      <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                        {t("No cleared alerts")}
+                      </div>
+                    ) : (
+                      filteredResolved.map((alert) => (
+                        <NotificationListItem
+                          key={alert.id}
+                          notification={alert}
+                        />
                       ))
                     )}
                   </motion.div>

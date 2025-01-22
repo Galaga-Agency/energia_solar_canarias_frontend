@@ -50,8 +50,6 @@ const GoodweAlertsModal = ({ isOpen, onClose }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const { plantId } = useParams();
 
-  console.log("activeNotifications ---- ", activeNotifications);
-
   // Load notifications on mount
   useEffect(() => {
     if (isOpen && user) {

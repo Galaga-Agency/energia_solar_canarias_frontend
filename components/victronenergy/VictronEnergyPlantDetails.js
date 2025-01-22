@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectPlantDetails,
   selectLoadingDetails,
+  selectAlerts,
 } from "@/store/slices/plantsSlice";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import { IoArrowBackCircle } from "react-icons/io5";
@@ -22,10 +23,10 @@ import VictronEnergyEquipmentDetails from "./VictronEnergyEquipmentDetails";
 import DateRangeModal from "./DateRangeModal";
 import VictronEnergyAlerts from "./VictronEnergyAlerts";
 import VictronAlertsModal from "./VictronAlertsModal";
-import { selectAlerts } from "@/store/slices/plantsSlice";
 import useCSVExport from "@/hooks/useCSVExport";
 import ExportModal from "../ExportModal";
 import AssociatedUsers from "../AssociatedUsers";
+import NotificationListItem from "@/components/notifications/NotificationListItem";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
@@ -70,8 +71,6 @@ const VictronEnergyPlantDetails = () => {
       setHasCoordinates(true);
     }
   }, [latitude, longitude]);
-
-  // console.log("plant:", plant);
 
   // Extract latitude and longitude from plant data
   useEffect(() => {
@@ -186,32 +185,7 @@ const VictronEnergyPlantDetails = () => {
         {isAdmin && <AssociatedUsers plantId={plantId} isAdmin={isAdmin} />}
 
         <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 w-full">
-          {/* {hasCoordinates && (
-            <WeatherWidget
-              lat={latitude}
-              lng={longitude}
-              token={user?.tokenIdentificador}
-              provider="victronenergy"
-            />
-          )} */}
-          {/* {tankData &&
-            !["tc", "tf", "tl", "tr", "tst"].every(
-              (key) => tankData[key] === undefined
-            ) && (
-              <section
-                className={`flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg ${
-                  !hasCoordinates && "flex flex-col mx-auto"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
-                    {t("Fuel Tank Status")}
-                  </h2>
-                </div>
-
-                <TankData tankData={tankData} />
-              </section>
-            )} */}
+          {/* Weather widget and tank data removed */}
         </div>
 
         <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6  backdrop-blur-sm shadow-lg mb-6">

@@ -112,8 +112,16 @@ const SettingsTab = () => {
   // Handle logout
   const handleLogout = () => {
     setIsLoginOut(true);
-    Cookies.remove("user");
-    Cookies.remove("authToken");
+    Cookies.remove("user", {
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+    Cookies.remove("authToken", {
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
     dispatch(logoutUser());
     router.push("/");
     setIsLoginOut(false);

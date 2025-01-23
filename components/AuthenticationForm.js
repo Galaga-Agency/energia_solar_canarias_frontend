@@ -85,7 +85,7 @@ const AuthenticationForm = () => {
 
       const cookieOptions = {
         expires: 180,
-        // secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         path: "/",
       };

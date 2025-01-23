@@ -15,6 +15,13 @@ import FormFace from "@/components/ui/FormFace";
 import ResultContent from "@/components/ResultContent";
 import LoginForm from "@/components/LoginForm";
 import RegisterForm from "@/components/RegisterForm";
+import {
+  fetchActiveNotifications,
+  fetchResolvedNotifications,
+  loadAllNotificationsInBackground,
+  selectIsInitialLoad,
+  setInitialLoad,
+} from "@/store/slices/notificationsSlice";
 
 const AuthenticationForm = () => {
   const [currentFace, setCurrentFace] = useState("login");
@@ -23,6 +30,7 @@ const AuthenticationForm = () => {
   const [tokenInput, setTokenInput] = useState("");
   const [userToValidate, setUserToValidate] = useState(null);
   const [showGlow, setShowGlow] = useState(false);
+  const isInitialLoad = useSelector(selectIsInitialLoad);
 
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading);
@@ -76,6 +84,14 @@ const AuthenticationForm = () => {
 
       dispatch(setUser(response.data));
       router.push(`/dashboard/${userToValidate}`);
+      dispatch(fetchActiveNotifications({ pageIndex: 1, pageSize: 200 }));
+      dispatch(loadAllNotificationsInBackground({ status: 0, pageSize: 200 }));
+      dispatch(fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 }));
+      dispatch(loadAllNotificationsInBackground({ status: 1, pageSize: 200 }));
+
+      if (isInitialLoad) {
+        dispatch(setInitialLoad(false));
+      }
       return true;
     } catch (error) {
       setSubmissionResult({

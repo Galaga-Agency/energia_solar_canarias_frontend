@@ -59,19 +59,17 @@ export default function RootLayout({ children }) {
         <StoreProvider>
           <ThemeWrapper>
             <TranslationProvider>
-              <NotificationsWrapper>
-                {children}
-                <Toaster
-                  position="top-center"
-                  theme="system"
-                  richColors
-                  closeButton
-                  toastOptions={{
-                    className: "dark:bg-custom-dark-blue dark:text-white",
-                    duration: 3000,
-                  }}
-                />
-              </NotificationsWrapper>
+              {children}
+              <Toaster
+                position="top-center"
+                theme="system"
+                richColors
+                closeButton
+                toastOptions={{
+                  className: "dark:bg-custom-dark-blue dark:text-white",
+                  duration: 3000,
+                }}
+              />
             </TranslationProvider>
           </ThemeWrapper>
         </StoreProvider>

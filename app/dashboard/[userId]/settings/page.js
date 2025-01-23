@@ -113,6 +113,7 @@ const SettingsTab = () => {
   const handleLogout = () => {
     setIsLoginOut(true);
     Cookies.remove("user");
+    Cookies.remove("authToken");
     dispatch(logoutUser());
     router.push("/");
     setIsLoginOut(false);

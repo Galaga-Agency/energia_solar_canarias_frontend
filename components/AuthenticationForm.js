@@ -22,6 +22,7 @@ import {
   selectIsInitialLoad,
   setInitialLoad,
 } from "@/store/slices/notificationsSlice";
+import Cookies from "js-cookie";
 
 const AuthenticationForm = () => {
   const [currentFace, setCurrentFace] = useState("login");
@@ -82,8 +83,26 @@ const AuthenticationForm = () => {
         throw new Error(t("invalidToken"));
       }
 
+      const cookieOptions = {
+        expires: 180,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+      };
+
+      console.log("responseeeeeeeeeeeeeeeeee", response);
+      // Verify the token before setting
+      if (!response.data.tokenIdentificador) {
+        console.error("No token found to save");
+        throw new Error("No token found");
+      }
+
+      Cookies.set("authToken", response.data.tokenIdentificador, cookieOptions);
+      Cookies.set("user", JSON.stringify(response.data), cookieOptions);
+
       dispatch(setUser(response.data));
       router.push(`/dashboard/${userToValidate}`);
+
       dispatch(fetchActiveNotifications({ pageIndex: 1, pageSize: 200 }));
       dispatch(loadAllNotificationsInBackground({ status: 0, pageSize: 200 }));
       dispatch(fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 }));
@@ -104,7 +123,6 @@ const AuthenticationForm = () => {
       setIsSubmitting(false);
     }
   };
-
   const resendTokenRequest = async () => {
     if (!userToValidate) return;
     try {

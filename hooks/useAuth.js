@@ -31,6 +31,9 @@ const useAuth = () => {
   }, [dispatch]);
 
   const saveAuthData = (token, user) => {
+    console.log("Saving token:", user.tokenIdentificador);
+    console.log("Full user object:", user);
+
     const cookieOptions = {
       expires: 180,
       secure: process.env.NODE_ENV === "production",
@@ -38,17 +41,18 @@ const useAuth = () => {
       path: "/",
     };
 
-    const userData = {
-      ...user,
-      tokenIdentificador: user.tokenIdentificador,
-    };
+    // Verify the token before setting
+    if (!user.tokenIdentificador) {
+      console.error("No token found to save");
+      return;
+    }
 
     Cookies.set("authToken", user.tokenIdentificador, cookieOptions);
-    Cookies.set("user", JSON.stringify(userData), cookieOptions);
+    Cookies.set("user", JSON.stringify(user), cookieOptions);
 
-    setToken(user.tokenIdentificador);
-    setUser(userData);
-    dispatch(setReduxUser(userData));
+    // Verify cookie was set
+    const savedToken = Cookies.get("authToken");
+    console.log("Saved token:", savedToken);
   };
 
   const clearAuthData = () => {

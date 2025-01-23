@@ -330,7 +330,6 @@ const userSlice = createSlice({
       .addCase(authenticateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        // Don't set user or isLoggedIn yet
       })
       .addCase(authenticateUser.rejected, (state, action) => {
         state.loading = false;
@@ -360,6 +359,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(validateToken.fulfilled, (state, action) => {
+        console.log("action.payload.data", action.payload.data);
         state.loading = false;
         if (action.payload.status === true) {
           state.user = action.payload.data;

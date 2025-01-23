@@ -117,7 +117,7 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
         className="p-0"
         backdropClass="backdrop-blur-sm"
       >
-        <div className="relative w-full max-w-6xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg p-6 rounded-xl">
+        <div className="relative w-full max-w-[90vw] md:max-w-4xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg p-6 rounded-xl">
           <Texture className="opacity-30" />
           <div className="relative z-10 flex flex-col h-full max-h-[75vh]">
             <UserDetailsModalHeader

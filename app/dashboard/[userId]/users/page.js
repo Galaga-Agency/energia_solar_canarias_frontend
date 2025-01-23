@@ -39,21 +39,6 @@ const INITIAL_FILTERS = {
   search: "",
 };
 
-const ViewModeButton = ({ isActive, onClick, icon: Icon }) => (
-  <motion.button
-    onClick={onClick}
-    className={`p-2 rounded-lg transition-colors ${
-      isActive
-        ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
-        : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
-    }`}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    <Icon className="w-5 h-5" />
-  </motion.button>
-);
-
 const UsersTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -63,8 +48,7 @@ const UsersTab = () => {
   const users = useSelector(selectUsers);
   const isLoading = useSelector(selectUsersLoading);
   const error = useSelector(selectUsersError);
-  const { isMobile, isTablet } = useDeviceType();
-
+  const { isMobile, isTablet, isDesktop } = useDeviceType();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list");
   const [filters, setFilters] = useState(INITIAL_FILTERS);
@@ -76,8 +60,9 @@ const UsersTab = () => {
 
   const usersPerPage = useMemo(() => {
     if (isMobile) return 6;
-    if (isTablet) return 7;
-    return viewMode === "grid" ? 6 : 6;
+    if (isTablet && viewMode === "list") return 7;
+    if (isTablet && viewMode === "grid") return 6;
+    return 6;
   }, [isMobile, isTablet, viewMode]);
 
   const filteredUsers = useMemo(() => {
@@ -178,7 +163,6 @@ const UsersTab = () => {
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar mb-12">
       <TransitionEffect />
-
       {/* Theme and Language Controls */}
       <motion.div
         className="fixed top-4 right-4 flex items-center gap-2 z-50"
@@ -189,9 +173,7 @@ const UsersTab = () => {
         <ThemeToggle />
         <LanguageSelector />
       </motion.div>
-
       <Texture />
-
       <motion.div
         className="p-8"
         initial={{ opacity: 0 }}
@@ -217,7 +199,7 @@ const UsersTab = () => {
 
         {/* Filter Button - Mobile/Tablet Only */}
         <motion.button
-          className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+          className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
           onClick={() => setIsSidebarOpen(true)}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -225,7 +207,7 @@ const UsersTab = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          <IoFilter className="text-xl text-custom-dark-blue" />
+          <IoFilter className="text-2xl text-custom-dark-blue" />
         </motion.button>
 
         <motion.div
@@ -389,7 +371,6 @@ const UsersTab = () => {
           </motion.div>
         </motion.div>
       </motion.div>
-
       {/* Mobile Sidebar */}
       <AnimatePresence>
         {(isMobile || isTablet) && isSidebarOpen && (
@@ -401,29 +382,19 @@ const UsersTab = () => {
           />
         )}
       </AnimatePresence>
-
       <AddUserForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
-
       {/* Action Buttons */}
       <motion.button
         onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-20 right-4 md:right-10 px-4 py-3 bg-custom-yellow text-custom-dark-blue rounded-full justify-center transition-all duration-300 button-shadow flex items-center z-40"
+        className="fixed bottom-20 right-4 md:right-10 w-12 h-12 lg:w-auto lg:h-auto lg:px-4 lg:py-3 flex rounded-full justify-center items-center button-shadow bg-custom-yellow text-custom-dark-blue  transition-all duration-300 button-shadow z-40"
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.6, duration: 0.3 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        {!isMobile ? (
-          <>
-            <PlusIcon className="w-5 h-5 mt-1 mr-2" />
-            <span className="font-semibold">{t("addUser")}</span>
-          </>
-        ) : (
-          <PlusIcon className="w-4 h-6" />
-        )}
+        <PlusIcon className="text-custom-dark-blue w-6 h-10" />
       </motion.button>
-
       <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
     </div>
   );

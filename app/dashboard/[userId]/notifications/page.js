@@ -260,7 +260,7 @@ const NotificationsTab = () => {
       {/* Mobile filter button - only shown when sidebar is closed */}
       {(isMobile || isTablet) && !isSidebarOpen && (
         <motion.button
-          className="xl:hidden fixed bottom-20 left-5 z-30 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+          className="xl:hidden fixed bottom-20 left-5 z-30 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -268,7 +268,7 @@ const NotificationsTab = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          <IoFilter />
+          <IoFilter className="text-2xl text-custom-dark-blue" />
         </motion.button>
       )}
 

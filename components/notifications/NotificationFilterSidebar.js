@@ -215,7 +215,7 @@ const NotificationFilterSidebar = ({
             title={t("reset_filters")}
           >
             {isDesktop && <span>{t("reset")}</span>}
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-7 h-7" />
           </button>
           {(isMobile || isTablet) && (
             <motion.button
@@ -224,7 +224,7 @@ const NotificationFilterSidebar = ({
               onClick={() => setIsSidebarOpen(false)}
               className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
-              <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow" />
+              <X className="h-9 w-9 text-custom-dark-blue dark:text-custom-yellow" />
             </motion.button>
           )}
         </div>

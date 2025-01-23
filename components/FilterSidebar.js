@@ -183,14 +183,14 @@ const FilterSidebar = forwardRef(
             <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
               {t("filter")}
             </h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 onClick={handleResetFilters}
                 className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
                 title={t("reset_filters")}
               >
                 {isDesktop && <span>{t("reset")}</span>}
-                <RotateCcw className="w-5 h-5" />
+                <RotateCcw className="w-7 h-7" />
               </button>
               {(isMobile || isTablet) && (
                 <motion.button
@@ -199,7 +199,7 @@ const FilterSidebar = forwardRef(
                   onClick={() => setIsSidebarOpen(false)}
                   className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                 >
-                  <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow" />
+                  <X className="h-9 w-9 text-custom-dark-blue dark:text-custom-yellow" />
                 </motion.button>
               )}
             </div>
@@ -305,14 +305,14 @@ const FilterSidebar = forwardRef(
         {(isMobile || isTablet) && (
           <motion.button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <IoFilter className="text-xl text-custom-dark-blue" />
+            <IoFilter className="text-2xl text-custom-dark-blue" />
           </motion.button>
         )}
       </div>

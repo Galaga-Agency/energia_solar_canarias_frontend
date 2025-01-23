@@ -10,7 +10,7 @@ const UserGridItem = ({ user, getLoginStatus, onClick, t }) => {
   return (
     <div
       onClick={onClick}
-      className="relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg shadow-lg p-6 hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer group"
+      className="relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg shadow-lg p-6 hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer group h-full w-full"
     >
       {/* User Profile Section */}
       <div className="relative mb-4">

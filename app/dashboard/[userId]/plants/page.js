@@ -101,7 +101,7 @@ const ClientDashboardPage = ({ params }) => {
     setCurrentPage(1);
   }, [viewMode]);
 
-  console.log("filtered plants", filteredPlants);
+  // console.log("filtered plants", filteredPlants);
 
   return (
     <div className="pb-12 min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">

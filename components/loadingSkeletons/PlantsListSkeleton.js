@@ -3,7 +3,7 @@ import CustomSkeleton from "@/components/loadingSkeletons/Skeleton";
 
 const PlantsListSkeleton = ({ theme, rows }) => {
   return (
-    <div className="grid grid-cols-1 gap-6 w-full">
+    <div className="grid grid-cols-1 gap-4 w-full">
       {[...Array(rows)].map((_, index) => (
         <div
           key={index}

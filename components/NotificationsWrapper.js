@@ -9,7 +9,7 @@ import {
   selectIsInitialLoad,
   setInitialLoad,
 } from "@/store/slices/notificationsSlice";
-import { selectUser } from "@/store/slices/userSlice";
+import { selectTokenValidated, selectUser } from "@/store/slices/userSlice";
 
 const REFRESH_INTERVAL = 30000; // Refresh every 30 seconds
 const FETCH_SIZE = 200;
@@ -18,18 +18,19 @@ const NotificationsWrapper = ({ children }) => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const isInitialLoad = useSelector(selectIsInitialLoad);
+  const tokenValidated = useSelector(selectTokenValidated);
 
   const fetchNotifications = useCallback(async () => {
-    if (!user) return;
+    if (!user || !tokenValidated) return;
 
     try {
-      // Fetch active notifications
       await dispatch(
         fetchActiveNotifications({
           pageIndex: 1,
           pageSize: FETCH_SIZE,
         })
       );
+
       dispatch(
         loadAllNotificationsInBackground({
           status: 0,
@@ -37,13 +38,13 @@ const NotificationsWrapper = ({ children }) => {
         })
       );
 
-      // Fetch resolved notifications
       await dispatch(
         fetchResolvedNotifications({
           pageIndex: 1,
           pageSize: FETCH_SIZE,
         })
       );
+
       dispatch(
         loadAllNotificationsInBackground({
           status: 1,
@@ -57,23 +58,20 @@ const NotificationsWrapper = ({ children }) => {
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
-  }, [dispatch, user, isInitialLoad]);
+  }, [dispatch, user, isInitialLoad, tokenValidated]);
 
-  // Initial fetch when component mounts and user is available
   useEffect(() => {
-    if (user && isInitialLoad) {
+    if (user && tokenValidated && isInitialLoad) {
       fetchNotifications();
     }
-  }, [fetchNotifications, user, isInitialLoad]);
+  }, [fetchNotifications, user, isInitialLoad, tokenValidated]);
 
-  // Set up periodic refresh
   useEffect(() => {
-    if (!user) return;
+    if (!user || !tokenValidated) return;
 
     const intervalId = setInterval(fetchNotifications, REFRESH_INTERVAL);
-
     return () => clearInterval(intervalId);
-  }, [fetchNotifications, user]);
+  }, [fetchNotifications, user, tokenValidated]);
 
   return children;
 };

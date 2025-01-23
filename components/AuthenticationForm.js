@@ -21,53 +21,35 @@ const AuthenticationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(null);
   const [tokenInput, setTokenInput] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
-  const dispatch = useDispatch();
-  const { saveAuthData } = useAuth();
-  const loading = useSelector(selectLoading);
-  const [userToValidate, setUserToValidate] = useState();
-  const { t } = useTranslation();
-  const router = useRouter();
+  const [userToValidate, setUserToValidate] = useState(null);
   const [showGlow, setShowGlow] = useState(false);
 
-  useEffect(() => {
-    // Delay the glow effect
-    const timer = setTimeout(() => {
-      setShowGlow(true);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const dispatch = useDispatch();
+  const loading = useSelector(selectLoading);
+  const { t } = useTranslation();
+  const router = useRouter();
 
   const handleSubmit = async (data, type) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
+
     try {
       const response = await dispatch(authenticateUser(data)).unwrap();
-      console.log("User data --------------", response);
-
-      saveAuthData(response.data.tokenIdentificador, response.data);
+      console.log("Auth response:", response);
 
       if (type === "login") {
-        setUserEmail(data.email);
-        setUserPassword(data.password);
-        setSubmissionResult({ status: "loginSuccess" });
         setUserToValidate(response.data.id);
+        setSubmissionResult({ status: "loginSuccess" });
         setCurrentFace("result");
-      } else {
-        setSubmissionResult({ status: "registerSuccess" });
-        setCurrentFace("login");
       }
     } catch (err) {
-      const errorMessage = err.includes("contraseña es inválida")
-        ? t("invalidPassword")
-        : err.includes("usuario no existe")
-        ? t("invalidUser")
-        : t("internalServerError");
-
       setSubmissionResult({
         status: "loginError",
-        message: errorMessage,
+        message: err.includes("contraseña es inválida")
+          ? t("invalidPassword")
+          : err.includes("usuario no existe")
+          ? t("invalidUser")
+          : t("internalServerError"),
       });
       setCurrentFace("result");
     } finally {
@@ -75,37 +57,25 @@ const AuthenticationForm = () => {
     }
   };
 
-  const handleTokenSubmit = async () => {
-    if (!tokenInput.trim() || !userToValidate) return false;
+  const handleTokenSubmit = async (e) => {
+    e?.preventDefault();
+    if (!tokenInput?.trim() || !userToValidate || isSubmitting) return false;
     setIsSubmitting(true);
 
     try {
       const response = await dispatch(
-        validateToken({ id: userToValidate, token: tokenInput })
-      );
+        validateToken({
+          id: userToValidate,
+          token: tokenInput.trim(),
+        })
+      ).unwrap();
 
-      // console.log("Token validation response:", response);
-
-      if (
-        response.type?.includes("rejected") ||
-        response.error ||
-        !response.payload?.status
-      ) {
-        setSubmissionResult({
-          status: "loginError",
-          message: response.payload || t("invalidToken"),
-        });
-        setTokenInput("");
-        setIsSubmitting(false);
-        return false;
+      if (!response?.status) {
+        throw new Error(t("invalidToken"));
       }
 
-      saveAuthData(
-        response.payload.data.tokenIdentificador,
-        response.payload.data
-      );
-      dispatch(setUser(response.payload.data));
-      window.location.href = `/dashboard/${userToValidate}`;
+      dispatch(setUser(response.data));
+      router.push(`/dashboard/${userToValidate}`);
       return true;
     } catch (error) {
       setSubmissionResult({
@@ -113,34 +83,34 @@ const AuthenticationForm = () => {
         message: t("invalidToken"),
       });
       setTokenInput("");
-      setIsSubmitting(false);
       return false;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const resendTokenRequest = async () => {
-    if (!userEmail || !userPassword) {
-      console.error("User credentials are not available to resend the token.");
-      return;
-    }
-
+    if (!userToValidate) return;
     try {
-      const data = { email: userEmail, password: userPassword };
-      await dispatch(authenticateUser(data));
-      // console.log("Token resent successfully!");
+      await dispatch(
+        authenticateUser({ email: userEmail, password: userPassword })
+      );
     } catch (error) {
       console.error("Failed to resend token:", error);
     }
   };
 
-  const getRotation = () => {
-    const rotations = {
+  useEffect(() => {
+    const timer = setTimeout(() => setShowGlow(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const getRotation = () =>
+    ({
       login: 0,
       register: 180,
       result: 360,
-    };
-    return `rotateY(${rotations[currentFace]}deg)`;
-  };
+    }[currentFace]);
 
   return (
     <div className="relative w-[min(100%-2rem,470px)] mx-auto mt-4">

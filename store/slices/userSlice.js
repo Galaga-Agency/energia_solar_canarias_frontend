@@ -25,15 +25,10 @@ export const authenticateUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await loginRequestAPI(userData);
-      if (!response || !response.data) throw new Error("Authentication failed");
-
-      return {
-        ...response,
-        data: {
-          ...response.data,
-          tokenIdentificador: response.data.tokenIdentificador,
-        },
-      };
+      if (!response?.status || !response?.data) {
+        throw new Error("Authentication failed");
+      }
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -334,10 +329,8 @@ const userSlice = createSlice({
       })
       .addCase(authenticateUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
-        state.isLoggedIn = true;
-        state.isAdmin = action.payload?.clase === "admin";
         state.error = null;
+        // Don't set user or isLoggedIn yet
       })
       .addCase(authenticateUser.rejected, (state, action) => {
         state.loading = false;

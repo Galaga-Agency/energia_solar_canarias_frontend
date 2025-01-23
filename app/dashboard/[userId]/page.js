@@ -6,12 +6,14 @@ import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import Loading from "@/components/ui/Loading";
 import { useEffect } from "react";
 import { clearPlantDetails } from "@/store/slices/plantsSlice";
+import { selectTheme } from "@/store/slices/themeSlice";
 
 export default function Dashboard() {
   const router = useRouter();
   const isAdmin = useSelector(selectIsAdmin);
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
+  const theme = useSelector(selectTheme);
 
   console.log("current user: ", user);
 
@@ -31,7 +33,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen w-screen">
-      <Loading />
+      <Loading theme={theme} />
     </div>
   );
 }

@@ -32,6 +32,7 @@ import DangerZone from "@/components/DangerZone";
 import { motion } from "framer-motion";
 import DeleteUserModal from "@/components/DeleteUserModal";
 import { deleteUser } from "@/store/slices/usersListSlice";
+import Loading from "@/components/ui/Loading";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();
@@ -46,6 +47,7 @@ const SettingsTab = () => {
   const pathname = usePathname();
   const isLoading = useSelector(selectLoading);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoginOut, setIsLoginOut] = useState(false);
 
   // Fetch fresh user data when component mounts or token changes
   useEffect(() => {
@@ -109,10 +111,14 @@ const SettingsTab = () => {
 
   // Handle logout
   const handleLogout = () => {
-    dispatch(logoutUser());
+    setIsLoginOut(true);
     Cookies.remove("user");
+    dispatch(logoutUser());
     router.push("/");
+    setIsLoginOut(false);
   };
+
+  isLoginOut && <Loading theme={theme} />;
 
   // Profile picture update handler
   const handleProfilePicUpdate = (newImageUrl) => {

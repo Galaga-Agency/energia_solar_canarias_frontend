@@ -20,8 +20,6 @@ const AssociatePlantModal = ({ isOpen, onClose, selectedUser, token, t }) => {
   const plants = useSelector(selectPlants);
   const user = useSelector(selectUser);
 
-  console.log(" plants available to associate: ", plants);
-
   const filteredPlants = (plants || []).filter((plant) =>
     plant.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );

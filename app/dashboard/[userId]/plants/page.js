@@ -51,7 +51,7 @@ const ClientDashboardPage = ({ params }) => {
   const sidebarRef = useRef(null);
 
   const GRID_ITEMS_PER_PAGE = isMobile ? 6 : 9;
-  const LIST_ITEMS_PER_PAGE = isMobile ? 4 : 7;
+  const LIST_ITEMS_PER_PAGE = 7;
 
   const itemsPerPage =
     viewMode === "grid" ? GRID_ITEMS_PER_PAGE : LIST_ITEMS_PER_PAGE;
@@ -104,26 +104,37 @@ const ClientDashboardPage = ({ params }) => {
   // console.log("filtered plants", filteredPlants);
 
   return (
-    <div className="pb-12 min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
+    <div className="pb-16 min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-x-hidden">
       <TransitionEffect />
 
-      <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+      <motion.div
+        className="fixed top-4 right-4 flex items-center gap-2 z-50"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+      >
         <ThemeToggle />
         <LanguageSelector />
-      </div>
+      </motion.div>
+
       <Texture />
 
-      <div className="relative h-auto z-10 p-8">
-        <div className="flex items-center mb-10 md:mb-2 z-10">
+      <div className="relative h-auto z-10 p-4 md:p-8">
+        <motion.div
+          className="flex items-center mb-6 md:mb-10 z-10 px-2"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
           <Image
             src={companyIcon}
             alt="Company Icon"
-            className="w-12 h-12 mr-2 z-10"
+            className="w-10 h-10 md:w-12 md:h-12 mr-2 z-10 transition-transform duration-300 hover:scale-110"
           />
-          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
+          <h2 className="z-10 text-3xl md:text-4xl dark:text-custom-yellow text-custom-dark-blue">
             {t("plants")}
           </h2>
-        </div>
+        </motion.div>
 
         <PlantsMapModal
           isOpen={isMapOpen}
@@ -131,7 +142,7 @@ const ClientDashboardPage = ({ params }) => {
           plants={sortedPlants}
         />
 
-        <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row xl:gap-6">
           <FilterSidebar
             ref={sidebarRef}
             plants={plants}
@@ -139,59 +150,61 @@ const ClientDashboardPage = ({ params }) => {
             initialSearchTerm={searchTerm}
           />
 
-          <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:justify-between z-30 mb-4">
-              <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
-                <div className="flex-grow">
+          <div className="flex-1 w-full max-w-[90vw] mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 z-30">
+              <div className="flex justify-between items-center w-full">
+                <div className="flex-grow md:flex-grow-0">
                   <SortMenu onSortChange={sortItems} />
                 </div>
+
+                <motion.div
+                  className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.1, duration: 0.5 }}
+                >
+                  <motion.button
+                    onClick={() => setViewMode("list")}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`p-2 rounded-lg transition-colors ${
+                      viewMode === "list"
+                        ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                        : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                    }`}
+                  >
+                    <HiViewList className="w-5 h-5" />
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setViewMode("grid")}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`p-2 rounded-lg transition-colors ${
+                      viewMode === "grid"
+                        ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                        : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                    }`}
+                  >
+                    <HiViewGrid className="w-5 h-5" />
+                  </motion.button>
+                </motion.div>
               </div>
-              <motion.div
-                className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.1, duration: 0.5 }}
-              >
-                <motion.button
-                  onClick={() => setViewMode("list")}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "list"
-                      ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
-                      : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
-                  }`}
-                >
-                  <HiViewList className="w-5 h-5" />
-                </motion.button>
-                <motion.button
-                  onClick={() => setViewMode("grid")}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
-                      : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
-                  }`}
-                >
-                  <HiViewGrid className="w-5 h-5" />
-                </motion.button>
-              </motion.div>
             </div>
 
             {loading ? (
               <PlantsListSkeleton theme={theme} rows={itemsPerPage} />
             ) : (
-              <>
+              <div className="w-full">
                 {paginatedPlants.length > 0 ? (
                   viewMode === "list" ? (
-                    <div>
+                    <div className="space-y-4 w-full overflow-x-auto">
                       {paginatedPlants.map((plant, index) => (
                         <motion.div
                           key={plant.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.8 + index * 0.05 }}
+                          className="w-full"
                         >
                           <PlantsListTableItem
                             plant={{
@@ -203,42 +216,50 @@ const ClientDashboardPage = ({ params }) => {
                       ))}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full">
                       {paginatedPlants.map((plant, index) => (
                         <motion.div
                           key={plant.id}
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: 1.2 + index * 0.05 }}
+                          className="w-full"
                         >
-                          <PlantCard key={plant.id} plant={plant} />
+                          <PlantCard plant={plant} />
                         </motion.div>
                       ))}
                     </div>
                   )
                 ) : (
-                  <div className="h-auto w-full flex flex-col justify-center items-center">
-                    <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
-                    <p className="text-center text-lg text-custom-dark-blue dark:text-custom-light-gray">
+                  <motion.div
+                    className="h-[50vh] w-full flex flex-col justify-center items-center px-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                  >
+                    <PiSolarPanelFill className="text-7xl md:text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
+                    <p className="text-center text-base md:text-lg text-custom-dark-blue dark:text-custom-light-gray mt-4">
                       {t("noPlantsFound")}
                     </p>
-                  </div>
+                  </motion.div>
                 )}
 
                 {totalPages > 1 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                  />
+                  <div className="mt-6 flex justify-center">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      <BottomNavbar userId={user && user.id} userClass={user && user.classe} />
+      <BottomNavbar userId={user?.id} userClass={user?.classe} />
     </div>
   );
 };

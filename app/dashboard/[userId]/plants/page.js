@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import BottomNavbar from "@/components/BottomNavbar";
@@ -19,19 +19,18 @@ import SortMenu from "@/components/SortPlantsMenu";
 import Pagination from "@/components/ui/Pagination";
 import PlantCard from "@/components/PlantCard";
 import PlantsMapModal from "@/components/PlantsMapModal";
-import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
-import AddPlantForm from "@/components/AddPlantForm";
 import Image from "next/image";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Texture from "@/components/Texture";
-import PlantStatuses from "@/components/PlantStatuses";
 import FilterSidebar from "@/components/FilterSidebar";
 import usePlantSort from "@/hooks/usePlantSort";
 import useDeviceType from "@/hooks/useDeviceType";
 import PlantsListSkeleton from "@/components/loadingSkeletons/PlantsListSkeleton";
 import { useTranslation } from "react-i18next";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { HiViewGrid, HiViewList } from "react-icons/hi";
+import PlantsListTableItem from "@/components/PlantsListTableItem";
+import { motion } from "framer-motion";
 
 const ClientDashboardPage = ({ params }) => {
   const user = useSelector(selectUser);
@@ -41,25 +40,28 @@ const ClientDashboardPage = ({ params }) => {
   const plants = useSelector(selectPlants);
   const theme = useSelector(selectTheme);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("list");
   const { sortedItems: sortedPlants, sortItems } = usePlantSort(filteredPlants);
   const { isMobile } = useDeviceType();
   const { t } = useTranslation();
   const sidebarRef = useRef(null);
 
-  const plantsPerPage = 6;
-  const totalPages = Math.ceil(sortedPlants.length / plantsPerPage);
-  const startIndex = (currentPage - 1) * plantsPerPage;
+  const GRID_ITEMS_PER_PAGE = isMobile ? 6 : 9;
+  const LIST_ITEMS_PER_PAGE = isMobile ? 4 : 7;
+
+  const itemsPerPage =
+    viewMode === "grid" ? GRID_ITEMS_PER_PAGE : LIST_ITEMS_PER_PAGE;
+
+  const totalPages = Math.ceil(sortedPlants.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPlants = sortedPlants.slice(
     startIndex,
-    startIndex + plantsPerPage
+    startIndex + itemsPerPage
   );
-
-  // console.log("plant from list: ", paginatedPlants);
 
   const handleFilterChange = useCallback((filteredResults) => {
     setFilteredPlants(filteredResults);
@@ -94,9 +96,17 @@ const ClientDashboardPage = ({ params }) => {
     setFilteredPlants(plants);
   }, [plants, dispatch]);
 
+  // Reset page when view mode changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [viewMode]);
+
+  console.log("filtered plants", filteredPlants);
+
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
+    <div className="pb-12 min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
       <TransitionEffect />
+
       <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
         <ThemeToggle />
         <LanguageSelector />
@@ -115,11 +125,6 @@ const ClientDashboardPage = ({ params }) => {
           </h2>
         </div>
 
-        {/* <AddPlantForm
-          onClose={() => setIsFormOpen(false)}
-          isOpen={isFormOpen}
-        /> */}
-
         <PlantsMapModal
           isOpen={isMapOpen}
           onClose={() => setIsMapOpen(false)}
@@ -135,41 +140,82 @@ const ClientDashboardPage = ({ params }) => {
           />
 
           <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:justify-between z-30">
+            <div className="flex flex-col md:flex-row md:justify-between z-30 mb-4">
               <div className="flex gap-4 justify-start mb-6 md:mb-0 z-30">
                 <div className="flex-grow">
                   <SortMenu onSortChange={sortItems} />
                 </div>
-                <button
-                  onClick={() => setIsMapOpen(true)}
-                  className="z-30 bg-custom-yellow text-custom-dark-blue px-4 py-2 rounded-lg flex items-center justify-center button-shadow"
-                >
-                  <FaMapMarkedAlt className="text-2xl" />
-                </button>
               </div>
-              <PlantStatuses />
+              <motion.div
+                className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.1, duration: 0.5 }}
+              >
+                <motion.button
+                  onClick={() => setViewMode("list")}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === "list"
+                      ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                      : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                  }`}
+                >
+                  <HiViewList className="w-5 h-5" />
+                </motion.button>
+                <motion.button
+                  onClick={() => setViewMode("grid")}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === "grid"
+                      ? "bg-custom-dark-blue dark:bg-custom-yellow text-white dark:text-custom-dark-blue"
+                      : "text-custom-dark-blue dark:text-custom-yellow hover:bg-white/10 dark:hover:bg-gray-800/50"
+                  }`}
+                >
+                  <HiViewGrid className="w-5 h-5" />
+                </motion.button>
+              </motion.div>
             </div>
 
-            {/* <div className="mb-4">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder={t("search")}
-                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:bg-gray-800 dark:text-custom-yellow"
-              />
-            </div> */}
-
             {loading ? (
-              <PlantsListSkeleton theme={theme} rows={plantsPerPage} />
+              <PlantsListSkeleton theme={theme} rows={itemsPerPage} />
             ) : (
               <>
                 {paginatedPlants.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
-                    {paginatedPlants.map((plant) => (
-                      <PlantCard key={plant.id} plant={plant} />
-                    ))}
-                  </div>
+                  viewMode === "list" ? (
+                    <div>
+                      {paginatedPlants.map((plant, index) => (
+                        <motion.div
+                          key={plant.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.8 + index * 0.05 }}
+                        >
+                          <PlantsListTableItem
+                            plant={{
+                              ...plant,
+                              id: plant.id?.toString(),
+                            }}
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 my-10 w-full">
+                      {paginatedPlants.map((plant, index) => (
+                        <motion.div
+                          key={plant.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 1.2 + index * 0.05 }}
+                        >
+                          <PlantCard key={plant.id} plant={plant} />
+                        </motion.div>
+                      ))}
+                    </div>
+                  )
                 ) : (
                   <div className="h-auto w-full flex flex-col justify-center items-center">
                     <PiSolarPanelFill className="mt-24 text-center text-9xl text-custom-dark-blue dark:text-custom-light-gray" />
@@ -190,13 +236,6 @@ const ClientDashboardPage = ({ params }) => {
             )}
           </div>
         </div>
-
-        {/* <button
-          onClick={() => setIsFormOpen(true)}
-          className="fixed bottom-20 right-4 md:right-10 w-12 h-12 bg-custom-yellow text-custom-dark-blue rounded-full flex items-center justify-center transition-colors duration-300 button-shadow"
-        >
-          <PlusIcon className="w-6 h-6" />
-        </button> */}
       </div>
 
       <BottomNavbar userId={user && user.id} userClass={user && user.classe} />

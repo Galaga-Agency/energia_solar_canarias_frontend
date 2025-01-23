@@ -393,7 +393,7 @@ const UsersTab = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <PlusIcon className="text-custom-dark-blue w-6 h-10" />
+        <PlusIcon className="text-custom-dark-blue w-8 h-10" />
       </motion.button>
       <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
     </div>

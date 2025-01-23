@@ -11,6 +11,8 @@ import useDeviceType from "@/hooks/useDeviceType";
 import { motion } from "framer-motion";
 import { RotateCcw, X } from "lucide-react";
 import { IoFilter } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { selectIsAdmin } from "@/store/slices/userSlice";
 
 const STATUS_OPTIONS = [
   "working",
@@ -50,6 +52,7 @@ const FilterSidebar = forwardRef(
       ...INITIAL_FILTER_STATE,
       search: initialSearchTerm || "",
     });
+    const isAdmin = useSelector(selectIsAdmin);
 
     const normalizeString = (str) => {
       if (!str) return "";
@@ -231,43 +234,45 @@ const FilterSidebar = forwardRef(
             </div>
           </div>
 
-          <div className="mb-4">
-            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-              {t("organization")}
-            </h3>
-            <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-              {ORGANIZATION_OPTIONS.map((org) => (
-                <div
-                  key={org.name}
-                  className={!org.isAvailable ? "opacity-50" : undefined}
-                >
-                  <CustomCheckbox
-                    label={
-                      <span className="flex items-center gap-2 text-nowrap">
-                        {org.name}
-                        {!org.isAvailable && (
-                          <span className="text-xs italic text-custom-dark-blue dark:text-custom-light-gray">
-                            ({t("comingSoon")})
-                          </span>
-                        )}
-                      </span>
-                    }
-                    checked={filters.organization.includes(
-                      normalizeString(org.name)
-                    )}
-                    onChange={() =>
-                      handleCheckboxChange(
-                        "organization",
-                        org.name,
-                        org.isAvailable
-                      )
-                    }
-                    disabled={!org.isAvailable}
-                  />
-                </div>
-              ))}
+          {isAdmin && (
+            <div className="mb-4">
+              <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+                {t("organization")}
+              </h3>
+              <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+                {ORGANIZATION_OPTIONS.map((org) => (
+                  <div
+                    key={org.name}
+                    className={!org.isAvailable ? "opacity-50" : undefined}
+                  >
+                    <CustomCheckbox
+                      label={
+                        <span className="flex items-center gap-2 text-nowrap">
+                          {org.name}
+                          {!org.isAvailable && (
+                            <span className="text-xs italic text-custom-dark-blue dark:text-custom-light-gray">
+                              ({t("comingSoon")})
+                            </span>
+                          )}
+                        </span>
+                      }
+                      checked={filters.organization.includes(
+                        normalizeString(org.name)
+                      )}
+                      onChange={() =>
+                        handleCheckboxChange(
+                          "organization",
+                          org.name,
+                          org.isAvailable
+                        )
+                      }
+                      disabled={!org.isAvailable}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="mb-4">
             <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">

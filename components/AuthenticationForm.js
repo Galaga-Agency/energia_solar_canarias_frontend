@@ -90,7 +90,6 @@ const AuthenticationForm = () => {
         path: "/",
       };
 
-      console.log("responseeeeeeeeeeeeeeeeee", response);
       // Verify the token before setting
       if (!response.data.tokenIdentificador) {
         console.error("No token found to save");

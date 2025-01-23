@@ -181,10 +181,9 @@ const AuthenticationForm = () => {
         style={{ perspective: "1500px" }}
       >
         <motion.div
-          className="absolute w-full h-full"
+          className="absolute w-full h-full [transform-style:preserve-3d]"
           style={{
-            transformStyle: "preserve-3d",
-            transform: getRotation(),
+            transform: `rotateY(${getRotation()}deg)`,
             transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >

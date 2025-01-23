@@ -112,16 +112,33 @@ const SettingsTab = () => {
   // Handle logout
   const handleLogout = () => {
     setIsLoginOut(true);
+
+    // Get domain for cookie settings
+    const domain = window.location.hostname;
+
     Cookies.remove("user", {
       path: "/",
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "strict",
+      domain: domain,
     });
+
     Cookies.remove("authToken", {
       path: "/",
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "strict",
+      domain: domain,
     });
+
+    // Add Clear-Site-Data header
+    if (typeof window !== "undefined") {
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+      });
+    }
+
     dispatch(logoutUser());
     router.push("/");
     setIsLoginOut(false);

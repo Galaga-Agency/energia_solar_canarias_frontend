@@ -1,22 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { X, Loader2 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "sonner";
 import Modal from "@/components/ui/Modal";
-import { selectPlants, associatePlantToUser } from "@/store/slices/plantsSlice";
+import {
+  selectPlants,
+  associatePlantToUser,
+  fetchPlants,
+} from "@/store/slices/plantsSlice";
 import Texture from "@/components/Texture";
 import SimplePlantsListItem from "./SimplePlantsListItem";
+import { selectUser } from "@/store/slices/userSlice";
 
 const AssociatePlantModal = ({ isOpen, onClose, selectedUser, token, t }) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [associating, setAssociating] = useState(false);
   const plants = useSelector(selectPlants);
+  const user = useSelector(selectUser);
+
+  console.log(" plants available to associate: ", plants);
 
   const filteredPlants = (plants || []).filter((plant) =>
     plant.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    dispatch(
+      fetchPlants({
+        userId: user.id,
+        token: user.tokenIdentificador,
+        page: 1,
+        pageSize: 10000,
+      })
+    );
+  }, [user, dispatch]);
 
   const handleAddPlant = async (plant) => {
     setAssociating(true);

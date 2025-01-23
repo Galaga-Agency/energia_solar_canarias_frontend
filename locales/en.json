@@ -997,5 +997,7 @@
   "error_loading_notifications": "Error loading notifications",
   "no_notifications_found": "No notifications found",
   "no_filtered_notifications": "No notifications match your filters",
-  "errorLoadingNotifications": "Error loading notifications"
+  "errorLoadingNotifications": "Error loading notifications",
+  "installAppSafari": "Add to Home Screen",
+  "safariInstallInstructions": "To install: tap the Share button, then 'Add to Home Screen'"
 }

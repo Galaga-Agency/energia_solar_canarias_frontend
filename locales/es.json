@@ -1912,5 +1912,8 @@
   "no_notifications_found": "No se encontraron notificaciones",
   "no_filtered_notifications": "Ninguna notificación coincide con tus filtros",
   "errorLoadingNotifications": "Error al cargar las notificaciones",
-  "View All": "Ver todas"
+  "View All": "Ver todas",
+  "installAppSafari": "Añadir a pantalla de inicio",
+  "safariInstallInstructions": "Para instalar: toca el botón Compartir y luego 'Añadir a pantalla de inicio'",
+  "notInstallable": "La aplicación no se puede instalar en este momento"
 }

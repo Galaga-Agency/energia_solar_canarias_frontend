@@ -1024,5 +1024,6 @@
   "cancel_button": "Cancel",
   "install_success": "Installation completed successfully",
   "install_error": "There was a problem with the installation",
-  "install_unavailable": "Installation not available at this time"
+  "install_unavailable": "Installation not available at this time",
+  "install_success_description": "The app has been installed successfully. You can find it in your app launcher or desktop."
 }

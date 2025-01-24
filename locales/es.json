@@ -1941,5 +1941,6 @@
   "cancel_button": "Cancelar",
   "install_success": "Instalación completada con éxito",
   "install_error": "Hubo un problema con la instalación",
-  "install_unavailable": "Instalación no disponible en este momento"
+  "install_unavailable": "Instalación no disponible en este momento",
+  "install_success_description": "La aplicación se ha instalado correctamente. Puedes encontrarla en tu launcher de aplicaciones o escritorio."
 }

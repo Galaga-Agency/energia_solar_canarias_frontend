@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FaDownload, FaPlus } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import PrimaryButton from "./ui/PrimaryButton";
 
 const InstallationGuide = ({ debug = true }) => {
@@ -26,6 +27,15 @@ const InstallationGuide = ({ debug = true }) => {
     [debug, isBrowser]
   );
 
+  const showSuccessMessage = useCallback(() => {
+    toast.success(t("install_success"), {
+      description: t("install_success_description"),
+      duration: 6000,
+      className:
+        "bg-white/90 dark:bg-custom-dark-blue/90 backdrop-blur-lg text-custom-dark-blue dark:text-custom-light-gray",
+    });
+  }, [t]);
+
   const handleClick = useCallback(async () => {
     log("Install button clicked", { hasPrompt: !!deferredPrompt });
 
@@ -40,11 +50,12 @@ const InstallationGuide = ({ debug = true }) => {
 
       if (choiceResult.outcome === "accepted") {
         setInstallState((prev) => ({ ...prev, isInstalled: true }));
+        showSuccessMessage();
       }
     } catch (error) {
       log("Installation error", error);
     }
-  }, [deferredPrompt, log]);
+  }, [deferredPrompt, log, showSuccessMessage]);
 
   useEffect(() => {
     if (!isBrowser) return;
@@ -61,6 +72,7 @@ const InstallationGuide = ({ debug = true }) => {
       log("App installed successfully");
       setInstallState((prev) => ({ ...prev, isInstalled: true }));
       setDeferredPrompt(null);
+      showSuccessMessage();
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -73,7 +85,7 @@ const InstallationGuide = ({ debug = true }) => {
       );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [isBrowser, log]);
+  }, [isBrowser, log, showSuccessMessage]);
 
   if (!mounted || !deferredPrompt) return null;
 

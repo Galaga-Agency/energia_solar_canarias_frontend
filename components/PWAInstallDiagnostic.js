@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const PlatformDiagnostic = () => {
+const PWAInstallDiagnostic = () => {
   const [diagnosticInfo, setDiagnosticInfo] = useState({
     browserSupport: false,
     httpsServed: false,
@@ -165,4 +165,4 @@ const PlatformDiagnostic = () => {
   );
 };
 
-export default PlatformDiagnostic;
+export default PWAInstallDiagnostic;

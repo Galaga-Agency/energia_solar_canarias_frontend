@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useMemo } from "react";
 import { FaDownload, FaPlus } from "react-icons/fa";
 import { useTranslation } from "react-i18next";

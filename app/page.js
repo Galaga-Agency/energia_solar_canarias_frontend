@@ -22,7 +22,6 @@ export default function Home() {
   const tokenValidated = useSelector(selectTokenValidated);
   const userData = useSelector((state) => state.user?.user);
   const redirectAttempted = useRef(false);
-  const isDev = process.env.NODE_ENV === "development";
 
   useEffect(() => {
     const handleInitialRedirect = async () => {
@@ -82,7 +81,6 @@ export default function Home() {
         <LogoAnimation />
       </div>
       <div className="fixed bottom-4 right-4 z-50">
-        {isDev && <PWAInstallDiagnostic />}
         <InstallationGuide debug={true} />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const usePWADiagnostics = () => {
   const [diagnostics, setDiagnostics] = useState({
@@ -9,10 +9,12 @@ const usePWADiagnostics = () => {
     isStandalone: false,
     canInstall: false,
     deferredPrompt: null,
+    isInstalled: false, // Indicates whether the app is already installed
   });
 
   useEffect(() => {
-    const performDiagnostics = () => {
+    const performDiagnostics = async () => {
+      // Check basic diagnostics
       const isHTTPS =
         window.location.protocol === "https:" ||
         window.location.hostname === "localhost";
@@ -23,6 +25,19 @@ const usePWADiagnostics = () => {
         window.matchMedia("(display-mode: standalone)").matches ||
         navigator.standalone;
 
+      // Check if the app is installed using `getInstalledRelatedApps`
+      let isInstalled = false;
+      if ("getInstalledRelatedApps" in navigator) {
+        try {
+          const relatedApps = await navigator.getInstalledRelatedApps();
+          isInstalled = relatedApps.some(
+            (app) => app.url === `${window.location.origin}/manifest.json`
+          );
+        } catch (error) {
+          console.error("Error checking installed related apps:", error);
+        }
+      }
+
       setDiagnostics((prev) => ({
         ...prev,
         isHTTPS,
@@ -30,6 +45,7 @@ const usePWADiagnostics = () => {
         supportsBeforeInstallPrompt,
         hasServiceWorker,
         isStandalone,
+        isInstalled,
       }));
     };
 
@@ -44,6 +60,7 @@ const usePWADiagnostics = () => {
 
     performDiagnostics();
 
+    // Listen for the beforeinstallprompt event
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {

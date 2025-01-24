@@ -23,9 +23,14 @@ const usePWADiagnostics = () => {
       const newManifest = document.createElement("link");
       newManifest.rel = "manifest";
       newManifest.href = `${manifestLink.href.split("?")[0]}?t=${Date.now()}`;
+
+      // Safely remove the existing manifest link if it exists
       document.head.removeChild(manifestLink);
+
       document.head.appendChild(newManifest);
       console.log("Manifest reloaded.");
+    } else {
+      console.log("Manifest link not found in the DOM.");
     }
   };
 

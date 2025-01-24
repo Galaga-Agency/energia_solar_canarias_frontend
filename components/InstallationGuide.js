@@ -22,18 +22,20 @@ const InstallationGuide = ({ debug = true }) => {
     const userAgent = navigator.userAgent;
     const platform = navigator.platform;
 
-    // Definitive Platform Detection
+    // Definitive OS Detection
     const detectOS = () => {
-      // Prioritize platform detection over user agent
+      // Prioritize platform detection
       if (/Win/i.test(platform)) return "Windows";
       if (/Mac/i.test(platform)) return "macOS";
       if (/Linux/i.test(platform)) return "Linux";
 
-      // Fallback to more specific user agent checks
+      // Fallback to user agent checks
       const uaLower = userAgent.toLowerCase();
       if (/windows/i.test(uaLower)) return "Windows";
       if (/macintosh/i.test(uaLower)) return "macOS";
       if (/linux/i.test(uaLower)) return "Linux";
+      if (/android/i.test(uaLower)) return "Android";
+      if (/iphone|ipad|ipod/i.test(uaLower)) return "iOS";
 
       return "Unknown";
     };
@@ -41,8 +43,15 @@ const InstallationGuide = ({ debug = true }) => {
     const detectDeviceType = () => {
       const uaLower = userAgent.toLowerCase();
 
-      // Explicit desktop checks
-      const desktopIndicators = [/windows nt/i, /macintosh/i, /x11/i, /linux/i];
+      // Explicit desktop indicators
+      const desktopIndicators = [
+        /windows nt/i,
+        /macintosh/i,
+        /x11/i,
+        /linux/i,
+        /win32/i,
+        /win64/i,
+      ];
 
       const mobileIndicators = [
         /android/i,
@@ -52,19 +61,20 @@ const InstallationGuide = ({ debug = true }) => {
         /ipod/i,
         /blackberry/i,
         /windows phone/i,
+        /mobile safari/i,
       ];
 
-      // Check for explicit desktop indicators first
+      // Explicit desktop detection
       if (desktopIndicators.some((indicator) => indicator.test(uaLower))) {
         return "Desktop";
       }
 
-      // Then check if it's explicitly mobile
+      // Explicit mobile detection
       if (mobileIndicators.some((indicator) => indicator.test(uaLower))) {
         return "Mobile";
       }
 
-      // Use browser window to determine device type
+      // Window width as fallback
       if (window.innerWidth > 1024) return "Desktop";
 
       return "Unknown";
@@ -80,13 +90,22 @@ const InstallationGuide = ({ debug = true }) => {
             !/edg/i.test(uaLower) &&
             !/opr/i.test(uaLower),
         },
-        { name: "Firefox", test: () => /firefox/i.test(uaLower) },
+        {
+          name: "Firefox",
+          test: () => /firefox/i.test(uaLower),
+        },
         {
           name: "Safari",
           test: () => /safari/i.test(uaLower) && !/chrome/i.test(uaLower),
         },
-        { name: "Edge", test: () => /edg/i.test(uaLower) },
-        { name: "Opera", test: () => /opr/i.test(uaLower) },
+        {
+          name: "Edge",
+          test: () => /edg/i.test(uaLower),
+        },
+        {
+          name: "Opera",
+          test: () => /opr/i.test(uaLower),
+        },
       ];
 
       const detectedBrowser = browserChecks.find((browser) => browser.test());
@@ -99,8 +118,8 @@ const InstallationGuide = ({ debug = true }) => {
       deviceType: detectDeviceType(),
     };
 
-    // Additional logging for debugging
-    console.log("Detailed Platform Detection:", {
+    // Extensive logging for debugging
+    console.log("Detailed Platform Detection", {
       userAgent,
       platform,
       detectedPlatform,
@@ -110,20 +129,30 @@ const InstallationGuide = ({ debug = true }) => {
   }, []);
 
   useEffect(() => {
-    // Detailed Logging
-    const logPlatformCapabilities = () => {
+    // Comprehensive Installation Status Check
+    const checkInstallationStatus = () => {
+      // Multiple methods to detect if app is already installed
+      const installationChecks = [
+        window.matchMedia("(display-mode: standalone)").matches,
+        navigator.standalone === true,
+        document.referrer.includes("android-app://"),
+        localStorage.getItem("app_installed") === "true",
+      ];
+
+      const isInstalled = installationChecks.some((check) => check);
+
+      // Logging for debugging
       console.group("PWA Installation Diagnostic");
-      console.log("Detected Platform:", detectPlatform);
-      console.log(
-        "Manifest Present:",
-        !!document.querySelector('link[rel="manifest"]')
-      );
-      console.log("Service Worker Supported:", "serviceWorker" in navigator);
-      console.log(
-        "Installation Prompt Supported:",
-        "beforeinstallprompt" in window
-      );
+      console.log("Installation Checks:", {
+        standaloneMode: window.matchMedia("(display-mode: standalone)").matches,
+        navigatorStandalone: navigator.standalone,
+        referrerCheck: document.referrer.includes("android-app://"),
+        localStorageCheck: localStorage.getItem("app_installed") === "true",
+        finalInstallStatus: !isInstalled,
+      });
       console.groupEnd();
+
+      return !isInstalled;
     };
 
     // Installation Prompt Handler
@@ -135,19 +164,29 @@ const InstallationGuide = ({ debug = true }) => {
       setInstallState((prev) => ({
         ...prev,
         deferredPrompt: e,
-        canInstall: true,
+        canInstall: checkInstallationStatus(),
         platformDetails: detectPlatform,
       }));
-
-      // Log additional details
-      logPlatformCapabilities();
     };
 
-    // Add event listener
+    // Add event listener for installation prompt
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    // Initial capability check
-    logPlatformCapabilities();
+    // Add event listener for successful installation
+    window.addEventListener("appinstalled", () => {
+      localStorage.setItem("app_installed", "true");
+      setInstallState((prev) => ({
+        ...prev,
+        canInstall: false,
+        deferredPrompt: null,
+      }));
+    });
+
+    // Initial installation status check
+    setInstallState((prev) => ({
+      ...prev,
+      canInstall: checkInstallationStatus(),
+    }));
 
     // Cleanup
     return () => {
@@ -162,8 +201,8 @@ const InstallationGuide = ({ debug = true }) => {
     const { deferredPrompt } = installState;
 
     if (!deferredPrompt) {
-      console.error("No deferred prompt available");
-      toast.error("Installation not supported");
+      console.error("No installation prompt available");
+      toast.error(t("install_not_supported"));
       return;
     }
 
@@ -172,10 +211,10 @@ const InstallationGuide = ({ debug = true }) => {
       const choiceResult = await deferredPrompt.userChoice;
 
       console.log("Installation Result:", choiceResult);
-      console.log("Platform Details:", installState.platformDetails);
 
       if (choiceResult.outcome === "accepted") {
         toast.success(t("install_success"));
+        localStorage.setItem("app_installed", "true");
       } else {
         toast.info(t("install_canceled"));
       }
@@ -192,7 +231,7 @@ const InstallationGuide = ({ debug = true }) => {
     }
   };
 
-  // Render install button if can install
+  // Render install button if installable
   if (!installState.canInstall) {
     return null;
   }

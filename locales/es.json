@@ -1915,5 +1915,31 @@
   "View All": "Ver todas",
   "installAppSafari": "Añadir a pantalla de inicio",
   "safariInstallInstructions": "Para instalar: toca el botón Compartir y luego 'Añadir a pantalla de inicio'",
-  "notInstallable": "La aplicación no se puede instalar en este momento"
+  "notInstallable": "La aplicación no se puede instalar en este momento",
+  "installation": {
+    "error": {
+      "title": "Error de Instalación",
+      "description": "Hubo un problema al instalar la aplicación. Por favor, inténtelo de nuevo."
+    },
+    "success": {
+      "title": "Instalación Completada",
+      "description": "Ahora puede acceder a la aplicación desde su pantalla de inicio"
+    },
+    "available": {
+      "title": "Instalar Aplicación",
+      "description": "Acceso rápido disponible",
+      "action": "Instalar"
+    },
+    "shareError": {
+      "title": "Error del Menú Compartir",
+      "description": "No se pudo abrir el menú compartir"
+    }
+  },
+  "install_app": "Instalar Aplicación",
+  "install_description": "¿Te gustaría instalar nuestra aplicación para una mejor experiencia?",
+  "install_button": "Instalar",
+  "cancel_button": "Cancelar",
+  "install_success": "Instalación completada con éxito",
+  "install_error": "Hubo un problema con la instalación",
+  "install_unavailable": "Instalación no disponible en este momento"
 }

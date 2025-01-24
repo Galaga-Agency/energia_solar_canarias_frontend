@@ -798,7 +798,6 @@
   "Active": "Active",
   "Cleared": "Cleared",
   "addToHomeScreen": "Add to Home Screen",
-  "installApp": "Install App",
   "installable": "Installable",
   "iosDevice": "iOS Device",
   "pwaMode": "PWA Mode",
@@ -999,5 +998,31 @@
   "no_filtered_notifications": "No notifications match your filters",
   "errorLoadingNotifications": "Error loading notifications",
   "installAppSafari": "Add to Home Screen",
-  "safariInstallInstructions": "To install: tap the Share button, then 'Add to Home Screen'"
+  "safariInstallInstructions": "To install: tap the Share button, then 'Add to Home Screen'",
+  "installation": {
+    "error": {
+      "title": "Installation Error",
+      "description": "There was a problem installing the app. Please try again."
+    },
+    "success": {
+      "title": "Installation Complete",
+      "description": "You can now access the app from your home screen"
+    },
+    "available": {
+      "title": "Install App",
+      "description": "Quick access available",
+      "action": "Install"
+    },
+    "shareError": {
+      "title": "Share Menu Error",
+      "description": "Could not open the share menu"
+    }
+  },
+  "install_app": "Install App",
+  "install_description": "Would you like to install our app for a better experience?",
+  "install_button": "Install",
+  "cancel_button": "Cancel",
+  "install_success": "Installation completed successfully",
+  "install_error": "There was a problem with the installation",
+  "install_unavailable": "Installation not available at this time"
 }

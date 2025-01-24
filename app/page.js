@@ -13,6 +13,7 @@ import {
 } from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { storage } from "@/utils/storage";
+import PWAInstallDiagnostic from "@/components/PWAInstallDiagnostic";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -81,6 +82,7 @@ export default function Home() {
         <LogoAnimation />
       </div>
       <div className="fixed bottom-4 right-4 z-50">
+        {isDev && <PWAInstallDiagnostic />}
         <InstallationGuide debug={true} />
       </div>
     </div>

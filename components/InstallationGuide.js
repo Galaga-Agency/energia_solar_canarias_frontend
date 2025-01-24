@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FaDownload, FaPlus } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -19,11 +19,82 @@ const InstallationGuide = ({ debug = true }) => {
 
   const isBrowser = typeof window !== "undefined";
 
-  const log = (message, data = {}) => {
-    if (debug && isBrowser) {
-      console.log(`[PWA Install Debug] ${message}`, data);
+  const log = useCallback(
+    (message, data = {}) => {
+      if (debug && isBrowser) {
+        console.log(`[PWA Install Debug] ${message}`, data);
+      }
+    },
+    [debug, isBrowser]
+  );
+
+  const handleInstallClick = useCallback(async () => {
+    log("Install button clicked", {
+      hasPrompt: !!deferredPrompt,
+      platform: installState.platform,
+    });
+
+    if (!deferredPrompt) {
+      if (installState.platform === "iOS") {
+        toast.info("Install on iOS", {
+          description: (
+            <div className="space-y-2">
+              <p>To install our app:</p>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>Tap the share button (rectangle with arrow)</li>
+                <li>Scroll and select &quot;Add to Home Screen&quot;</li>
+                <li>Tap &quot;Add&quot; to complete installation</li>
+              </ol>
+            </div>
+          ),
+          duration: 10000,
+        });
+        return;
+      }
+
+      if (installState.platform === "Android") {
+        toast.info("Install on Android", {
+          description: (
+            <div className="space-y-2">
+              <p>To install our app:</p>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>Tap the menu button (three dots)</li>
+                <li>Select &quot;Install app&quot;</li>
+                <li>Follow the prompts to complete installation</li>
+              </ol>
+            </div>
+          ),
+          duration: 10000,
+        });
+        return;
+      }
+      return;
     }
-  };
+
+    try {
+      await deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      log("User choice", { outcome: choiceResult.outcome });
+
+      if (choiceResult.outcome === "accepted") {
+        setInstallState((prev) => ({ ...prev, isInstalled: true }));
+      } else {
+        toast("Installation Declined", {
+          description:
+            "You can install the app later from the menu if you change your mind",
+        });
+      }
+
+      setDeferredPrompt(null);
+      setInstallState((prev) => ({ ...prev, isInstallable: false }));
+    } catch (error) {
+      log("Installation error", { error: error.message });
+      toast.error("Installation Error", {
+        description:
+          "There was a problem installing the app. Please try again later.",
+      });
+    }
+  }, [deferredPrompt, installState.platform, log]);
 
   useEffect(() => {
     if (!isBrowser) return;
@@ -66,7 +137,6 @@ const InstallationGuide = ({ debug = true }) => {
       setDeferredPrompt(e);
       setInstallState((prev) => ({ ...prev, isInstallable: true }));
 
-      // Show initial installation suggestion toast
       toast("Install App", {
         description: "Get quick access to our app from your device",
         action: {
@@ -82,7 +152,6 @@ const InstallationGuide = ({ debug = true }) => {
       setInstallState((prev) => ({ ...prev, isInstalled: true }));
       setDeferredPrompt(null);
 
-      // Show success toast
       toast.success("App Installed Successfully", {
         description: "You can now access the app from your home screen",
       });
@@ -106,75 +175,7 @@ const InstallationGuide = ({ debug = true }) => {
       );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [isBrowser]);
-
-  const handleInstallClick = async () => {
-    log("Install button clicked", {
-      hasPrompt: !!deferredPrompt,
-      platform: installState.platform,
-    });
-
-    if (!deferredPrompt) {
-      if (installState.platform === "iOS") {
-        toast.info("Install on iOS", {
-          description: (
-            <div className="space-y-2">
-              <p>To install our app:</p>
-              <ol className="list-decimal list-inside space-y-1 ml-2">
-                <li>Tap the share button (rectangle with arrow)</li>
-                <li>Scroll and select "Add to Home Screen"</li>
-                <li>Tap "Add" to complete installation</li>
-              </ol>
-            </div>
-          ),
-          duration: 10000,
-        });
-        return;
-      }
-
-      if (installState.platform === "Android") {
-        toast.info("Install on Android", {
-          description: (
-            <div className="space-y-2">
-              <p>To install our app:</p>
-              <ol className="list-decimal list-inside space-y-1 ml-2">
-                <li>Tap the menu button (three dots)</li>
-                <li>Select "Install app"</li>
-                <li>Follow the prompts to complete installation</li>
-              </ol>
-            </div>
-          ),
-          duration: 10000,
-        });
-        return;
-      }
-      return;
-    }
-
-    try {
-      await deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      log("User choice", { outcome: choiceResult.outcome });
-
-      if (choiceResult.outcome === "accepted") {
-        setInstallState((prev) => ({ ...prev, isInstalled: true }));
-      } else {
-        toast("Installation Declined", {
-          description:
-            "You can install the app later from the menu if you change your mind",
-        });
-      }
-
-      setDeferredPrompt(null);
-      setInstallState((prev) => ({ ...prev, isInstallable: false }));
-    } catch (error) {
-      log("Installation error", { error: error.message });
-      toast.error("Installation Error", {
-        description:
-          "There was a problem installing the app. Please try again later.",
-      });
-    }
-  };
+  }, [isBrowser, handleInstallClick, log]);
 
   if (!mounted) return null;
 

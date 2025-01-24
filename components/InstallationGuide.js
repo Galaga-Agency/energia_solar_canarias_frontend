@@ -1,164 +1,151 @@
-import React, { useState, useEffect } from "react";
-import { FaDownload } from "react-icons/fa";
-import { useTranslation } from "react-i18next";
+"use client";
 
-const InstallationGuide = ({ debug = false }) => {
+import React, { useState, useEffect } from "react";
+import { FaDownload, FaPlus } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import PrimaryButton from "./ui/PrimaryButton";
+
+const InstallationGuide = ({ debug = true }) => {
   const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [installState, setInstallState] = useState({
     isInstallable: false,
     isInstalled: false,
-    isIOS: false,
-  });
-  const [debugInfo, setDebugInfo] = useState({
-    userAgent: "",
-    platform: "",
-    displayMode: "",
-    manifestSupport: false,
-    serviceWorkerSupport: false,
-    installPromptSupport: false,
-    installHistory: [],
+    platform: null,
+    installMethod: null,
   });
 
-  const logDebugInfo = (message, data = {}) => {
-    if (debug) {
+  const isBrowser = typeof window !== "undefined";
+
+  const log = (message, data = {}) => {
+    if (debug && isBrowser) {
       console.log(`[PWA Install Debug] ${message}`, data);
-      setDebugInfo((prev) => ({
-        ...prev,
-        installHistory: [
-          ...prev.installHistory,
-          {
-            timestamp: new Date().toISOString(),
-            message,
-            data,
-          },
-        ],
-      }));
     }
   };
 
   useEffect(() => {
-    // Initialize debug information
-    const initDebugInfo = () => {
-      const manifest = document.querySelector('link[rel="manifest"]');
-      const swSupport = "serviceWorker" in navigator;
+    if (!isBrowser) return;
 
-      setDebugInfo((prev) => ({
-        ...prev,
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        displayMode: window.matchMedia("(display-mode: standalone)").matches
-          ? "standalone"
-          : "browser",
-        manifestSupport: !!manifest,
-        serviceWorkerSupport: swSupport,
-        installPromptSupport: "BeforeInstallPromptEvent" in window,
-      }));
+    setMounted(true);
 
-      logDebugInfo("Initial debug info collected", {
-        userAgent: navigator.userAgent,
-        manifest: manifest?.href,
-        serviceWorker: swSupport,
-      });
+    const detectPlatform = () => {
+      const ua = window.navigator.userAgent.toLowerCase();
+      const isIOS = /ipad|iphone|ipod/.test(ua) && !window.MSStream;
+      const isAndroid = /android/.test(ua);
+      const isChrome = /chrome/.test(ua);
+
+      let platform = isIOS ? "iOS" : isAndroid ? "Android" : "Desktop";
+      let method = isChrome ? "chrome" : "browser";
+
+      log("Platform Detection", { platform, method, userAgent: ua });
+      return { platform, method };
     };
 
-    initDebugInfo();
+    const platformInfo = detectPlatform();
 
-    // Check if running on iOS
-    const isIOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    logDebugInfo("Platform detection", { isIOS });
-
-    // Multiple methods to detect if PWA is installed
     const checkInstallation = () => {
-      const isStandalone =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        window.navigator.standalone ||
-        document.referrer.includes("android-app://");
-
-      logDebugInfo("Installation check", {
-        isStandalone,
-        navigatorStandalone: window.navigator.standalone,
-        referrer: document.referrer,
-      });
-
-      setInstallState((prev) => ({
-        ...prev,
-        isInstalled: isStandalone,
-        isIOS,
-      }));
+      const isStandalone = window.matchMedia(
+        "(display-mode: standalone)"
+      ).matches;
+      const isNavigatorStandalone = window.navigator?.standalone;
+      return isStandalone || isNavigatorStandalone;
     };
 
-    checkInstallation();
+    setInstallState((prev) => ({
+      ...prev,
+      platform: platformInfo.platform,
+      installMethod: platformInfo.method,
+      isInstalled: checkInstallation(),
+    }));
 
-    // Listen for display mode changes
-    const displayModeQuery = window.matchMedia("(display-mode: standalone)");
-    const handleDisplayModeChange = (e) => {
-      logDebugInfo("Display mode changed", { matches: e.matches });
-      checkInstallation();
-    };
-    displayModeQuery.addListener(handleDisplayModeChange);
-
-    // Handle installation prompt
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
-      logDebugInfo("Install prompt received", {
-        prompt: "beforeinstallprompt",
-      });
+      log("Install prompt received", { type: e.type });
       setDeferredPrompt(e);
       setInstallState((prev) => ({ ...prev, isInstallable: true }));
+
+      // Show initial installation suggestion toast
+      toast("Install App", {
+        description: "Get quick access to our app from your device",
+        action: {
+          label: "Install",
+          onClick: () => handleInstallClick(),
+        },
+        duration: 10000,
+      });
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    // Handle successful installation
-    const handleAppInstalled = (event) => {
-      logDebugInfo("App installed successfully");
+    const handleAppInstalled = () => {
+      log("App installed successfully");
       setInstallState((prev) => ({ ...prev, isInstalled: true }));
       setDeferredPrompt(null);
+
+      // Show success toast
+      toast.success("App Installed Successfully", {
+        description: "You can now access the app from your home screen",
+      });
     };
 
-    window.addEventListener("appinstalled", handleAppInstalled);
+    const handleDisplayModeChange = (e) => {
+      log("Display mode changed", { isStandalone: e.matches });
+      setInstallState((prev) => ({ ...prev, isInstalled: e.matches }));
+    };
 
-    // Monitor service worker registration
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready
-        .then((registration) => {
-          logDebugInfo("Service Worker ready", {
-            scope: registration.scope,
-            state: registration.active?.state,
-          });
-        })
-        .catch((error) => {
-          logDebugInfo("Service Worker error", { error: error.message });
-        });
-    }
+    const mediaQuery = window.matchMedia("(display-mode: standalone)");
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    mediaQuery.addListener(handleDisplayModeChange);
 
     return () => {
-      displayModeQuery.removeListener(handleDisplayModeChange);
+      mediaQuery.removeListener(handleDisplayModeChange);
       window.removeEventListener(
         "beforeinstallprompt",
         handleBeforeInstallPrompt
       );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [debug]);
+  }, [isBrowser]);
 
   const handleInstallClick = async () => {
-    logDebugInfo("Install button clicked", {
-      deferredPrompt: !!deferredPrompt,
-      isIOS: installState.isIOS,
+    log("Install button clicked", {
+      hasPrompt: !!deferredPrompt,
+      platform: installState.platform,
     });
 
     if (!deferredPrompt) {
-      if (installState.isIOS) {
-        logDebugInfo("Showing iOS instructions");
-        alert(
-          t(
-            "iosInstallInstructions",
-            "Add to Home Screen by tapping the share button and selecting 'Add to Home Screen'"
-          )
-        );
+      if (installState.platform === "iOS") {
+        toast.info("Install on iOS", {
+          description: (
+            <div className="space-y-2">
+              <p>To install our app:</p>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>Tap the share button (rectangle with arrow)</li>
+                <li>Scroll and select "Add to Home Screen"</li>
+                <li>Tap "Add" to complete installation</li>
+              </ol>
+            </div>
+          ),
+          duration: 10000,
+        });
+        return;
+      }
+
+      if (installState.platform === "Android") {
+        toast.info("Install on Android", {
+          description: (
+            <div className="space-y-2">
+              <p>To install our app:</p>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>Tap the menu button (three dots)</li>
+                <li>Select "Install app"</li>
+                <li>Follow the prompts to complete installation</li>
+              </ol>
+            </div>
+          ),
+          duration: 10000,
+        });
         return;
       }
       return;
@@ -167,75 +154,57 @@ const InstallationGuide = ({ debug = false }) => {
     try {
       await deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
-
-      logDebugInfo("Installation prompt result", {
-        outcome: choiceResult.outcome,
-        platform: navigator.platform,
-      });
+      log("User choice", { outcome: choiceResult.outcome });
 
       if (choiceResult.outcome === "accepted") {
         setInstallState((prev) => ({ ...prev, isInstalled: true }));
+      } else {
+        toast("Installation Declined", {
+          description:
+            "You can install the app later from the menu if you change your mind",
+        });
       }
 
       setDeferredPrompt(null);
       setInstallState((prev) => ({ ...prev, isInstallable: false }));
     } catch (error) {
-      logDebugInfo("Installation error", { error: error.message });
-      console.error("Installation failed:", error);
+      log("Installation error", { error: error.message });
+      toast.error("Installation Error", {
+        description:
+          "There was a problem installing the app. Please try again later.",
+      });
     }
   };
 
-  // Render debug information if debug mode is enabled
-  const renderDebugInfo = () => {
-    if (!debug) return null;
-
-    return (
-      <div className="fixed top-4 right-4 p-4 bg-gray-100 rounded shadow-lg max-w-md overflow-auto max-h-96">
-        <h3 className="font-bold mb-2">PWA Debug Info</h3>
-        <pre className="text-xs whitespace-pre-wrap">
-          {JSON.stringify(
-            {
-              ...debugInfo,
-              currentState: installState,
-              hasInstallPrompt: !!deferredPrompt,
-            },
-            null,
-            2
-          )}
-        </pre>
-      </div>
-    );
-  };
+  if (!mounted) return null;
 
   if (installState.isInstalled) {
-    logDebugInfo("Component hidden - PWA already installed");
-    return debug ? renderDebugInfo() : null;
+    log("PWA is installed - hiding button");
+    return null;
   }
 
-  const buttonText = installState.isIOS
-    ? t("addToHomeScreen", "Add to Home Screen")
-    : t("installApp", "Install App");
-  const shouldShowButton = installState.isInstallable || installState.isIOS;
+  const buttonText =
+    installState.platform === "iOS"
+      ? t("addToHomeScreen", "Add to Home Screen")
+      : t("installApp", "Install App");
+
+  const shouldShowButton =
+    installState.isInstallable ||
+    ["iOS", "Android"].includes(installState.platform);
 
   if (!shouldShowButton) {
-    logDebugInfo("Component hidden - PWA not installable");
-    return debug ? renderDebugInfo() : null;
+    log("Install conditions not met - hiding button");
+    return null;
   }
 
   return (
-    <>
-      {renderDebugInfo()}
-      <div className="fixed bottom-4 right-4 z-50">
-        <button
-          onClick={handleInstallClick}
-          className="flex items-center gap-2 bg-custom-yellow text-custom-dark-blue font-semibold px-4 h-9 rounded-md shadow-md hover:bg-opacity-90 transition-all"
-          aria-label={buttonText}
-        >
-          <FaDownload className="text-lg" aria-hidden="true" />
-          <span>{buttonText}</span>
-        </button>
-      </div>
-    </>
+    <div className="fixed bottom-4 right-4 z-50">
+      <PrimaryButton onClick={handleInstallClick} aria-label={buttonText}>
+        <FaPlus className="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <FaDownload className="text-lg" aria-hidden="true" />
+        <span>{buttonText}</span>
+      </PrimaryButton>
+    </div>
   );
 };
 

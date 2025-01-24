@@ -2,72 +2,94 @@ import { useEffect, useState } from "react";
 
 const usePWADiagnostics = () => {
   const [diagnostics, setDiagnostics] = useState({
-    isHTTPS: false,
-    hasManifest: false,
-    supportsBeforeInstallPrompt: false,
-    hasServiceWorker: false,
-    isStandalone: false,
-    canInstall: false,
     deferredPrompt: null,
-    isInstalled: false, // Indicates whether the app is already installed
+    isInstalled: false,
+    showButton: true,
   });
 
+  const persistDeferredPrompt = (prompt) => {
+    if (prompt) {
+      // Persisting deferredPrompt using localStorage
+      localStorage.setItem("deferredPrompt", JSON.stringify(prompt));
+    } else {
+      localStorage.removeItem("deferredPrompt");
+    }
+  };
+
+  const reloadManifest = () => {
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+      const newManifest = document.createElement("link");
+      newManifest.rel = "manifest";
+      newManifest.href = `${manifestLink.href.split("?")[0]}?t=${Date.now()}`;
+      document.head.removeChild(manifestLink);
+      document.head.appendChild(newManifest);
+      console.log("Manifest reloaded.");
+    }
+  };
+
+  const checkStandalone = () => {
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      navigator.standalone ||
+      false
+    );
+  };
+
   useEffect(() => {
-    const performDiagnostics = async () => {
-      // Check basic diagnostics
-      const isHTTPS =
-        window.location.protocol === "https:" ||
-        window.location.hostname === "localhost";
-      const hasManifest = !!document.querySelector('link[rel="manifest"]');
-      const supportsBeforeInstallPrompt = "beforeinstallprompt" in window;
-      const hasServiceWorker = "serviceWorker" in navigator;
-      const isStandalone =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        navigator.standalone;
-
-      // Check if the app is installed using `getInstalledRelatedApps`
-      let isInstalled = false;
-      if ("getInstalledRelatedApps" in navigator) {
-        try {
-          const relatedApps = await navigator.getInstalledRelatedApps();
-          isInstalled = relatedApps.some(
-            (app) => app.url === `${window.location.origin}/manifest.json`
-          );
-        } catch (error) {
-          console.error("Error checking installed related apps:", error);
-        }
-      }
-
-      setDiagnostics((prev) => ({
-        ...prev,
-        isHTTPS,
-        hasManifest,
-        supportsBeforeInstallPrompt,
-        hasServiceWorker,
-        isStandalone,
-        isInstalled,
-      }));
-    };
-
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
+      console.log("beforeinstallprompt fired");
+
+      persistDeferredPrompt(e);
+
       setDiagnostics((prev) => ({
         ...prev,
         deferredPrompt: e,
-        canInstall: true,
+        showButton: "currentTarget" in e, // Update showButton when event is fired
       }));
     };
 
-    performDiagnostics();
+    const checkInstalledStatus = () => {
+      setDiagnostics((prev) => ({
+        ...prev,
+        isInstalled: checkStandalone(),
+      }));
+    };
 
-    // Listen for the beforeinstallprompt event
+    const loadDeferredPromptFromStorage = () => {
+      const savedPrompt = localStorage.getItem("deferredPrompt");
+      if (savedPrompt) {
+        console.log("DeferredPrompt loaded from localStorage.");
+        return JSON.parse(savedPrompt);
+      }
+      return null;
+    };
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", checkInstalledStatus);
+
+    // Initial checks
+    const storedPrompt = loadDeferredPromptFromStorage();
+    if (storedPrompt) {
+      setDiagnostics((prev) => ({
+        ...prev,
+        deferredPrompt: storedPrompt,
+        showButton: "currentTarget" in storedPrompt,
+      }));
+    }
+
+    checkInstalledStatus();
+
+    // Force re-triggering `beforeinstallprompt` by reloading manifest
+    reloadManifest();
 
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
         handleBeforeInstallPrompt
       );
+      window.removeEventListener("appinstalled", checkInstalledStatus);
     };
   }, []);
 

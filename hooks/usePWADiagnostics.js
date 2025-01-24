@@ -5,6 +5,7 @@ const usePWADiagnostics = () => {
     deferredPrompt: null,
     isInstalled: false,
     showButton: true,
+    isIOS: false,
   });
 
   const persistDeferredPrompt = (prompt) => {
@@ -34,6 +35,11 @@ const usePWADiagnostics = () => {
       navigator.standalone ||
       false
     );
+  };
+
+  const isIOS = () => {
+    // Detect iOS device
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   };
 
   useEffect(() => {
@@ -68,6 +74,12 @@ const usePWADiagnostics = () => {
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", checkInstalledStatus);
+
+    // Detect iOS
+    setDiagnostics((prev) => ({
+      ...prev,
+      isIOS: isIOS(),
+    }));
 
     // Initial checks
     const storedPrompt = loadDeferredPromptFromStorage();

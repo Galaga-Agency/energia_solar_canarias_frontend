@@ -1026,5 +1026,6 @@
   "install_not_supported": "App installation is not supported on this device",
   "install_error": "There was a problem with the installation",
   "install_unavailable": "Installation not available at this time",
-  "install_success_description": "The app has been installed successfully. You can find it in your app launcher or desktop."
+  "install_success_description": "The app has been installed successfully. You can find it in your app launcher or desktop.",
+  "install_ios_message": "To install this app, tap the Share button in Safari and select 'Add to Home Screen'."
 }

@@ -8,16 +8,21 @@ import usePWADiagnostics from "@/hooks/usePWADiagnostics";
 import { useTranslation } from "react-i18next";
 
 const InstallationGuide = () => {
-  const { deferredPrompt, isInstalled, showButton } = usePWADiagnostics();
+  const { deferredPrompt, isInstalled, showButton, isIOS } =
+    usePWADiagnostics();
   const { t } = useTranslation();
 
   console.log("Installation Guide States:");
   console.log("isInstalled:", isInstalled);
   console.log("deferredPrompt:", deferredPrompt);
   console.log("showButton:", showButton);
+  console.log("isIOS:", isIOS);
 
   const handleInstallClick = async () => {
-    if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
+    if (isIOS) {
+      // Show a custom instruction for iOS users to add to Home Screen
+      toast.info(t("install_ios_message"));
+    } else if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
       try {
         deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
@@ -44,7 +49,6 @@ const InstallationGuide = () => {
   // Hide the button if the app is already installed
   if (isInstalled) return null;
 
-  console.log("showButton", showButton);
   return (
     showButton && (
       <div className="fixed bottom-4 right-4 z-50">

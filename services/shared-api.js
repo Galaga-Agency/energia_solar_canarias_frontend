@@ -761,6 +761,7 @@ export const createUserAPI = async ({ userData, token }) => {
 };
 
 export const generateApiKeyAPI = async ({ token }) => {
+  console.log("token passed for api key -----", token);
   try {
     const response = await fetch(`${API_BASE_URL}/usuario/bearerToken`, {
       method: "GET",
@@ -778,6 +779,8 @@ export const generateApiKeyAPI = async ({ token }) => {
     }
 
     const data = await response.json();
+    console.log("data for token -----", data);
+
     return data;
   } catch (error) {
     console.error("Error generating API key:", error);

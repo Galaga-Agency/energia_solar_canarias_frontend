@@ -19,7 +19,6 @@ const ApiKeyRequestCard = ({ onClose = () => {} }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [isInputHovered, setIsInputHovered] = useState(false);
-
   const { isMobile } = useDeviceType();
   const isTouchDevice = useTouchDevice();
   const loading = useSelector((state) => state.user.loading);

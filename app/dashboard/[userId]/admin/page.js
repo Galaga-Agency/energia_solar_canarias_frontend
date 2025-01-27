@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import {
   fetchPlants,
@@ -40,6 +40,7 @@ import {
   selectDashboardView,
   setDashboardView,
 } from "@/store/slices/dashboardViewSlice";
+import { IoFilter } from "react-icons/io5";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -208,17 +209,42 @@ const AdminDashboard = () => {
             transition={{ delay: 0.9 }}
           >
             {view === "plants" && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.4, duration: 0.5 }}
-              >
-                <FilterSidebar
-                  ref={sidebarRef}
-                  plants={plants}
-                  onFilterChange={handleFilterChange}
-                />
-              </motion.div>
+              <>
+                {(isMobile || isTablet) && (
+                  <>
+                    <motion.button
+                      className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
+                      onClick={() => setIsSidebarOpen(true)}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8, duration: 0.3 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <IoFilter className="text-2xl text-custom-dark-blue" />
+                    </motion.button>
+
+                    <FilterSidebar
+                      ref={sidebarRef}
+                      plants={plants}
+                      onFilterChange={handleFilterChange}
+                    />
+                  </>
+                )}
+                {!isMobile && !isTablet && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.4, duration: 0.5 }}
+                  >
+                    <FilterSidebar
+                      ref={sidebarRef}
+                      plants={plants}
+                      onFilterChange={handleFilterChange}
+                    />
+                  </motion.div>
+                )}
+              </>
             )}
 
             <motion.div
@@ -326,12 +352,7 @@ const AdminDashboard = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.8 + index * 0.05 }}
                             >
-                              <PlantsListTableItem
-                                plant={{
-                                  ...plant,
-                                  id: plant.id?.toString(),
-                                }}
-                              />
+                              <PlantsListTableItem plant={plant} />
                             </motion.div>
                           ))}
                         </div>

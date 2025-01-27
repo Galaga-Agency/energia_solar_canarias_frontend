@@ -1948,5 +1948,10 @@
   "installation_success_title": "Instalación exitosa",
   "installation_success_description": "¡La aplicación se ha instalado correctamente!",
   "installation_unavailable": "La instalación no está disponible.",
-  "installation_error_description": "Ocurrió un error durante la instalación."
+  "installation_error_description": "Ocurrió un error durante la instalación.",
+  "lastYear": "Último año",
+  "last12months": "Últimos 12 Meses",
+  "pageNotFound": "Página no encontrada",
+  "pageDoesNotExist": "Lo sentimos, la página que busca no existe o ha sido movida.",
+  "404": "404"
 }

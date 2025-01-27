@@ -1031,5 +1031,9 @@
   "installation_success_title": "Installation Successful",
   "installation_success_description": "Your app has been installed successfully!",
   "installation_unavailable": "The installation is not available.",
-  "installation_error_description": "An error occurred during installation."
+  "installation_error_description": "An error occurred during installation.",
+  "lastYear": "Last year",
+  "last12months": "Last 12 Months",
+  "pageNotFound": "Page Not Found",
+  "pageDoesNotExist": "Sorry, the page you are looking for does not exist or has been moved."
 }

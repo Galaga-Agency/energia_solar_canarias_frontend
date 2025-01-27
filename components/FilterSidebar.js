@@ -4,6 +4,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useCallback,
+  useEffect,
 } from "react";
 import { useTranslation } from "next-i18next";
 import CustomCheckbox from "@/components/ui/CustomCheckbox";
@@ -43,7 +44,7 @@ const INITIAL_FILTER_STATE = {
 };
 
 const FilterSidebar = forwardRef(
-  ({ plants, onFilterChange, initialSearchTerm }, ref) => {
+  ({ plants, onFilterChange, initialSearchTerm, view }, ref) => {
     const { t } = useTranslation();
     const { isMobile, isTablet, isDesktop } = useDeviceType();
     const sidebarRef = useRef(null);
@@ -174,6 +175,15 @@ const FilterSidebar = forwardRef(
       []
     );
 
+    // Sidebar visibility logic (matching UsersSidebar)
+    useEffect(() => {
+      if (isMobile || isTablet) {
+        setIsSidebarOpen(false); // Mobile/tablet: close by default
+      } else {
+        setIsSidebarOpen(view === "plants"); // Ensure sidebar stays open only in "plants" view for desktop
+      }
+    }, [isMobile, isTablet, view]); // Trigger on device type or view change
+
     return (
       <div>
         <div
@@ -182,6 +192,7 @@ const FilterSidebar = forwardRef(
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
         >
+          {/* Sidebar content */}
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
               {t("filter")}
@@ -208,6 +219,7 @@ const FilterSidebar = forwardRef(
             </div>
           </div>
 
+          {/* Filters */}
           <div className="mb-4">
             <input
               type="text"
@@ -307,6 +319,7 @@ const FilterSidebar = forwardRef(
           </div>
         </div>
 
+        {/* Mobile filter button */}
         {(isMobile || isTablet) && (
           <motion.button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}

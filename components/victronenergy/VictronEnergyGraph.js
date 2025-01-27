@@ -7,12 +7,15 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  Bar,
   ResponsiveContainer,
   Legend,
   Line,
-  Bar,
   ReferenceLine,
   Area,
+  BandedChart,
+  Band,
+  Polygon,
 } from "recharts";
 import {
   fetchVictronEnergyGraphData,
@@ -22,7 +25,10 @@ import {
   clearGraphData,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
-import DateRangeModal from "./DateRangeModal";
+import { useDataFetchWithRetry } from "@/hooks/useDataFetchWithRetry";
+import useDeviceType from "@/hooks/useDeviceType";
+import { selectTheme } from "@/store/slices/themeSlice";
+import VictronGraphSkeleton from "@/components/loadingSkeletons/VictronGraphSkeleton";
 import {
   format,
   startOfDay,
@@ -31,174 +37,30 @@ import {
   endOfWeek,
   startOfMonth,
   endOfMonth,
+  startOfYear,
+  endOfYear,
   subDays,
   subHours,
   subMonths,
   subWeeks,
+  subYears,
 } from "date-fns";
 import { es } from "date-fns/locale";
-import { useDataFetchWithRetry } from "@/hooks/useDataFetchWithRetry";
-import useDeviceType from "@/hooks/useDeviceType";
-import { selectTheme } from "@/store/slices/themeSlice";
-import VictronGraphSkeleton from "../loadingSkeletons/VictronGraphSkeleton";
-import { FiAlertCircle } from "react-icons/fi";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import useCSVExport from "@/hooks/useCSVExport";
-import ExportModal from "../ExportModal";
+
+// Imported Components
+import CustomTooltip from "./CustomTooltip";
+import BatteryMetrics from "./BatteryMetrics";
+import PowerMetrics from "./PowerMetrics";
+import NoDataDisplay from "./NoDataDisplay";
 
 const getColors = (theme) => ({
-  consumption: theme === "dark" ? "#FFD57B" : "#BDBFC0",
-  solar: theme === "dark" ? "#BDBFC0" : "#0B2738",
-  solarPredicted: theme === "dark" ? "#657880" : "#FFD57B",
-  consumptionPredicted: theme === "dark" ? "#A48D67" : "#9CA3AF",
-  battery: theme === "dark" ? "#9CA3AF" : "#AD936A",
+  consumption: theme === "dark" ? "#FFD57B" : "#BDBFC0", // Color for consumption (yellowish in dark mode, light gray in light mode)
+  solar: theme === "dark" ? "#BDBFC0" : "#0B2738", // Color for solar production (light gray in dark mode, dark blue in light mode)
+  solarPredicted: theme === "dark" ? "#657880" : "#FFD57B", // Color for predicted solar production (muted grayish green in dark mode, yellow in light mode)
+  consumptionPredicted: theme === "dark" ? "#A48D67" : "#9CA3AF", // Color for predicted consumption (earthy brown in dark mode, gray in light mode)
+  battery: theme === "dark" ? "#9CA3AF" : "#AD936A", // Color for battery (grayish in dark mode, brownish in light mode)
 });
-
-const MetricCard = ({ title, value, predictedValue, icon, unit = "kWh" }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl shadow-lg hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300">
-      <div className="flex items-center gap-2 mb-2">
-        {icon}
-        <h3 className="text-sm font-medium text-custom-dark-blue dark:text-custom-yellow">
-          {title}
-        </h3>
-      </div>
-      <p className="text-xl font-bold text-custom-dark-blue dark:text-custom-light-gray">
-        {value} {unit}
-      </p>
-      {predictedValue && (
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {t("Total previsto")}: {predictedValue} {unit}
-        </p>
-      )}
-    </div>
-  );
-};
-
-const CustomTooltip = ({ active, payload, label }) => {
-  const { t } = useTranslation();
-  const theme = useSelector(selectTheme);
-  const COLORS = getColors(theme);
-
-  if (!active || !payload || !payload.length) return null;
-
-  const hasVoltageData = payload[0]?.payload?.batteryVoltage !== undefined;
-
-  return (
-    <div
-      className={`
-      p-3 rounded-lg shadow-lg min-w-[200px]
-      ${
-        theme === "dark"
-          ? "bg-slate-800 text-gray-100 border border-gray-700"
-          : "bg-white text-gray-800 border border-gray-200"
-      }
-    `}
-    >
-      <p
-        className={`
-        mb-2 font-medium
-        ${theme === "dark" ? "text-gray-300" : "text-gray-600"}
-      `}
-      >
-        {format(new Date(label), "HH:mm, dd MMM yyyy")}
-      </p>
-
-      {/* Consumption */}
-      {payload.find((p) => p.dataKey === "consumption") && (
-        <div className="flex justify-between items-center gap-4">
-          <span style={{ color: COLORS.consumption }}>{t("Consumo")}:</span>
-          <span
-            className={`font-medium ${
-              theme === "dark" ? "text-gray-100" : "text-gray-800"
-            }`}
-          >
-            {payload.find((p) => p.dataKey === "consumption").value.toFixed(2)}{" "}
-            kWh
-          </span>
-        </div>
-      )}
-
-      {/* Solar */}
-      {payload.find((p) => p.dataKey === "solar") && (
-        <div className="flex justify-between items-center gap-4">
-          <span style={{ color: COLORS.solar }}>{t("Solar")}:</span>
-          <span
-            className={`font-medium ${
-              theme === "dark" ? "text-gray-100" : "text-gray-800"
-            }`}
-          >
-            {payload.find((p) => p.dataKey === "solar").value.toFixed(2)} kWh
-          </span>
-        </div>
-      )}
-
-      {/* Battery Percentage */}
-      {payload.find((p) => p.dataKey === "battery") && (
-        <div className="flex justify-between items-center gap-4">
-          <span style={{ color: COLORS.battery }}>{t("Batería")}:</span>
-          <span
-            className={`font-medium ${
-              theme === "dark" ? "text-gray-100" : "text-gray-800"
-            }`}
-          >
-            {payload.find((p) => p.dataKey === "battery").value.toFixed(2)}%
-          </span>
-        </div>
-      )}
-
-      {/* Battery Voltage */}
-      {hasVoltageData && (
-        <div className="flex justify-between items-center gap-4">
-          <span style={{ color: COLORS.battery }}>{t("Tensión")}:</span>
-          <span
-            className={`font-medium ${
-              theme === "dark" ? "text-gray-100" : "text-gray-800"
-            }`}
-          >
-            {payload[0].payload.batteryVoltage.toFixed(2)} V
-          </span>
-        </div>
-      )}
-
-      {/* Min/Max Voltage if available */}
-      {hasVoltageData && (
-        <div
-          className={`
-          mt-2 pt-2 text-sm
-          ${
-            theme === "dark"
-              ? "border-t border-gray-700"
-              : "border-t border-gray-200"
-          }
-        `}
-        >
-          <div className="flex justify-between items-center">
-            <span
-              className={theme === "dark" ? "text-gray-400" : "text-gray-600"}
-            >
-              {t("Min")}:
-            </span>
-            <span className="font-medium">
-              {payload[0].payload.batteryMin.toFixed(2)} V
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span
-              className={theme === "dark" ? "text-gray-400" : "text-gray-600"}
-            >
-              {t("Max")}:
-            </span>
-            <span className="font-medium">
-              {payload[0].payload.batteryMax.toFixed(2)} V
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const VictronEnergyGraph = ({
   plantId,
@@ -210,13 +72,8 @@ const VictronEnergyGraph = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useSelector(selectTheme);
-  const COLORS = {
-    consumption: theme === "dark" ? "#FFD57B" : "#BDBFC0",
-    solar: theme === "dark" ? "#BDBFC0" : "#0B2738",
-    solarPredicted: theme === "dark" ? "#657880" : "#FFD57B",
-    consumptionPredicted: theme === "dark" ? "#A48D67" : "#9CA3AF",
-    battery: theme === "dark" ? "#9CA3AF" : "#AD936A",
-  };
+  const COLORS = getColors(theme);
+
   const [showForecast, setShowForecast] = useState(false);
   const [forecastData, setForecastData] = useState(null);
   const [isForecastLoading, setIsForecastLoading] = useState(false);
@@ -313,6 +170,14 @@ const VictronEnergyGraph = ({
           return { interval: "days", type: "live_feed" };
         case "thisYear":
           return { interval: "months", type: "live_feed" };
+        case "lastYear": {
+          return {
+            interval: "months",
+            type: "live_feed",
+            aggregated: true,
+          };
+        }
+
         case "last12months":
           return { interval: "months", type: "live_feed" };
         case "yesterday":
@@ -488,6 +353,28 @@ const VictronEnergyGraph = ({
             end: Math.floor(now.getTime() / 1000),
           };
         }
+        case "thisYear": {
+          return {
+            start: Math.floor(startOfYear(now).getTime() / 1000),
+            end: Math.floor(now.getTime() / 1000),
+          };
+        }
+
+        case "lastYear": {
+          // We need to get full previous year: January to December
+          const lastYearStart = startOfYear(subYears(now, 1)); // This gets January 1st of last year
+          const lastYearEnd = endOfYear(subYears(now, 1)); // This gets December 31st of last year
+          return {
+            start: Math.floor(lastYearStart.getTime() / 1000),
+            end: Math.floor(lastYearEnd.getTime() / 1000),
+          };
+        }
+        case "last12months":
+          const start = Math.floor(subMonths(now, 12).getTime() / 1000); // Start of the range (12 months ago)
+          const end = Math.floor(now.getTime() / 1000); // Current time (end of the range)
+          console.log("Start Date (last 12 months):", new Date(start * 1000));
+          console.log("End Date (last 12 months):", new Date(end * 1000));
+          return { start, end };
         case "custom": {
           return {
             start: Math.floor(range.start.getTime() / 1000),
@@ -544,208 +431,83 @@ const VictronEnergyGraph = ({
 
   const transformData = useCallback(
     (rawData, forecastData) => {
-      // console.log("Raw Data passed to transformData:", rawData);
-
-      // If we're in forecast mode and have forecast data
-      if (showForecast && rawData?.records) {
-        const forecastRecords = rawData.records;
-
-        if (
-          Array.isArray(forecastRecords.vrm_consumption_fc) &&
-          Array.isArray(forecastRecords.solar_yield_forecast)
-        ) {
-          const now = new Date();
-
-          const processedData = forecastRecords.vrm_consumption_fc
-            .filter((entry) => entry[0] >= now.getTime())
-            .map((entry) => {
-              const timestamp = entry[0];
-              const solarEntry = forecastRecords.solar_yield_forecast.find(
-                (solar) => solar[0] === timestamp
-              );
-
-              return {
-                timestamp,
-                consumption: entry[1] || 0,
-                solar: solarEntry?.[1] || 0,
-                battery: null,
-                solarYield: solarEntry?.[1] || 0,
-                forecastConsumption: entry[1] || 0,
-                forecastSolar: solarEntry?.[1] || 0,
-              };
-            });
-
-          return processedData.sort((a, b) => a.timestamp - b.timestamp);
-        }
-      }
-
-      // Original historical data processing
       if (!rawData?.records) {
         console.warn("No valid records in response:", rawData);
-        return [];
+        return []; // Return empty array if no records exist
       }
 
       const records = rawData.records;
 
-      // Determine which type of data we have
-      const hasBatteryVoltage =
-        Array.isArray(records?.bv) && records.bv.length > 0;
-      const hasBatteryState =
-        Array.isArray(records?.bs) && records.bs.length > 0;
-      const hasPdcData = Array.isArray(records?.Pdc);
-      const hasConsumption = Array.isArray(records?.total_consumption);
-      const hasSolarYield = Array.isArray(records?.total_solar_yield);
+      // Log rawData structure for debugging
+      console.log("Raw Records:", records);
 
-      // If we have battery voltage data, use it as primary reference
-      if (hasBatteryVoltage) {
-        const processedData = records.bv.map((bvEntry) => {
-          const timestamp = bvEntry[0];
-          const batteryVoltage = bvEntry[1] || 0; // Average voltage
-          const minVoltage = bvEntry[2] || 0; // Min voltage
-          const maxVoltage = bvEntry[3] || 0; // Max voltage
+      // Use Array.isArray() to validate the data before using .map()
+      const totalConsumption = Array.isArray(records.total_consumption)
+        ? records.total_consumption
+        : []; // Ensure we fall back to an empty array if it's not an array
+      const totalSolarYield = Array.isArray(records.total_solar_yield)
+        ? records.total_solar_yield
+        : [];
+      const Pdc = Array.isArray(records.Pdc) ? records.Pdc : [];
+      const bs = Array.isArray(records.bs) ? records.bs : [];
+      const bv = Array.isArray(records.bv) ? records.bv : [];
 
-          // Get battery state (percentage) for the same timestamp
-          const batteryPercentage = hasBatteryState
-            ? records.bs.find((entry) => entry[0] === timestamp)?.[1] || 0
-            : 0;
+      // Ensure totalConsumption and other data arrays are never undefined or null
+      if (
+        totalConsumption.length === 0 &&
+        totalSolarYield.length === 0 &&
+        Pdc.length === 0 &&
+        bs.length === 0 &&
+        bv.length === 0
+      ) {
+        console.warn(
+          "All data arrays are empty or invalid, returning empty data set."
+        );
+        return []; // If all data arrays are invalid, return an empty array
+      }
 
-          // Get consumption and solar data if available
-          const consumption = hasConsumption
-            ? records.total_consumption.find(
-                (entry) => entry[0] === timestamp
-              )?.[1] || 0
-            : 0;
+      // Get all timestamps from all available data arrays
+      const allTimestamps = new Set([
+        ...totalConsumption.map((entry) => entry[0]),
+        ...totalSolarYield.map((entry) => entry[0]),
+        ...Pdc.map((entry) => entry[0]),
+        ...bs.map((entry) => entry[0]),
+        ...bv.map((entry) => entry[0]),
+      ]);
 
-          const solar = hasSolarYield
-            ? records.total_solar_yield.find(
-                (entry) => entry[0] === timestamp
-              )?.[1] || 0
-            : 0;
+      console.log("All timestamps:", Array.from(allTimestamps)); // Log the generated timestamps
 
-          return {
+      // Map over all timestamps and gather the data
+      return Array.from(allTimestamps)
+        .map((timestamp) => {
+          const dataPoint = {
             timestamp,
-            consumption,
-            solar,
-            battery: batteryPercentage, // Use percentage for the main line
-            batteryVoltage, // Keep voltage data for tooltip
-            batteryMin: minVoltage,
-            batteryMax: maxVoltage,
-            solarYield: solar,
-            forecastConsumption: null,
-            forecastSolar: null,
+            consumption:
+              totalConsumption.find((entry) => entry[0] === timestamp)?.[1] ||
+              0,
+            solar:
+              totalSolarYield.find((entry) => entry[0] === timestamp)?.[1] || 0,
           };
-        });
 
-        return processedData.sort((a, b) => a.timestamp - b.timestamp);
-      }
+          // Handle battery state data (min/max)
+          const bsEntry = bs.find((entry) => entry[0] === timestamp);
+          if (bsEntry) {
+            dataPoint.battery = bsEntry[1] || null; // Battery percentage
+            dataPoint.batteryStateMin = bsEntry[2] || null; // Min battery percentage
+            dataPoint.batteryStateMax = bsEntry[3] || null; // Max battery percentage
+          }
 
-      // If we have Pdc data, use it as reference
-      if (hasPdcData) {
-        return records.Pdc.map((pdcEntry) => {
-          const timestamp = pdcEntry[0];
+          // Handle battery voltage data
+          const bvEntry = bv.find((entry) => entry[0] === timestamp);
+          if (bvEntry) {
+            dataPoint.batteryVoltage = bvEntry[1] || 0; // Current voltage
+            dataPoint.batteryMin = bvEntry[2] || 0; // Min voltage
+            dataPoint.batteryMax = bvEntry[3] || 0; // Max voltage
+          }
 
-          // Get battery state if available
-          const batteryState = hasBatteryState
-            ? records.bs.find((entry) => entry[0] === timestamp)?.[1] || 0
-            : null;
-
-          const consumption = hasConsumption
-            ? records.total_consumption.find(
-                (entry) => entry[0] === timestamp
-              )?.[1] || 0
-            : 0;
-
-          const solar = hasSolarYield
-            ? records.total_solar_yield.find(
-                (entry) => entry[0] === timestamp
-              )?.[1] || 0
-            : 0;
-
-          return {
-            timestamp,
-            consumption,
-            solar,
-            battery: batteryState,
-            solarYield: solar,
-            forecastConsumption: null,
-            forecastSolar: null,
-          };
-        }).sort((a, b) => a.timestamp - b.timestamp);
-      }
-
-      // If we only have battery state data
-      if (hasBatteryState) {
-        return records.bs
-          .map((bsEntry) => {
-            const timestamp = bsEntry[0];
-            const batteryState = bsEntry[1] || 0;
-
-            const consumption = hasConsumption
-              ? records.total_consumption.find(
-                  (entry) => entry[0] === timestamp
-                )?.[1] || 0
-              : 0;
-
-            const solar = hasSolarYield
-              ? records.total_solar_yield.find(
-                  (entry) => entry[0] === timestamp
-                )?.[1] || 0
-              : 0;
-
-            return {
-              timestamp,
-              consumption,
-              solar,
-              battery: batteryState,
-              solarYield: solar,
-              forecastConsumption: null,
-              forecastSolar: null,
-            };
-          })
-          .sort((a, b) => a.timestamp - b.timestamp);
-      }
-
-      // If we only have consumption or solar data
-      if (hasConsumption || hasSolarYield) {
-        const timestamps = new Set([
-          ...(hasConsumption
-            ? records.total_consumption.map((entry) => entry[0])
-            : []),
-          ...(hasSolarYield
-            ? records.total_solar_yield.map((entry) => entry[0])
-            : []),
-        ]);
-
-        return Array.from(timestamps)
-          .map((timestamp) => {
-            const consumption = hasConsumption
-              ? records.total_consumption.find(
-                  (entry) => entry[0] === timestamp
-                )?.[1] || 0
-              : 0;
-
-            const solar = hasSolarYield
-              ? records.total_solar_yield.find(
-                  (entry) => entry[0] === timestamp
-                )?.[1] || 0
-              : 0;
-
-            return {
-              timestamp,
-              consumption,
-              solar,
-              battery: null,
-              solarYield: solar,
-              forecastConsumption: null,
-              forecastSolar: null,
-            };
-          })
-          .sort((a, b) => a.timestamp - b.timestamp);
-      }
-
-      // If we don't have any of the expected data structures
-      console.warn("No supported data format found in records:", records);
-      return [];
+          return dataPoint;
+        })
+        .sort((a, b) => a.timestamp - b.timestamp); // Sort the data by timestamp
     },
     [showForecast]
   );
@@ -785,34 +547,49 @@ const VictronEnergyGraph = ({
 
     const records = graphData.records;
 
-    // Check if total_consumption and total_solar_yield are available and not empty
+    // Calculate total consumption properly
     const totalConsumption =
       Array.isArray(records.total_consumption) &&
       records.total_consumption.length > 0
-        ? records.total_consumption.reduce(
-            (sum, item) => sum + (item[1] || 0),
-            0
-          )
+        ? records.total_consumption.reduce((sum, item) => {
+            const value = Number(item[1]) || 0;
+            return sum + value;
+          }, 0)
         : 0;
 
+    // Calculate total solar properly
     const totalSolar =
       Array.isArray(records.total_solar_yield) &&
       records.total_solar_yield.length > 0
-        ? records.total_solar_yield.reduce(
-            (sum, item) => sum + (item[1] || 0),
-            0
-          )
+        ? records.total_solar_yield.reduce((sum, item) => {
+            const value = Number(item[1]) || 0;
+            return sum + value;
+          }, 0)
         : 0;
 
+    // Get battery and genset data
     const genset = records.total_genset;
+    const gridHistoryTo = Number(records.grid_history_to) || 0;
+    const gridHistoryFrom = Number(records.grid_history_from) || 0;
+
+    // Calculate battery usage if available
+    const batteryUsage =
+      Array.isArray(records.bs) && records.bs.length > 0
+        ? records.bs.reduce((sum, item) => {
+            const value = Number(item[1]) || 0;
+            return sum + value;
+          }, 0) / records.bs.length // Average battery percentage
+        : 0;
 
     return {
-      consumption: records.grid_history_to ? records.grid_history_to : 0,
-      solar: records.grid_history_from ? records.grid_history_from : 0,
-      battery: genset ? genset : "-",
-      totalConsumption: totalConsumption.toFixed(1),
-      totalSolar: totalSolar.toFixed(1),
+      consumption: gridHistoryTo,
+      solar: gridHistoryFrom,
+      battery: genset || batteryUsage || "-",
+      totalConsumption: Number(totalConsumption).toFixed(1),
+      totalSolar: Number(totalSolar).toFixed(1),
       genset,
+      grid_history_to: gridHistoryTo,
+      grid_history_from: gridHistoryFrom,
     };
   }, [graphData]);
 
@@ -820,6 +597,17 @@ const VictronEnergyGraph = ({
     setIsInitialLoad(true);
     const { start, end } = calculateDateRange(currentRange);
     const { interval, type } = getRangeParams(currentRange.type);
+
+    // Add debug logs for lastYear
+    if (currentRange.type === "lastYear") {
+      console.log("LastYear Request Parameters:", {
+        id: plantId,
+        interval,
+        type,
+        start: new Date(start * 1000).toISOString(),
+        end: new Date(end * 1000).toISOString(),
+      });
+    }
 
     const params = {
       id: plantId,
@@ -830,7 +618,17 @@ const VictronEnergyGraph = ({
     };
 
     fetchGraphData(params)
-      .then(() => {
+      .then((response) => {
+        if (currentRange.type === "lastYear") {
+          console.log("LastYear API Response:", response);
+          // Log record timestamps to see what dates we actually get
+          if (response?.records?.total_consumption) {
+            const dates = response.records.total_consumption.map((item) =>
+              new Date(item[0]).toISOString()
+            );
+            console.log("Available dates in response:", dates);
+          }
+        }
         setIsInitialLoad(false);
       })
       .catch((error) => {
@@ -852,10 +650,11 @@ const VictronEnergyGraph = ({
     getRangeParams,
   ]);
 
-  const handleRangeSelect = useCallback((range) => {
-    setCurrentRange(range);
-    setIsDateModalOpen(false);
-  }, []);
+  useEffect(() => {
+    if (onDataChange) {
+      onDataChange(chartData);
+    }
+  }, [chartData, onDataChange]);
 
   const hasBatteryVoltage =
     chartData.length > 0 && "batteryMin" in chartData[0];
@@ -868,388 +667,282 @@ const VictronEnergyGraph = ({
     chartData.length === 0 ||
     (!hasConsumption && !hasSolar && !hasBatteryState);
 
-  useEffect(() => {
-    if (onDataChange) {
-      onDataChange(chartData);
-    }
-  }, [chartData, onDataChange]);
+  const handleRetry = () => {
+    const { start, end } = calculateDateRange(currentRange);
+    const { interval, type } = getRangeParams(currentRange.type);
+    fetchGraphData({
+      id: plantId,
+      interval,
+      type,
+      start,
+      end,
+    });
+  };
 
   return (
-    <>
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="w-full sm:w-auto">
-            {canShowForecast(currentRange.type) && (
-              <button
-                className="select-none px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto"
-                onClick={handleForecastToggle}
-                disabled={isForecastLoading}
-              >
-                {isForecastLoading
-                  ? t("Cargando pronóstico...")
-                  : showForecast
-                  ? t("Ocultar pronóstico")
-                  : t("Mostrar pronóstico")}
-              </button>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="w-full sm:w-auto">
+          {canShowForecast(currentRange.type) && (
             <button
               className="select-none px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto"
-              onClick={() => setIsDateModalOpen(true)}
+              onClick={handleForecastToggle}
+              disabled={isForecastLoading}
             >
-              {t(currentRange.type)}
+              {isForecastLoading
+                ? t("Cargando pronóstico...")
+                : showForecast
+                ? t("Ocultar pronóstico")
+                : t("Mostrar pronóstico")}
             </button>
-            <button
-              onClick={onExportClick}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
-            </button>
-          </div>
+          )}
         </div>
+        <div className="flex items-center gap-4">
+          <button
+            className="select-none px-4 py-2 bg-custom-light-blue dark:bg-custom-dark-blue rounded-xl shadow-lg hover:shadow-xl transition-all text-custom-dark-blue dark:text-custom-light-gray w-full sm:w-auto"
+            onClick={() => setIsDateModalOpen(true)}
+          >
+            {t(currentRange.type)}
+          </button>
+          <button
+            onClick={onExportClick}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+          </button>
+        </div>
+      </div>
 
-        <div className="bg-white dark:bg-custom-dark-blue p-6 rounded-xl shadow-lg">
-          {(isInitialLoad || isLoading || retryLoading) && (
-            <VictronGraphSkeleton theme={theme} />
-          )}
+      <div className="bg-white dark:bg-custom-dark-blue p-6 rounded-xl shadow-lg">
+        {(isInitialLoad || isLoading || retryLoading) && (
+          <VictronGraphSkeleton theme={theme} />
+        )}
 
-          {error && (
-            <div className="flex items-center justify-center h-96">
-              <div className="text-center text-red-500">
-                <p>{t("Error al cargar los datos")}</p>
-                <p className="text-sm">{error.message}</p>
-                <button
-                  onClick={() => {
-                    const { start, end } = calculateDateRange(currentRange);
-                    const { interval, type } = getRangeParams(
-                      currentRange.type
-                    );
-                    fetchGraphData({
-                      id: plantId,
-                      interval,
-                      type,
-                      start,
-                      end,
-                    });
-                  }}
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  {t("Reintentar")}
-                </button>
-              </div>
+        {error && (
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center text-red-500">
+              <p>{t("Error al cargar los datos")}</p>
+              <p className="text-sm">{error.message}</p>
+              <button
+                onClick={handleRetry}
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                {t("Reintentar")}
+              </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {!isInitialLoad && !isLoading && !retryLoading && !error && (
-            <>
-              <div className="overflow-x-auto">
-                <div style={{ minWidth: "600px" }}>
-                  {hasNoData ? (
-                    <div className="h-[400px] mb-6 flex flex-col items-center justify-center w-full bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                      <FiAlertCircle className="text-4xl mb-3 text-slate-400 dark:text-slate-500" />
-                      <p className="text-lg font-medium text-slate-600 dark:text-slate-300">
-                        {t("noDataAvailable")}
-                      </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                        {t("tryAnotherTimeRange")}
-                      </p>
-                      <button
-                        onClick={() => setIsDateModalOpen(true)}
-                        className="mt-4 px-4 py-2 text-sm bg-custom-yellow text-custom-dark-blue rounded-lg hover:bg-opacity-90 transition-all"
-                      >
-                        {t("selectDifferentRange")}
-                      </button>
-                    </div>
-                  ) : (
-                    <ResponsiveContainer width="100%" height={400}>
-                      <ComposedChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
-                        <XAxis
-                          dataKey="timestamp"
-                          tickFormatter={formatXAxis}
-                          type="number"
-                          domain={["dataMin", "dataMax"]}
-                          scale="time"
-                          interval="preserveStartEnd"
-                          tick={{ fontSize: 12 }}
-                          className="text-custom-dark-blue dark:text-custom-light-gray"
-                        />
+        {!isInitialLoad && !isLoading && !retryLoading && !error && (
+          <>
+            <div className="overflow-x-auto overflow-y-hidden">
+              <div style={{ minWidth: "600px", height: "400px" }}>
+                {hasNoData ? (
+                  <NoDataDisplay
+                    onSelectRange={() => setIsDateModalOpen(true)}
+                  />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                      <XAxis
+                        dataKey="timestamp"
+                        tickFormatter={formatXAxis}
+                        type="number"
+                        domain={["dataMin", "dataMax"]}
+                        scale="time"
+                        interval="preserveStartEnd"
+                        tick={{ fontSize: 12 }}
+                        className="text-custom-dark-blue dark:text-custom-light-gray"
+                      />
+                      <YAxis
+                        yAxisId="power"
+                        orientation="left"
+                        label={{
+                          value: "kWh",
+                          angle: -90,
+                          position: "insideLeft",
+                          offset: 10,
+                        }}
+                        className="text-custom-dark-blue dark:text-custom-light-gray"
+                      />
+                      {hasBatteryState && (
                         <YAxis
-                          yAxisId="power"
-                          orientation="left"
+                          yAxisId="percentage"
+                          orientation="right"
+                          domain={[0, 100]}
                           label={{
-                            value: "kWh",
-                            angle: -90,
-                            position: "insideLeft",
+                            value: "%",
+                            angle: 90,
+                            position: "insideRight",
                             offset: 10,
                           }}
                           className="text-custom-dark-blue dark:text-custom-light-gray"
                         />
-                        {hasBatteryState && (
-                          <YAxis
-                            yAxisId="percentage"
-                            orientation="right"
-                            domain={[0, 100]}
-                            label={{
-                              value: "%",
-                              angle: 90,
-                              position: "insideRight",
-                              offset: 10,
-                            }}
-                            className="text-custom-dark-blue dark:text-custom-light-gray"
-                          />
-                        )}
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend
-                          verticalAlign="top"
-                          height={36}
-                          className="text-custom-dark-blue dark:text-custom-light-gray"
-                          payload={[
-                            ...(hasConsumption
-                              ? [
-                                  {
-                                    value: t("Consumo"),
-                                    type: "line",
-                                    color: COLORS.consumption,
-                                  },
-                                ]
-                              : []),
-                            ...(hasSolar
-                              ? [
-                                  {
-                                    value: t("Solar"),
-                                    type: "line",
-                                    color: COLORS.solar,
-                                  },
-                                ]
-                              : []),
-                            ...(hasBatteryState
-                              ? [
-                                  {
-                                    value: t("Batería"),
-                                    type: "line",
-                                    color: COLORS.battery,
-                                  },
-                                ]
-                              : []),
-                          ]}
+                      )}
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend
+                        verticalAlign="top"
+                        height={36}
+                        className="text-custom-dark-blue dark:text-custom-light-gray"
+                        payload={[
+                          ...(hasConsumption
+                            ? [
+                                {
+                                  value: t("Consumo"),
+                                  type: "line",
+                                  color: COLORS.consumption,
+                                },
+                              ]
+                            : []),
+                          ...(hasSolar
+                            ? [
+                                {
+                                  value: t("Solar"),
+                                  type: "line",
+                                  color: COLORS.solar,
+                                },
+                              ]
+                            : []),
+                          ...(hasBatteryState
+                            ? [
+                                {
+                                  value: t("Batería"),
+                                  type: "line",
+                                  color: COLORS.battery,
+                                },
+                              ]
+                            : []),
+                        ]}
+                      />
+
+                      {hasConsumption && (
+                        <Bar
+                          dataKey="consumption"
+                          fill={COLORS.consumption}
+                          name={t("Consumo")}
+                          barSize={15}
+                          yAxisId="power"
+                          unit="kWh"
                         />
+                      )}
 
-                        {hasConsumption && (
+                      {hasSolar && (
+                        <Bar
+                          dataKey="solar"
+                          fill={COLORS.solar}
+                          name={t("Solar")}
+                          barSize={15}
+                          yAxisId="power"
+                          unit="kWh"
+                        />
+                      )}
+
+                      {hasBatteryState && (
+                        <>
+                          <Line
+                            dataKey="batteryStateMin"
+                            style={{
+                              fill: COLORS.battery,
+                              fillOpacity: 0.1,
+                            }}
+                          />
+                          <Line
+                            dataKey="batteryStateMax"
+                            style={{
+                              fill: "red",
+                              fillOpacity: 0.1,
+                            }}
+                          />
                           <Line
                             type="monotone"
-                            dataKey="consumption"
-                            stroke={COLORS.consumption}
-                            yAxisId="power"
-                            name={t("Consumo")}
-                            strokeWidth={3}
+                            dataKey="batteryStateMin"
+                            stroke={COLORS.battery}
+                            yAxisId="percentage"
+                            name={t("Battery Min")}
+                            strokeWidth={2}
                             dot={false}
-                            unit="kWh"
+                            unit="%"
                           />
-                        )}
-
-                        {hasSolar && (
                           <Line
                             type="monotone"
-                            dataKey="solar"
-                            stroke={COLORS.solar}
-                            yAxisId="power"
-                            name={t("Solar")}
-                            strokeWidth={3}
+                            dataKey="batteryStateMax"
+                            stroke={COLORS.battery}
+                            yAxisId="percentage"
+                            name={t("Battery Max")}
+                            strokeWidth={2}
                             dot={false}
-                            unit="kWh"
+                            unit="%"
                           />
-                        )}
-
-                        {hasBatteryState && (
                           <Line
                             type="monotone"
                             dataKey="battery"
                             stroke={COLORS.battery}
                             yAxisId="percentage"
-                            name={t("Batería")}
+                            name={t("Battery")}
                             strokeWidth={3}
                             dot={false}
                             unit="%"
                           />
-                        )}
+                        </>
+                      )}
 
-                        {showForecast && !isForecastLoading && (
-                          <>
-                            {chartData.some(
-                              (data) => data.forecastSolar !== null
-                            ) && (
-                              <Line
-                                type="monotone"
-                                dataKey="forecastSolar"
-                                stroke={COLORS.solarPredicted}
-                                strokeWidth={2}
-                                dot={false}
-                                fillOpacity={0.5}
-                                yAxisId="power"
-                                name={t("Solar previsto")}
-                                unit="kWh"
-                                connectNulls={true}
-                              />
-                            )}
-                            {chartData.some(
-                              (data) => data.forecastConsumption !== null
-                            ) && (
-                              <Line
-                                type="monotone"
-                                dataKey="forecastConsumption"
-                                stroke={COLORS.consumptionPredicted}
-                                strokeWidth={2}
-                                dot={false}
-                                fillOpacity={0.5}
-                                yAxisId="power"
-                                name={t("Consumo previsto")}
-                                unit="kWh"
-                                connectNulls={true}
-                              />
-                            )}
-                          </>
-                        )}
-                        <ReferenceLine
-                          x={new Date().getTime()}
-                          stroke="#666"
-                          label="Now"
-                          strokeDasharray="3 3"
-                          yAxisId="power"
-                        />
-                      </ComposedChart>
-                    </ResponsiveContainer>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-6">
-                {/* Battery Voltage Metrics */}
-                {hasBatteryVoltage && (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                    <MetricCard
-                      title={t("Tensión mínima")}
-                      value={
-                        chartData.length > 0
-                          ? Math.min(
-                              ...chartData.map((d) => d.batteryMin)
-                            ).toFixed(2)
-                          : "-"
-                      }
-                      icon={null}
-                      unit="V"
-                    />
-                    <MetricCard
-                      title={t("Tensión máxima")}
-                      value={
-                        chartData.length > 0
-                          ? Math.max(
-                              ...chartData.map((d) => d.batteryMax)
-                            ).toFixed(2)
-                          : "-"
-                      }
-                      icon={null}
-                      unit="V"
-                    />
-                    <MetricCard
-                      title={t("Tensión promedio")}
-                      value={
-                        chartData.length > 0
-                          ? (
-                              chartData.reduce((sum, d) => sum + d.battery, 0) /
-                              chartData.length
-                            ).toFixed(2)
-                          : "-"
-                      }
-                      icon={null}
-                      unit="V"
-                    />
-                    <MetricCard
-                      title={t("Rango de tensión")}
-                      value={
-                        chartData.length > 0
-                          ? `${Math.min(
-                              ...chartData.map((d) => d.batteryMin)
-                            ).toFixed(2)} - ${Math.max(
-                              ...chartData.map((d) => d.batteryMax)
-                            ).toFixed(2)}`
-                          : "-"
-                      }
-                      icon={null}
-                      unit="V"
-                    />
-                    <MetricCard
-                      title={t("Última lectura")}
-                      value={
-                        chartData.length > 0
-                          ? chartData[chartData.length - 1].battery.toFixed(2)
-                          : "-"
-                      }
-                      icon={null}
-                      unit="V"
-                    />
-                  </div>
+                      {showForecast && !isForecastLoading && (
+                        <>
+                          {chartData.some(
+                            (data) => data.forecastSolar !== null
+                          ) && (
+                            <Line
+                              type="monotone"
+                              dataKey="forecastSolar"
+                              stroke={COLORS.solarPredicted}
+                              strokeWidth={2}
+                              dot={false}
+                              fillOpacity={0.5}
+                              yAxisId="power"
+                              name={t("Solar previsto")}
+                              unit="kWh"
+                              connectNulls={true}
+                            />
+                          )}
+                          {chartData.some(
+                            (data) => data.forecastConsumption !== null
+                          ) && (
+                            <Line
+                              type="monotone"
+                              dataKey="forecastConsumption"
+                              stroke={COLORS.consumptionPredicted}
+                              strokeWidth={2}
+                              dot={false}
+                              fillOpacity={0.5}
+                              yAxisId="power"
+                              name={t("Consumo previsto")}
+                              unit="kWh"
+                              connectNulls={true}
+                            />
+                          )}
+                        </>
+                      )}
+                      <ReferenceLine
+                        x={new Date().getTime()}
+                        stroke="#666"
+                        label="Now"
+                        strokeDasharray="3 3"
+                        yAxisId="power"
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
                 )}
-
-                {/* Power Metrics */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                  <MetricCard
-                    title={t("Hasta la entrada CA")}
-                    value={
-                      typeof graphData.grid_history_to === "number"
-                        ? graphData.grid_history_to.toFixed(1)
-                        : "-"
-                    }
-                    icon={null}
-                    unit="kWh"
-                  />
-                  <MetricCard
-                    title={t("Entrada CA activa")}
-                    value={
-                      typeof graphData.grid_history_from === "number"
-                        ? graphData.grid_history_from.toFixed(1)
-                        : "-"
-                    }
-                    icon={null}
-                    unit="kWh"
-                  />
-                  <MetricCard
-                    title={t("Generador")}
-                    value={
-                      typeof totals.genset === "number"
-                        ? totals.genset.toFixed(1)
-                        : "-"
-                    }
-                    icon={null}
-                    unit="kWh"
-                  />
-                  <MetricCard
-                    title={t("Consumo")}
-                    value={
-                      typeof totals.totalConsumption === "number"
-                        ? totals.totalConsumption.toFixed(1)
-                        : "-"
-                    }
-                    icon={null}
-                    unit="kWh"
-                  />
-                  <MetricCard
-                    title={t("Solar")}
-                    value={
-                      typeof totals.totalSolar === "number"
-                        ? totals.totalSolar.toFixed(1)
-                        : "-"
-                    }
-                    icon={null}
-                    unit="kWh"
-                  />
-                </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+            <div className="space-y-6">
+              {hasBatteryVoltage && <BatteryMetrics chartData={chartData} />}
+              <PowerMetrics graphData={graphData} totals={totals} />
+            </div>
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

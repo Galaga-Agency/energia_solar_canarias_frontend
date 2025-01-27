@@ -1944,5 +1944,9 @@
   "install_error": "Hubo un problema con la instalación",
   "install_unavailable": "Instalación no disponible en este momento",
   "install_success_description": "La aplicación se ha instalado correctamente. Puedes encontrarla en tu launcher de aplicaciones o escritorio.",
-  "install_ios_message": "Para instalar esta aplicación, toca el botón de Compartir en Safari y selecciona 'Añadir a la pantalla de inicio'."
+  "install_ios_message": "Para instalar esta aplicación, toca el botón de Compartir en Safari y selecciona 'Añadir a la pantalla de inicio'.",
+  "installation_success_title": "Instalación exitosa",
+  "installation_success_description": "¡La aplicación se ha instalado correctamente!",
+  "installation_unavailable": "La instalación no está disponible.",
+  "installation_error_description": "Ocurrió un error durante la instalación."
 }

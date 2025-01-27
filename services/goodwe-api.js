@@ -43,35 +43,46 @@ export const fetchGoodweGraphDataAPI = async ({
 };
 
 export const fetchGoodweWeatherDataAPI = async (name, token) => {
-  //   console.log("Full address received: ", name);
-
+  // Handle the case when we don't have a valid address format
   const extractCityAndCountry = (address) => {
     if (!address) return null;
 
+    // Handle cases like "Street name, City, Country"
     const parts = address.split(",").map((part) => part.trim());
+
     if (parts.length >= 2) {
+      // If there are at least two parts, assume last is country and second last is city
       const city = parts[parts.length - 2];
       const country = parts[parts.length - 1];
       return `${city}, ${country}`;
+    } else if (parts.length === 1) {
+      // If only one part is given, assume it's a city or street
+      return parts[0]; // Return as-is if no clear city/country split
     }
 
-    return null;
+    // If the address format doesn't meet expectations
+    return address;
   };
 
-  const cityAndCountry = extractCityAndCountry(name);
-  if (!cityAndCountry) {
-    console.error(
-      "Unable to extract city and country from the provided address."
-    );
-    throw new Error("Invalid address format");
+  // First check if lat and lng are available
+  let location = null;
+  if (name) {
+    // Use name as a fallback (can be city, street, or combined address)
+    location = extractCityAndCountry(name);
   }
 
-  //   console.log("Extracted city and country: ", cityAndCountry);
+  // If we still don't have a valid location, log the error
+  if (!location) {
+    console.error("No valid location data provided.");
+    throw new Error("Invalid address or coordinates.");
+  }
+
+  console.log("Fetching weather data for:", location);
 
   try {
     const response = await fetch(`${API_BASE_URL}/clima`, {
       method: "POST",
-      body: JSON.stringify({ name: cityAndCountry }),
+      body: JSON.stringify({ name: location }), // Send the available location
       headers: {
         "Content-Type": "application/json",
         usuario: USUARIO,

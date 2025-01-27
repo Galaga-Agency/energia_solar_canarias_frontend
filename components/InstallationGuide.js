@@ -29,20 +29,18 @@ const InstallationGuide = () => {
 
         if (choiceResult.outcome === "accepted") {
           toast.success(
-            `${t("installation.success.title")}: ${t(
-              "installation.success.description"
+            `${t("installation_success_title")}: ${t(
+              "installation_success_description"
             )}`
           );
-        } else {
-          toast.info(t("installation.unavailable"));
         }
       } catch (error) {
         console.error("Installation error:", error);
-        toast.error(t("installation.error.description"));
+        toast.error(t("installation_error_description"));
       }
     } else {
       console.error("No valid deferredPrompt available.");
-      toast.error("Failed to trigger install prompt.");
+      toast.error(t("installation_error_description"));
     }
   };
 

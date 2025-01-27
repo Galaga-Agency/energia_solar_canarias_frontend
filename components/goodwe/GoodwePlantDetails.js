@@ -86,9 +86,8 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const token = useMemo(() => user?.tokenIdentificador, [user]);
 
   const formattedAddress = useMemo(() => {
-    if (!goodwePlant?.location) return "";
-    return `${goodwePlant.location.city}, ${goodwePlant.location.country}`;
-  }, [goodwePlant?.location]);
+    return goodwePlant?.info?.address || "";
+  }, [goodwePlant?.info?.address]);
 
   const statusColors = {
     working: "bg-green-500",
@@ -135,7 +134,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
     setTodayPVGeneration(value);
   };
 
-  // console.log("goodwePlant: ", goodwePlant);
+  console.log("goodwePlant: ", goodwePlant);
 
   if (error) {
     return (
@@ -246,7 +245,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
 
           {/* Mobile Battery */}
           {isMobile && (
-            <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4 mb-6">
+            <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4">
               <BatteryIndicator soc={batteryPower} />
               <TooltipProvider>
                 <Tooltip>

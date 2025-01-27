@@ -502,6 +502,7 @@ const initialState = {
   associatedPlants: [],
   loadingAssociatedPlants: false,
   errorAssociatedPlants: null,
+  isDataFetched: false,
 };
 
 const plantsSlice = createSlice({
@@ -531,6 +532,9 @@ const plantsSlice = createSlice({
       state.realtimeData = null;
       state.realtimeError = null;
     },
+    resetFetchState: (state) => {
+      state.isDataFetched = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -542,6 +546,7 @@ const plantsSlice = createSlice({
         state.loading = false;
         state.plants = action.payload || [];
         state.error = null;
+        state.isDataFetched = true;
         state.lastUpdated = new Date().toISOString();
       })
       .addCase(fetchPlants.rejected, (state, action) => {
@@ -575,6 +580,7 @@ const plantsSlice = createSlice({
         state.plants = Array.isArray(action.payload) ? action.payload : [];
         state.error = null;
         state.lastUpdated = new Date().toISOString();
+        state.isDataFetched = true;
       })
       .addCase(fetchPlantsByProvider.rejected, (state, action) => {
         state.loading = false;
@@ -965,6 +971,7 @@ export const selectAssociatedUsers = createSelector(
   (state) => state.plants,
   (plants) => plants.associatedUsers || []
 );
+export const selectIsDataFetched = (state) => state.plants.isDataFetched;
 
 export const {
   clearPlants,
@@ -973,6 +980,7 @@ export const {
   clearGraphData,
   clearRealtimeData,
   clearSolarEdgeComparisonGraph,
+  resetFetchState,
 } = plantsSlice.actions;
 
 export default plantsSlice.reducer;

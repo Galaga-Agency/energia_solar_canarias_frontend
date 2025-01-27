@@ -10,6 +10,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import {
   clearPlantDetails,
   fetchPlants,
+  selectIsDataFetched,
   selectLoading,
   selectPlants,
 } from "@/store/slices/plantsSlice";
@@ -45,6 +46,7 @@ const ClientDashboardPage = ({ params }) => {
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("list");
+  const isDataFetched = useSelector(selectIsDataFetched);
   const { sortedItems: sortedPlants, sortItems } = usePlantSort(filteredPlants);
   const { isMobile } = useDeviceType();
   const { t } = useTranslation();
@@ -73,23 +75,26 @@ const ClientDashboardPage = ({ params }) => {
     sidebarRef.current?.updateSearch(value);
   }, []);
 
-  const fetchUserPlants = useCallback(() => {
-    if (user?.id) {
+  const fetchPlantsIfNeeded = useCallback(() => {
+    if (user?.id && !isDataFetched) {
       dispatch(
-        fetchPlants({ userId: user.id, token: user.tokenIdentificador })
+        fetchPlants({
+          userId: user.id,
+          token: user.tokenIdentificador,
+        })
       );
       dispatch(clearPlantDetails());
     }
-  }, [dispatch, user]);
+  }, [dispatch, user, isDataFetched]);
 
   useEffect(() => {
     if (!user?.id) {
       router.push("/");
     } else {
       setIsInitialLoad(false);
-      fetchUserPlants();
+      fetchPlantsIfNeeded();
     }
-  }, [user, router, fetchUserPlants]);
+  }, [user, router, fetchPlantsIfNeeded]);
 
   useEffect(() => {
     dispatch(clearPlantDetails());
@@ -100,8 +105,6 @@ const ClientDashboardPage = ({ params }) => {
   useEffect(() => {
     setCurrentPage(1);
   }, [viewMode]);
-
-  // console.log("filtered plants", filteredPlants);
 
   return (
     <div className="pb-16 min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-x-hidden">
@@ -197,7 +200,7 @@ const ClientDashboardPage = ({ params }) => {
               <div className="w-full">
                 {paginatedPlants.length > 0 ? (
                   viewMode === "list" ? (
-                    <div className="space-y-4 w-full overflow-x-auto">
+                    <div className="space-y-4 w-full overflow-x-auto overflow-y-hidden">
                       {paginatedPlants.map((plant, index) => (
                         <motion.div
                           key={plant.id}
@@ -245,7 +248,7 @@ const ClientDashboardPage = ({ params }) => {
                 )}
 
                 {totalPages > 1 && (
-                  <div className="mt-6 flex justify-center">
+                  <div className="flex justify-center">
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}

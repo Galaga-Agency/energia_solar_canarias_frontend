@@ -76,27 +76,53 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
   const [retryCount, setRetryCount] = useState(0);
 
   const hasRequiredData = useMemo(() => {
-    if (provider === "victronenergy") {
-      return lat && lng && token;
+    if (!token) return false;
+
+    // For VictronEnergy, prefer lat/lng but accept address as fallback
+    if (provider?.toLowerCase() === "victronenergy") {
+      return Boolean(lat && lng) || Boolean(address);
     }
-    return address && provider && token;
+
+    // For all other providers, accept ANY form of location data
+    return Boolean(address) || Boolean(lat && lng);
   }, [provider, lat, lng, token, address]);
 
   const fetchWeatherData = useCallback(() => {
+    // Debug logs
+    // console.log("WeatherWidget Debug:", {
+    //   address,
+    //   provider,
+    //   token,
+    //   lat,
+    //   lng,
+    //   hasRequiredData,
+    // });
+
     if (!hasRequiredData) {
       console.warn("Missing required data. Waiting for user data...");
       return;
     }
 
-    switch (provider?.toLowerCase()) {
-      case "goodwe":
-      case "energia y calor solar del atlantico sl":
+    // Normalize and log provider name
+    const normalizedProvider = provider?.toLowerCase();
+    // console.log("Normalized provider:", normalizedProvider);
+
+    const isGoodweProvider =
+      normalizedProvider === "goodwe" ||
+      normalizedProvider === "energia y calor solar del atlantico sl";
+
+    switch (true) {
+      case isGoodweProvider:
+        console.log("Attempting to fetch Goodwe weather with:", {
+          name: address,
+          token,
+        });
         dispatch(fetchGoodweWeatherData({ name: address, token }));
         break;
-      case "solaredge":
+      case normalizedProvider === "solaredge":
         dispatch(fetchSolarEdgeWeatherData({ name: address, token }));
         break;
-      case "victronenergy":
+      case normalizedProvider === "victronenergy":
         dispatch(fetchVictronEnergyWeatherData({ lat, lng, token }));
         break;
       default:

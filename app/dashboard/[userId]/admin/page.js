@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import {
   fetchPlants,
   fetchPlantsByProvider,
+  selectIsDataFetched,
   selectLoading,
   selectPlants,
+  resetFetchState,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
@@ -34,6 +36,10 @@ import useDeviceType from "@/hooks/useDeviceType";
 import usePlantSort from "@/hooks/usePlantSort";
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import PlantCard from "@/components/PlantCard";
+import {
+  selectDashboardView,
+  setDashboardView,
+} from "@/store/slices/dashboardViewSlice";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -43,11 +49,11 @@ const AdminDashboard = () => {
   const loading = useSelector(selectLoading);
   const plants = useSelector(selectPlants);
   const theme = useSelector(selectTheme);
+  const isDataFetched = useSelector(selectIsDataFetched);
   const { isMobile, isTablet } = useDeviceType();
   const sidebarRef = useRef(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const [view, setView] = useState("providers");
+  const view = useSelector(selectDashboardView);
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -94,7 +100,7 @@ const AdminDashboard = () => {
 
   // Initial data fetch
   useEffect(() => {
-    if (user?.id && user?.tokenIdentificador && isInitialLoad) {
+    if (user?.id && user?.tokenIdentificador && !isDataFetched) {
       dispatch(
         fetchPlants({
           userId: user.id,
@@ -103,9 +109,8 @@ const AdminDashboard = () => {
           pageSize: itemsPerPage,
         })
       );
-      setIsInitialLoad(false);
     }
-  }, [user, dispatch, currentPage, isInitialLoad, itemsPerPage]);
+  }, [user, dispatch, currentPage, itemsPerPage, isDataFetched]);
 
   // Set filtered plants when view changes
   useEffect(() => {
@@ -126,6 +131,7 @@ const AdminDashboard = () => {
       .replace(/\s+/g, "");
 
     setSelectedProvider(normalizedProviderName);
+    dispatch(resetFetchState());
     dispatch(
       fetchPlantsByProvider({
         userId: user.id,
@@ -137,7 +143,7 @@ const AdminDashboard = () => {
   };
 
   const handleViewChange = (value) => {
-    setView(value);
+    dispatch(setDashboardView(value));
     setCurrentPage(1);
   };
 
@@ -152,9 +158,7 @@ const AdminDashboard = () => {
       <TransitionEffect />
       <Texture />
 
-      {/* Main content wrapper with proper stacking context */}
       <div className="relative z-20">
-        {/* Theme and Language Controls */}
         <motion.div
           className="fixed top-4 right-4 flex items-center gap-2 z-30"
           initial={{ opacity: 0, y: -20 }}

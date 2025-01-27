@@ -1,107 +1,72 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+
+// Import reducers
 import userReducer from "@/store/slices/userSlice";
 import plantsReducer from "@/store/slices/plantsSlice";
 import notificationsReducer from "@/store/slices/notificationsSlice";
 import themeReducer from "@/store/slices/themeSlice";
 import usersListReducer from "@/store/slices/usersListSlice";
 import providersReducer from "@/store/slices/providersSlice";
+import dashboardViewReducer from "@/store/slices/dashboardViewSlice";
 
-// Transform to clean sensitive/volatile data before persisting
-const cleanDataTransform = createTransform(
-  // Transform state on its way to being serialized and persisted
-  (inboundState, key) => {
-    switch (key) {
-      case "plants":
-        return {
-          ...inboundState,
-          plantDetails: null,
-          loadingDetails: false,
-          loading: false,
-          error: null,
-          detailsError: null,
-        };
-      case "notifications":
-        return {
-          ...inboundState,
-          loading: false,
-          error: null,
-        };
-      case "usersList":
-        return {
-          ...inboundState,
-          loading: false,
-          error: null,
-        };
-      case "providers":
-        return {
-          ...inboundState,
-          loading: false,
-          error: null,
-        };
-      default:
-        return inboundState;
-    }
-  },
-  // Transform state being rehydrated
-  (outboundState, key) => {
-    switch (key) {
-      case "plants":
-        return {
-          ...outboundState,
-          plantDetails: null,
-          loadingDetails: false,
-          loading: false,
-          error: null,
-          detailsError: null,
-        };
-      case "notifications":
-        return {
-          ...outboundState,
-          loading: false,
-          error: null,
-        };
-      case "usersList":
-        return {
-          ...outboundState,
-          loading: false,
-          error: null,
-        };
-      case "providers":
-        return {
-          ...outboundState,
-          loading: false,
-          error: null,
-        };
-      default:
-        return outboundState;
-    }
-  }
-);
-
-// Configuration for redux-persist
-const persistConfig = {
-  key: "root",
-  storage,
-  whitelist: ["user", "theme"],
-  transforms: [cleanDataTransform],
-};
-
-// Separate config for plants slice to handle it specially
-const plantsPersistConfig = {
-  key: "plants",
-  storage,
-  blacklist: [
+// Define which states should be cleaned during persistence
+const volatileStates = {
+  plants: [
     "plantDetails",
     "loadingDetails",
     "loading",
     "error",
     "detailsError",
   ],
+  notifications: ["loading", "error"],
+  usersList: ["loading", "error"],
+  providers: ["loading", "error"],
 };
 
-// Combine all reducers with special handling for plants
+// Transform to clean sensitive/volatile data before persisting
+const cleanDataTransform = createTransform(
+  // Transform state going to storage
+  (inboundState, key) => {
+    if (volatileStates[key]) {
+      const cleanState = { ...inboundState };
+      volatileStates[key].forEach((field) => {
+        cleanState[field] = null;
+      });
+      return cleanState;
+    }
+    return inboundState;
+  },
+  // Transform state being rehydrated
+  (outboundState, key) => {
+    if (volatileStates[key]) {
+      const cleanState = { ...outboundState };
+      volatileStates[key].forEach((field) => {
+        cleanState[field] = null;
+      });
+      return cleanState;
+    }
+    return outboundState;
+  }
+);
+
+// Main persistence configuration
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["user", "theme", "dashboardView"],
+  transforms: [cleanDataTransform],
+};
+
+// Special config for plants slice
+const plantsPersistConfig = {
+  key: "plants",
+  storage,
+  blacklist: volatileStates.plants,
+};
+
+// Combine all reducers
 const rootReducer = combineReducers({
   user: userReducer,
   plants: persistReducer(plantsPersistConfig, plantsReducer),
@@ -109,6 +74,7 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   usersList: usersListReducer,
   providers: providersReducer,
+  dashboardView: dashboardViewReducer,
 });
 
 // Create the persisted reducer
@@ -128,17 +94,12 @@ const store = configureStore({
 });
 
 // Create persistor
-export const persistor = persistStore(store, null, () => {
-  // After rehydration, clear sensitive data
-  store.dispatch({ type: "plants/clearPlantDetails" });
-});
+export const persistor = persistStore(store);
 
-// Rehydration complete listener
-let rehydrated = false;
+// Clear sensitive data after rehydration
 persistor.subscribe(() => {
-  if (!rehydrated && persistor.getState().bootstrapped) {
-    rehydrated = true;
-    // Clear volatile data after rehydration
+  const state = persistor.getState();
+  if (state.bootstrapped) {
     store.dispatch({ type: "plants/clearPlantDetails" });
   }
 });

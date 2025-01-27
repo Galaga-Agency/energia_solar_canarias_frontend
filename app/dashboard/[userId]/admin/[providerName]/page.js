@@ -13,6 +13,8 @@ import {
   selectAlerts,
   selectLoading,
   selectPlants,
+  selectIsDataFetched,
+  resetFetchState,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -70,7 +72,7 @@ const ProviderPage = () => {
     startIndex,
     startIndex + plantsPerPage
   );
-
+  const isDataFetched = useSelector(selectIsDataFetched);
   const router = useRouter();
   const params = useParams();
   const providerPassed = params?.providerName.toLowerCase();
@@ -82,18 +84,20 @@ const ProviderPage = () => {
   console.log("plants", plants);
 
   useEffect(() => {
-    if (isInitialLoad) {
+    if (isInitialLoad && !isDataFetched) {
       dispatch(
         fetchPlantsByProvider({
           userId: user.id,
           token: user.tokenIdentificador,
           provider: providerPassed,
+          page: 1,
+          pageSize: 1000,
         })
       );
       dispatch(clearPlantDetails());
       setIsInitialLoad(false);
     }
-  }, [user, providerPassed, provider, isInitialLoad, dispatch]);
+  }, [user, providerPassed, provider, isInitialLoad, isDataFetched, dispatch]);
 
   useEffect(() => {
     if (!loading && plants.length > 0 && provider) {
@@ -302,6 +306,7 @@ const ProviderPage = () => {
           <button
             onClick={(e) => {
               e.stopPropagation();
+              dispatch(resetFetchState());
               window.location.href = `/dashboard/${user.id}/admin`;
             }}
           >

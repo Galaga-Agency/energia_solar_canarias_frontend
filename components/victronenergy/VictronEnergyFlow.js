@@ -350,12 +350,12 @@ const VictronEnergyFlow = () => {
 
             <div className="flex-1 flex flex-col items-center justify-start relative">
               <div className="absolute -top-10 w-48 transition-transform duration-700 ease-in-out group-hover:scale-105">
-                <BatteryIndicator soc={energyData?.battery.soc} />
+                <BatteryIndicator soc={energyData?.battery?.soc} />
               </div>
               <div className="text-center mt-28">
                 <h3 className="text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                   {(() => {
-                    const state = energyData?.battery.state?.toLowerCase();
+                    const state = energyData?.battery?.state?.toLowerCase();
                     switch (state) {
                       case "idle":
                         return t("victronEnergyFlow.battery.idle");
@@ -364,7 +364,7 @@ const VictronEnergyFlow = () => {
                       case "discharging":
                         return t("victronEnergyFlow.battery.discharging");
                       default:
-                        return energyData?.battery.state || "-";
+                        return energyData?.battery?.state || "-";
                     }
                   })()}
                 </h3>
@@ -392,21 +392,21 @@ const VictronEnergyFlow = () => {
                     {index === 0 && (
                       <>
                         {energyData?.battery.voltage
-                          ? `${energyData?.battery.voltage} V`
+                          ? `${energyData?.battery?.voltage} V`
                           : "-"}
                       </>
                     )}
                     {index === 1 && (
                       <>
                         {energyData?.battery.current
-                          ? `${energyData?.battery.current} A`
+                          ? `${energyData?.battery?.current} A`
                           : "-"}
                       </>
                     )}
                     {index === 2 && (
                       <>
                         {energyData?.battery.temp
-                          ? `${energyData?.battery.temp} °C`
+                          ? `${energyData?.battery?.temp} °C`
                           : "-"}
                       </>
                     )}
@@ -422,9 +422,9 @@ const VictronEnergyFlow = () => {
           <EnergyBlock
             isBlinking={isBlinking}
             title="Inversor FV"
-            value={energyData?.inverter.totalPower}
+            value={energyData?.inverter?.totalPower}
             unit={
-              typeof energyData?.inverter.totalPower === "number" ? "W" : ""
+              typeof energyData?.inverter?.totalPower === "number" ? "W" : ""
             }
             icon={FaExchangeAlt}
             tooltip={t("victronEnergyFlow.inverter.tooltip")}
@@ -531,7 +531,7 @@ const VictronEnergyFlow = () => {
                       </span>
                       <div className="flex items-center gap-4">
                         <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
-                          {data.power}W
+                          {data?.power}W
                         </span>
                       </div>
                     </div>
@@ -571,14 +571,14 @@ const VictronEnergyFlow = () => {
                             isBlinking && "animate-double-blink"
                           }`}
                         >
-                          {data.current}A
+                          {data?.current}A
                         </span>
                         <span
                           className={`font-medium text-custom-dark-blue dark:text-custom-yellow ${
                             isBlinking && "animate-double-blink"
                           }`}
                         >
-                          {data.power}W
+                          {data?.power}W
                         </span>
                       </div>
                     </div>

@@ -22,13 +22,7 @@ import {
 import { selectTheme } from "@/store/slices/themeSlice";
 import useCSVExport from "@/hooks/useCSVExport";
 import ExportModal from "@/components/ExportModal";
-import { Info } from "lucide-react";
-import {
-  Tooltip as TooltipUI,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
+import CustomTooltipBattery from "./CustomTooltipBattery";
 
 const BatteryChargingGraph = ({ token, plantId }) => {
   const { t } = useTranslation();
@@ -205,28 +199,8 @@ const BatteryChargingGraph = ({ token, plantId }) => {
                 }}
               />
               <YAxis domain={[0, 100]} />
-              <Tooltip
-                content={({ payload }) => {
-                  if (!payload || !payload.length) return null;
-                  const { date, time, batteryPercentageState } =
-                    payload[0].payload;
-                  return (
-                    <div
-                      className={`p-3 bg-white dark:bg-gray-800 border rounded shadow-md`}
-                    >
-                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        {t("date")}: {date}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        {t("time")}: {time}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        {t("batteryState")}: {batteryPercentageState}%
-                      </p>
-                    </div>
-                  );
-                }}
-              />
+              <Tooltip content={<CustomTooltipBattery />} />
+
               <Area
                 type="monotone"
                 dataKey="batteryPercentageState"

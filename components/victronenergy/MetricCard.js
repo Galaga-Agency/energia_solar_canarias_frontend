@@ -5,7 +5,7 @@ const MetricCard = ({ title, value, predictedValue, icon, unit = "kWh" }) => {
   const { t } = useTranslation();
   return (
     <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl shadow-lg hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-2 ">
         {icon}
         <h3 className="text-sm font-medium text-custom-dark-blue dark:text-custom-yellow">
           {title}

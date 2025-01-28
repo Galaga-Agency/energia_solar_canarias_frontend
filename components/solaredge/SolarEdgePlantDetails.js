@@ -228,23 +228,6 @@ const SolarEdgePlantDetails = React.memo(
       []
     );
 
-    const getYieldColor = useCallback((yieldRate) => {
-      if (!yieldRate) return "text-gray-500";
-      const percentage = yieldRate * 100;
-      if (percentage >= 80) return "text-green-500";
-      if (percentage >= 70) return "text-emerald-400";
-      if (percentage >= 60) return "text-yellow-500";
-      if (percentage >= 50) return "text-orange-500";
-      return "text-red-500";
-    }, []);
-
-    const getYieldIcon = useCallback((yieldRate) => {
-      const percentage = yieldRate * 100;
-      if (percentage >= 70) return "🌟";
-      if (percentage >= 50) return "⚡";
-      return "⚠️";
-    }, []);
-
     const formatValueWithDecimals = useCallback((value, unit) => {
       if (!value || isNaN(parseFloat(value))) {
         return `N/A ${unit}`;
@@ -440,34 +423,37 @@ const SolarEdgePlantDetails = React.memo(
             token={token}
           />
 
-          <section className="flex flex-col md:flex-row gap-6 mt-6 w-full">
-            <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-              <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                {/* Battery Gauge */}
-                <BatteryIndicator soc={batteryLevel} />
+          {solaredgePlant?.siteCurrentPowerFlow?.STORAGE && (
+            <section className="flex flex-col md:flex-row gap-6 mt-6 w-full">
+              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
+                <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
+                  {/* Battery Gauge */}
+                  <BatteryIndicator soc={batteryLevel} />
 
-                {/* Tooltip */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                      <Info className="h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p>{t("batteryTooltipContent")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                  {/* Tooltip */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
+                        <Info className="h-4 w-4" />
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-xs">
+                        <p>{t("batteryTooltipContent")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
-            </div>
 
-            {/* Battery Graph */}
-            <div className="flex-1 min-w-[300px]">
-              <BatteryChargingGraph
-                plantId={solaredgePlant?.id}
-                token={token}
-              />
-            </div>
-          </section>
+              {/* Battery Graph */}
+
+              <div className="flex-1 min-w-[300px]">
+                <BatteryChargingGraph
+                  plantId={solaredgePlant?.id}
+                  token={token}
+                />
+              </div>
+            </section>
+          )}
 
           <EnergyComparisonChart
             plantId={solaredgePlant?.id}

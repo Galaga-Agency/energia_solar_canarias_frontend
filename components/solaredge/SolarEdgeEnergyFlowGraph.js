@@ -44,6 +44,7 @@ import { useParams } from "next/navigation";
 import ExportModal from "../ExportModal";
 import useCSVExport from "@/hooks/useCSVExport";
 import CustomSelect from "../ui/CustomSelect";
+import CustomTooltipEnergyFlowGraph from "./CustomTooltipEnergyFlowGraph.js";
 
 // Constants
 const MAX_RETRIES = 3;
@@ -107,15 +108,11 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const { isMobile } = useDeviceType();
   const params = useParams();
   const plantId = params?.plantId;
-
-  // Selectors
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
   const theme = useSelector(selectTheme);
-
-  // State
   const [range, setRange] = useState("DAY");
   const [customRange, setCustomRange] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
@@ -429,49 +426,6 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     formatDate,
   ]);
 
-  const renderTooltip = useCallback(
-    (name) => {
-      return (
-        <TooltipProvider>
-          <TooltipUI>
-            <TooltipTrigger asChild>
-              <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              <p className="text-sm">{t(`tooltips.${name}`)}</p>
-            </TooltipContent>
-          </TooltipUI>
-        </TooltipProvider>
-      );
-    },
-    [t]
-  );
-
-  const customLegendRenderer = useCallback(
-    (props) => {
-      const { payload } = props;
-      if (!payload) return null;
-
-      return (
-        <div className="flex flex-wrap justify-center gap-4 mt-4">
-          {payload.map((entry, index) => (
-            <div key={`item-${index}`} className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-sm"
-                style={{ backgroundColor: entry.color }}
-              />
-              <span className="text-sm text-custom-dark-blue dark:text-custom-light-gray">
-                {entry.value}
-              </span>
-              {renderTooltip(entry.value.toLowerCase())}
-            </div>
-          ))}
-        </div>
-      );
-    },
-    [renderTooltip]
-  );
-
   const isEmptyOrZeroData = useMemo(() => {
     if (!transformedData.length) return true;
 
@@ -495,10 +449,6 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     downloadCSV(exportData, "solaredge_data.csv");
     setIsModalOpen(false);
   }, [filteredData, downloadCSV]);
-
-  if (isLoading) {
-    return <SolarEdgeEnergyFlowGraphSkeleton theme={theme} />;
-  }
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6">
@@ -590,28 +540,14 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
         )}
       </div>
 
-      {isEmptyOrZeroData ? (
+      {isLoading ? (
+        <SolarEdgeEnergyFlowGraphSkeleton theme={theme} />
+      ) : isEmptyOrZeroData ? (
         <div>
           <div className="flex items-center justify-center pb-4 px-8 gap-4">
             <p className="text-lg text-gray-500 dark:text-gray-400">
               {t("noDataAvailable")}
             </p>
-            <TooltipProvider>
-              <TooltipUI>
-                <TooltipTrigger asChild>
-                  <div className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 cursor-pointer">
-                    <Info className="h-5 w-5 text-gray-500 dark:text-gray-300" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p className="text-sm text-gray-700 dark:text-gray-200">
-                    {t("noDataTooltip", {
-                      range: t(range.toLowerCase()),
-                    })}
-                  </p>
-                </TooltipContent>
-              </TooltipUI>
-            </TooltipProvider>
           </div>
 
           <div className="overflow-x-auto">
@@ -646,7 +582,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                     }}
                   />
                   <Tooltip content={() => null} />
-                  <Legend content={customLegendRenderer} />
+                  <Legend />
                   {visibleCurves.map((curve) => (
                     <Line
                       key={curve.dataKey}
@@ -664,7 +600,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
           </div>
         </div>
       ) : (
-        <>
+        <div>
           <div className="mb-6 flex flex-col gap-6">
             <PercentageBar
               title={t("Producción del Sistema")}
@@ -716,39 +652,8 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
                       offset: 5,
                     }}
                   />
-                  <Tooltip
-                    content={({ payload, label }) => {
-                      if (!payload || !payload.length) return null;
-                      return (
-                        <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
-                          <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                            {label}
-                          </p>
-                          {payload.map((entry, index) => (
-                            <div
-                              key={`tooltip-${index}`}
-                              className="flex justify-between gap-4"
-                            >
-                              <span
-                                className="text-sm text-gray-700 dark:text-gray-300"
-                                style={{ color: entry.color }}
-                              >
-                                {entry.name}:
-                              </span>
-                              <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                {entry.value >= 1000000
-                                  ? `${(entry.value / 1000000).toFixed(1)} MWh`
-                                  : entry.value >= 1000
-                                  ? `${(entry.value / 1000).toFixed(1)} KWh`
-                                  : `${entry.value} Wh`}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    }}
-                  />
-                  <Legend content={customLegendRenderer} />
+                  <Tooltip content={<CustomTooltipEnergyFlowGraph />} />
+                  <Legend />
                   {visibleCurves.map((curve) => (
                     <Line
                       key={curve.dataKey}
@@ -764,7 +669,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
               </ResponsiveContainer>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {isModalOpen && (

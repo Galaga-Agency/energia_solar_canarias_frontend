@@ -213,7 +213,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
             {/* Tablet Battery - Hidden on 2xl */}
             {!isMobile && (
               <div className="2xl:hidden bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center 2xl:flex-col gap-4">
-                <BatteryIndicator soc={goodwePlant?.soc[0]?.power || 0} />
+                <BatteryIndicator soc={goodwePlant?.soc?.[0]?.power ?? 0} />{" "}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">

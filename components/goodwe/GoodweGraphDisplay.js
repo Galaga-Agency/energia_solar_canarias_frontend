@@ -41,6 +41,7 @@ import DateSelector from "../DateSelector";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { BsCalendar3 } from "react-icons/bs";
+import CustomTooltipGraph from "./CustomTooltipGraph";
 
 const CHART_RANGE_OPTIONS = [
   { value: "dia", label: "day" },
@@ -468,61 +469,14 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
                         />
                         <YAxis />
                         <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
-                                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                                    {label}
-                                  </p>
-                                  {payload.map((entry, index) => {
-                                    const sanitizedName = entry.name.replace(
-                                      "PCurve_Power_",
-                                      ""
-                                    );
-                                    const formattedName = sanitizedName
-                                      .replace("PV", "PV(W)")
-                                      .replace("Battery", "Batería(W)")
-                                      .replace("Meter", "Medidor(W)")
-                                      .replace("Load", "Carga(W)")
-                                      .replace("SOC", "SOC(%)");
-
-                                    const resolvedColor = getPotenciaLineColor(
-                                      entry.name,
-                                      theme
-                                    );
-
-                                    return (
-                                      <div
-                                        key={`tooltip-item-${index}`}
-                                        className="mb-1"
-                                      >
-                                        <span
-                                          style={{
-                                            color: resolvedColor,
-                                            fontWeight: "bold",
-                                          }}
-                                        >
-                                          {formattedName}:
-                                        </span>{" "}
-                                        <span
-                                          style={{
-                                            color:
-                                              theme === "dark"
-                                                ? "#FFF"
-                                                : "#000",
-                                          }}
-                                        >
-                                          {entry.value}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
+                          content={
+                            <CustomTooltipGraph
+                              chartType="potencia"
+                              theme={theme}
+                              getBarOrLineColor={getBarOrLineColor}
+                              getPotenciaLineColor={getPotenciaLineColor}
+                            />
+                          }
                         />
                         <Legend
                           formatter={(value) => {
@@ -818,31 +772,14 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
                             />
                           ))}
                           <Tooltip
-                            content={({ active, payload, label }) => {
-                              if (active && payload && payload.length) {
-                                return (
-                                  <div className="p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
-                                    <p className="text-sm font-bold text-gray-900 dark:text-gray-200 mb-2">
-                                      {label}
-                                    </p>
-                                    {payload.map((entry, index) => (
-                                      <div
-                                        key={`tooltip-item-${index}`}
-                                        className="flex items-center gap-2 mb-1"
-                                      >
-                                        <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-300">
-                                          {entry.name}
-                                        </span>
-                                        <span className="text-sm font-bold text-gray-900 dark:text-gray-200">
-                                          {entry.value}
-                                        </span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }}
+                            content={
+                              <CustomTooltipGraph
+                                chartType={chartIndexId}
+                                theme={theme}
+                                getBarOrLineColor={getBarOrLineColor}
+                                getPotenciaLineColor={getPotenciaLineColor}
+                              />
+                            }
                           />
                           <Legend
                             formatter={(value, entry) => {

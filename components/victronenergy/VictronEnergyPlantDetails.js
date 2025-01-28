@@ -18,7 +18,7 @@ import WeatherWidget from "@/components/WeatherWidget";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useParams } from "next/navigation";
 import TankData from "./TankData";
-import VictronEnergyGraph from "./VictronEnergyGraph";
+import VictronEnergyGraph from "./graphs/VictronEnergyGraph";
 import VictronEnergyEquipmentDetails from "./VictronEnergyEquipmentDetails";
 import DateRangeModal from "./DateRangeModal";
 import VictronEnergyAlerts from "./VictronEnergyAlerts";

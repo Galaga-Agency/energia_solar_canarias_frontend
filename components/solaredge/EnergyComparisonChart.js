@@ -32,6 +32,7 @@ import PrimaryButton from "../ui/PrimaryButton";
 import SecondaryButton from "../ui/SecondaryButton";
 import ExportModal from "../ExportModal";
 import { Info } from "lucide-react";
+import CustomTooltipEnergyComparison from "./CustomTooltipEnergyComparison";
 
 const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   const dispatch = useDispatch();
@@ -141,45 +142,26 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
     setIsModalOpen(false);
   };
 
-  const renderTooltip = useCallback(
-    (name) => {
-      return (
-        <TooltipProvider>
-          <TooltipUI>
-            <TooltipContent side="top">
-              <p className="text-sm">{t(`tooltips.${name}`)}</p>
-            </TooltipContent>
-          </TooltipUI>
-        </TooltipProvider>
-      );
-    },
-    [t]
-  );
+  const customLegendRenderer = useCallback((props) => {
+    const { payload } = props;
+    if (!payload) return null;
 
-  const customLegendRenderer = useCallback(
-    (props) => {
-      const { payload } = props;
-      if (!payload) return null;
-
-      return (
-        <div className="flex flex-wrap justify-center gap-4 mt-4">
-          {payload.map((entry, index) => (
-            <div key={`item-${index}`} className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-sm"
-                style={{ backgroundColor: entry.color }}
-              />
-              <span className="text-sm text-custom-dark-blue dark:text-custom-light-gray">
-                {entry.value}
-              </span>
-              {renderTooltip(entry.value.toLowerCase())}
-            </div>
-          ))}
-        </div>
-      );
-    },
-    [renderTooltip]
-  );
+    return (
+      <div className="flex flex-wrap justify-center gap-4 mt-4">
+        {payload.map((entry, index) => (
+          <div key={`item-${index}`} className="flex items-center gap-2">
+            <div
+              className="w-3 h-3 rounded-sm"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-sm text-custom-dark-blue dark:text-custom-light-gray">
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }, []);
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mt-6">
@@ -346,36 +328,9 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
                 />
 
                 <Tooltip
-                  content={({ payload, label }) => {
-                    if (!payload || !payload.length) return null;
-                    return (
-                      <div className="p-3 bg-white dark:bg-gray-800 border rounded shadow-md">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                          {label}
-                        </p>
-                        {payload.map((entry, index) => (
-                          <div
-                            key={`tooltip-${index}`}
-                            className="flex justify-between gap-4"
-                          >
-                            <span
-                              className="text-sm text-gray-700 dark:text-gray-300"
-                              style={{ color: entry.color }}
-                            >
-                              {entry.name}:
-                            </span>
-                            <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                              {entry.value >= 1000000
-                                ? `${(entry.value / 1000000).toFixed(1)} MWh`
-                                : entry.value >= 1000
-                                ? `${(entry.value / 1000).toFixed(1)} KWh`
-                                : `${entry.value} Wh`}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  }}
+                  content={
+                    <CustomTooltipEnergyComparison timeUnit={timeUnit} />
+                  }
                 />
 
                 {timeUnit === "MONTH" && (

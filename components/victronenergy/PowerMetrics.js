@@ -29,7 +29,12 @@ const PowerMetrics = ({ totals }) => {
       <MetricCard
         title={t("Consumo total")}
         value={formatValue(totalConsumption)}
-        icon={<FaBolt className="text-yellow-500" size={20} />}
+        icon={
+          <FaBolt
+            className="w-10 h-10 p-2 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
+            size={10}
+          />
+        }
         unit="kWh"
       />
 
@@ -37,7 +42,12 @@ const PowerMetrics = ({ totals }) => {
       <MetricCard
         title={t("Producción solar")}
         value={formatValue(totalSolar)}
-        icon={<FaSolarPanel className="text-green-500" size={20} />}
+        icon={
+          <FaSolarPanel
+            className="w-10 h-10 p-2 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
+            size={20}
+          />
+        }
         unit="kWh"
       />
 
@@ -45,7 +55,12 @@ const PowerMetrics = ({ totals }) => {
       <MetricCard
         title={t("Uso de batería")}
         value={formatValue(battery)}
-        icon={<IoMdBatteryFull className="text-blue-500" size={20} />}
+        icon={
+          <IoMdBatteryFull
+            className="w-10 h-10 p-2 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
+            size={20}
+          />
+        }
         unit="kWh"
       />
     </div>

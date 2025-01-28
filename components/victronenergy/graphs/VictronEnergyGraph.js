@@ -47,19 +47,19 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-
-// Imported Components
-import CustomTooltip from "./CustomTooltip";
-import BatteryMetrics from "./BatteryMetrics";
-import PowerMetrics from "./PowerMetrics";
-import NoDataDisplay from "./NoDataDisplay";
+import CustomTooltip from "../CustomTooltip";
+import BatteryMetrics from "../BatteryMetrics";
+import PowerMetrics from "../PowerMetrics";
+import NoDataDisplay from "../NoDataDisplay";
 
 const getColors = (theme) => ({
-  consumption: theme === "dark" ? "#FFD57B" : "#BDBFC0", // Color for consumption (yellowish in dark mode, light gray in light mode)
-  solar: theme === "dark" ? "#BDBFC0" : "#0B2738", // Color for solar production (light gray in dark mode, dark blue in light mode)
-  solarPredicted: theme === "dark" ? "#657880" : "#FFD57B", // Color for predicted solar production (muted grayish green in dark mode, yellow in light mode)
-  consumptionPredicted: theme === "dark" ? "#A48D67" : "#9CA3AF", // Color for predicted consumption (earthy brown in dark mode, gray in light mode)
-  battery: theme === "dark" ? "#9CA3AF" : "#AD936A", // Color for battery (grayish in dark mode, brownish in light mode)
+  consumption: theme === "dark" ? "#BDBFC080" : "#0B2738",
+  solarProduction: theme === "dark" ? "#AD936A" : "#BDBFC0",
+  export: theme === "dark" ? "#657880" : "#FFD57B",
+  import: theme === "dark" ? "#9CA3AF" : "#BDBFC0",
+  batteryAverage: theme === "dark" ? "#FFD57B" : "rgb(255, 213, 122)",
+  batteryMin: theme === "dark" ? "#BDBFC0" : "#BDBFC070",
+  batteryMax: theme === "dark" ? "#A48D67" : "#AD936A",
 });
 
 const VictronEnergyGraph = ({
@@ -753,7 +753,6 @@ const VictronEnergyGraph = ({
                         scale="time"
                         interval="preserveStartEnd"
                         tick={{ fontSize: 12 }}
-                        className="text-custom-dark-blue dark:text-custom-light-gray"
                       />
                       <YAxis
                         yAxisId="power"
@@ -764,7 +763,6 @@ const VictronEnergyGraph = ({
                           position: "insideLeft",
                           offset: 10,
                         }}
-                        className="text-custom-dark-blue dark:text-custom-light-gray"
                       />
                       {hasBatteryState && (
                         <YAxis
@@ -777,9 +775,107 @@ const VictronEnergyGraph = ({
                             position: "insideRight",
                             offset: 10,
                           }}
-                          className="text-custom-dark-blue dark:text-custom-light-gray"
                         />
                       )}
+
+                      {hasConsumption && (
+                        <Bar
+                          dataKey="consumption"
+                          fill={COLORS.consumption}
+                          name={t("Consumo")}
+                          barSize={15}
+                          yAxisId="power"
+                          unit="kWh"
+                        />
+                      )}
+                      {hasSolar && (
+                        <Bar
+                          dataKey="solar"
+                          fill={COLORS.solarProduction}
+                          name={t("Solar")}
+                          barSize={15}
+                          yAxisId="power"
+                          unit="kWh"
+                        />
+                      )}
+                      {hasBatteryState && (
+                        <>
+                          <Line
+                            type="monotone"
+                            yAxisId="percentage"
+                            dataKey="batteryStateMax"
+                            stroke={COLORS.batteryMax}
+                            fill={COLORS.batteryMax}
+                            fillOpacity={0.2}
+                            strokeWidth={2}
+                            name={t("Batería Máx")}
+                            dot={false}
+                            unit="%"
+                          />
+                          <Line
+                            type="monotone"
+                            yAxisId="percentage"
+                            dataKey="batteryStateMin"
+                            stroke={COLORS.batteryMin}
+                            strokeWidth={2}
+                            name={t("Batería Mín")}
+                            dot={false}
+                            unit="%"
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="battery"
+                            stroke={COLORS.batteryAverage}
+                            yAxisId="percentage"
+                            name={t("Batería")}
+                            strokeWidth={3}
+                            dot={false}
+                            unit="%"
+                          />
+                        </>
+                      )}
+
+                      {showForecast && !isForecastLoading && (
+                        <>
+                          {chartData.some(
+                            (data) => data.forecastSolar !== null
+                          ) && (
+                            <Line
+                              type="monotone"
+                              dataKey="forecastSolar"
+                              stroke={COLORS.solarProduction}
+                              strokeWidth={2}
+                              dot={false}
+                              yAxisId="power"
+                              name={t("Solar previsto")}
+                              unit="kWh"
+                              connectNulls={true}
+                            />
+                          )}
+                          {chartData.some(
+                            (data) => data.forecastConsumption !== null
+                          ) && (
+                            <Line
+                              type="monotone"
+                              dataKey="forecastConsumption"
+                              stroke={COLORS.consumption}
+                              strokeWidth={2}
+                              dot={false}
+                              yAxisId="power"
+                              name={t("Consumo previsto")}
+                              unit="kWh"
+                              connectNulls={true}
+                            />
+                          )}
+                        </>
+                      )}
+                      <ReferenceLine
+                        x={new Date().getTime()}
+                        stroke="#666"
+                        label="Now"
+                        strokeDasharray="3 3"
+                        yAxisId="power"
+                      />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend
                         verticalAlign="top"
@@ -800,135 +896,30 @@ const VictronEnergyGraph = ({
                                 {
                                   value: t("Solar"),
                                   type: "line",
-                                  color: COLORS.solar,
+                                  color: COLORS.solarProduction,
                                 },
                               ]
                             : []),
                           ...(hasBatteryState
                             ? [
                                 {
-                                  value: t("Batería"),
+                                  value: t("Batería Min"),
                                   type: "line",
-                                  color: COLORS.battery,
+                                  color: COLORS.batteryMin,
+                                },
+                                {
+                                  value: t("Batería Average"),
+                                  type: "line",
+                                  color: COLORS.batteryAverage,
+                                },
+                                {
+                                  value: t("Batería Max"),
+                                  type: "line",
+                                  color: COLORS.batteryMax,
                                 },
                               ]
                             : []),
                         ]}
-                      />
-
-                      {hasConsumption && (
-                        <Bar
-                          dataKey="consumption"
-                          fill={COLORS.consumption}
-                          name={t("Consumo")}
-                          barSize={15}
-                          yAxisId="power"
-                          unit="kWh"
-                        />
-                      )}
-
-                      {hasSolar && (
-                        <Bar
-                          dataKey="solar"
-                          fill={COLORS.solar}
-                          name={t("Solar")}
-                          barSize={15}
-                          yAxisId="power"
-                          unit="kWh"
-                        />
-                      )}
-
-                      {hasBatteryState && (
-                        <>
-                          <Line
-                            dataKey="batteryStateMin"
-                            style={{
-                              fill: COLORS.battery,
-                              fillOpacity: 0.1,
-                            }}
-                          />
-                          <Line
-                            dataKey="batteryStateMax"
-                            style={{
-                              fill: "red",
-                              fillOpacity: 0.1,
-                            }}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="batteryStateMin"
-                            stroke={COLORS.battery}
-                            yAxisId="percentage"
-                            name={t("Battery Min")}
-                            strokeWidth={2}
-                            dot={false}
-                            unit="%"
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="batteryStateMax"
-                            stroke={COLORS.battery}
-                            yAxisId="percentage"
-                            name={t("Battery Max")}
-                            strokeWidth={2}
-                            dot={false}
-                            unit="%"
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="battery"
-                            stroke={COLORS.battery}
-                            yAxisId="percentage"
-                            name={t("Battery")}
-                            strokeWidth={3}
-                            dot={false}
-                            unit="%"
-                          />
-                        </>
-                      )}
-
-                      {showForecast && !isForecastLoading && (
-                        <>
-                          {chartData.some(
-                            (data) => data.forecastSolar !== null
-                          ) && (
-                            <Line
-                              type="monotone"
-                              dataKey="forecastSolar"
-                              stroke={COLORS.solarPredicted}
-                              strokeWidth={2}
-                              dot={false}
-                              fillOpacity={0.5}
-                              yAxisId="power"
-                              name={t("Solar previsto")}
-                              unit="kWh"
-                              connectNulls={true}
-                            />
-                          )}
-                          {chartData.some(
-                            (data) => data.forecastConsumption !== null
-                          ) && (
-                            <Line
-                              type="monotone"
-                              dataKey="forecastConsumption"
-                              stroke={COLORS.consumptionPredicted}
-                              strokeWidth={2}
-                              dot={false}
-                              fillOpacity={0.5}
-                              yAxisId="power"
-                              name={t("Consumo previsto")}
-                              unit="kWh"
-                              connectNulls={true}
-                            />
-                          )}
-                        </>
-                      )}
-                      <ReferenceLine
-                        x={new Date().getTime()}
-                        stroke="#666"
-                        label="Now"
-                        strokeDasharray="3 3"
-                        yAxisId="power"
                       />
                     </ComposedChart>
                   </ResponsiveContainer>

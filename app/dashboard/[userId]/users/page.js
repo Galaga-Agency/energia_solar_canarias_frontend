@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
-import { IoFilter } from "react-icons/io5";
-import { HiViewGrid, HiViewList } from "react-icons/hi";
-import { FaUserAltSlash } from "react-icons/fa";
+import { IoFilter, IoPersonAddOutline } from "react-icons/io5";
+import { HiUserAdd, HiViewGrid, HiViewList } from "react-icons/hi";
+import { FaUserAltSlash, FaUserPlus } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Pagination from "@/components/ui/Pagination";
@@ -32,6 +32,8 @@ import {
 import { addUser, selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import AddUserForm from "@/components/AddUserForm";
+import { MdPersonAdd } from "react-icons/md";
+import { RiUserAddLine } from "react-icons/ri";
 
 const INITIAL_FILTERS = {
   role: ["all"],
@@ -386,14 +388,19 @@ const UsersTab = () => {
       {/* Action Buttons */}
       <motion.button
         onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-20 right-4 md:right-10 w-12 h-12 lg:w-auto lg:h-auto lg:px-4 lg:py-3 flex rounded-full justify-center items-center button-shadow bg-custom-yellow text-custom-dark-blue  transition-all duration-300 button-shadow z-40"
+        className="fixed bottom-20 right-4 xl:right-10 w-12 h-12 lg:w-14 lg:h-14 flex rounded-full justify-center items-center button-shadow bg-custom-yellow text-custom-dark-blue  transition-all duration-300 button-shadow z-40"
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.6, duration: 0.3 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <PlusIcon className="text-custom-dark-blue w-8 h-10" />
+        <motion.div
+          whileHover={{ rotateY: 360, scale: 1.1 }}
+          transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
+        >
+          <RiUserAddLine className="text-2xl lg:text-3xl text-custom-dark-blue " />
+        </motion.div>
       </motion.button>
       <BottomNavbar userId={currentUser?.id} userClass={currentUser?.clase} />
     </div>

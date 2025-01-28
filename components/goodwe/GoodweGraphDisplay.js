@@ -61,16 +61,12 @@ const GoodweGraphDisplay = ({ plantId, title, onValueUpdate }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isMobile, isDesktop } = useDeviceType();
-
-  // Redux selectors
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);
   const user = useSelector(selectUser);
   const theme = useSelector(selectTheme);
   const token = useMemo(() => user?.tokenIdentificador, [user]);
-
-  // Local state
   const [range, setRange] = useState("dia");
   const [chartIndexId, setChartIndexId] = useState("potencia");
   const [isInitialized, setIsInitialized] = useState(false);

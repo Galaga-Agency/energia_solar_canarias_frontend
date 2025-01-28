@@ -24,13 +24,12 @@ const UserDetailsModalHeader = React.memo(
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4 min-w-0">
           {/* Profile Image & Badge */}
-          <div className="flex-shrink-0 relative w-20 h-20">
+          <div className="relative w-20 h-20 flex-shrink-0 rounded-full">
             <Image
               src={imageSrc}
               alt={userName || "Default avatar"}
-              width={80}
-              height={80}
-              className="rounded-full border-4 border-white dark:border-gray-800 object-cover"
+              fill
+              className="rounded-full border-4 border-custom-dark-blue dark:border-custom-yellow object-cover"
               onError={handleImageError}
               sizes="80px"
               priority
@@ -46,11 +45,11 @@ const UserDetailsModalHeader = React.memo(
           {/* User Info */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow truncate">
+              <h2 className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow truncate w-full">
                 {userName || t("unnamed")}
               </h2>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 mt-1 truncate">
+            <p className="text-gray-600 dark:text-gray-300 mt-1 truncate w-full">
               {userEmail || t("noEmail")}
             </p>
           </div>

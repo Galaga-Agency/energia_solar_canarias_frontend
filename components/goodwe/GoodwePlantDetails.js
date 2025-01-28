@@ -64,12 +64,13 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
     return data;
   }, [plant?.data?.data]);
 
+  const hasBattery = goodwePlant?.type?.powerstation_type === "Battery Storage";
+
   // Helper function to safely get battery power
   const getBatteryPower = (socData) => {
-    if (!socData) return 0;
-    if (!Array.isArray(socData)) return 0;
-    if (socData.length === 0) return 0;
-    if (!socData[0] || typeof socData[0].power === "undefined") return 0;
+    if (!socData || !Array.isArray(socData) || socData.length === 0)
+      return null;
+    if (!socData[0] || typeof socData[0].power === "undefined") return null;
     return socData[0].power;
   };
 
@@ -133,6 +134,16 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
     // console.log("Today's PV Generation from child:", value);
     setTodayPVGeneration(value);
   };
+
+  const memoizedGraph = useMemo(() => {
+    return (
+      <GoodweGraphDisplay
+        plantId={goodwePlant?.info?.powerstation_id}
+        title={t("plantAnalytics")}
+        onValueUpdate={handleValueUpdate}
+      />
+    );
+  }, [goodwePlant?.info?.powerstation_id]); // Only re-renders if `plantId` changes
 
   console.log("goodwePlant: ", goodwePlant);
 
@@ -201,19 +212,58 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
 
         {isAdmin && <AssociatedUsers plantId={plantId} isAdmin={isAdmin} />}
 
-        {/* Top Section Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-[1fr_auto_1fr] gap-6 mb-6">
-          {/* Weather Widget + Battery Container */}
-          <div className="flex flex-col gap-6">
-            <WeatherWidget
-              plant={goodwePlant}
-              address={formattedAddress}
-              provider={goodwePlant?.info?.org_name}
-            />
-            {/* Tablet Battery - Hidden on 2xl */}
-            {!isMobile && (
-              <div className="2xl:hidden bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center 2xl:flex-col gap-4">
-                <BatteryIndicator soc={goodwePlant?.soc?.[0]?.power ?? 0} />{" "}
+        <div
+          className={`grid grid-cols-1 mb-6 gap-6 ${
+            batteryPower ? "2xl:grid-cols-[1fr_auto_1fr]" : "2xl:grid-cols-2"
+          }`}
+        >
+          <WeatherWidget
+            plant={goodwePlant}
+            address={formattedAddress}
+            provider={goodwePlant?.info?.org_name}
+          />
+
+          {/* This container is for the battery and plant details */}
+          <div
+            className={`grid grid-cols-1  gap-6 ${
+              batteryPower ? "md:grid-cols-[auto_1fr]" : ""
+            }`}
+          >
+            {batteryPower && !isMobile && (
+              <div className="2xl:hidden bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex flex-col items-center justify-center gap-4">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
+                      <Info className="h-4 w-4" />
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs">
+                      <p>{t("batteryTooltipContent")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <BatteryIndicator soc={batteryPower} />
+              </div>
+            )}
+
+            {batteryPower && (
+              <div className="hidden 2xl:flex bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg items-center justify-center flex-col gap-4 w-[200px]">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
+                      <Info className="h-4 w-4" />
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs">
+                      <p>{t("batteryTooltipContent")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <BatteryIndicator soc={batteryPower} />
+              </div>
+            )}
+
+            {batteryPower && isMobile && (
+              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4">
+                <BatteryIndicator soc={batteryPower} />
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
@@ -226,161 +276,105 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
                 </TooltipProvider>
               </div>
             )}
-          </div>
 
-          {/* Desktop Battery - Only shown on 2xl */}
-          <div className="hidden 2xl:flex bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg items-center justify-center flex-col gap-4 w-[200px]">
-            <BatteryIndicator soc={batteryPower} />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
-                  <Info className="h-4 w-4" />
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
-                  <p>{t("batteryTooltipContent")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-
-          {/* Mobile Battery */}
-          {isMobile && (
-            <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4">
-              <BatteryIndicator soc={batteryPower} />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
-                    <Info className="h-4 w-4" />
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-xs">
-                    <p>{t("batteryTooltipContent")}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div>
+              {isLoading ? (
+                <PlantDetailsSkeleton theme={theme} />
+              ) : (
+                <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm flex flex-col justify-between h-full">
+                  <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                    {t("plantDetails")}
+                  </h2>
+                  <div className="flex flex-1 flex-col gap-4">
+                    <DetailRow
+                      icon={
+                        <HiOutlineStatusOnline className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
+                      }
+                      label={t("currentStatus")}
+                      value={
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <div className="flex items-center gap-1">
+                                <Info
+                                  className={`h-4 w-4 ${statusColors[
+                                    goodwePlant?.info?.status
+                                  ]?.replace("bg-", "text-")} cursor-help mt-1`}
+                                />
+                                <span
+                                  className={`${statusColors[
+                                    goodwePlant?.info?.status
+                                  ]?.replace("bg-", "text-")} cursor-help`}
+                                >
+                                  {goodwePlant?.info?.status
+                                    ? t(`status.${goodwePlant?.info?.status}`)
+                                    : t("loading")}
+                                </span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="right"
+                              className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
+                            >
+                              <p className="font-medium">
+                                {goodwePlant?.info?.status === "working" &&
+                                  t("statusDescriptions.working")}
+                                {goodwePlant?.info?.status === "waiting" &&
+                                  t("statusDescriptions.waiting")}
+                                {goodwePlant?.info?.status === "disconnected" &&
+                                  t("statusDescriptions.disconnected")}
+                                {goodwePlant?.info?.status === "error" &&
+                                  t("loading")}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                    />
+                    <DetailRow
+                      icon={IoLocationOutline}
+                      label={t("location")}
+                      value={goodwePlant?.info?.address || t("loading")}
+                    />
+                    <DetailRow
+                      icon={LiaBirthdayCakeSolid}
+                      label={t("installationDate")}
+                      value={
+                        goodwePlant?.info?.create_time
+                          ? new Intl.DateTimeFormat("es-ES", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            }).format(new Date(goodwePlant.info.create_time))
+                          : t("loading")
+                      }
+                    />
+                    <DetailRow
+                      icon={
+                        <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
+                      }
+                      label={t("poweredBy")}
+                      value={goodwePlant?.info?.org_name || t("loading")}
+                      tooltip={t("poweredByTooltip")}
+                    />
+                    <DetailRow
+                      icon={
+                        <Tag className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
+                      }
+                      label={t("typeOfPlant")}
+                      value={
+                        goodwePlant?.info?.powerstation_type
+                          ? t(`${goodwePlant?.info?.powerstation_type}`)
+                          : t("loading")
+                      }
+                      tooltip={t("typeTooltip")}
+                    />
+                  </div>
+                </section>
+              )}
             </div>
-          )}
-
-          {/* Plant Details */}
-          <div className="2xl:col-start-3 2xl:col-end-4">
-            {isLoading ? (
-              <PlantDetailsSkeleton theme={theme} />
-            ) : (
-              <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm flex flex-col justify-between h-full">
-                <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
-                  {t("plantDetails")}
-                </h2>
-                <div className="flex flex-1 flex-col gap-4">
-                  <DetailRow
-                    icon={
-                      <HiOutlineStatusOnline className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
-                    }
-                    label={t("currentStatus")}
-                    value={
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <div className="flex items-center gap-1">
-                              <Info
-                                className={`h-4 w-4 ${statusColors[
-                                  goodwePlant?.info?.status
-                                ]?.replace("bg-", "text-")} cursor-help mt-1`}
-                              />
-                              <span
-                                className={`${statusColors[
-                                  goodwePlant?.info?.status
-                                ]?.replace("bg-", "text-")} cursor-help`}
-                              >
-                                {goodwePlant?.info?.status
-                                  ? t(`status.${goodwePlant?.info?.status}`)
-                                  : t("loading")}
-                              </span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            side="right"
-                            className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
-                          >
-                            <p className="font-medium">
-                              {goodwePlant?.info?.status === "working" &&
-                                t("statusDescriptions.working")}
-                              {goodwePlant?.info?.status === "waiting" &&
-                                t("statusDescriptions.waiting")}
-                              {goodwePlant?.info?.status === "disconnected" &&
-                                t("statusDescriptions.disconnected")}
-                              {goodwePlant?.info?.status === "error" &&
-                                t("loading")}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    }
-                  />
-                  <DetailRow
-                    icon={IoLocationOutline}
-                    label={t("location")}
-                    value={goodwePlant?.info?.address || t("loading")}
-                  />
-                  <DetailRow
-                    icon={LiaBirthdayCakeSolid}
-                    label={t("installationDate")}
-                    value={
-                      goodwePlant?.info?.create_time
-                        ? new Intl.DateTimeFormat("es-ES", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          }).format(new Date(goodwePlant.info.create_time))
-                        : t("loading")
-                    }
-                  />
-                  <DetailRow
-                    icon={
-                      <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
-                    }
-                    label={t("poweredBy")}
-                    value={goodwePlant?.info?.org_name || t("loading")}
-                    tooltip={t("poweredByTooltip")}
-                  />
-                  <DetailRow
-                    icon={
-                      <Tag className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
-                    }
-                    label={t("typeOfPlant")}
-                    value={
-                      goodwePlant?.info?.powerstation_type
-                        ? t(`${goodwePlant?.info?.powerstation_type}`)
-                        : t("loading")
-                    }
-                    tooltip={t("typeTooltip")}
-                  />
-                </div>
-              </section>
-            )}
           </div>
         </div>
-
-        {/* Mobile Battery */}
-        {isMobile && (
-          <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4 mb-6">
-            <BatteryIndicator
-              soc={
-                Array.isArray(goodwePlant?.soc)
-                  ? goodwePlant.soc?.[0]?.power || 0
-                  : 0
-              }
-            />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
-                  <Info className="h-4 w-4" />
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
-                  <p>{t("batteryTooltipContent")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        )}
 
         <GoodweEnergyFlowDisplay
           plantId={plantId}
@@ -421,19 +415,13 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
           />
         </div>
 
-        <section className="mb-6">
-          <GoodweGraphDisplay
-            plantId={goodwePlant?.info?.powerstation_id}
-            title={t("plantAnalytics")}
-            onValueUpdate={handleValueUpdate}
-          />
-        </section>
-      </div>
+        <section className="mb-6">{memoizedGraph}</section>
 
-      <GoodweAlertsModal
-        isOpen={isAlertsModalOpen}
-        onClose={() => setIsAlertsModalOpen(false)}
-      />
+        <GoodweAlertsModal
+          isOpen={isAlertsModalOpen}
+          onClose={() => setIsAlertsModalOpen(false)}
+        />
+      </div>
     </PageTransition>
   );
 });

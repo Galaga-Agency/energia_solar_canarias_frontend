@@ -18,6 +18,7 @@ import Modal from "./ui/Modal";
 import { t } from "i18next";
 import DeleteProfilePictureConfirmModal from "./DeleteProfilePictureConfirmModal";
 import ConfirmationModal from "./ConfirmationModal";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
   const [localFormData, setLocalFormData] = useState(user);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { isMobile } = useDeviceType();
 
   const formFields = [
     { key: "name", name: "nombre", label: "Name" },
@@ -183,7 +185,13 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
                   <span className="text-gray-500 dark:text-custom-dark-gray">
                     {label}:
                   </span>
-                  <span className="text-custom-dark-blue dark:text-custom-yellow text-right">
+                  <span
+                    className={`text-custom-dark-blue dark:text-custom-yellow 
+          text-right ${
+            isMobile &&
+            "truncate max-w-[200px] whitespace-nowrap  text-ellipsis"
+          } overflow-hidden`}
+                  >
                     {localFormData[name] || "-"}
                   </span>
                 </div>

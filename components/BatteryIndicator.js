@@ -6,9 +6,9 @@ import { selectTheme } from "@/store/slices/themeSlice";
 
 const BatteryIndicator = ({ soc }) => {
   const theme = useSelector(selectTheme);
-  const { isDesktop, isSmallDesktop } = useDeviceType();
+  const { isDesktop, isTablet, isSmallDesktop } = useDeviceType();
 
-  const isVertical = isDesktop || isSmallDesktop;
+  const isVertical = isDesktop || isTablet || isSmallDesktop;
   const showPercentage = soc !== null && soc !== undefined;
 
   // Define a unique parent ID for the SVG

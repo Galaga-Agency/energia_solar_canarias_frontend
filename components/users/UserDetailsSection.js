@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { selectUser } from "@/store/slices/userSlice";
 import { updateUser } from "@/store/slices/userSlice";
 import { updateUserInList, fetchUsers } from "@/store/slices/usersListSlice";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const UserDetailsSection = ({ editedUser, t }) => {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ const UserDetailsSection = ({ editedUser, t }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [localFormData, setLocalFormData] = useState(editedUser);
+  const { isDesktop } = useDeviceType();
 
   useEffect(() => {
     setLocalFormData(editedUser);
@@ -113,7 +115,13 @@ const UserDetailsSection = ({ editedUser, t }) => {
                 <span className="text-gray-500 dark:text-custom-dark-gray">
                   {label}:
                 </span>
-                <span className="text-custom-dark-blue dark:text-custom-yellow text-right">
+                <span
+                  className={`text-custom-dark-blue dark:text-custom-yellow 
+          text-right ${
+            !isDesktop &&
+            "truncate max-w-[200px] whitespace-nowrap  text-ellipsis"
+          } overflow-hidden`}
+                >
                   {localFormData[name] || ""}
                 </span>
               </div>

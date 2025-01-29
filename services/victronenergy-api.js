@@ -43,14 +43,14 @@ export const fetchVictronEnergyGraphDataAPI = async ({
   token,
 }) => {
   try {
-    // console.log("API call with params:", {
-    //   plantId,
-    //   interval,
-    //   type,
-    //   fechaInicio,
-    //   fechaFin,
-    //   token,
-    // });
+    console.log("API call with params:", {
+      plantId,
+      interval,
+      type,
+      fechaInicio,
+      fechaFin,
+      token,
+    });
     const response = await fetch(
       `${API_BASE_URL}/plants/graficas?proveedor=victronenergy`,
       {
@@ -79,7 +79,7 @@ export const fetchVictronEnergyGraphDataAPI = async ({
     }
 
     const data = await response.json();
-    // console.log("Graph Data Response:", data);
+    console.log("Graph Data Response:", data);
     return data?.data;
   } catch (error) {
     console.error("Graph data fetch error:", error);
@@ -175,10 +175,45 @@ export const fetchVictronEnergyAlertsAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
-    // console.log("Alerts Data Response for victron:", data);
+    console.log("Alerts Data Response for victron:", data);
     return data?.data || null;
   } catch (error) {
     console.error("Alerts data fetch error:", error);
+    throw error;
+  }
+};
+
+export const fetchVictronEnergyStatsAPI = async ({ plantId, type, token }) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plants/graficas?proveedor=victronenergy`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id: plantId,
+          type,
+          overallstats: true,
+        }),
+      }
+    );
+
+    const clonedResponse = response.clone();
+    if (!response.ok) {
+      const errorData = await clonedResponse.json().catch(() => ({}));
+      console.error("Error Response:", errorData);
+      throw new Error(errorData.message || "Failed to fetch stats data");
+    }
+
+    const data = await response.json();
+    return data?.data;
+  } catch (error) {
+    console.error("Stats data fetch error:", error);
     throw error;
   }
 };

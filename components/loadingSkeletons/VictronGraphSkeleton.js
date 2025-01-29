@@ -75,32 +75,6 @@ const VictronEnergyGraphSkeleton = ({ theme }) => {
               </div>
             ))}
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {[...Array(5)].map((_, index) => (
-              <div
-                key={index}
-                className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-4 h-4">
-                    <CustomSkeleton
-                      width="100%"
-                      height="100%"
-                      theme={theme}
-                      circle
-                    />
-                  </div>
-                  <div className="w-24 h-4">
-                    <CustomSkeleton width="100%" height="100%" theme={theme} />
-                  </div>
-                </div>
-                <div className="w-full h-6">
-                  <CustomSkeleton width="100%" height="100%" theme={theme} />
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>

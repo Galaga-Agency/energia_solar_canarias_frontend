@@ -18,7 +18,7 @@ import WeatherWidget from "@/components/WeatherWidget";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { useParams } from "next/navigation";
 import TankData from "./TankData";
-import VictronEnergyGraph from "./graphs/VictronEnergyGraph";
+import VictronEnergyGraphs from "./graphs/VictronEnergyGraphsContainer";
 import VictronEnergyEquipmentDetails from "./VictronEnergyEquipmentDetails";
 import DateRangeModal from "./DateRangeModal";
 import VictronEnergyAlerts from "./VictronEnergyAlerts";
@@ -210,7 +210,7 @@ const VictronEnergyPlantDetails = () => {
         </div>
 
         <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mb-6 backdrop-blur-sm shadow-lg my-6">
-          <VictronEnergyGraph
+          <VictronEnergyGraphs
             plantId={plantId}
             currentRange={currentRange}
             setIsDateModalOpen={setIsDateModalOpen}

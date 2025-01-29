@@ -1055,5 +1055,6 @@
   "sell": "Sell",
   "buy": "Buy",
   "contribution_ratio": "Contribution Ratio",
-  "graph_total": "Total"
+  "graph_total": "Total",
+  "Batería Promedio": "Battery Average"
 }

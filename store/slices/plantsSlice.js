@@ -34,6 +34,7 @@ import {
   fetchVictronEnergyGraphDataAPI,
   fetchVictronEnergyRealtimeDataAPI,
   fetchVictronEnergyWeatherDataAPI,
+  fetchVictronEnergyStatsAPI,
 } from "@/services/victronenergy-api";
 
 // Thunks
@@ -413,6 +414,26 @@ export const fetchVictronEnergyGraphData = createAsyncThunk(
   }
 );
 
+export const fetchVictronOverallStats = createAsyncThunk(
+  "plants/fetchVictronOverallStats",
+  async ({ id, type, token }, { rejectWithValue }) => {
+    if (!token) {
+      return rejectWithValue("No authentication token available");
+    }
+
+    try {
+      const response = await fetchVictronEnergyStatsAPI({
+        plantId: id,
+        type,
+        token,
+      });
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const fetchVictronEnergyRealtimeData = createAsyncThunk(
   "plants/fetchVictronEnergyRealtimeData",
   async ({ plantId, token }, { rejectWithValue }) => {
@@ -503,6 +524,9 @@ const initialState = {
   loadingAssociatedPlants: false,
   errorAssociatedPlants: null,
   isDataFetched: false,
+  statsData: null,
+  statsLoading: false,
+  statsError: null,
 };
 
 const plantsSlice = createSlice({
@@ -876,6 +900,20 @@ const plantsSlice = createSlice({
       .addCase(fetchVictronEnergyAlerts.rejected, (state, action) => {
         state.alertsLoading = false;
         state.alertsError = action.payload || "Failed to fetch alerts";
+      })
+      .addCase(fetchVictronOverallStats.pending, (state) => {
+        state.statsLoading = true;
+        state.statsError = null;
+      })
+      .addCase(fetchVictronOverallStats.fulfilled, (state, action) => {
+        state.statsLoading = false;
+        state.statsData = action.payload;
+        state.statsError = null;
+      })
+      .addCase(fetchVictronOverallStats.rejected, (state, action) => {
+        state.statsLoading = false;
+        state.statsData = null;
+        state.statsError = action.payload || "Failed to fetch stats data";
       });
   },
 });
@@ -972,6 +1010,9 @@ export const selectAssociatedUsers = createSelector(
   (plants) => plants.associatedUsers || []
 );
 export const selectIsDataFetched = (state) => state.plants.isDataFetched;
+export const selectStatsData = (state) => state.plants.statsData;
+export const selectStatsLoading = (state) => state.plants.statsLoading;
+export const selectStatsError = (state) => state.plants.statsError;
 
 export const {
   clearPlants,

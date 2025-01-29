@@ -225,8 +225,10 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
 
           {/* This container is for the battery and plant details */}
           <div
-            className={`grid grid-cols-1  gap-6 ${
-              batteryPower ? "md:grid-cols-[auto_1fr]" : ""
+            className={`grid grid-cols-1 gap-6 ${
+              batteryPower
+                ? "md:grid-cols-[auto_1fr] 2xl:col-span-2 2xl:grid-cols-[200px_1fr]"
+                : ""
             }`}
           >
             {batteryPower && !isMobile && (
@@ -281,7 +283,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
               {isLoading ? (
                 <PlantDetailsSkeleton theme={theme} />
               ) : (
-                <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm flex flex-col justify-between h-full">
+                <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm flex flex-col justify-between h-full">
                   <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
                     {t("plantDetails")}
                   </h2>

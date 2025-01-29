@@ -2,20 +2,23 @@ import { useCallback } from "react";
 
 const useCSVExport = () => {
   const downloadCSV = useCallback((data, filename = "data.csv") => {
-    if (!data || data.length === 0) return;
+    if (!data || data.length === 0) {
+      console.warn("No data available for export.");
+      return;
+    }
 
-    // Use the first row to get headers if they exist
+    // Extract headers dynamically
     const headers = Object.keys(data[0]);
 
-    // Create rows with consistent order of values
+    // Create CSV rows
     const rows = data.map((row) =>
-      headers.map((fieldName) => `"${row[fieldName] || 0}"`).join(",")
+      headers.map((fieldName) => `"${row[fieldName] ?? ""}"`).join(",")
     );
 
-    // Combine headers and rows
+    // Create CSV content
     const csvContent = [headers.join(","), ...rows].join("\n");
 
-    // Create a Blob with BOM for Excel compatibility
+    // Create Blob with BOM for Excel compatibility
     const BOM = "\uFEFF";
     const blob = new Blob([BOM + csvContent], {
       type: "text/csv;charset=utf-8;",

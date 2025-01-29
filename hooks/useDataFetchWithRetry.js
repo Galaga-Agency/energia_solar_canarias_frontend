@@ -15,6 +15,7 @@ export const useDataFetchWithRetry = ({
   const [hasEmptyData, setHasEmptyData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Fetch function
   const handleFetch = useCallback(
     async (params) => {
       if (!token) {
@@ -25,16 +26,8 @@ export const useDataFetchWithRetry = ({
       setIsLoading(true);
 
       try {
-        // Create a complete params object with token
-        const completeParams = {
-          ...params,
-          token,
-        };
-
-        // console.log("Fetching with complete params:", completeParams);
-
+        const completeParams = { ...params, token };
         const result = await dispatch(fetchAction(completeParams)).unwrap();
-        // console.log("Fetch result:", result);
 
         if (!validateData(result)) {
           setHasEmptyData(true);
@@ -56,19 +49,18 @@ export const useDataFetchWithRetry = ({
 
   // Retry mechanism
   useEffect(() => {
-    if (!data || !validateData(data)) {
-      if (retryCount < maxRetries) {
-        setHasEmptyData(true);
-        const retryTimer = setTimeout(() => {
-          // console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
-          setRetryCount((prev) => prev + 1);
-        }, retryDelay);
+    if (retryCount < maxRetries && (!data || !validateData(data))) {
+      const retryTimer = setTimeout(() => {
+        setRetryCount((prev) => prev + 1); // Increment retry count
+      }, retryDelay);
 
-        return () => clearTimeout(retryTimer);
-      }
-    } else {
-      setHasEmptyData(false);
+      return () => clearTimeout(retryTimer); // Clear timer
+    }
+
+    // Stop retries once valid data is received
+    if (data && validateData(data)) {
       setRetryCount(0);
+      setHasEmptyData(false);
     }
   }, [data, retryCount, maxRetries, retryDelay, validateData]);
 

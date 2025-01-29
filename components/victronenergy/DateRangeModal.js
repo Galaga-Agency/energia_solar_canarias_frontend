@@ -134,7 +134,7 @@ const DateRangeModal = ({ isOpen, onClose, onSelectRange }) => {
                       transition={{ delay: 0.3 + idx * 0.1 }}
                       className="bg-white/50 dark:bg-gray-800/30 rounded-xl p-4 backdrop-blur-sm"
                     >
-                      <h3 className="font-semibold text-lg mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                      <h3 className="text-lg mb-4 text-custom-dark-blue dark:text-custom-yellow">
                         {t(section.title)}
                       </h3>
                       <div className="space-y-1">
@@ -143,7 +143,7 @@ const DateRangeModal = ({ isOpen, onClose, onSelectRange }) => {
                             key={range}
                             whileHover={{ x: 4 }}
                             whileTap={{ scale: 0.98 }}
-                            className="w-full py-2.5 px-4 text-left rounded-lg hover:bg-white dark:hover:bg-gray-700/50 transition-all text-custom-dark-blue/80 dark:text-custom-light-gray/80 hover:text-custom-dark-blue dark:hover:text-custom-light-gray"
+                            className="font-secondary w-full py-2.5 px-4 text-left rounded-lg hover:bg-white dark:hover:bg-gray-700/50 transition-all text-custom-dark-blue/80 dark:text-custom-light-gray/80 hover:text-custom-dark-blue dark:hover:text-custom-light-gray"
                             onClick={() => handleRangeSelect({ type: range })}
                           >
                             {t(range)}
@@ -161,7 +161,7 @@ const DateRangeModal = ({ isOpen, onClose, onSelectRange }) => {
                   transition={{ delay: 0.6 }}
                   className="bg-white/50 dark:bg-gray-800/30 rounded-xl p-4 backdrop-blur-sm mt-6"
                 >
-                  <h3 className="font-semibold text-lg mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                  <h3 className="text-lg mb-4 text-custom-dark-blue dark:text-custom-yellow">
                     {t("Personalizado")}
                   </h3>
                   <div className="flex flex-col gap-4">

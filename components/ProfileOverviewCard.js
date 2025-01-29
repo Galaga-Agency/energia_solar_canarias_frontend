@@ -78,8 +78,6 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
         uploadProfilePicture({ formData, token: user.tokenIdentificador })
       ).unwrap();
 
-      console.log("--------------->", uploadResponse);
-
       if (uploadResponse?.data?.path) {
         setLocalProfilePic(uploadResponse?.data?.path);
         setProfilePic(uploadResponse?.data?.path);

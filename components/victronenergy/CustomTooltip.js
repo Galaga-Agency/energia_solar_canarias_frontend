@@ -17,13 +17,28 @@ const getColors = (theme) => ({
 const CustomTooltip = ({ active, payload, label }) => {
   const { t } = useTranslation();
   const theme = useSelector(selectTheme);
-  const COLORS = getColors(theme); // Uses updated color palette
+  const COLORS = getColors(theme);
 
   if (!active || !payload || !payload.length) return null;
 
   const data = payload[0]?.payload || {};
 
-  const formatNumber = (value, unit) =>
+  // Define known keys to avoid breaking other graphs
+  const knownKeys = [
+    "consumption",
+    "solar",
+    "battery",
+    "batteryStateMin",
+    "batteryStateMax",
+    "forecastSolar",
+    "forecastConsumption",
+    "fromBattery",
+    "fromPV",
+    "grid_history_to",
+    "grid_history_from",
+  ];
+
+  const formatNumber = (value, unit = "") =>
     typeof value !== "undefined" && value !== null
       ? `${Number(value).toFixed(2)} ${unit}`
       : "-";
@@ -54,12 +69,9 @@ const CustomTooltip = ({ active, payload, label }) => {
         {format(new Date(label), "HH:mm, dd MMM yyyy")}
       </div>
 
-      {/* Power Section */}
-      {(data.consumption !== undefined || data.solar !== undefined) && (
-        <div className="mb-3">
-          <div className="font-medium mb-2 text-sm opacity-75">
-            {t("Energía")}
-          </div>
+      {/* Keep original structure for known graphs */}
+      {knownKeys.some((key) => key in data) ? (
+        <>
           {data.consumption !== undefined &&
             renderSection(
               t("Consumo"),
@@ -74,58 +86,75 @@ const CustomTooltip = ({ active, payload, label }) => {
               COLORS.solarProduction,
               "kWh"
             )}
-        </div>
-      )}
-
-      {/* Battery Section */}
-      {data.battery !== undefined && (
-        <div className="mb-3">
-          <div className="font-medium mb-2 text-sm opacity-75">
-            {t("Estado Batería")}
-          </div>
-          {renderSection(t("Actual"), data.battery, COLORS.batteryAverage, "%")}
-          <div
-            className="mt-1 pl-2 border-l-2"
-            style={{ borderColor: COLORS.battery }}
-          >
-            {renderSection(
-              t("Mínimo"),
+          {data.fromBattery !== undefined &&
+            renderSection(
+              t("Desde la batería"),
+              data.fromBattery,
+              COLORS.batteryAverage,
+              "kWh"
+            )}
+          {data.fromPV !== undefined &&
+            renderSection(
+              t("Desde el sistema FV"),
+              data.fromPV,
+              COLORS.solarProduction,
+              "kWh"
+            )}
+          {data.battery !== undefined &&
+            renderSection(
+              t("Batería"),
+              data.battery,
+              COLORS.batteryAverage,
+              "%"
+            )}
+          {data.batteryStateMin !== undefined &&
+            renderSection(
+              t("Batería Min"),
               data.batteryStateMin,
               COLORS.batteryMin,
               "%"
             )}
-            {renderSection(
-              t("Máximo"),
+          {data.batteryStateMax !== undefined &&
+            renderSection(
+              t("Batería Max"),
               data.batteryStateMax,
               COLORS.batteryMax,
               "%"
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Forecast Section */}
-      {(data.forecastSolar !== undefined ||
-        data.forecastConsumption !== undefined) && (
-        <div>
-          <div className="font-medium mb-2 text-sm opacity-75">
-            {t("Previsión")}
-          </div>
           {data.forecastSolar !== undefined &&
             renderSection(
-              t("Solar"),
+              t("Solar previsto"),
               data.forecastSolar,
               COLORS.solarProduction,
               "kWh"
             )}
           {data.forecastConsumption !== undefined &&
             renderSection(
-              t("Consumo"),
+              t("Consumo previsto"),
               data.forecastConsumption,
               COLORS.consumption,
               "kWh"
             )}
-        </div>
+          {data.grid_history_to !== undefined &&
+            renderSection(
+              t("Historial Red (To)"),
+              data.grid_history_to,
+              COLORS.import,
+              "kWh"
+            )}
+          {data.grid_history_from !== undefined &&
+            renderSection(
+              t("Historial Red (From)"),
+              data.grid_history_from,
+              COLORS.export,
+              "kWh"
+            )}
+        </>
+      ) : (
+        // If unknown data appears, show a generic tooltip
+        Object.keys(data).map((key) =>
+          renderSection(t(key), data[key], COLORS[key] || "#ccc", "kWh")
+        )
       )}
     </div>
   );

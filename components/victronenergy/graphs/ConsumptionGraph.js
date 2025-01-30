@@ -40,6 +40,7 @@ import VictronEnergyGraphSkeleton from "@/components/loadingSkeletons/VictronGra
 import { FaSolarPanel } from "react-icons/fa";
 import { MdOutlineGrid4X4 } from "react-icons/md";
 import { GiPieChart, GiPowerGenerator } from "react-icons/gi";
+import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
 
 const getColors = (theme) => ({
   batteria: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
@@ -235,7 +236,7 @@ const ConsumptionGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
             {pieData.map((entry, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between text-sm"
+                className="flex items-center justify-between gap-2 text-sm"
               >
                 <div className="flex items-center space-x-2">
                   <div
@@ -244,14 +245,19 @@ const ConsumptionGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                   />
                   <span
                     className="text-gray-600 dark:text-gray-300 truncate max-w-[150px] md:max-w-[150px] lg:max-w-[200px] whitespace-nowrap overflow-hidden"
-                    title={entry.name} // Show full text on hover
+                    title={entry.name}
                   >
                     {entry.name}
                   </span>
                 </div>
 
-                <span className="font-medium" style={{ color: entry.color }}>
-                  {entry.value.toFixed(1)} kWh ({entry.percentage.toFixed(1)}%)
+                <span
+                  className="font-medium text-right"
+                  style={{ color: entry.color }}
+                >
+                  {roundToOneDecimal(entry.value)} kWh (
+                  {roundToWhole(entry.percentage)}
+                  %)
                 </span>
               </div>
             ))}

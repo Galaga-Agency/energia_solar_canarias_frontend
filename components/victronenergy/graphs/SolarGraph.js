@@ -40,6 +40,7 @@ import {
   formatAxisDate,
 } from "@/utils/date-range-utils";
 import SolarTooltip from "../tooltips/SolarTooltip";
+import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
 
 const getColors = (theme) => ({
   toBattery: theme === "dark" ? "#FFD57B" : "#FFD57B",
@@ -241,7 +242,7 @@ const SolarGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
             {pieData.map((entry, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between text-sm"
+                className="flex items-center justify-between gap-2 text-sm"
               >
                 <div className="flex items-center space-x-2">
                   <div
@@ -255,8 +256,13 @@ const SolarGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                     {entry.name}
                   </span>
                 </div>
-                <span className="font-medium" style={{ color: entry.color }}>
-                  {entry.value.toFixed(1)} kWh ({entry.percentage.toFixed(1)}%)
+                <span
+                  className="font-medium text-right"
+                  style={{ color: entry.color }}
+                >
+                  {roundToOneDecimal(entry.value)} kWh (
+                  {roundToWhole(entry.percentage)}
+                  %)
                 </span>
               </div>
             ))}

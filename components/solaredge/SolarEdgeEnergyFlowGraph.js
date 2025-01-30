@@ -280,7 +280,8 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
       if (Array.isArray(graphData[key])) {
         graphData[key].forEach(({ date, value }) => {
           if (!mergedData[date]) mergedData[date] = { date };
-          mergedData[date][key] = value;
+          // Convert from W to kW by dividing by 1000
+          mergedData[date][key] = value / 1000;
         });
       }
     });
@@ -428,16 +429,18 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const handleExportCSV = useCallback(() => {
     const exportData = filteredData.map((item) => ({
       "Hora de medición": item.date,
-      "Producción (W)": item.solarProduction || 0,
-      "A la red (W)": item.export || 0,
-      "Consumo (W)": item.consumption || 0,
-      "De la red (W)": item.import || 0,
-      "De Solar (W)": item.selfConsumption || 0,
+      "Producción (kW)": item.solarProduction || 0,
+      "A la red (kW)": item.export || 0,
+      "Consumo (kW)": item.consumption || 0,
+      "De la red (kW)": item.import || 0,
+      "De Solar (kW)": item.selfConsumption || 0,
     }));
 
     downloadCSV(exportData, "solaredge_data.csv");
     setIsModalOpen(false);
   }, [filteredData, downloadCSV]);
+
+  console.log("filteredData", filteredData);
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6">

@@ -38,6 +38,7 @@ import {
   formatAxisDate,
 } from "@/utils/date-range-utils";
 import GridTooltip from "../tooltips/GridTooltip";
+import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
 
 const getColors = (theme) => ({
   import: theme === "dark" ? "#FFD57B" : "#FFD57B",
@@ -263,7 +264,7 @@ const GridGraph = ({
                     Total
                   </span>
                   <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                    {totalValue.toFixed(1)} kWh
+                    {roundToOneDecimal(totalValue)} kWh
                   </span>
                 </>
               ) : (
@@ -297,7 +298,8 @@ const GridGraph = ({
                 </div>
                 {hasData ? (
                   <span className="font-medium" style={{ color: entry.color }}>
-                    {entry.value.toFixed(1)} kWh ({entry.percentage.toFixed(1)}
+                    {roundToOneDecimal(entry.value)} kWh (
+                    {roundToWhole(entry.percentage)}
                     %)
                   </span>
                 ) : (

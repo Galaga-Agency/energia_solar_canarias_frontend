@@ -6,6 +6,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
+import {
+  roundToWhole,
+  roundToOneDecimal,
+  formatNumber,
+} from "@/utils/roundNumbers";
 
 const PercentageBar = ({
   title,
@@ -17,34 +22,20 @@ const PercentageBar = ({
   color2,
   tooltip,
 }) => {
-  // Utility function to format numbers (e.g., 22000 -> 22k)
-  const formatNumber = (value) => {
-    if (value === null || value === undefined) return "0";
-
-    // Handle different scales
-    if (Math.abs(value) >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
-    }
-    if (Math.abs(value) >= 1000) {
-      return `${(value / 1000).toFixed(1)}k`;
-    }
-    return value.toFixed(1);
-  };
-
-  // Convert values to numbers and handle null/undefined cases
-  const numericValue1 = Number(value1) || 0;
-  const numericValue2 = Number(value2) || 0;
+  // Convert values to numbers, handle null/undefined cases, and convert from W to kW
+  const numericValue1 = (Number(value1) || 0) / 1000;
+  const numericValue2 = (Number(value2) || 0) / 1000;
 
   // Calculate total and percentages
   const total = numericValue1 + numericValue2;
   const percentage1 =
-    total > 0 ? ((numericValue1 / total) * 100).toFixed(1) : 0;
+    total > 0 ? roundToOneDecimal((numericValue1 / total) * 100) : 0;
   const percentage2 =
-    total > 0 ? ((numericValue2 / total) * 100).toFixed(1) : 0;
+    total > 0 ? roundToOneDecimal((numericValue2 / total) * 100) : 0;
 
   // Format display values
-  const displayValue1 = formatNumber(numericValue1);
-  const displayValue2 = formatNumber(numericValue2);
+  const displayValue1 = formatNumber(roundToOneDecimal(numericValue1));
+  const displayValue2 = formatNumber(roundToOneDecimal(numericValue2));
 
   return (
     <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 backdrop-blur-sm shadow-lg">
@@ -86,7 +77,7 @@ const PercentageBar = ({
             style={{ backgroundColor: color1 }}
           />
           <span className="text-custom-dark-blue dark:text-custom-light-gray">
-            {label1}: {displayValue1} kWh ({percentage1}%)
+            {label1}: {displayValue1} kW ({percentage1}%)
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -95,7 +86,7 @@ const PercentageBar = ({
             style={{ backgroundColor: color2 }}
           />
           <span className="text-custom-dark-blue dark:text-custom-light-gray">
-            {label2}: {displayValue2} kWh ({percentage2}%)
+            {label2}: {displayValue2} kW ({percentage2}%)
           </span>
         </div>
       </div>

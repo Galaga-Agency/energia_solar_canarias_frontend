@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { format, isValid, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
 
 const getColors = (theme) => ({
   consumption: theme === "dark" ? "#BDBFC0" : "#0B2738",
@@ -36,7 +37,7 @@ const CustomTooltipEnergyFlowGraph = ({ active, payload, label }) => {
 
   const formatNumber = (value) =>
     typeof value !== "undefined" && value !== null
-      ? `${Number(value).toFixed(2)} kW`
+      ? `${roundToOneDecimal(value)} kW`
       : "-";
 
   const renderSection = (label, value, color) => (
@@ -97,8 +98,8 @@ const CustomTooltipEnergyFlowGraph = ({ active, payload, label }) => {
           <span className="text-sm opacity-75">{t("selfSufficiency")}:</span>
           <span className="font-medium">
             {data.consumption > 0
-              ? `${((data.selfConsumption / data.consumption) * 100).toFixed(
-                  1
+              ? `${roundToWhole(
+                  (data.selfConsumption / data.consumption) * 100
                 )}%`
               : "-"}
           </span>

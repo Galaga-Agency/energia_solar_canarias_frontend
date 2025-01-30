@@ -29,7 +29,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
-import GoodweGraphDisplay from "@/components/goodwe/GoodweGraphDisplay";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
@@ -44,6 +43,7 @@ import GoodweAlerts from "@/components/goodwe/GoodweAlerts";
 import AlertsModal from "../AlertsModal";
 import AssociatedUsers from "../AssociatedUsers";
 import GoodweAlertsModal from "./GoodweAlertsModal";
+import GoodweGraphContainer from "./graphs/GoodweGraphContainer";
 
 const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
@@ -137,13 +137,13 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
 
   const memoizedGraph = useMemo(() => {
     return (
-      <GoodweGraphDisplay
+      <GoodweGraphContainer
         plantId={goodwePlant?.info?.powerstation_id}
         title={t("plantAnalytics")}
         onValueUpdate={handleValueUpdate}
       />
     );
-  }, [goodwePlant?.info?.powerstation_id]); // Only re-renders if `plantId` changes
+  }, [goodwePlant?.info?.powerstation_id, t, handleValueUpdate]);
 
   console.log("goodwePlant: ", goodwePlant);
 

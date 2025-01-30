@@ -5,10 +5,10 @@ import { selectTheme } from "@/store/slices/themeSlice";
 import { format } from "date-fns";
 
 const getColors = (theme) => ({
-  batteria: theme === "dark" ? "#BDBFC080" : "#0B2738",
+  batteria: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
   sistemaFV: theme === "dark" ? "#FFD57B" : "rgb(255, 213, 122)",
   red: theme === "dark" ? "#A48D67" : "#AD936A",
-  genset: theme === "dark" ? "#BDBFC0" : "#BDBFC070",
+  genset: theme === "dark" ? "#BDBFC080" : "#0B2738",
 });
 
 const ConsumptionTooltip = ({ active, payload, label }) => {

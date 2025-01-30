@@ -6,7 +6,7 @@ import { format } from "date-fns";
 
 const getColors = (theme) => ({
   toBattery: theme === "dark" ? "#FFD57B" : "#FFD57B",
-  directUse: theme === "dark" ? "#AD936A" : "#BDBFC0",
+  directUse: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
 });
 
 const GeneratorTooltip = ({ active, payload, label }) => {

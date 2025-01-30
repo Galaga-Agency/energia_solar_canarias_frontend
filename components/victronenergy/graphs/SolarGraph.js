@@ -43,7 +43,7 @@ import SolarTooltip from "../tooltips/SolarTooltip";
 
 const getColors = (theme) => ({
   toBattery: theme === "dark" ? "#FFD57B" : "#FFD57B",
-  directUse: theme === "dark" ? "#AD936A" : "#BDBFC0",
+  directUse: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
   toGrid: theme === "dark" ? "#A48D67" : "#AD936A",
 });
 

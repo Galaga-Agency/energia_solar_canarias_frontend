@@ -1,9 +1,11 @@
 import React from "react";
 import { useTranslation } from "next-i18next";
 import { RefreshCcw, AlertCircle, FileBarChart2 } from "lucide-react";
+import { useParams } from "next/navigation";
 
 const NoDataErrorState = ({ isError, onRetry, onSelectRange }) => {
   const { t } = useTranslation();
+  const { provider } = useParams();
 
   return (
     <div className="min-h-[400px] w-full flex items-center justify-center">
@@ -39,12 +41,14 @@ const NoDataErrorState = ({ isError, onRetry, onSelectRange }) => {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={onSelectRange}
-                className="inline-flex items-center gap-2 px-6 py-2 bg-white dark:bg-custom-dark-blue hover:bg-white/80 dark:hover:bg-custom-dark-blue/80 transition-all duration-300 rounded-full shadow-md text-custom-dark-blue dark:text-custom-yellow"
-              >
-                {t("Cambiar rango")}
-              </button>
+              {provider !== "solaredge" && (
+                <button
+                  onClick={onSelectRange}
+                  className="inline-flex items-center gap-2 px-6 py-2 bg-white dark:bg-custom-dark-blue hover:bg-white/80 dark:hover:bg-custom-dark-blue/80 transition-all duration-300 rounded-full shadow-md text-custom-dark-blue dark:text-custom-yellow"
+                >
+                  {t("Cambiar rango")}
+                </button>
+              )}
               <button
                 onClick={onRetry}
                 className="inline-flex items-center gap-2 px-6 py-2 bg-white/50 dark:bg-custom-dark-blue/50 hover:bg-white/30 dark:hover:bg-custom-dark-blue/30 transition-all duration-300 rounded-full shadow-md text-custom-dark-blue dark:text-custom-yellow"

@@ -20,10 +20,6 @@ import {
   selectGraphLoading,
   selectGraphError,
   clearGraphData,
-  selectBatteryChargingState,
-  selectBatteryChargingLoading,
-  selectBatteryChargingError,
-  fetchBatteryChargingState,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import DatePicker from "react-datepicker";
@@ -31,20 +27,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import SolarEdgeEnergyFlowGraphSkeleton from "@/components/loadingSkeletons/SolarEdgeEnergyFlowGraphSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import {
-  Tooltip as TooltipUI,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
-import { Info } from "lucide-react";
 import PercentageBar from "@/components/solaredge/PercentageBar";
-import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useParams } from "next/navigation";
 import ExportModal from "../ExportModal";
 import useCSVExport from "@/hooks/useCSVExport";
 import CustomSelect from "../ui/CustomSelect";
 import CustomTooltipEnergyFlowGraph from "./CustomTooltipEnergyFlowGraph.js";
+import NoDataErrorState from "../NoDataErrorState";
 
 // Constants
 const MAX_RETRIES = 3;
@@ -542,62 +531,29 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
 
       {isLoading ? (
         <SolarEdgeEnergyFlowGraphSkeleton theme={theme} />
+      ) : graphError ? (
+        <div className="min-h-[400px] flex items-center justify-center">
+          <NoDataErrorState
+            isError={true}
+            onRetry={handleButtonClick}
+            onSelectRange={() => {
+              // Reset to default range if needed
+              setRange("DAY");
+              setCustomRange(false);
+            }}
+          />
+        </div>
       ) : isEmptyOrZeroData ? (
-        <div>
-          <div className="flex items-center justify-center pb-4 px-8 gap-4">
-            <p className="text-lg text-gray-500 dark:text-gray-400">
-              {t("noDataAvailable")}
-            </p>
-          </div>
-
-          <div className="overflow-x-auto">
-            <div style={{ minWidth: "600px" }}>
-              <ResponsiveContainer width="100%" height={400}>
-                <ComposedChart
-                  data={[{ date: "", selfConsumption: 0 }]}
-                  margin={{
-                    left: 5,
-                    right: isMobile ? -25 : 15,
-                    top: 10,
-                    bottom: 10,
-                  }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
-                    opacity={theme === "dark" ? 0.5 : 1}
-                  />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fill: "#ccc" }}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    tick={{ fill: "#ccc" }}
-                    label={{
-                      value: "kW",
-                      angle: -90,
-                      position: "insideLeft",
-                      offset: 5,
-                    }}
-                  />
-                  <Tooltip content={() => null} />
-                  <Legend />
-                  {visibleCurves.map((curve) => (
-                    <Line
-                      key={curve.dataKey}
-                      type="monotone"
-                      dataKey={curve.dataKey}
-                      stroke={curve.color}
-                      name={curve.name}
-                      dot={false}
-                      strokeWidth={0}
-                    />
-                  ))}
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <NoDataErrorState
+            isError={false}
+            onRetry={handleButtonClick}
+            onSelectRange={() => {
+              // Reset to default range if needed
+              setRange("DAY");
+              setCustomRange(false);
+            }}
+          />
         </div>
       ) : (
         <div>

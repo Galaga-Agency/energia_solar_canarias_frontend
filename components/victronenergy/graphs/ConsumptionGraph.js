@@ -42,10 +42,10 @@ import { MdOutlineGrid4X4 } from "react-icons/md";
 import { GiPieChart, GiPowerGenerator } from "react-icons/gi";
 
 const getColors = (theme) => ({
-  batteria: theme === "dark" ? "#BDBFC080" : "#0B2738",
+  batteria: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
   sistemaFV: theme === "dark" ? "#FFD57B" : "rgb(255, 213, 122)",
   red: theme === "dark" ? "#A48D67" : "#AD936A",
-  genset: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
+  genset: theme === "dark" ? "#BDBFC080" : "#0B2738",
 });
 
 const ConsumptionGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {

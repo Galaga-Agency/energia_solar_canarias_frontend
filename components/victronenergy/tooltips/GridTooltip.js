@@ -5,9 +5,10 @@ import { selectTheme } from "@/store/slices/themeSlice";
 import { format } from "date-fns";
 
 const getColors = (theme) => ({
-  import: theme === "dark" ? "#4B5563" : "#6B7280",
-  export: theme === "dark" ? "#FFD57B" : "#FFD57B",
-  balance: theme === "dark" ? "#AD936A" : "#BDBFC0",
+  import: theme === "dark" ? "#FFD57B" : "#FFD57B",
+  export: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
+  balance:
+    theme === "dark" ? "rgba(173, 147, 106, 1)" : "rgba(101, 120, 128, 0.9)",
 });
 
 const GridTooltip = ({ active, payload, label }) => {

@@ -38,10 +38,11 @@ import {
   formatAxisDate,
 } from "@/utils/date-range-utils";
 import GeneratorTooltip from "../tooltips/GeneratorTooltip";
+import NoDataErrorState from "@/components/NoDataErrorState";
 
 const getColors = (theme) => ({
   toBattery: theme === "dark" ? "#FFD57B" : "#FFD57B",
-  directUse: theme === "dark" ? "#AD936A" : "#BDBFC0",
+  directUse: theme === "dark" ? "#BDBFC0" : "#BDBFC0",
 });
 
 const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
@@ -276,14 +277,35 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     );
   };
 
-  if (isInitialLoad || isLoading) {
+  if (isLoading || isInitialLoad) {
     return <VictronGraphSkeleton theme={theme} />;
   }
 
-  const hasValidData = graphData && statsData && chartData.length > 0;
+  if (error) {
+    return (
+      <NoDataErrorState
+        isError={true}
+        onRetry={() => {
+          dispatch(clearGraphData());
+          fetchData();
+        }}
+        onSelectRange={() => setIsDateModalOpen(true)}
+      />
+    );
+  }
 
-  if (!hasValidData || error) {
-    return <NoDataDisplay onSelectRange={() => setIsDateModalOpen(true)} />;
+  const hasValidData = graphData && statsData && chartData.length > 0;
+  if (!hasValidData) {
+    return (
+      <NoDataErrorState
+        isError={false}
+        onRetry={() => {
+          dispatch(clearGraphData());
+          fetchData();
+        }}
+        onSelectRange={() => setIsDateModalOpen(true)}
+      />
+    );
   }
 
   return (

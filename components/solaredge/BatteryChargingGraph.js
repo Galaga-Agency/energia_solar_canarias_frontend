@@ -23,6 +23,7 @@ import { selectTheme } from "@/store/slices/themeSlice";
 import useCSVExport from "@/hooks/useCSVExport";
 import ExportModal from "@/components/ExportModal";
 import CustomTooltipBattery from "./CustomTooltipBattery";
+import NoDataErrorState from "../NoDataErrorState";
 
 const BatteryChargingGraph = ({ token, plantId }) => {
   const { t } = useTranslation();
@@ -155,29 +156,15 @@ const BatteryChargingGraph = ({ token, plantId }) => {
       {/* Content Section */}
       {isLoading ? (
         <BatteryChargingGraphSkeleton theme={theme} />
-      ) : !processedData.length || batteryError ? (
-        <div>
-          <div className="flex flex-col items-center justify-center pb-4 px-8 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-lg text-gray-500 dark:text-gray-400">
-                {t("noDataAvailable")}
-              </span>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <ResponsiveContainer width="100%" height={400}>
-              <AreaChart data={[]}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
-                  opacity={theme === "dark" ? 0.5 : 1}
-                />
-                <XAxis dataKey="date" tickFormatter={() => ""} />
-                <YAxis domain={[0, 100]} />
-                <Tooltip content={() => null} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+      ) : batteryError || !processedData.length ? (
+        <div className="min-h-[400px] flex items-center justify-center">
+          <NoDataErrorState
+            isError={!!batteryError}
+            onRetry={handleRefresh}
+            onSelectRange={() => {
+              handleRefresh();
+            }}
+          />
         </div>
       ) : (
         <div className="overflow-x-auto mt-4">

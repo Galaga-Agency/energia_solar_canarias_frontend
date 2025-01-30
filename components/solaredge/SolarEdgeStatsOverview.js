@@ -15,7 +15,7 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
       {/* Status Overview */}
       <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-4 shadow-lg">
         <div className="flex items-center gap-3 mb-4">
@@ -73,7 +73,7 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
       </div>
 
       {/* Alerts Overview */}
-      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-4 shadow-lg">
+      {/* <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-4 shadow-lg">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue rounded-full flex items-center justify-center shadow-md">
             <AlertTriangle className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
@@ -100,7 +100,7 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

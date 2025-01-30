@@ -37,13 +37,40 @@ import SystemOverviewTooltip from "../tooltips/SystemOverviewTooltip";
 import useCSVExport from "@/hooks/useCSVExport";
 
 const getColors = (theme) => ({
-  consumption: theme === "dark" ? "#BDBFC080" : "#0B2738",
-  solarProduction: theme === "dark" ? "#FFD57B" : "rgb(255, 213, 122)",
-  export: theme === "dark" ? "#657880" : "#FFD57B",
-  import: theme === "dark" ? "#9CA3AF" : "#BDBFC0",
-  batteryAverage: theme === "dark" ? "#BDBFC0" : "#BDBFC070",
-  batteryMin: theme === "dark" ? "#AD936A" : "#BDBFC0",
-  batteryMax: theme === "dark" ? "#A48D67" : "#AD936A",
+  consumption:
+    theme === "dark"
+      ? "rgba(189, 191, 192, 0.8)" // More vibrant gray with slight opacity
+      : "rgba(156, 163, 175, 0.3)", // Softer gray for light mode
+
+  solarProduction:
+    theme === "dark"
+      ? "rgba(255, 213, 122, 0.8)" // Brighter, more saturated yellow
+      : "rgba(255, 213, 122, 0.8)", // Consistent yellow with slight opacity
+
+  export:
+    theme === "dark"
+      ? "rgba(101, 120, 128, 0.9)" // Deeper, more defined teal-gray
+      : "#FFD57B",
+
+  import:
+    theme === "dark"
+      ? "rgba(156, 163, 175, 0.9)" // More defined gray
+      : "#BDBFC0",
+
+  batteryAverage:
+    theme === "dark"
+      ? "rgba(255, 213, 122, 1)" // Bright, full opacity yellow
+      : "#0B2738",
+
+  batteryMin:
+    theme === "dark"
+      ? "rgba(189, 191, 192, 1)" // Bright, full opacity gray
+      : "#BDBFC0",
+
+  batteryMax:
+    theme === "dark"
+      ? "rgba(173, 147, 106, 1)" // Richer, more defined brown
+      : "#AD936A",
 });
 
 const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
@@ -442,6 +469,26 @@ const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                         }}
                       />
                     )}
+                    {hasConsumption && (
+                      <Bar
+                        dataKey="consumption"
+                        fill={COLORS.consumption}
+                        name={t("Consumo")}
+                        barSize={40}
+                        yAxisId="power"
+                        unit="kWh"
+                      />
+                    )}
+                    {hasSolar && (
+                      <Bar
+                        dataKey="solar"
+                        fill={COLORS.solarProduction}
+                        name={t("Solar")}
+                        barSize={40}
+                        yAxisId="power"
+                        unit="kWh"
+                      />
+                    )}
                     {hasBatteryState && (
                       <>
                         <Line
@@ -451,7 +498,7 @@ const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                           stroke={COLORS.batteryMax}
                           fill={COLORS.batteryMax}
                           fillOpacity={0.2}
-                          strokeWidth={2}
+                          strokeWidth={3}
                           name={t("Batería Máx")}
                           dot={false}
                           unit="%"
@@ -461,7 +508,7 @@ const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                           yAxisId="percentage"
                           dataKey="batteryStateMin"
                           stroke={COLORS.batteryMin}
-                          strokeWidth={2}
+                          strokeWidth={3}
                           name={t("Batería Mín")}
                           dot={false}
                           unit="%"
@@ -478,26 +525,6 @@ const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                         />
                       </>
                     )}
-                    {hasConsumption && (
-                      <Bar
-                        dataKey="consumption"
-                        fill={COLORS.consumption}
-                        name={t("Consumo")}
-                        barSize={60}
-                        yAxisId="power"
-                        unit="kWh"
-                      />
-                    )}
-                    {hasSolar && (
-                      <Bar
-                        dataKey="solar"
-                        fill={COLORS.solarProduction}
-                        name={t("Solar")}
-                        barSize={60}
-                        yAxisId="power"
-                        unit="kWh"
-                      />
-                    )}
                     {showForecast && !isForecastLoading && (
                       <>
                         {chartData.some(
@@ -507,7 +534,7 @@ const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                             type="monotone"
                             dataKey="forecastSolar"
                             stroke={COLORS.solarProduction}
-                            strokeWidth={2}
+                            strokeWidth={3}
                             dot={false}
                             yAxisId="power"
                             name={t("Solar previsto")}
@@ -522,7 +549,7 @@ const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                             type="monotone"
                             dataKey="forecastConsumption"
                             stroke={COLORS.consumption}
-                            strokeWidth={2}
+                            strokeWidth={3}
                             dot={false}
                             yAxisId="power"
                             name={t("Consumo previsto")}

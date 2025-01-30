@@ -33,6 +33,7 @@ import SecondaryButton from "../ui/SecondaryButton";
 import ExportModal from "../ExportModal";
 import { Info } from "lucide-react";
 import CustomTooltipEnergyComparison from "./CustomTooltipEnergyComparison";
+import NoDataErrorState from "../NoDataErrorState";
 
 const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   const dispatch = useDispatch();
@@ -164,7 +165,7 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   }, []);
 
   return (
-    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 mt-6">
+    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 my-6">
       <div className="flex justify-between items-center mb-6 gap-4">
         <div className="flex items-center gap-4">
           <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
@@ -218,78 +219,14 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
       {isLoading ? (
         <EnergyComparisonChartSkeleton theme={theme} />
       ) : !transformedData.length || comparisonError ? (
-        <div>
-          {/* No Data Available Message with Tooltip */}
-          <div className="flex flex-col items-center justify-center pb-4 px-8 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-lg text-gray-500 dark:text-gray-400">
-                {t("noDataAvailable")}
-              </span>
-
-              <TooltipProvider>
-                <TooltipUI>
-                  <TooltipTrigger asChild>
-                    <div className="p-2 rounded-full bg-gray-200/50 dark:bg-gray-700 cursor-pointer">
-                      <Info className="h-5 w-5 text-gray-500 dark:text-gray-300" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    <p className="text-sm text-gray-700 dark:text-gray-200">
-                      {t("noDataTooltip", {
-                        range: timeUnit === "MONTH" ? t("months") : t("years"),
-                      })}
-                    </p>
-                  </TooltipContent>
-                </TooltipUI>
-              </TooltipProvider>
-            </div>
-          </div>
-
-          {/* Empty Graph */}
-          <div className="overflow-x-auto">
-            <div style={{ minWidth: `${getMinWidth()}px` }}>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart
-                  data={[{ name: "", value: 0 }]} // Mock empty data
-                  margin={{
-                    top: 10,
-                    right: 30,
-                    left: 0,
-                    bottom: 10,
-                  }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke={theme === "dark" ? "#E0E0E0" : "rgb(161, 161, 170)"}
-                    opacity={theme === "dark" ? 0.5 : 1}
-                  />
-
-                  <XAxis dataKey="name" tick={{ fill: "#ccc" }} />
-                  <YAxis
-                    dataKey="value" // Ensure a static dataKey exists
-                    tick={{ fill: "#ccc" }}
-                    domain={[0, 100]} // Keep a static domain for empty graphs
-                    label={{
-                      value: t("units.kwh"), // Always show the unit for the empty graph
-                      angle: -90,
-                      position: "insideLeft",
-                      offset: 5,
-                    }}
-                  />
-
-                  <Tooltip content={() => null} />
-                  {COLORS.map((color, index) => (
-                    <Bar
-                      key={index}
-                      dataKey={`value${index}`}
-                      fill={color}
-                      barSize={getBarSize()}
-                    />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <NoDataErrorState
+            isError={false}
+            onRetry={handleRefresh}
+            onSelectRange={() => {
+              setTimeUnit("MONTH"); // Optional: reset to default view
+            }}
+          />
         </div>
       ) : (
         <div className="overflow-x-auto">

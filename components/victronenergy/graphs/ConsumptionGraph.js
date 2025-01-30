@@ -28,7 +28,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { CiExport } from "react-icons/ci";
 import MetricCard from "../MetricCard";
-import NoDataErrorState from "../NoDataErrorState";
+import NoDataErrorState from "../../NoDataErrorState";
 import useCSVExport from "@/hooks/useCSVExport";
 import {
   getDateRangeParams,
@@ -338,18 +338,21 @@ const ConsumptionGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                 stackId="consumption"
                 fill={COLORS.sistemaFV}
                 name={t("Desde el sistema FV")}
+                barSize={60}
               />
               <Bar
                 dataKey="fromGrid"
                 stackId="consumption"
                 fill={COLORS.red}
                 name={t("Desde la red")}
+                barSize={60}
               />
               <Bar
                 dataKey="fromGenset"
                 stackId="consumption"
                 fill={COLORS.genset}
                 name={t("Desde el grupo electrógeno")}
+                barSize={60}
               />
             </ComposedChart>
           </ResponsiveContainer>

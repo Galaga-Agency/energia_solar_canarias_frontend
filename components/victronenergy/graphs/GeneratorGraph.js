@@ -10,10 +10,15 @@ import {
   Bar,
   ResponsiveContainer,
   Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import {
   fetchVictronEnergyGraphData,
+  fetchVictronOverallStats,
   selectGraphData,
+  selectStatsData,
   selectGraphLoading,
   selectGraphError,
   clearGraphData,
@@ -32,6 +37,7 @@ import {
   calculateDateRange,
   formatAxisDate,
 } from "@/utils/date-range-utils";
+import GeneratorTooltip from "../tooltips/GeneratorTooltip";
 
 const getColors = (theme) => ({
   toBattery: theme === "dark" ? "#FFD57B" : "#FFD57B",
@@ -46,6 +52,7 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
   const { downloadCSV } = useCSVExport();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const graphData = useSelector(selectGraphData);
+  const statsData = useSelector(selectStatsData);
   const isLoading = useSelector(selectGraphLoading);
   const error = useSelector(selectGraphError);
   const user = useSelector(selectUser);
@@ -66,21 +73,18 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     downloadCSV(csvData, filename);
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    dispatch(clearGraphData());
+  const fetchData = async () => {
+    if (!plantId || !user?.tokenIdentificador) {
+      return;
+    }
 
-    const fetchData = async () => {
-      if (!plantId || !user?.tokenIdentificador) {
-        return;
-      }
+    try {
+      setIsInitialLoad(true);
+      const { interval } = getDateRangeParams(currentRange.type);
+      const dateRange = calculateDateRange(currentRange);
 
-      try {
-        setIsInitialLoad(true);
-        const { interval } = getDateRangeParams(currentRange.type);
-        const dateRange = calculateDateRange(currentRange);
-
-        await dispatch(
+      await Promise.all([
+        dispatch(
           fetchVictronEnergyGraphData({
             id: plantId,
             interval,
@@ -89,20 +93,27 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
             end: dateRange.end,
             token: user.tokenIdentificador,
           })
-        ).unwrap();
-      } catch (error) {
-        console.error("Fetch error:", error);
-      } finally {
-        if (isMounted) {
-          setIsInitialLoad(false);
-        }
-      }
-    };
+        ).unwrap(),
+        dispatch(
+          fetchVictronOverallStats({
+            id: plantId,
+            type: "generator",
+            token: user.tokenIdentificador,
+          })
+        ).unwrap(),
+      ]);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setIsInitialLoad(false);
+    }
+  };
 
+  useEffect(() => {
+    dispatch(clearGraphData());
     fetchData();
 
     return () => {
-      isMounted = false;
       dispatch(clearGraphData());
     };
   }, [dispatch, plantId, currentRange, user?.tokenIdentificador]);
@@ -146,11 +157,130 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     return transformData(graphData);
   }, [graphData, transformData]);
 
+  const renderPieChart = (period, title) => {
+    const data = statsData?.records?.[period];
+    const hasData = !!data && (data.totals?.gb > 0 || data.totals?.gc > 0);
+
+    const pieData = hasData
+      ? [
+          {
+            name: t("A la batería"),
+            value: data.totals.gb || 0,
+            percentage: data.percentages.gb || 0,
+            color: COLORS.toBattery,
+          },
+          {
+            name: t("Uso directo"),
+            value: data.totals.gc || 0,
+            percentage: data.percentages.gc || 0,
+            color: COLORS.directUse,
+          },
+        ]
+      : [
+          {
+            name: t("A la batería"),
+            value: 1,
+            percentage: 0,
+            color: theme === "dark" ? "#4B5563" : "#E5E7EB", // gray-600 : gray-200
+          },
+          {
+            name: t("Uso directo"),
+            value: 1,
+            percentage: 0,
+            color: theme === "dark" ? "#374151" : "#D1D5DB", // gray-700 : gray-300
+          },
+        ];
+
+    const totalValue = hasData
+      ? pieData.reduce((sum, item) => sum + item.value, 0)
+      : 0;
+
+    return (
+      <div className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl shadow-lg hover:bg-slate-100 dark:hover:bg-slate-600/50 transition-colors duration-300">
+        <h3 className="text-center font-secondary font-medium text-gray-700 dark:text-gray-200 mb-2">
+          {title}
+        </h3>
+        <div className="flex flex-col h-full">
+          <div className="relative flex-1" style={{ minHeight: "200px" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={65}
+                  outerRadius={85}
+                  paddingAngle={3}
+                  dataKey="value"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              {hasData ? (
+                <>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Total
+                  </span>
+                  <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                    {totalValue.toFixed(1)} kWh
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm text-gray-400 dark:text-gray-500">
+                  {t("Sin datos")}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="mt-4 space-y-2">
+            {pieData.map((entry, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between text-sm"
+              >
+                <div className="flex items-center space-x-2">
+                  <div
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <span
+                    className={`truncate max-w-[150px] md:max-w-[150px] lg:max-w-[200px] whitespace-nowrap overflow-hidden ${
+                      hasData
+                        ? "text-gray-600 dark:text-gray-300"
+                        : "text-gray-400 dark:text-gray-500"
+                    }`}
+                    title={entry.name}
+                  >
+                    {entry.name}
+                  </span>
+                </div>
+                {hasData ? (
+                  <span className="font-medium" style={{ color: entry.color }}>
+                    {entry.value.toFixed(1)} kWh ({entry.percentage.toFixed(1)}
+                    %)
+                  </span>
+                ) : (
+                  <span className="text-gray-400 dark:text-gray-500">
+                    0 kWh (0%)
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (isInitialLoad || isLoading) {
     return <VictronGraphSkeleton theme={theme} />;
   }
 
-  const hasValidData = chartData.length > 0;
+  const hasValidData = graphData && statsData && chartData.length > 0;
 
   if (!hasValidData || error) {
     return <NoDataDisplay onSelectRange={() => setIsDateModalOpen(true)} />;
@@ -158,7 +288,6 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
 
   return (
     <div className="space-y-6">
-      {/* Export Button */}
       <div className="flex justify-end">
         <button
           onClick={() => handleExportClick(chartData)}
@@ -168,7 +297,6 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
         </button>
       </div>
 
-      {/* Main Chart */}
       <div className="overflow-x-auto overflow-y-hidden">
         <div style={{ minWidth: "800px", height: "400px" }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -193,26 +321,34 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
                   position: "insideLeft",
                 }}
               />
-              <Tooltip />
+              <Tooltip content={<GeneratorTooltip />} />
               <Legend verticalAlign="top" height={36} />
               <Bar
                 dataKey="toBattery"
                 stackId="generator"
                 fill={COLORS.toBattery}
                 name={t("A la batería")}
+                barSize={60}
               />
               <Bar
                 dataKey="directUse"
                 stackId="generator"
                 fill={COLORS.directUse}
                 name={t("Uso directo")}
+                barSize={60}
               />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-6">
+        {renderPieChart("today", t("Últimas 24 h"))}
+        {renderPieChart("week", t("Últimos 7 días"))}
+        {renderPieChart("month", t("Últimos 30 días"))}
+        {renderPieChart("year", t("Últimos 365 días"))}
+      </div>
+
       <div className="flex w-full flex-wrap gap-4">
         {graphData?.totals?.gb > 0 && (
           <MetricCard

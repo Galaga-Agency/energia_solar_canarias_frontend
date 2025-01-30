@@ -5,13 +5,12 @@ import { selectTheme } from "@/store/slices/themeSlice";
 import { format } from "date-fns";
 
 const getColors = (theme) => ({
-  batteria: theme === "dark" ? "#BDBFC080" : "#0B2738",
-  sistemaFV: theme === "dark" ? "#FFD57B" : "rgb(255, 213, 122)",
-  red: theme === "dark" ? "#A48D67" : "#AD936A",
-  genset: theme === "dark" ? "#BDBFC0" : "#BDBFC070",
+  import: theme === "dark" ? "#4B5563" : "#6B7280",
+  export: theme === "dark" ? "#FFD57B" : "#FFD57B",
+  balance: theme === "dark" ? "#AD936A" : "#BDBFC0",
 });
 
-const ConsumptionTooltip = ({ active, payload, label }) => {
+const GridTooltip = ({ active, payload, label }) => {
   const { t } = useTranslation();
   const theme = useSelector(selectTheme);
   const COLORS = getColors(theme);
@@ -51,11 +50,7 @@ const ConsumptionTooltip = ({ active, payload, label }) => {
     );
   }
 
-  const total =
-    (data.fromBattery || 0) +
-    (data.fromPV || 0) +
-    (data.fromGrid || 0) +
-    (data.fromGenset || 0);
+  const total = Math.abs((data.import || 0) + (data.export || 0));
 
   // Regular chart tooltip
   return (
@@ -70,62 +65,47 @@ const ConsumptionTooltip = ({ active, payload, label }) => {
         {format(new Date(data.timestamp), "dd/MM/yyyy HH:mm")}
       </div>
 
-      {data.fromBattery !== 0 && (
+      {data.import !== 0 && (
         <div className="flex justify-between items-center gap-4 py-1">
           <span className="flex items-center gap-2">
             <span
               className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.batteria }}
+              style={{ backgroundColor: COLORS.import }}
             ></span>
-            <span>{t("Desde la batería")}:</span>
+            <span>{t("Importación de red")}:</span>
           </span>
           <span className="font-medium">
-            {Number(data.fromBattery).toFixed(2)} kWh
+            {Number(data.import).toFixed(2)} kWh
           </span>
         </div>
       )}
 
-      {data.fromPV !== 0 && (
+      {data.export !== 0 && (
         <div className="flex justify-between items-center gap-4 py-1">
           <span className="flex items-center gap-2">
             <span
               className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.sistemaFV }}
+              style={{ backgroundColor: COLORS.export }}
             ></span>
-            <span>{t("Desde el sistema FV")}:</span>
+            <span>{t("Exportación a red")}:</span>
           </span>
           <span className="font-medium">
-            {Number(data.fromPV).toFixed(2)} kWh
+            {Number(data.export).toFixed(2)} kWh
           </span>
         </div>
       )}
 
-      {data.fromGrid !== 0 && (
+      {data.balance !== undefined && (
         <div className="flex justify-between items-center gap-4 py-1">
           <span className="flex items-center gap-2">
             <span
               className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.red }}
+              style={{ backgroundColor: COLORS.balance }}
             ></span>
-            <span>{t("Desde la red")}:</span>
+            <span>{t("Balance neto")}:</span>
           </span>
           <span className="font-medium">
-            {Number(data.fromGrid).toFixed(2)} kWh
-          </span>
-        </div>
-      )}
-
-      {data.fromGenset !== 0 && (
-        <div className="flex justify-between items-center gap-4 py-1">
-          <span className="flex items-center gap-2">
-            <span
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.genset }}
-            ></span>
-            <span>{t("Desde el grupo electrógeno")}:</span>
-          </span>
-          <span className="font-medium">
-            {Number(data.fromGenset).toFixed(2)} kWh
+            {Number(data.balance).toFixed(2)} kWh
           </span>
         </div>
       )}
@@ -138,4 +118,4 @@ const ConsumptionTooltip = ({ active, payload, label }) => {
   );
 };
 
-export default ConsumptionTooltip;
+export default GridTooltip;

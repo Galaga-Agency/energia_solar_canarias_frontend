@@ -32,7 +32,7 @@ import {
 import { CiExport } from "react-icons/ci";
 import BatteryMetrics from "../BatteryMetrics";
 import PowerMetrics from "../PowerMetrics";
-import NoDataErrorState from "../NoDataErrorState";
+import NoDataErrorState from "../../NoDataErrorState";
 import SystemOverviewTooltip from "../tooltips/SystemOverviewTooltip";
 import useCSVExport from "@/hooks/useCSVExport";
 

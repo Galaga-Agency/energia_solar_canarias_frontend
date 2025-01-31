@@ -290,7 +290,7 @@ const SolarEdgePlantDetails = React.memo(
             )}
           </div>
 
-          <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6  backdrop-blur-sm shadow-lg mb-6">
+          <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6  backdrop-blur-sm shadow-lg mb-6 pb-8 ">
             <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
               {t("Real-Time Energy Flow")}
             </h2>

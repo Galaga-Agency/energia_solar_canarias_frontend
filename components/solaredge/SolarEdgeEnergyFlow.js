@@ -133,7 +133,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
       )}
 
       {/* Custom Grid Layout */}
-      <div className="relative w-full h-[650px] p-4 ">
+      <div className="relative w-full h-[650px] p-4">
         {/* Center Inverter Circle */}
         <div className="group absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[170px] h-[170px] xl:w-[260px] xl:h-[260px] z-50 shadow-xl rounded-full ">
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] transition-all duration-1000">
@@ -175,7 +175,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                   {t("solarTitle")}
                 </h3>
                 <p
-                  className={`text-xl xl:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
+                  className={`text-2xl xl:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
                     isBlinking ? "animate-double-blink" : ""
                   }`}
                 >
@@ -192,7 +192,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                 <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center xl:px-2 py-1">
                   <span>{t("solarStatus")}</span>
                   <span className="font-medium text-custom-dark-blue dark:text-custom-yellow mr-20">
-                    {energyData?.pv?.status || "-"}
+                    {t(energyData?.pv?.status) || "-"}
                   </span>
                 </div>
               </div>
@@ -207,10 +207,10 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
         >
           <div className="relative h-full w-full">
             <div className="flex-1 flex flex-col items-center justify-center relative">
-              <div className="overflow-auto absolute -top-10 w-32 h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
-                <TbPlug className="w-24 h-24 text-custom-dark-blue dark:text-custom-yellow transition-transform duration-700 ease-in-out group-hover:scale-110" />
+              <div className="overflow-auto absolute -top-6 right-0 xl:right-[calc(50%-4rem)] xl:-top-10 w-24 h-24 xl:w-32 xl:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+                <TbPlug className="w-16 h-16 xl:w-24 xl:h-24 text-custom-dark-blue dark:text-custom-yellow transition-transform duration-700 ease-in-out group-hover:scale-110" />
               </div>
-              <div className="text-center mt-28 space-y-2">
+              <div className="text-center mt-20 xl:mt-28 space-y-2">
                 {energyData.grid.isImporting === true ? (
                   <h3 className="text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                     {t("gridImportTitle")}
@@ -221,7 +221,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                   </h3>
                 )}
                 <p
-                  className={`text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
+                  className={`text-2xl xl:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
                     isBlinking ? "animate-double-blink" : ""
                   }`}
                 >
@@ -234,10 +234,12 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                 </p>
               </div>
             </div>
-            <div className="absolute bottom-0 right-0 w-[90%] mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-4">
+            <div className="absolute w-[90%] bottom-0 right-0 mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-1 xl:pt-4">
               <div className="space-y-2">
-                <div className="flex justify-between items-center px-2 py-1 ml-20">
-                  <span>{t("gridStatus")}</span>
+                <div className="flex flex-col items-end xl:flex-row xl:justify-between xl:items-center xl:px-2 py-1">
+                  <span className="text-nowrap xl:ml-20">
+                    {t("gridStatus")}
+                  </span>
                   <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
                     {t(energyData?.grid?.status) || "-"}
                   </span>
@@ -253,17 +255,17 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
       hover:translate-y-[-4px]"
         >
           <div className="flex-1 flex flex-col items-center justify-start relative h-full">
-            <div className="absolute -top-10 w-32 h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
-              <div className="w-24 transition-transform duration-700 ease-in-out group-hover:scale-110">
+            <div className="absolute -bottom-10 left-0 xl:left-[calc(50%-4rem)] xl:-top-10 w-24 h-24 xl:w-32 xl:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+              <div className="w-16 xl:w-24 transition-transform duration-700 ease-in-out group-hover:scale-110">
                 <BatteryIndicator soc={energyData?.storage?.chargeLevel} />
               </div>
             </div>
-            <div className="text-center mt-28 space-y-2">
+            <div className="text-center mt-12 xl:mt-28 space-y-2">
               <h3 className="text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                 {t("batteryTitle")}
               </h3>
               <p
-                className={`text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
+                className={`text-2xl xl:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
                   isBlinking ? "animate-double-blink" : ""
                 }`}
               >
@@ -291,16 +293,16 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
       hover:translate-y-[-4px]"
         >
           <div className="relative h-full w-full">
-            <div className="flex-1 flex flex-col items-center justify-center relative">
-              <div className="overflow-auto absolute -top-10 w-32 h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
-                <HiOutlineHome className="w-24 h-24 text-custom-dark-blue dark:text-custom-yellow transition-transform duration-700 ease-in-out group-hover:scale-110" />
+            <div className="flex-1 flex flex-col items-center justify-center ">
+              <div className="overflow-auto absolute -bottom-10 xl:-top-10 w-24 h-24 xl:w-32 xl:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+                <HiOutlineHome className="w-16 h-16 xl:w-24 xl:h-24 text-custom-dark-blue dark:text-custom-yellow transition-transform duration-700 ease-in-out group-hover:scale-110" />
               </div>
-              <div className="text-center mt-28 space-y-2">
+              <div className="text-center mt-12 xl:mt-28 space-y-2">
                 <h3 className="text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                   {t("loadsTitle")}
                 </h3>
                 <p
-                  className={`text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
+                  className={`text-2xl xl:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent ${
                     isBlinking ? "animate-double-blink" : ""
                   }`}
                 >
@@ -311,10 +313,12 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                 </p>
               </div>
             </div>
-            <div className="absolute bottom-0 left-0 w-[90%] mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-4">
+            <div className="absolute w-[90%] bottom-12 left-0 mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-1 xl:pt-4">
               <div className="space-y-2">
-                <div className="flex justify-between items-center px-2 py-1">
-                  <span>{t("loadsStatus")}</span>
+                <div className="flex flex-col items-start xl:flex-row xl:justify-between xl:items-center xl:px-2 py-1">
+                  <span className="text-nowrap xl:ml-20">
+                    {t("loadsStatus")}
+                  </span>
                   <span className="font-medium text-custom-dark-blue dark:text-custom-yellow mr-20">
                     {t(energyData?.load?.status || "-")}
                   </span>

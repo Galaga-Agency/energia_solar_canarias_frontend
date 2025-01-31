@@ -8,7 +8,6 @@ const BatteryIndicator = ({ soc }) => {
   const theme = useSelector(selectTheme);
   const { isDesktop, isTablet, isSmallDesktop } = useDeviceType();
 
-  const isVertical = isDesktop || isTablet || isSmallDesktop;
   const showPercentage = soc !== null && soc !== undefined;
 
   // Define a unique parent ID for the SVG
@@ -26,8 +25,8 @@ const BatteryIndicator = ({ soc }) => {
             id={gradientId}
             x1="0"
             y1="0"
-            x2={isVertical ? "0" : "1"}
-            y2={isVertical ? "1" : "0"}
+            x2="0"
+            y2="1"
             gradientUnits="objectBoundingBox"
           >
             <stop
@@ -48,7 +47,7 @@ const BatteryIndicator = ({ soc }) => {
         animated={true}
         charging={false}
         size={150}
-        orientation={isVertical ? "vertical" : "horizontal"}
+        orientation="vertical"
         customization={{
           batteryBody: {
             strokeWidth: 4,

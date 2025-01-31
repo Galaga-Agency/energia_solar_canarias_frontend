@@ -11,7 +11,6 @@ import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import { Building2, Tag, Info } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
-import SolarEdgeEnergyFlowDisplay from "@/components/solaredge/SolarEdgeEnergyFlowDisplay";
 import DetailRow from "@/components/DetailRow";
 import {
   selectDetailsError,
@@ -39,97 +38,7 @@ import EnergyComparisonChart from "./EnergyComparisonChart";
 import useDeviceType from "@/hooks/useDeviceType";
 import BatteryChargingGraph from "./BatteryChargingGraph";
 import AssociatedUsers from "../AssociatedUsers";
-
-const mockAlerts = [
-  {
-    id: 1,
-    severity: 5,
-    message: "Problema recurrente con la tensión de la red",
-    type: "networkVoltage",
-    component: "Inverter 2",
-    date: "2024-12-10T10:20:00",
-    status: "Abiertas",
-    category: "Configuración instalación",
-    serialNumber: "7E043030-E2",
-  },
-  {
-    id: 2,
-    severity: 4,
-    message: "Interrupción en la tensión de la red",
-    type: "networkInterruption",
-    component: "Inverter 1",
-    date: "2024-11-28T14:40:00",
-    status: "Abierta (silenciada)",
-    category: "Configuración instalación",
-    serialNumber: "7E043EDB-9B",
-  },
-  {
-    id: 3,
-    severity: 4,
-    message: "Interrupción en la tensión de la red",
-    type: "networkInterruption",
-    component: "Inverter 1",
-    date: "2024-11-22T11:40:00",
-    status: "Cerrada",
-    category: "Configuración instalación",
-    serialNumber: "7B052213-B5",
-  },
-  {
-    id: 4,
-    severity: 3,
-    message: "Fluctuación en la generación de energía",
-    type: "generationFluctuation",
-    component: "Inverter 3",
-    date: "2024-12-08T09:30:00",
-    status: "Abiertas",
-    category: "Monitoreo de rendimiento",
-    serialNumber: "8D014111-B4",
-  },
-  {
-    id: 5,
-    severity: 2,
-    message: "Advertencia de desconexión de comunicación",
-    type: "communicationIssue",
-    component: "Inverter 4",
-    date: "2024-12-01T16:00:00",
-    status: "Cerrada",
-    category: "Mantenimiento",
-    serialNumber: "3C023111-D3",
-  },
-  {
-    id: 6,
-    severity: 3,
-    message: "Baja eficiencia de los paneles solares",
-    type: "panelEfficiency",
-    component: "Inverter 5",
-    date: "2024-12-05T12:50:00",
-    status: "Abierta",
-    category: "Monitoreo de rendimiento",
-    serialNumber: "7D043322-F1",
-  },
-  {
-    id: 7,
-    severity: 5,
-    message: "Fallo crítico en el inversor principal",
-    type: "criticalFailure",
-    component: "Inverter 1",
-    date: "2024-12-12T13:20:00",
-    status: "Abierta",
-    category: "Mantenimiento",
-    serialNumber: "5B032221-C4",
-  },
-  {
-    id: 8,
-    severity: 2,
-    message: "Baja radiación solar detectada",
-    type: "solarRadiation",
-    component: "Inverter 2",
-    date: "2024-12-13T07:10:00",
-    status: "Cerrada",
-    category: "Monitoreo ambiental",
-    serialNumber: "9F041112-F5",
-  },
-];
+import SolarEdgeEnergyFlow from "@/components/solaredge/SolarEdgeEnergyFlow";
 
 const SolarEdgePlantDetails = React.memo(
   ({ plant, handleRefresh }) => {
@@ -381,8 +290,12 @@ const SolarEdgePlantDetails = React.memo(
             )}
           </div>
 
-          {/* Energy Flow */}
-          <SolarEdgeEnergyFlowDisplay provider={solaredgePlant?.organization} />
+          <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6  backdrop-blur-sm shadow-lg mb-6">
+            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
+              {t("Real-Time Energy Flow")}
+            </h2>
+            <SolarEdgeEnergyFlow provider={solaredgePlant?.organization} />
+          </section>
 
           <section className="flex flex-col mb-6 md:flex-row gap-6 w-full">
             <SolarEdgeEquipmentDetails

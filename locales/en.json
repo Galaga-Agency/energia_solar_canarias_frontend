@@ -1098,5 +1098,9 @@
   "connectionsTooltip": "Active power flow routes",
   "connectionsUnit": "routes",
   "activeConnections": "Active Connections",
-  "totalPower": "Total Power Flow"
+  "totalPower": "Total Power Flow",
+  "unavailable": "Status Unavailable",
+  "Idle": "Idle",
+  "Charging": "Charging",
+  "Discharging": "Discharging"
 }

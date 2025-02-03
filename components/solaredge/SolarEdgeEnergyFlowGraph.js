@@ -95,8 +95,7 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isMobile } = useDeviceType();
-  const params = useParams();
-  const plantId = params?.plantId;
+  const { plantId } = useParams();
   const graphData = useSelector(selectGraphData);
   const isLoading = useSelector(selectGraphLoading);
   const graphError = useSelector(selectGraphError);

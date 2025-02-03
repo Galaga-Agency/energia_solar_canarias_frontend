@@ -50,17 +50,17 @@ const BatteryIndicator = ({ soc }) => {
         orientation="vertical"
         customization={{
           batteryBody: {
-            strokeWidth: 4,
+            strokeWidth: 7,
             cornerRadius: 6,
             fill: "none",
             strokeColor:
-              theme === "dark" ? "rgb(203 213 225)" : "rgb(71 85 105)",
+              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(71 85 105)",
           },
           batteryCap: {
             fill: "none",
-            strokeWidth: 4,
+            strokeWidth: 7,
             strokeColor:
-              theme === "dark" ? "rgb(203 213 225)" : "rgb(71 85 105)",
+              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(71 85 105)",
             cornerRadius: 2,
             capToBodyRatio: 0.4,
           },

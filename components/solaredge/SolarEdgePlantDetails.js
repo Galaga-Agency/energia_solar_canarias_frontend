@@ -122,10 +122,23 @@ const SolarEdgePlantDetails = React.memo(
       return `${city}, ${country}`;
     }, [solaredgePlant?.location]);
 
-    const tStatus = useMemo(
-      () => t(`status.${solaredgePlant?.status}` || "status.unknown"),
-      [t, solaredgePlant?.status]
-    );
+    const tStatus = useMemo(() => {
+      // If there's no plant data or status is undefined/null
+      if (!solaredgePlant?.status) {
+        return t("unavailable");
+      }
+
+      // Check if the status key exists in translations
+      const statusKey = `status.${solaredgePlant.status}`;
+      const hasTranslation =
+        t(statusKey, { returnObjects: true }) !== statusKey;
+
+      // Return the translated status if available, otherwise return a formatted version of the raw status
+      return hasTranslation
+        ? t(statusKey)
+        : solaredgePlant.status.charAt(0).toUpperCase() +
+            solaredgePlant.status.slice(1);
+    }, [t, solaredgePlant?.status]);
 
     const statusColors = useMemo(
       () => ({
@@ -330,35 +343,11 @@ const SolarEdgePlantDetails = React.memo(
             )}
           </div>
 
-          <SolarEdgeEnergyFlowGraph
-            plantId={solaredgePlant?.id}
-            title={t("potenciaPlanta")}
-            token={token}
-          />
+          <SolarEdgeEnergyFlowGraph title={t("potenciaPlanta")} token={token} />
 
           {solaredgePlant?.siteCurrentPowerFlow?.STORAGE && (
             <section className="flex flex-col md:flex-row gap-6 mt-6 w-full">
-              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex flex-col items-center gap-4">
-                <div className="flex md:flex-col items-center justify-center flex-1 gap-4">
-                  {/* Battery Gauge */}
-                  <BatteryIndicator soc={batteryLevel} />
-
-                  {/* Tooltip */}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger className="flex items-center gap-2 text-custom-dark-blue dark:text-custom-yellow">
-                        <Info className="h-4 w-4" />
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="max-w-xs">
-                        <p>{t("batteryTooltipContent")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </div>
-
               {/* Battery Graph */}
-
               <div className="flex-1 min-w-[300px]">
                 <BatteryChargingGraph
                   plantId={solaredgePlant?.id}

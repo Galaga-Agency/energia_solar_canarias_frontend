@@ -95,7 +95,7 @@
   "temperature": "Temperatura",
   "humidity": "Humedad",
   "wind": "Viento",
-  "batteryStatus": "Estado de la Batería",
+  "batteryStatus": "Estado Batería",
   "threeDayForecast": "Pronóstico a Tres Días",
   "twoDayForecast": "Pronóstico a Dos Días",
   "high": "Máxima",
@@ -2016,5 +2016,9 @@
   "connectionsTooltip": "Rutas de flujo activas",
   "connectionsUnit": "rutas",
   "activeConnections": "Conexiones Activas",
-  "totalPower": "Potencia Total"
+  "totalPower": "Potencia Total",
+  "unavailable": "Estado No Disponible",
+  "Idle": "En reposo",
+  "Charging": "Cargando",
+  "Discharging": "Descargando"
 }

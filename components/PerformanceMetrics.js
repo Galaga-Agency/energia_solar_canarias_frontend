@@ -1,12 +1,7 @@
 import React from "react";
 import { useTranslation } from "next-i18next";
 import { Wallet, PiggyBank, BarChart2, Info } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 
 const PerformanceMetrics = ({ kpi }) => {
   const { t } = useTranslation();
@@ -47,39 +42,33 @@ const PerformanceMetrics = ({ kpi }) => {
             {t(labelKey)}
           </strong>
           {tooltipKey && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm"
-                >
+            <Popover showArrow offset={20} placement="right">
+              <PopoverTrigger>
+                <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help" />
+              </PopoverTrigger>
+              <PopoverContent className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm">
+                <div className="px-1 py-2">
                   <p className="font-medium">{t(tooltipKey)}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
         </div>
       </div>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow cursor-help">
-              {value}
-            </span>
-          </TooltipTrigger>
-          {tooltipKey && (
-            <TooltipContent
-              side="left"
-              className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm"
-            >
+      <Popover showArrow offset={20} placement="left">
+        <PopoverTrigger>
+          <span className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow cursor-help">
+            {value}
+          </span>
+        </PopoverTrigger>
+        {tooltipKey && (
+          <PopoverContent className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm">
+            <div className="px-1 py-2">
               <p className="font-medium">{t(tooltipKey)}</p>
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </TooltipProvider>
+            </div>
+          </PopoverContent>
+        )}
+      </Popover>
     </div>
   );
 

@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/Tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import { Info } from "lucide-react";
 
 const EnergyBlock = ({
@@ -23,20 +18,17 @@ const EnergyBlock = ({
       transition-all duration-700 ease-in-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
       hover:translate-y-[-4px] ${className} z-10`}
     >
-      {/* Icon Tooltip */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger className="absolute top-4 right-4">
-            <Info className="w-5 h-5 text-custom-dark-blue/60 dark:text-custom-yellow/60 transition-all duration-300 hover:scale-110 hover:text-custom-dark-blue dark:hover:text-custom-yellow" />
-          </TooltipTrigger>
-          <TooltipContent
-            side="top"
-            className="max-w-xs bg-gray-200 dark:bg-gray-800 text-sm p-3 rounded-lg shadow"
-          >
+      {/* Icon Popover */}
+      <Popover showArrow offset={20} placement="top">
+        <PopoverTrigger className="absolute top-4 right-4">
+          <Info className="w-5 h-5 text-custom-dark-blue/60 dark:text-custom-yellow/60 transition-all duration-300 hover:scale-110 hover:text-custom-dark-blue dark:hover:text-custom-yellow" />
+        </PopoverTrigger>
+        <PopoverContent className="max-w-xs bg-gray-200 dark:bg-gray-800 text-sm p-3 rounded-lg shadow">
+          <div className="px-1 py-2">
             <p>{tooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+          </div>
+        </PopoverContent>
+      </Popover>
 
       <div className="flex-1 flex flex-col items-center justify-center relative">
         <div className="absolute -top-10 w-20 h-20 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">

@@ -9,12 +9,7 @@ import {
   Box,
   Thermometer,
 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchVictronEnergyEquipmentDetails,
@@ -232,8 +227,7 @@ const victronEnergyEquipmentMockData = {
 
 const VictronEnergyEquipmentDetails = ({ token }) => {
   const dispatch = useDispatch();
-  const params = useParams();
-  const plantId = params.plantId;
+  const { plantId } = useParams();
   const theme = useSelector(selectTheme);
   //   const equipmentDetails = useSelector(selectEquipmentDetails);
   const equipmentDetails = victronEnergyEquipmentMockData.records;
@@ -270,12 +264,12 @@ const VictronEnergyEquipmentDetails = ({ token }) => {
   };
 
   const renderTooltip = (item) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
-          <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
-        </TooltipTrigger>
-        <TooltipContent className="bg-slate-800 text-white p-3 rounded-lg shadow-xl">
+    <Popover showArrow offset={20} placement="top">
+      <PopoverTrigger>
+        <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
+      </PopoverTrigger>
+      <PopoverContent className="bg-slate-800 text-white p-3 rounded-lg shadow-xl">
+        <div className="px-1 py-2">
           {Object.entries(item)
             .filter(([key]) => !["name", "class", "customName"].includes(key))
             .map(([key, value]) => (
@@ -286,11 +280,10 @@ const VictronEnergyEquipmentDetails = ({ token }) => {
                 </span>
               </div>
             ))}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
-
   // Group devices by their class
   const devicesByType =
     equipmentDetails?.devices?.reduce((acc, device) => {

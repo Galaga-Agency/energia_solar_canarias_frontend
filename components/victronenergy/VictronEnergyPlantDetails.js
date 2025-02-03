@@ -40,8 +40,7 @@ const VictronEnergyPlantDetails = () => {
   const [longitude, setLongitude] = useState();
   const [hasCoordinates, setHasCoordinates] = useState(false);
   const isAdmin = useSelector(selectIsAdmin);
-  const params = useParams();
-  const plantId = params.plantId;
+  const { plantId } = useParams();
   const [loadTime] = useState(
     new Date().toLocaleString("es-ES", {
       year: "numeric",

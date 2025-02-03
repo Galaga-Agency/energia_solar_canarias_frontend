@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown, Info, Battery, Gauge, Cpu, Wrench } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchSolarEdgeInventory,
@@ -18,8 +13,7 @@ import { selectTheme } from "@/store/slices/themeSlice";
 
 const SolarEdgeEquipmentDetails = ({ token, t }) => {
   const dispatch = useDispatch();
-  const params = useParams();
-  const plantId = params.plantId;
+  const { plantId } = useParams();
   const theme = useSelector(selectTheme);
   const inventory = useSelector(selectInventory);
   const isLoading = useSelector(selectInventoryLoading);
@@ -52,12 +46,12 @@ const SolarEdgeEquipmentDetails = ({ token, t }) => {
   };
 
   const renderTooltip = (item) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
-          <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
-        </TooltipTrigger>
-        <TooltipContent className="bg-slate-800 text-white p-3 rounded-lg shadow-xl">
+    <Popover showArrow offset={20} placement="top">
+      <PopoverTrigger>
+        <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
+      </PopoverTrigger>
+      <PopoverContent className="bg-slate-800 text-white p-3 rounded-lg shadow-xl">
+        <div className="px-1 py-2">
           {Object.entries(item)
             .filter(([key]) => key !== "name")
             .map(([key, value]) => (
@@ -66,9 +60,9 @@ const SolarEdgeEquipmentDetails = ({ token, t }) => {
                 <span className="text-slate-200">{value}</span>
               </div>
             ))}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 
   const invertersByModel = inventory?.inverters?.reduce((acc, inv) => {

@@ -13,7 +13,7 @@ import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import { Building2, Tag, Info } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
-import GoodweEnergyFlowDisplay from "@/components/goodwe/GoodweEnergyFlowDisplay";
+import GoodweEnergyFlow from "@/components/goodwe/GoodweEnergyFlow";
 import DetailRow from "@/components/DetailRow";
 import {
   selectAlerts,
@@ -23,12 +23,6 @@ import {
   selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
@@ -44,6 +38,7 @@ import AlertsModal from "../AlertsModal";
 import AssociatedUsers from "../AssociatedUsers";
 import GoodweAlertsModal from "./GoodweAlertsModal";
 import GoodweGraphContainer from "./graphs/GoodweGraphContainer";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 
 const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
   const theme = useSelector(selectTheme);
@@ -212,177 +207,118 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
 
         {isAdmin && <AssociatedUsers plantId={plantId} isAdmin={isAdmin} />}
 
-        <div
-          className={`grid grid-cols-1 mb-6 gap-6 ${
-            batteryPower ? "2xl:grid-cols-[1fr_auto_1fr]" : "2xl:grid-cols-2"
-          }`}
-        >
+        <div className={`grid grid-cols-1 mb-6 gap-6 md:grid-cols-2`}>
           <WeatherWidget
             plant={goodwePlant}
             address={formattedAddress}
             provider={goodwePlant?.info?.org_name}
           />
 
-          {/* This container is for the battery and plant details */}
-          <div
-            className={`grid grid-cols-1 gap-6 ${
-              batteryPower
-                ? "md:grid-cols-[auto_1fr] 2xl:col-span-2 2xl:grid-cols-[200px_1fr]"
-                : ""
-            }`}
-          >
-            {batteryPower && !isMobile && (
-              <div className="2xl:hidden bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex flex-col items-center justify-center gap-4">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
-                      <Info className="h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p>{t("batteryTooltipContent")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <BatteryIndicator soc={batteryPower} />
-              </div>
-            )}
-
-            {batteryPower && (
-              <div className="hidden 2xl:flex bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg items-center justify-center flex-col gap-4 w-[200px]">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
-                      <Info className="h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p>{t("batteryTooltipContent")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <BatteryIndicator soc={batteryPower} />
-              </div>
-            )}
-
-            {batteryPower && isMobile && (
-              <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm shadow-lg flex items-center justify-center gap-4">
-                <BatteryIndicator soc={batteryPower} />
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="text-custom-dark-blue dark:text-custom-yellow">
-                      <Info className="h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p>{t("batteryTooltipContent")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            )}
-
-            <div>
-              {isLoading ? (
-                <PlantDetailsSkeleton theme={theme} />
-              ) : (
-                <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm flex flex-col justify-between h-full">
-                  <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
-                    {t("plantDetails")}
-                  </h2>
-                  <div className="flex flex-1 flex-col gap-4">
-                    <DetailRow
-                      icon={
-                        <HiOutlineStatusOnline className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
-                      }
-                      label={t("currentStatus")}
-                      value={
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <div className="flex items-center gap-1">
-                                <Info
-                                  className={`h-4 w-4 ${statusColors[
-                                    goodwePlant?.info?.status
-                                  ]?.replace("bg-", "text-")} cursor-help mt-1`}
-                                />
-                                <span
-                                  className={`${statusColors[
-                                    goodwePlant?.info?.status
-                                  ]?.replace("bg-", "text-")} cursor-help`}
-                                >
-                                  {goodwePlant?.info?.status
-                                    ? t(`status.${goodwePlant?.info?.status}`)
-                                    : t("loading")}
-                                </span>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent
-                              side="right"
-                              className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
+          <div>
+            {isLoading ? (
+              <PlantDetailsSkeleton theme={theme} />
+            ) : (
+              <section className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 backdrop-blur-sm flex flex-col justify-between h-full">
+                <h2 className="text-xl mb-4 text-custom-dark-blue dark:text-custom-yellow">
+                  {t("plantDetails")}
+                </h2>
+                <div className="flex flex-1 flex-col gap-4">
+                  <DetailRow
+                    icon={
+                      <HiOutlineStatusOnline className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
+                    }
+                    label={t("currentStatus")}
+                    value={
+                      <Popover showArrow offset={20} placement="right">
+                        <PopoverTrigger>
+                          <div className="flex items-center gap-1">
+                            <Info
+                              className={`h-4 w-4 ${statusColors[
+                                goodwePlant?.info?.status
+                              ]?.replace("bg-", "text-")} cursor-help mt-1`}
+                            />
+                            <span
+                              className={`${statusColors[
+                                goodwePlant?.info?.status
+                              ]?.replace("bg-", "text-")} cursor-help`}
                             >
-                              <p className="font-medium">
-                                {goodwePlant?.info?.status === "working" &&
-                                  t("statusDescriptions.working")}
-                                {goodwePlant?.info?.status === "waiting" &&
-                                  t("statusDescriptions.waiting")}
-                                {goodwePlant?.info?.status === "disconnected" &&
-                                  t("statusDescriptions.disconnected")}
-                                {goodwePlant?.info?.status === "error" &&
-                                  t("loading")}
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      }
-                    />
-                    <DetailRow
-                      icon={IoLocationOutline}
-                      label={t("location")}
-                      value={goodwePlant?.info?.address || t("loading")}
-                    />
-                    <DetailRow
-                      icon={LiaBirthdayCakeSolid}
-                      label={t("installationDate")}
-                      value={
-                        goodwePlant?.info?.create_time
-                          ? new Intl.DateTimeFormat("es-ES", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            }).format(new Date(goodwePlant.info.create_time))
-                          : t("loading")
-                      }
-                    />
-                    <DetailRow
-                      icon={
-                        <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
-                      }
-                      label={t("poweredBy")}
-                      value={goodwePlant?.info?.org_name || t("loading")}
-                      tooltip={t("poweredByTooltip")}
-                    />
-                    <DetailRow
-                      icon={
-                        <Tag className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
-                      }
-                      label={t("typeOfPlant")}
-                      value={
-                        goodwePlant?.info?.powerstation_type
-                          ? t(`${goodwePlant?.info?.powerstation_type}`)
-                          : t("loading")
-                      }
-                      tooltip={t("typeTooltip")}
-                    />
-                  </div>
-                </section>
-              )}
-            </div>
+                              {goodwePlant?.info?.status
+                                ? t(`status.${goodwePlant?.info?.status}`)
+                                : t("loading")}
+                            </span>
+                          </div>
+                        </PopoverTrigger>
+                        <PopoverContent className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs">
+                          <div className="px-1 py-2">
+                            <p className="font-medium">
+                              {goodwePlant?.info?.status === "working" &&
+                                t("statusDescriptions.working")}
+                              {goodwePlant?.info?.status === "waiting" &&
+                                t("statusDescriptions.waiting")}
+                              {goodwePlant?.info?.status === "disconnected" &&
+                                t("statusDescriptions.disconnected")}
+                              {goodwePlant?.info?.status === "error" &&
+                                t("loading")}
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    }
+                  />
+                  <DetailRow
+                    icon={IoLocationOutline}
+                    label={t("location")}
+                    value={goodwePlant?.info?.address || t("loading")}
+                  />
+                  <DetailRow
+                    icon={LiaBirthdayCakeSolid}
+                    label={t("installationDate")}
+                    value={
+                      goodwePlant?.info?.create_time
+                        ? new Intl.DateTimeFormat("es-ES", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          }).format(new Date(goodwePlant.info.create_time))
+                        : t("loading")
+                    }
+                  />
+                  <DetailRow
+                    icon={
+                      <Building2 className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
+                    }
+                    label={t("poweredBy")}
+                    value={goodwePlant?.info?.org_name || t("loading")}
+                    tooltip={t("poweredByTooltip")}
+                  />
+                  <DetailRow
+                    icon={
+                      <Tag className="text-3xl text-custom-dark-blue dark:text-custom-light-gray" />
+                    }
+                    label={t("typeOfPlant")}
+                    value={
+                      goodwePlant?.info?.powerstation_type
+                        ? t(`${goodwePlant?.info?.powerstation_type}`)
+                        : t("loading")
+                    }
+                    tooltip={t("typeTooltip")}
+                  />
+                </div>
+              </section>
+            )}
           </div>
         </div>
 
-        <GoodweEnergyFlowDisplay
-          plantId={plantId}
-          token={token}
-          provider={goodwePlant?.info?.org_name}
-        />
+        <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6  backdrop-blur-sm shadow-lg mb-6 pb-8 ">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
+            {t("Real-Time Energy Flow")}
+          </h2>
+          <GoodweEnergyFlow
+            plantId={plantId}
+            token={token}
+            provider={goodwePlant?.info?.org_name}
+          />
+        </section>
 
         {isLoading ? (
           <GoodweEnergyStatisticsSkeleton theme={theme} />

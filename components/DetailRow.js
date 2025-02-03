@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import { Info } from "lucide-react";
 import useDeviceType from "@/hooks/useDeviceType";
 
@@ -31,21 +26,18 @@ const DetailRow = ({ icon: Icon, label, value = "N/A", tooltip }) => {
           {label}
         </strong>
         {tooltip && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span role="button" tabIndex={0} className="cursor-help ml-2">
-                  <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
-              >
+          <Popover showArrow offset={20} placement="right">
+            <PopoverTrigger asChild>
+              <span role="button" tabIndex={0} className="cursor-help ml-2">
+                <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow" />
+              </span>
+            </PopoverTrigger>
+            <PopoverContent className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs">
+              <div className="px-1 py-2">
                 <p className="font-medium">{tooltip}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
       <div className="text-left xl:text-right xl:max-w-[50%] overflow-hidden text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow ml-4">

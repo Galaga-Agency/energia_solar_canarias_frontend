@@ -2,12 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Info, Battery, Cpu, ChevronDown } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
-import {
   fetchGoodweEquipmentDetails,
   selectEquipmentDetails,
   selectEquipmentLoading,
@@ -17,14 +11,14 @@ import EquipmentDetailsSkeleton from "../loadingSkeletons/EquipmentDetailsSkelet
 import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 
 const GoodweEquipmentDetails = ({ t }) => {
   const dispatch = useDispatch();
   const equipmentDetails = useSelector(selectEquipmentDetails);
   const isLoading = useSelector(selectEquipmentLoading);
   const error = useSelector(selectEquipmentError);
-  const params = useParams();
-  const plantId = params.plantId;
+  const { plantId } = useParams();
   const user = useSelector(selectUser);
   const token = user.tokenIdentificador;
   const theme = useSelector(selectTheme);
@@ -92,12 +86,12 @@ const GoodweEquipmentDetails = ({ t }) => {
             <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
               {deviceTitle}
             </h2>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
-                </TooltipTrigger>
-                <TooltipContent className="bg-slate-800 text-white p-2 rounded-lg shadow-xl">
+            <Popover showArrow offset={20} placement="right">
+              <PopoverTrigger>
+                <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
+              </PopoverTrigger>
+              <PopoverContent className="bg-slate-800 text-white p-2 rounded-lg shadow-xl">
+                <div className="px-1 py-2">
                   <div className="text-sm space-y-1">
                     <p>
                       {t(
@@ -111,9 +105,9 @@ const GoodweEquipmentDetails = ({ t }) => {
                       {t("Capacity")}: {deviceCapacity}kW
                     </p>
                   </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>

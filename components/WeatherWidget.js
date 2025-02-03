@@ -113,10 +113,6 @@ const WeatherWidget = ({ plant, address, provider, lat, lng }) => {
 
     switch (true) {
       case isGoodweProvider:
-        console.log("Attempting to fetch Goodwe weather with:", {
-          name: address,
-          token,
-        });
         dispatch(fetchGoodweWeatherData({ name: address, token }));
         break;
       case normalizedProvider === "solaredge":

@@ -22,7 +22,6 @@ import {
   Cell,
 } from "recharts";
 import { BiDotsVerticalRounded, BiRefresh } from "react-icons/bi";
-import Loading from "@/components/ui/Loading";
 import { useTranslation } from "react-i18next";
 import {
   fetchGoodweGraphData,

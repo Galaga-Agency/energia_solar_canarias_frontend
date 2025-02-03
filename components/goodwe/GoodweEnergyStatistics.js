@@ -7,12 +7,7 @@ import {
 import { PiSolarPanelFill } from "react-icons/pi";
 import { RiBattery2ChargeLine } from "react-icons/ri";
 import { BsCalendarMonth } from "react-icons/bs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import { Info } from "lucide-react";
 
 const GoodweEnergyStatistics = ({
@@ -98,19 +93,16 @@ const GoodweEnergyStatistics = ({
               </span>
               <span className="text-sm">kW</span>
             </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help absolute top-2 right-2" />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs"
-                >
+            <Popover showArrow offset={20} placement="top">
+              <PopoverTrigger asChild>
+                <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help absolute top-2 right-2" />
+              </PopoverTrigger>
+              <PopoverContent className="dark:bg-gray-800 bg-white/90 backdrop-blur-sm max-w-xs">
+                <div className="px-1 py-2">
                   <p className="text-sm">{tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         ))}
       </div>

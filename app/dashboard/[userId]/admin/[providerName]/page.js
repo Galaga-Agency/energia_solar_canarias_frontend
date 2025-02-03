@@ -74,10 +74,9 @@ const ProviderPage = () => {
   );
   const isDataFetched = useSelector(selectIsDataFetched);
   const router = useRouter();
-  const params = useParams();
-
-  console.log("---------------- ", params);
-  const providerPassed = params?.providerName.toLowerCase();
+  const { providerName, userId } = useParams();
+  console.log("---------------- ", { providerName, userId });
+  const providerPassed = providerName.toLowerCase();
   const provider = providers.find(
     (p) => p.name.toLowerCase().replace(/\s+/g, "") === providerPassed
   );

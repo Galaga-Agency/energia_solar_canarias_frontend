@@ -1,11 +1,6 @@
 import React from "react";
 import { Info } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import {
   roundToWhole,
   roundToOneDecimal,
@@ -44,16 +39,16 @@ const PercentageBar = ({
           {title}
         </h3>
         {tooltip && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p className="text-sm">{tooltip}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Popover showArrow offset={20} placement="bottom">
+            <PopoverTrigger>
+              <Info className="h-4 w-4 text-custom-dark-blue dark:text-custom-yellow cursor-help" />
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="px-1 py-2">
+                <div className="text-small">{tooltip}</div>
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
 

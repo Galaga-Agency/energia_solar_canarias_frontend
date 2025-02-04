@@ -22,7 +22,7 @@ import { PiSolarPanelLight } from "react-icons/pi";
 import { TbPlug } from "react-icons/tb";
 import { HiOutlineHome } from "react-icons/hi";
 import Image from "next/image";
-import VictronEnergyFlowSkeleton from "@/components/loadingSkeletons/VictronEnergyFlowSkeleton";
+import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import goodweLogo from "@/public/assets/logos/goodwe-logo.png";
 import { Grid, UtilityPole } from "lucide-react";
@@ -154,7 +154,7 @@ const GoodweEnergyFlow = memo(() => {
   }, [fetchRealtimeData, formattedPlantId, token]);
 
   if (isComponentLoading || !realtimeData) {
-    return <VictronEnergyFlowSkeleton theme={theme} />;
+    return <EnergyFlowSkeleton theme={theme} />;
   }
 
   const {

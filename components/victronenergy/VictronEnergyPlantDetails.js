@@ -60,6 +60,8 @@ const VictronEnergyPlantDetails = () => {
   const { downloadCSV } = useCSVExport();
   const [graphChartData, setGraphChartData] = useState([]);
 
+  console.log("plant ----------->", plant);
+
   const handleRangeSelect = (range) => {
     setCurrentRange(range);
     setIsDateModalOpen(false);
@@ -191,10 +193,7 @@ const VictronEnergyPlantDetails = () => {
           <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
             {t("Real-Time Energy Flow")}
           </h2>
-          <VictronEnergyFlow
-            plantId={plantId}
-            token={user?.tokenIdentificador}
-          />
+          <VictronEnergyFlow plant={plant} />
         </section>
 
         <div className="flex flex-col md:flex-row gap-6">

@@ -2020,5 +2020,21 @@
   "unavailable": "Estado No Disponible",
   "Idle": "En reposo",
   "Charging": "Cargando",
-  "Discharging": "Descargando"
+  "Discharging": "Descargando",
+  "generatorStatus": "Estado Generador",
+  "Running": "En Marcha",
+  "Paused": "En reposo",
+  "Stopped": "Parado",
+  "Importing": "Importando",
+  "Exporting": "Exportando",
+  "GeneratorBlock": "Generador",
+  "batteryDetails": "Detalles de la batería",
+  "voltage": "Voltaje",
+  "current": "Corriente",
+  "loadsDetails": "Detalles de consumo",
+  "phase": "L",
+  "frequency": "Frecuencia",
+  "gridDetails": "Detalles de la red",
+  "mpptDetails": "Detalles MPPT",
+  "mppt": "MPPT"
 }

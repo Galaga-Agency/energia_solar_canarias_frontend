@@ -1,596 +1,455 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { FaExchangeAlt } from "react-icons/fa";
-import victronBlue from "@/public/assets/logos/victron-energy-azul.png";
-import victronYellow from "@/public/assets/logos/victron-energy-amarillo.png";
-import { PiSolarPanelLight } from "react-icons/pi";
-import { TbBatteryAutomotive, TbPlug } from "react-icons/tb";
-import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { selectTheme } from "@/store/slices/themeSlice";
+import { useTranslation } from "next-i18next";
 import { useParams } from "next/navigation";
+import { UtilityPole } from "lucide-react";
+import { Popover, PopoverTrigger } from "@heroui/react";
+import { BsPlusCircle } from "react-icons/bs";
+import { formatPowerValue } from "@/utils/powerUtils";
+import { processVictronData } from "@/utils/victronDataProcessor";
+import GridDetailsPopover from "./popovers/GridDetailsPopover";
+import EnergyLoadingClock from "@/components/EnergyLoadingClock";
+import BatteryIndicator from "@/components/BatteryIndicator";
+import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
+import useDeviceType from "@/hooks/useDeviceType";
 import { selectUser } from "@/store/slices/userSlice";
-import EnergyBlock from "./EnergyBlock";
+import { selectTheme } from "@/store/slices/themeSlice";
 import {
   fetchVictronEnergyRealtimeData,
   selectLoadingDetails,
 } from "@/store/slices/plantsSlice";
-import BatteryIndicator from "@/components/BatteryIndicator";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/Tooltip";
-import { Info } from "lucide-react";
-import VictronEnergyFlowSkeleton from "../loadingSkeletons/VictronEnergyFlowSkeleton";
-import useDeviceType from "@/hooks/useDeviceType";
-import EnergyLoadingClock from "../EnergyLoadingClock";
-import { GiElectric } from "react-icons/gi";
-import { IoSunnyOutline, IoSunnySharp } from "react-icons/io5";
+import { PiSolarPanelLight } from "react-icons/pi";
+import MpptDetailsPopover from "./popovers/MpptDetailsPopover";
+import BatteryDetailsPopover from "./popovers/BatteryDetailsPopover";
+import LoadsDetailsPopover from "./popovers/LoadsDetailsPopover";
+import { HiOutlineHome } from "react-icons/hi";
+import victronLogoLight from "@/public/assets/logos/victron-energy-azul.png";
+import victronLogoDark from "@/public/assets/logos/victron-energy-amarillo.png";
 import Image from "next/image";
+import { TbBatteryAutomotive, TbPlug } from "react-icons/tb";
 
-const VictronEnergyFlow = () => {
+const VictronEnergyFlow = ({ plant }) => {
   const dispatch = useDispatch();
   const [energyData, setEnergyData] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
-  const theme = useSelector(selectTheme);
+  const [isBlinking, setIsBlinking] = useState(false);
+  const blinkingTimeoutRef = useRef(null);
   const { t } = useTranslation();
-  const params = useParams();
-  const plantId = params?.plantId;
+  const theme = useSelector(selectTheme);
+  const { plantId } = useParams();
   const user = useSelector(selectUser);
   const token = user?.tokenIdentificador;
   const isComponentLoading = useSelector(selectLoadingDetails);
   const { isMobile } = useDeviceType();
   const lastUpdatedRef = useRef(new Date().toLocaleString());
-  const [isBlinking, setIsBlinking] = useState(false);
-
-  const processRecords = (records) => {
-    if (!records) return null;
-
-    const findValue = (description, device = null) => {
-      const record = records.find(
-        (r) =>
-          r.description === description && (device ? r.Device === device : true)
-      );
-      return record?.formattedValue;
-    };
-
-    const findNumericValue = (description, device = null) => {
-      const value = findValue(description, device);
-      return value ? parseFloat(value) : 0;
-    };
-
-    const findAttributeValue = (code) => {
-      if (code === "solar_yield") {
-        // Calculate total from components
-        const l1 = findNumericValue("PV - AC-coupled on output L1");
-        const l2 = findNumericValue("PV - AC-coupled on output L2");
-        const l3 = findNumericValue("PV - AC-coupled on output L3");
-        const dc = findNumericValue("PV - DC-coupled");
-        return l1 + l2 + l3 + dc;
-      }
-      return 0;
-    };
-
-    const findMPPTValue = (records, mpptId) => {
-      const mpptRecords = records.filter(
-        (r) => r.Device === "Solar Charger" && r.instance === mpptId
-      );
-
-      // If no records found for this MPPT, return null
-      if (!mpptRecords.length) return null;
-
-      const current =
-        Math.round(
-          (parseFloat(
-            mpptRecords.find((r) => r.idDataAttribute === 442)?.rawValue || 0
-          ) /
-            parseFloat(
-              mpptRecords.find((r) => r.idDataAttribute === 86)?.rawValue || 1
-            )) *
-            10
-        ) / 10;
-
-      return {
-        voltage: parseFloat(
-          mpptRecords.find((r) => r.idDataAttribute === 86)?.formattedValue
-        ),
-        current: current,
-        power: parseFloat(
-          mpptRecords.find((r) => r.idDataAttribute === 442)?.formattedValue
-        ),
-      };
-    };
-
-    // Get all active MPPT instances
-    const getMPPTInstances = (records) => {
-      return [
-        ...new Set(
-          records
-            .filter((r) => r.Device === "Solar Charger")
-            .map((r) => r.instance)
-        ),
-      ];
-    };
-
-    const mpptInstances = getMPPTInstances(records);
-    const mpptData = {};
-    mpptInstances.forEach((instance) => {
-      const mpptValue = findMPPTValue(records, instance);
-      if (mpptValue) {
-        mpptData[instance] = mpptValue;
-      }
-    });
-
-    const pvCharger = {
-      power: findNumericValue("PV - DC-coupled"),
-      mpptData,
-    };
-
-    const getInverterPhases = (records) => {
-      return [
-        ...new Set(
-          records
-            .filter(
-              (r) =>
-                r.description?.includes("L") && r.description?.includes("Power")
-            )
-            .map((r) => r.description.match(/L(\d)/)?.[1])
-            .filter(Boolean)
-        ),
-      ].sort();
-    };
-
-    const phases = getInverterPhases(records);
-    const inverterData = {};
-
-    phases.forEach((phase) => {
-      inverterData[`L${phase}`] = {
-        power: findNumericValue(`L${phase} Power`),
-        voltage: findNumericValue(`L${phase} Voltage`),
-        current: findNumericValue(`L${phase} Current`),
-      };
-    });
-
-    const inverter = {
-      ...inverterData,
-      totalPower: Object.values(inverterData).reduce(
-        (sum, phase) => sum + phase.power,
-        0
-      ),
-    };
-
-    const generator = {
-      status: findValue("Manual start", "Generator"),
-      uptime: findValue("Manual start timer", "Generator"),
-    };
-
-    const findFromToGrid = () => {
-      const fromToGridRecord = records.find((r) => r.code === "from_to_grid");
-      return fromToGridRecord ? fromToGridRecord.formattedValue : "-";
-    };
-
-    const fromToGrid = findFromToGrid();
-
-    return {
-      acInput: {
-        state: findValue("AC-Input", "System overview"),
-      },
-      battery: {
-        soc: findNumericValue("Battery SOC"),
-        voltage: findNumericValue("Voltage", "Battery Monitor"),
-        current: findNumericValue("Current", "Battery Monitor"),
-        temp: findNumericValue("Battery temperature"),
-        dcPower: findNumericValue("Battery Power"),
-        state: findValue("Battery state"),
-      },
-      inverter,
-      pvCharger,
-      loads: {
-        L1: {
-          power: findNumericValue("AC Consumption L1"),
-          frequency: findNumericValue("Phase 1 frequency"),
-        },
-        L2: {
-          power: findNumericValue("AC Consumption L2"),
-          frequency: findNumericValue("Phase 2 frequency"),
-        },
-        L3: {
-          power: findNumericValue("AC Consumption L3"),
-          frequency: findNumericValue("Phase 3 frequency"),
-        },
-        totalPower:
-          findNumericValue("AC Consumption L1") +
-          findNumericValue("AC Consumption L2") +
-          findNumericValue("AC Consumption L3"),
-      },
-      solarYield: findAttributeValue("solar_yield"),
-      generator,
-      fromToGrid,
-    };
-  };
 
   const fetchRealtimeData = useCallback(async () => {
-    if (!plantId || !token) return;
+    console.log("Fetching real-time data:", {
+      plantId,
+      tokenAvailable: !!token,
+    });
 
-    if (!isFetching) {
-      setIsFetching(true);
-      try {
-        const result = await dispatch(
-          fetchVictronEnergyRealtimeData({
-            plantId,
-            token,
-          })
-        ).unwrap();
+    if (!plantId || !token || isFetching) return;
 
-        const processedData = processRecords(result?.records);
-        if (processedData) {
-          setEnergyData(processedData);
-          lastUpdatedRef.current = new Date().toLocaleString();
-          setIsBlinking(true);
-          setTimeout(() => setIsBlinking(false), 300);
+    setIsFetching(true);
+
+    try {
+      const result = await dispatch(
+        fetchVictronEnergyRealtimeData({ plantId, token })
+      ).unwrap();
+
+      const records = result?.data?.records || result?.records || result || [];
+      const processedData = processVictronData(records);
+
+      if (processedData) {
+        setEnergyData(processedData);
+        lastUpdatedRef.current = new Date().toLocaleString();
+
+        console.log("processedData", processedData);
+
+        setIsBlinking(true);
+
+        if (blinkingTimeoutRef.current) {
+          clearTimeout(blinkingTimeoutRef.current);
         }
-      } catch (err) {
-        console.error("Error fetching real-time data:", err);
-      } finally {
-        setIsFetching(false);
+
+        blinkingTimeoutRef.current = setTimeout(() => {
+          setIsBlinking(false);
+          blinkingTimeoutRef.current = null;
+        }, 300);
+      } else {
+        console.error("No processed data available");
       }
+    } catch (err) {
+      console.error("Error fetching real-time data:", err);
+    } finally {
+      setIsFetching(false);
     }
   }, [dispatch, plantId, token]);
 
   useEffect(() => {
-    fetchRealtimeData();
-    const intervalId = setInterval(fetchRealtimeData, 15000); // Re-fetch every 15 seconds
-    lastUpdatedRef.current = new Date().toLocaleString();
-    return () => clearInterval(intervalId);
-  }, [fetchRealtimeData]);
+    if (plantId && token) {
+      fetchRealtimeData();
+    }
 
-  if (isComponentLoading || !energyData) {
-    return <VictronEnergyFlowSkeleton theme={theme} />;
+    const interval = setInterval(() => {
+      fetchRealtimeData();
+    }, 15000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [plantId, token, fetchRealtimeData]);
+
+  // Initial data fetch
+  useEffect(() => {
+    // Fetch data on initial mount
+    if (plantId && token) {
+      console.log("Attempting to fetch initial data");
+      fetchRealtimeData();
+    } else {
+      console.warn("Cannot fetch data: Missing plantId or token");
+    }
+  }, [plantId, token, fetchRealtimeData]);
+
+  useEffect(() => {
+    return () => {
+      if (blinkingTimeoutRef.current) {
+        clearTimeout(blinkingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // If component is loading or no data, show skeleton
+  if (!isComponentLoading || !energyData) {
+    return <EnergyFlowSkeleton theme={theme} />;
   }
 
-  // console.log("Real-Time Data Response:", energyData);
+  // Safe data extraction with extensive fallbacks
+  const gridPower = energyData.gridPower?.totalPower ?? 0;
+  const pvChargerPower = energyData.pvCharger?.power ?? 0;
+  const batteryData = energyData.battery ?? {
+    soc: 0,
+    dcPower: 0,
+    state: "Unknown",
+  };
+  const loadsData = energyData.loads ?? {
+    totalPower: 0,
+  };
+
+  const generatorData = energyData.generator ?? {
+    status: "Stopped",
+    uptime: 0,
+  };
+
+  console.log("gridPower", gridPower);
 
   return (
     <>
-      {isMobile ? (
-        <div className="flex items-center gap-2 justify-between">
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            {t("lastUpdated")}: {lastUpdatedRef.current}
-          </span>
-          <EnergyLoadingClock
-            duration={15}
-            onComplete={fetchRealtimeData}
-            isPaused={isFetching}
-          />
-        </div>
-      ) : (
-        <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
-          <EnergyLoadingClock
-            duration={15}
-            onComplete={fetchRealtimeData}
-            isPaused={isFetching}
-          />
-          <span className="absolute top-4 right-16 max-w-36">
-            {t("lastUpdated")}: {lastUpdatedRef.current}
-          </span>
-        </div>
-      )}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-6">
-        {/* Left Column */}
-        <div className="flex flex-col gap-8">
-          <EnergyBlock
-            isBlinking={isBlinking}
-            title={t("victronEnergyFlow.acInput.title")}
-            value={
-              energyData?.fromToGrid !== undefined
-                ? energyData?.fromToGrid
-                : "-"
-            }
-            unit={energyData?.fromToGrid > 0 ? "W" : ""}
-            icon={TbPlug}
-            tooltip={t("victronEnergyFlow.acInput.tooltip")}
-          />
+      {/* Header section */}
+      <div className="mb-8">
+        {isMobile ? (
+          <div className="flex items-center gap-2 justify-between">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {t("lastUpdated")}: {lastUpdatedRef.current}
+            </span>
+            <EnergyLoadingClock
+              duration={15}
+              onComplete={fetchRealtimeData}
+              isPaused={isFetching}
+            />
+          </div>
+        ) : (
+          <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-col items-end">
+            <EnergyLoadingClock
+              duration={15}
+              onComplete={fetchRealtimeData}
+              isPaused={isFetching}
+            />
+            <span className="absolute top-4 right-16 max-w-36">
+              {t("lastUpdated")}: {lastUpdatedRef.current}
+            </span>
+          </div>
+        )}
+      </div>
 
-          {/* Generator Block */}
-          <EnergyBlock
-            isBlinking={isBlinking}
-            title={t("victronEnergyFlow.generator.title")}
-            value={
-              energyData?.generator?.power !== undefined
-                ? energyData?.generator?.power
-                : "-"
-            }
-            unit={energyData?.generator?.power > 0 ? "W" : ""}
-            icon={TbBatteryAutomotive}
-            tooltip={t("victronEnergyFlow.generator.tooltip")}
-            details={
-              energyData?.generator?.status && (
-                <div className="space-y-2">
-                  {/* Status */}
-                  <div className="flex justify-between items-center px-2 py-1">
-                    <span>{t("victronEnergyFlow.generator.status")}</span>
-                    <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
-                      {energyData?.generator?.status === "Stopped"
-                        ? t("victronEnergyFlow.generator.stopped")
-                        : t("victronEnergyFlow.generator.running")}
-                    </span>
-                  </div>
-
-                  {/* Uptime */}
-                  <div className="flex justify-between items-center px-2 py-1">
-                    <span>{t("victronEnergyFlow.generator.uptime")}</span>
-                    <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
-                      {energyData?.generator?.uptime ||
-                        t("victronEnergyFlow.generator.noData")}
-                    </span>
-                  </div>
-                </div>
-              )
-            }
-          />
-
-          {/* Battery Block */}
-          <div
-            className="relative bg-white dark:bg-custom-dark-blue rounded-lg p-6 backdrop-blur-sm shadow-lg flex flex-col flex-grow group 
-  transition-all duration-700 ease-in-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]
-  hover:translate-y-[-4px] z-10"
-          >
-            {/* Info Icon */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="absolute top-4 right-4">
-                  <Info className="w-5 h-5 text-custom-dark-blue/60 dark:text-custom-yellow/60 transition-all duration-300 hover:scale-110 hover:text-custom-dark-blue dark:hover:text-custom-yellow" />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs bg-gray-200 dark:bg-gray-800 text-sm p-3 rounded-lg shadow">
-                  <p>{t("victronEnergyFlow.battery.tooltip")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <div className="flex-1 flex flex-col items-center justify-start relative">
-              <div className="absolute -top-10 w-48 transition-transform duration-700 ease-in-out group-hover:scale-105">
-                <BatteryIndicator soc={energyData?.battery?.soc} />
-              </div>
-              <div className="text-center mt-28">
-                <h3 className="text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                  {(() => {
-                    const state = energyData?.battery?.state?.toLowerCase();
-                    switch (state) {
-                      case "idle":
-                        return t("victronEnergyFlow.battery.idle");
-                      case "charging":
-                        return t("victronEnergyFlow.battery.charging");
-                      case "discharging":
-                        return t("victronEnergyFlow.battery.discharging");
-                      default:
-                        return energyData?.battery?.state || "-";
-                    }
-                  })()}
-                </h3>
-              </div>
-            </div>
-
-            <div className="w-full mt-6 text-sm space-y-2 border-t border-gray-200 dark:border-gray-700/50 pt-4">
-              {[
-                t("victronEnergyFlow.battery.voltage"),
-                t("victronEnergyFlow.battery.current"),
-                t("victronEnergyFlow.battery.temperature"),
-              ].map((label, index) => (
-                <div
-                  key={label}
-                  className="flex justify-between items-center px-2 py-1 rounded-md "
-                >
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {label}
-                  </span>
-                  <span
-                    className={`font-medium text-custom-dark-blue dark:text-custom-yellow ${
-                      isBlinking && "animate-double-blink"
-                    }`}
-                  >
-                    {index === 0 && (
-                      <>
-                        {energyData?.battery.voltage
-                          ? `${energyData?.battery?.voltage} V`
-                          : "-"}
-                      </>
-                    )}
-                    {index === 1 && (
-                      <>
-                        {energyData?.battery.current
-                          ? `${energyData?.battery?.current} A`
-                          : "-"}
-                      </>
-                    )}
-                    {index === 2 && (
-                      <>
-                        {energyData?.battery.temp
-                          ? `${energyData?.battery?.temp} °C`
-                          : "-"}
-                      </>
-                    )}
-                  </span>
-                </div>
-              ))}
+      {/* Grid Layout */}
+      <div className="relative w-full h-[650px] p-4">
+        {/* Center Logo */}
+        <div className="group absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[170px] h-[170px] md:w-[260px] md:h-[260px] z-50 shadow-xl rounded-full">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] transition-all duration-1000">
+            <div className="absolute inset-0 rotate-180 bg-gradient-to-t from-yellow-400/40 via-green-500/40 to-transparent rounded-full blur-[100px] group-hover:blur-[120px] group-hover:scale-110 transition-all duration-1000"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-yellow-400/40 via-green-500/40 to-transparent rounded-full blur-[100px] group-hover:blur-[120px] group-hover:scale-110 transition-all duration-1000 animate-pulse"></div>
+          </div>
+          <div className="relative bg-white/70 dark:bg-custom-dark-blue/70 rounded-full p-6 backdrop-blur-md shadow-lg flex flex-col items-center justify-center h-full transition-all duration-700 group-hover:transform group-hover:scale-105 group-hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] dark:group-hover:shadow-[0_20px_50px_rgba(254,_204,_27,_0.4)]">
+            <div className="relative w-24 h-24 md:w-32 xl:h-32 transform transition-all duration-500 group-hover:scale-125 group-hover:rotate-180">
+              <Image
+                src={theme === "dark" ? victronLogoDark : victronLogoLight}
+                alt="Victron Logo"
+                fill
+                priority
+                className="object-contain"
+              />
             </div>
           </div>
         </div>
 
-        {/* Center Column */}
-        <div className="flex flex-col gap-8">
-          <EnergyBlock
-            isBlinking={isBlinking}
-            title="Inversor FV"
-            value={energyData?.inverter?.totalPower}
-            unit={
-              typeof energyData?.inverter?.totalPower === "number" ? "W" : ""
-            }
-            icon={FaExchangeAlt}
-            tooltip={t("victronEnergyFlow.inverter.tooltip")}
-            details={
-              <div className="mt-4 space-y-2">
-                {["L1", "L2", "L3"]
-                  .filter((phase) => energyData?.inverter?.[phase]?.power)
-                  .map((phase) => (
-                    <div
-                      key={phase}
-                      className="flex justify-between items-center px-2 py-1"
-                    >
-                      <span>{phase}</span>
-                      <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
-                        {energyData?.inverter?.[phase]?.power || "No Data"} W
-                      </span>
-                    </div>
-                  ))}
+        {/* Grid / Generador Block */}
+        <div className="absolute top-0 left-0 w-[calc(50%-16px)] h-[calc(50%-16px)] bg-white dark:bg-custom-dark-blue rounded-lg [border-bottom-right-radius:250px] [border-top-left-radius:250px] p-6 backdrop-blur-sm shadow-lg group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-700 ease-in-out hover:translate-y-[-4px]">
+          <div className="relative h-full w-full">
+            <div className="flex-1 flex flex-col items-center justify-center relative">
+              <div className="absolute -top-6 left-0 md:left-[calc(50%-4rem)] lg:-top-10 w-24 h-24 lg:w-32 lg:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+                {plant?.data?.records?.[0].hasGenerator == 1 &&
+                !gridPower > 0 ? (
+                  <TbBatteryAutomotive className="w-20 h-20 text-custom-dark-blue dark:text-custom-yellow" />
+                ) : (
+                  <UtilityPole className="w-16 h-16 text-custom-dark-blue dark:text-custom-yellow" />
+                )}
               </div>
-            }
-          />
 
-          {/* Center Column - Inverter Block */}
-          <div className="relative flex-grow group">
-            {/* Enhanced glow effect */}
-            {energyData?.acInput?.state === "Inverting" && (
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] transition-all duration-1000">
-                <div className="absolute inset-0 rotate-180 bg-gradient-to-t from-yellow-400/40 via-green-500/40 to-transparent rounded-full blur-[100px] group-hover:blur-[120px] group-hover:scale-110 transition-all duration-1000"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-yellow-400/40 via-green-500/40 to-transparent rounded-full blur-[100px] group-hover:blur-[120px] group-hover:scale-110 transition-all duration-1000 animate-pulse"></div>
-              </div>
-            )}
-            <div
-              className="relative bg-white dark:bg-custom-dark-blue rounded-full p-6 backdrop-blur-md shadow-lg flex flex-col items-center justify-center h-full transition-all duration-700
-    group-hover:transform group-hover:scale-105
-    group-hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]
-    dark:group-hover:shadow-[0_20px_50px_rgba(254,_204,_27,_0.4)]"
-            >
-              {/* Info Icon */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger className="absolute top-[calc(50% - 12px)] right-4">
-                    <Info className="w-5 h-5 text-custom-dark-blue/60 dark:text-custom-yellow/60 transition-all duration-300 hover:scale-110 hover:text-custom-dark-blue dark:hover:text-custom-yellow" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs bg-gray-200 dark:bg-gray-800 text-sm p-3 rounded-lg shadow">
-                    <p>{t("victronEnergyFlow.inverter.tooltip")}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              <div className="absolute -top-4 w-20 h-20 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 group-hover:shadow-lg">
-                <div className="relative w-16 h-16 transform transition-all duration-700 group-hover:scale-125 group-hover:rotate-180">
-                  <Image
-                    src={theme === "dark" ? victronYellow : victronBlue}
-                    alt="Victron Energy Logo"
-                    fill
-                    priority
-                    className="object-contain"
-                  />
+              <div className="text-center mt-20 lg:mt-28 space-y-2">
+                <div className="flex items-center gap-2 justify-center">
+                  <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {plant?.data?.records?.[0].hasGenerator == 1 &&
+                    !gridPower > 0
+                      ? t("GeneratorBlock")
+                      : t("Grid")}
+                  </h3>
+                  {!plant?.data?.records?.[0].hasGenerator == 1 &&
+                    gridPower && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            className="cursor-help"
+                          >
+                            <BsPlusCircle className="h-5 w-5 text-custom-dark-blue dark:text-custom-yellow" />
+                          </span>
+                        </PopoverTrigger>
+                        <GridDetailsPopover
+                          gridMetrics={energyData?.gridPower}
+                        />
+                      </Popover>
+                    )}
                 </div>
-              </div>
-
-              <div className="text-center mt-12 space-y-2">
-                <p className="text-2xl font-bold bg-gradient-to-r from-custom-dark-blue to-blue-700 dark:from-custom-yellow dark:to-yellow-500 bg-clip-text text-transparent">
-                  {energyData?.acInput?.state
-                    ? t("victronEnergyFlow.acInput.state.inverting")
-                    : "-"}
+                <p
+                  className={`text-2xl md:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent whitespace-nowrap ${
+                    isBlinking ? "animate-double-blink" : ""
+                  }`}
+                >
+                  {plant?.data?.records?.[0].hasGenerator == 1 &&
+                  !gridPower > 0 &&
+                  generatorData?.uptime
+                    ? `${generatorData.uptime} W`
+                    : gridPower
+                    ? `${gridPower} W`
+                    : "-"}{" "}
                 </p>
               </div>
             </div>
-          </div>
 
-          <EnergyBlock
-            isBlinking={isBlinking}
-            title="Potencia solar total"
-            value={energyData?.solarYield}
-            unit={typeof energyData?.solarYield === "number" ? "W" : ""}
-            icon={IoSunnyOutline}
-            tooltip={t("victronEnergyFlow.solarYield.tooltip")}
-          />
+            <div className="absolute w-full md:w-[75%] 2xl:w-[90%] bottom-0 md:bottom-10 lg:bottom-4 2xl:bottom-0 left-0 mb-4 lg:mb-0 lg:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-1 xl:pt-4">
+              <div className="space-y-2">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center md:px-2 py-1 text-nowrap">
+                  <span className="text-nowrap text-xs lg:text-base">
+                    {plant?.data?.records?.[0].hasGenerator == 1 &&
+                    !gridPower > 0
+                      ? t("generatorStatus")
+                      : t("gridStatus")}
+                  </span>
+                  {plant?.data?.records?.[0].hasGenerator == 1 &&
+                  !gridPower > 0 ? (
+                    <span className="font-medium text-custom-dark-blue dark:text-custom-yellow lg:mr-6 xl:mr-12 2xl:mr-20 lg:text-base">
+                      {generatorData.uptime > 0 ? t("Running") : t("Stopped")}
+                    </span>
+                  ) : (
+                    <span className="font-medium text-custom-dark-blue dark:text-custom-yellow lg:mr-6 xl:mr-12 2xl:mr-20 lg:text-base">
+                      {gridPower > 0
+                        ? t("Importing")
+                        : gridPower < 0
+                        ? t("Exporting")
+                        : t("Inactive")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right Column */}
-        <div className="flex flex-col gap-8">
-          <EnergyBlock
-            isBlinking={isBlinking}
-            title={t("victronEnergyFlow.loads.title")}
-            value={energyData?.loads?.totalPower || "-"}
-            unit={energyData?.loads?.totalPower > 0 ? "W" : ""}
-            icon={GiElectric}
-            tooltip={t("victronEnergyFlow.loads.tooltip")}
-            details={
-              <div className="space-y-2">
-                {Object.entries(energyData?.loads || {})
-                  .filter(
-                    ([phase, data]) => phase !== "totalPower" && data?.power
-                  ) // Filter out phases without power data
-                  .map(([phase, data]) => (
-                    <div
-                      key={phase}
-                      className="flex justify-between items-center px-2 py-1"
-                    >
-                      <span className="text-gray-600 dark:text-gray-400">
-                        {phase}
-                      </span>
-                      <div className="flex items-center gap-4">
-                        <span className="font-medium text-custom-dark-blue dark:text-custom-yellow">
-                          {data?.power}W
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+        {/* Solar Block */}
+        <div className="absolute top-0 right-0 w-[calc(50%-16px)] h-[calc(50%-16px)] bg-white dark:bg-custom-dark-blue rounded-lg [border-bottom-left-radius:250px] [border-top-right-radius:250px] p-6 backdrop-blur-sm shadow-lg group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-700 ease-in-out hover:translate-y-[-4px]">
+          <div className="relative h-full w-full">
+            <div className="flex-1 flex flex-col items-center justify-center relative">
+              <div className="overflow-auto absolute -top-6 right-0 md:right-[calc(50%-4rem)] lg:-top-10 w-24 h-24 lg:w-32 lg:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+                <PiSolarPanelLight className="w-16 h-16 xl:w-24 xl:h-24 text-custom-dark-blue dark:text-custom-yellow transition-transform duration-700 ease-in-out group-hover:scale-110" />
               </div>
-            }
-          />
-
-          <EnergyBlock
-            isBlinking={isBlinking}
-            title="Cargador PV"
-            value={energyData?.pvCharger?.power}
-            unit="W"
-            icon={PiSolarPanelLight}
-            tooltip={t("victronEnergyFlow.pvCharger.tooltip")}
-            details={
+              <div className="text-center mt-20 lg:mt-28 space-y-2">
+                <div className="flex items-center gap-2 justify-center">
+                  <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {t("solarTitle")}
+                  </h3>
+                  {energyData?.pvCharger?.mpptData && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          className="cursor-help"
+                        >
+                          <BsPlusCircle className="h-5 w-5 text-custom-dark-blue dark:text-custom-yellow" />
+                        </span>
+                      </PopoverTrigger>
+                      <MpptDetailsPopover
+                        mpptData={energyData?.pvCharger?.mpptData}
+                      />
+                    </Popover>
+                  )}
+                </div>
+                <p
+                  className={`text-2xl md:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent whitespace-nowrap ${
+                    isBlinking ? "animate-double-blink" : ""
+                  }`}
+                >
+                  {formatPowerValue(energyData?.pvCharger?.power)}
+                </p>
+              </div>
+            </div>
+            <div className="absolute w-full md:w-[75%] 2xl:w-[90%] bottom-0 md:bottom-10 lg:bottom-4 2xl:bottom-0 right-0 mb-4 lg:mb-0 lg:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-1 xl:pt-4">
               <div className="space-y-2">
-                {Object.entries(energyData?.pvCharger?.mpptData || {}).map(
-                  ([id, data]) => (
-                    <div
-                      key={id}
-                      className="flex justify-between items-center px-2 py-1"
-                    >
-                      <span className="text-gray-600 dark:text-gray-400">
-                        MPPT-{id}
-                      </span>
-                      <div className="flex gap-4">
+                <div className="flex flex-col items-end md:flex-row md:justify-between md:items-center md:px-2 py-1">
+                  <span className="text-nowrap lg:ml-12 xl:ml-20 text-xs lg:text-base">
+                    {t("solarStatus")}
+                  </span>
+                  <span className="font-medium text-custom-dark-blue dark:text-custom-yellow lg:text-base">
+                    {energyData?.pvCharger?.power > 0
+                      ? t("Active")
+                      : t("Inactive")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Battery Block */}
+        <div className="absolute bottom-0 left-0 w-[calc(50%-16px)] h-[calc(50%-16px)] bg-white dark:bg-custom-dark-blue rounded-lg [border-top-right-radius:250px] [border-bottom-left-radius:250px] p-6 backdrop-blur-sm shadow-lg group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-700 ease-in-out hover:translate-y-[-4px]">
+          <div className="flex-1 flex flex-col items-center justify-start relative h-full">
+            <div className="absolute -bottom-8 left-0 md:left-[calc(50%-4rem)] md:-top-10 w-24 h-24 lg:w-32 lg:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+              <div className="w-16 xl:w-24 transition-transform duration-700 ease-in-out group-hover:scale-110 left-0 md:left-[calc(50%-4rem)] md:-bottom-48">
+                <BatteryIndicator soc={energyData?.battery?.soc} />
+              </div>
+            </div>
+            <div className="flex flex-col items-center mt-10 md:mt-20 lg:mt-28 space-y-2">
+              <div className="flex items-center gap-2">
+                {isMobile ? (
+                  <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {t("batteryTitle").replace(
+                      "Almacenamiento",
+                      "Almaceni-\nmiento"
+                    )}
+                  </h3>
+                ) : (
+                  <>
+                    <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                      {t("batteryTitle")}
+                    </h3>
+                    <Popover>
+                      <PopoverTrigger asChild>
                         <span
-                          className={`text-gray-600 dark:text-gray-400 ${
-                            isBlinking && "animate-double-blink"
-                          }`}
+                          role="button"
+                          tabIndex={0}
+                          className="cursor-help"
                         >
-                          {data.voltage}V
+                          <BsPlusCircle className="h-5 w-5 text-custom-dark-blue dark:text-custom-yellow" />
                         </span>
-                        <span
-                          className={`text-gray-600 dark:text-gray-400 ${
-                            isBlinking && "animate-double-blink"
-                          }`}
-                        >
-                          {data?.current}A
-                        </span>
-                        <span
-                          className={`font-medium text-custom-dark-blue dark:text-custom-yellow ${
-                            isBlinking && "animate-double-blink"
-                          }`}
-                        >
-                          {data?.power}W
-                        </span>
-                      </div>
-                    </div>
-                  )
+                      </PopoverTrigger>
+                      <BatteryDetailsPopover
+                        batteryData={energyData?.battery}
+                      />
+                    </Popover>
+                  </>
                 )}
               </div>
-            }
-          />
+              <div className="flex flex-col items-center gap-1">
+                <p
+                  className={`text-2xl md:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent whitespace-nowrap ${
+                    isBlinking ? "animate-double-blink" : ""
+                  }`}
+                >
+                  {formatPowerValue(energyData?.battery?.dcPower)}
+                </p>
+              </div>
+            </div>
+
+            <div className="overflow-hidden absolute w-full md:w-[75%] 2xl:w-[90%] bottom-14 md:bottom-8 lg:bottom-0 left-0 md:right-0 md:ml-auto mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-2 xl:pt-4">
+              <div className="space-y-2">
+                <div className="flex flex-col items-start justify-start md:gap-4 md:flex-row md:justify-between md:items-center md:px-2">
+                  <span className="md:ml-4 xl:ml-12 2xl:ml-20 text-gray-600 dark:text-gray-400 text-nowrap text-xs lg:text-base">
+                    {t("batteryStatus")}
+                  </span>
+                  <span className="font-medium text-custom-dark-blue dark:text-custom-yellow lg:text-base">
+                    {t(energyData?.battery?.state)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Consumption Block */}
+        <div className="absolute bottom-0 right-0 w-[calc(50%-16px)] h-[calc(50%-16px)] bg-white dark:bg-custom-dark-blue rounded-lg [border-top-left-radius:250px] [border-bottom-right-radius:250px] p-6 backdrop-blur-sm shadow-lg group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-700 ease-in-out hover:translate-y-[-4px]">
+          <div className="relative h-full w-full">
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <div className="overflow-auto absolute -bottom-8 right-0 md:right-[calc(50%-4rem)] md:-top-10 w-24 h-24 lg:w-32 lg:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+                <HiOutlineHome className="w-16 h-16 xl:w-24 xl:h-24 text-custom-dark-blue dark:text-custom-yellow transition-transform duration-700 ease-in-out group-hover:scale-110" />
+              </div>
+              <div className="flex flex-col items-center mt-10 md:mt-20 lg:mt-28 space-y-2">
+                <div className="flex items-center gap-2">
+                  <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                    {t("loadsTitle")}
+                  </h3>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <span role="button" tabIndex={0} className="cursor-help">
+                        <BsPlusCircle className="h-5 w-5 text-custom-dark-blue dark:text-custom-yellow" />
+                      </span>
+                    </PopoverTrigger>
+                    <LoadsDetailsPopover loads={energyData?.loads} />
+                  </Popover>
+                </div>
+                <p
+                  className={`text-2xl md:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent whitespace-nowrap ${
+                    isBlinking ? "animate-double-blink" : ""
+                  }`}
+                >
+                  {formatPowerValue(energyData?.loads?.totalPower)}
+                </p>
+              </div>
+            </div>
+
+            <div className="md:mr-12 absolute w-full md:w-[75%] 2xl:w-[90%] bottom-14 md:bottom-8 lg:bottom-0 right-0 md:left-0 mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-2 xl:pt-4">
+              <div className="space-y-2">
+                <div className="flex flex-col items-end justify-end md:flex-row md:justify-between md:items-center md:px-2">
+                  <span className="text-nowrap text-xs lg:text-base">
+                    {t("loadsStatus")}
+                  </span>
+                  <span className="font-medium text-custom-dark-blue dark:text-custom-yellow lg:mr-6 xl:mr-12 2xl:mr-20 lg:text-base">
+                    {energyData?.loads?.totalPower > 0
+                      ? t("Active")
+                      : t("Inactive")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
   );
 };
+
+VictronEnergyFlow.displayName = "VictronEnergyFlow";
 
 export default VictronEnergyFlow;

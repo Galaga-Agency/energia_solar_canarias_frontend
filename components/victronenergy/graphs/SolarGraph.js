@@ -41,6 +41,7 @@ import {
 } from "@/utils/date-range-utils";
 import SolarTooltip from "../tooltips/SolarTooltip";
 import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
+import { UtilityPole } from "lucide-react";
 
 const getColors = (theme) => ({
   toBattery: theme === "dark" ? "#FFD57B" : "#FFD57B",
@@ -394,7 +395,7 @@ const SolarGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
             title={t("A la red")}
             value={(graphData.totals.Pg || 0).toFixed(1)}
             icon={
-              <MdOutlineGrid4X4 className="w-10 h-10 p-2 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow" />
+              <UtilityPole className="w-10 h-10 p-2 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow" />
             }
           />
         )}

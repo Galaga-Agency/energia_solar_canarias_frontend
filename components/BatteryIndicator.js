@@ -53,14 +53,12 @@ const BatteryIndicator = ({ soc }) => {
             strokeWidth: 7,
             cornerRadius: 6,
             fill: "none",
-            strokeColor:
-              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(71 85 105)",
+            strokeColor: theme === "dark" ? "rgb(255, 213, 122)" : "#002c3f",
           },
           batteryCap: {
             fill: "none",
             strokeWidth: 7,
-            strokeColor:
-              theme === "dark" ? "rgb(255, 213, 122)" : "rgb(71 85 105)",
+            strokeColor: theme === "dark" ? "rgb(255, 213, 122)" : "#002c3f",
             cornerRadius: 2,
             capToBodyRatio: 0.4,
           },

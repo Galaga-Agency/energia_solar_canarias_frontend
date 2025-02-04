@@ -12,12 +12,6 @@ import {
   selectLoadingDetails,
 } from "@/store/slices/plantsSlice";
 import BatteryIndicator from "@/components/BatteryIndicator";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/Tooltip";
 import { Info, UtilityPole } from "lucide-react";
 import Image from "next/image";
 import { GiElectric } from "react-icons/gi";
@@ -25,7 +19,7 @@ import { IoSunnyOutline } from "react-icons/io5";
 import EnergyLoadingClock from "@/components/EnergyLoadingClock";
 import useDeviceType from "@/hooks/useDeviceType";
 import SolarEdgeEnergyBlock from "@/components/solaredge/SolarEdgeEnergyBlock";
-import VictronEnergyFlowSkeleton from "@/components/loadingSkeletons/VictronEnergyFlowSkeleton";
+import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 import { HiHome, HiOutlineHome } from "react-icons/hi";
 
 const SolarEdgeEnergyFlow = ({ provider }) => {
@@ -100,7 +94,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
   }, [fetchRealtimeData]);
 
   if (isComponentLoading || !energyData) {
-    return <VictronEnergyFlowSkeleton theme={theme} />;
+    return <EnergyFlowSkeleton theme={theme} />;
   }
 
   console.log("energyData", energyData);

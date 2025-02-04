@@ -1102,5 +1102,20 @@
   "unavailable": "Status Unavailable",
   "Idle": "Idle",
   "Charging": "Charging",
-  "Discharging": "Discharging"
+  "Discharging": "Discharging",
+  "generatorStatus": "Generator Status",
+  "Running": "Running",
+  "Stopped": "Stopped",
+  "Importing": "Importing",
+  "Exporting": "Exporting",
+  "GeneratorBlock": "Generator",
+  "batteryDetails": "Battery Details",
+  "voltage": "Voltage",
+  "current": "Current",
+  "loadsDetails": "Loads Details",
+  "phase": "L",
+  "frequency": "Frequency",
+  "gridDetails": "Grid Details",
+  "mpptDetails": "MPPT Details",
+  "mppt": "MPPT"
 }

@@ -281,8 +281,9 @@ const VictronEnergyFlow = ({ plant }) => {
                       ? `${gridPower} w`
                       : "-"}
                   </p>
+
                   {energyData?.acInput?.state !== "Generator" &&
-                    gridPower != 0 && (
+                    gridPower !== 0 && (
                       <Popover>
                         <PopoverTrigger asChild>
                           <span

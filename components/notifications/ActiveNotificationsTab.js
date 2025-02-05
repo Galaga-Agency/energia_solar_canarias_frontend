@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -24,8 +24,12 @@ const ActiveNotificationsTab = ({
 }) => {
   const { t } = useTranslation();
   const theme = useSelector(selectTheme);
-  const isLoading = useSelector(selectIsInitialLoad);
+  const isInitialLoad = useSelector(selectIsInitialLoad);
+  const notifications = useSelector(selectActiveNotifications);
   const error = useSelector(selectActiveError);
+
+  // Determine loading state based on both initial load and data availability
+  const isLoading = isInitialLoad && !notifications.length;
 
   // Calculate pagination
   const paginatedNotifications = filteredActive.slice(

@@ -46,11 +46,51 @@ const NotificationsTab = () => {
   const [filteredActive, setFilteredActive] = useState([]);
   const [filteredResolved, setFilteredResolved] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isInitializing, setIsInitializing] = useState(true);
 
+  // Initialize notifications if they're not already loaded
+  useEffect(() => {
+    const initializeNotifications = async () => {
+      if (
+        (!activeNotifications.length && !resolvedNotifications.length) ||
+        isInitializing
+      ) {
+        try {
+          await Promise.all([
+            dispatch(
+              fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
+            ).unwrap(),
+            dispatch(
+              fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
+            ).unwrap(),
+          ]);
+
+          // Trigger background loads after initial fetch
+          dispatch(
+            loadAllNotificationsInBackground({ status: 0, pageSize: 200 })
+          );
+          dispatch(
+            loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
+          );
+        } catch (error) {
+          console.error("Error initializing notifications:", error);
+        } finally {
+          setIsInitializing(false);
+        }
+      } else {
+        setIsInitializing(false);
+      }
+    };
+
+    initializeNotifications();
+  }, [dispatch, activeNotifications.length, resolvedNotifications.length]);
+
+  // Reset current page when tab changes
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);
 
+  // Update filtered notifications when source notifications change
   useEffect(() => {
     if (activeNotifications.length) {
       setFilteredActive(activeNotifications);
@@ -92,13 +132,10 @@ const NotificationsTab = () => {
 
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar mb-12">
-      {/* Background effects - lowest layer */}
       <TransitionEffect />
       <Texture />
 
-      {/* Main content wrapper */}
       <div className="relative z-20">
-        {/* Theme and Language Controls - floating controls layer */}
         <motion.div
           className="fixed top-4 right-4 flex items-center gap-2 z-30"
           initial={{ opacity: 0, y: -20 }}
@@ -109,9 +146,7 @@ const NotificationsTab = () => {
           <LanguageSelector />
         </motion.div>
 
-        {/* Main content area */}
         <div className="relative h-auto p-8">
-          {/* Page title */}
           <motion.h2
             className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-8"
             initial={{ opacity: 0, y: 20 }}
@@ -121,14 +156,12 @@ const NotificationsTab = () => {
             {t("notifications")}
           </motion.h2>
 
-          {/* Content layout container */}
           <motion.div
             className="flex gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
           >
-            {/* Sidebar section - conditionally rendered based on device */}
             {isMobile ? (
               <NotificationFilterSidebar
                 activeNotifications={activeNotifications}
@@ -155,7 +188,6 @@ const NotificationsTab = () => {
               </motion.div>
             )}
 
-            {/* Main content area */}
             <motion.div
               className="flex-1 space-y-6"
               initial={{ opacity: 0 }}
@@ -257,7 +289,6 @@ const NotificationsTab = () => {
         </div>
       </div>
 
-      {/* Mobile filter button - only shown when sidebar is closed */}
       {(isMobile || isTablet) && !isSidebarOpen && (
         <motion.button
           className="xl:hidden fixed bottom-20 left-5 z-30 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
@@ -272,7 +303,6 @@ const NotificationsTab = () => {
         </motion.button>
       )}
 
-      {/* Bottom navigation  */}
       <BottomNavbar userId={user?.id} userClass={user?.clase} />
     </div>
   );

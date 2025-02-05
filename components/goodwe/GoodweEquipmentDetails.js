@@ -185,7 +185,7 @@ const GoodweEquipmentDetails = ({ t }) => {
                     </span>
                   </div>
                   <span className="text-custom-dark-blue dark:text-custom-yellow text-sm text-left">
-                    {item.value || "--"} {item.unit}
+                    {t(item.value) || "--"} {item.unit}
                   </span>
                 </div>
               ))}

@@ -20,14 +20,19 @@ const volatileStates = {
     "error",
     "detailsError",
   ],
-  notifications: ["loading", "error"],
+  notifications: [
+    "loading",
+    "error",
+    "isLoadingMore",
+    "activeError",
+    "resolvedError",
+  ],
   usersList: ["loading", "error"],
   providers: ["loading", "error"],
 };
 
 // Transform to clean sensitive/volatile data before persisting
 const cleanDataTransform = createTransform(
-  // Transform state going to storage
   (inboundState, key) => {
     if (volatileStates[key]) {
       const cleanState = { ...inboundState };
@@ -38,7 +43,6 @@ const cleanDataTransform = createTransform(
     }
     return inboundState;
   },
-  // Transform state being rehydrated
   (outboundState, key) => {
     if (volatileStates[key]) {
       const cleanState = { ...outboundState };
@@ -50,6 +54,21 @@ const cleanDataTransform = createTransform(
     return outboundState;
   }
 );
+
+// Special config for notifications slice
+const notificationsPersistConfig = {
+  key: "notifications",
+  storage,
+  whitelist: [
+    "activeNotifications",
+    "resolvedNotifications",
+    "activeTotalCount",
+    "resolvedTotalCount",
+    "organizationFilter",
+    "resolvedFetched",
+  ],
+  transforms: [cleanDataTransform],
+};
 
 // Main persistence configuration
 const persistConfig = {
@@ -66,11 +85,14 @@ const plantsPersistConfig = {
   blacklist: volatileStates.plants,
 };
 
-// Combine all reducers
+// Combine all reducers with persisted notifications
 const rootReducer = combineReducers({
   user: userReducer,
   plants: persistReducer(plantsPersistConfig, plantsReducer),
-  notifications: notificationsReducer,
+  notifications: persistReducer(
+    notificationsPersistConfig,
+    notificationsReducer
+  ),
   theme: themeReducer,
   usersList: usersListReducer,
   providers: providersReducer,
@@ -87,7 +109,11 @@ const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
-        ignoredPaths: ["plants.plantDetails"],
+        ignoredPaths: [
+          "plants.plantDetails",
+          "notifications.activeNotifications",
+          "notifications.resolvedNotifications",
+        ],
       },
     }),
   devTools: process.env.NODE_ENV !== "production",

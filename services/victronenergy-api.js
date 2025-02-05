@@ -175,7 +175,7 @@ export const fetchVictronEnergyAlertsAPI = async ({ plantId, token }) => {
     }
 
     const data = await response.json();
-    console.log("Alerts Data Response for victron:", data);
+    // console.log("Alerts Data Response for victron:", data);
     return data?.data || null;
   } catch (error) {
     console.error("Alerts data fetch error:", error);

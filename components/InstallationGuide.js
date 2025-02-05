@@ -12,11 +12,11 @@ const InstallationGuide = () => {
     usePWADiagnostics();
   const { t } = useTranslation();
 
-  console.log("Installation Guide States:");
-  console.log("isInstalled:", isInstalled);
-  console.log("deferredPrompt:", deferredPrompt);
-  console.log("showButton:", showButton);
-  console.log("isIOS:", isIOS);
+  // console.log("Installation Guide States:");
+  // console.log("isInstalled:", isInstalled);
+  // console.log("deferredPrompt:", deferredPrompt);
+  // console.log("showButton:", showButton);
+  // console.log("isIOS:", isIOS);
 
   const handleInstallClick = async () => {
     if (isIOS) {

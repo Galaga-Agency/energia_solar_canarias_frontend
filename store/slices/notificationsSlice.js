@@ -269,8 +269,6 @@ export const loadAllNotificationsInBackground = createAsyncThunk(
             : appendResolvedNotifications(formattedNotifications)
         );
 
-        console.log("formattedNotifications", formattedNotifications);
-
         if (formattedNotifications.length < pageSize) {
           hasMore = false;
         } else {

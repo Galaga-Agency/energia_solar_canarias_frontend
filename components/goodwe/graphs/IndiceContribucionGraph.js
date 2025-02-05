@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import CustomTooltipGraph from "../CustomTooltipGraph";
+import NoDataErrorState from "@/components/NoDataErrorState";
 
 const getColors = (theme) => ({
   Consumption: theme === "dark" ? "#AD936A" : "#9CA3AF",
@@ -20,13 +21,20 @@ const getColors = (theme) => ({
   SelfUse: theme === "dark" ? "#BDBFC0" : "#0B2738",
 });
 
-const IndiceContribucionGraph = ({ data, theme, isMobile }) => {
+const IndiceContribucionGraph = ({
+  data,
+  theme,
+  isMobile,
+  isError,
+  onRetry,
+  onSelectRange,
+}) => {
   const { t } = useTranslation();
 
   const transformedData = React.useMemo(() => {
-    if (!data?.lines?.length) return [];
+    if (!data?.lines?.length) return null;
 
-    return data.lines[0].xy.map((point, index) => {
+    const formattedData = data.lines[0].xy.map((point, index) => {
       const dataPoint = { date: point.x };
       data.lines.forEach((line) => {
         if (line.xy[index]) {
@@ -35,7 +43,34 @@ const IndiceContribucionGraph = ({ data, theme, isMobile }) => {
       });
       return dataPoint;
     });
+
+    // Check if all data values are 0 or missing
+    const allZero = formattedData.every((entry) =>
+      Object.values(entry).every((value) => value === 0 || value === null)
+    );
+
+    return allZero ? null : formattedData;
   }, [data]);
+
+  if (isError) {
+    return (
+      <NoDataErrorState
+        isError={true}
+        onRetry={onRetry}
+        onSelectRange={onSelectRange}
+      />
+    );
+  }
+
+  if (!transformedData || transformedData == []) {
+    return (
+      <NoDataErrorState
+        isError={false}
+        onRetry={onRetry}
+        onSelectRange={onSelectRange}
+      />
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -75,12 +110,21 @@ const IndiceContribucionGraph = ({ data, theme, isMobile }) => {
               content={<CustomTooltipGraph chartType="indice" theme={theme} />}
             />
             <Legend
-              formatter={(value) => (
-                <span style={{ color: getColors(theme)[value] }}>
-                  {t(value)}
-                </span>
-              )}
+              formatter={(value) => {
+                const formattedValue = value
+                  .replace("Consumption", "Consumo(W)")
+                  .replace("Buy", "Compra(W)")
+                  .replace("SelfUse", "Autoconsumo(W)")
+                  .replace("ContributionRatio", "Índice Contribución(%)");
+
+                return (
+                  <span style={{ color: getColors(theme)[value] }}>
+                    {t(formattedValue)}
+                  </span>
+                );
+              }}
             />
+
             <Bar
               dataKey="Consumption"
               fill={getColors(theme).Consumption}

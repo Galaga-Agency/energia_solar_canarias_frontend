@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import CustomTooltipGraph from "../CustomTooltipGraph";
+import NoDataErrorState from "@/components/NoDataErrorState";
 
 const getColors = (theme) => ({
   PV: theme === "dark" ? "#FFD57B" : "#BDBFC0",
@@ -20,7 +21,14 @@ const getColors = (theme) => ({
   SOC: theme === "dark" ? "#9CA3AF" : "#AD936A",
 });
 
-const PowerGraph = ({ data, theme, isMobile }) => {
+const PowerGraph = ({
+  data,
+  theme,
+  isMobile,
+  onRetry,
+  onSelectRange,
+  isError,
+}) => {
   const { t } = useTranslation();
 
   const getPotenciaLineColor = (lineName) => {
@@ -30,7 +38,7 @@ const PowerGraph = ({ data, theme, isMobile }) => {
   };
 
   const transformedData = React.useMemo(() => {
-    if (!data?.lines?.[0]?.xy) return [];
+    if (!data?.lines?.[0]?.xy || data.lines[0].xy.length === 0) return null;
 
     const now = new Date();
     const currentHour = now.getHours();
@@ -63,8 +71,26 @@ const PowerGraph = ({ data, theme, isMobile }) => {
       });
     }
 
-    return extendedData;
+    const hasValidData = extendedData.some((entry) =>
+      Object.entries(entry).some(([key, value]) => key !== "time" && value > 0)
+    );
+
+    return hasValidData ? extendedData : null;
   }, [data]);
+
+  if (isError) {
+    return (
+      <NoDataErrorState
+        isError={true}
+        onRetry={onRetry}
+        onSelectRange={onSelectRange}
+      />
+    );
+  }
+
+  if (!transformedData || transformedData == []) {
+    return <NoDataErrorState onRetry={onRetry} onSelectRange={onSelectRange} />;
+  }
 
   return (
     <div className="overflow-x-auto">

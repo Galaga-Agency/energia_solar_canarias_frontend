@@ -12,6 +12,9 @@ import {
   startOfYear,
   isValid,
   parseISO,
+  isAfter,
+  isSameDay,
+  startOfDay,
 } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -120,6 +123,20 @@ const GoodweDateSelector = ({
     return date.getFullYear() === today.getFullYear();
   };
 
+  const isFutureDate = (date) => {
+    const today = startOfDay(new Date());
+
+    if (range === views.DAY) {
+      return isAfter(startOfDay(date), today);
+    } else if (range === views.MONTH) {
+      // For month view, consider future if the first day of the month is after today
+      return isAfter(startOfDay(startOfMonth(date)), today);
+    } else {
+      // For year view, consider future if the first day of the year is after today
+      return isAfter(startOfDay(startOfYear(date)), today);
+    }
+  };
+
   const isSelected = (date) => {
     if (!selectedDate) return false;
     if (range === views.DAY) {
@@ -131,6 +148,9 @@ const GoodweDateSelector = ({
   };
 
   const handleDateSelect = (date) => {
+    // Prevent selecting future dates
+    if (isFutureDate(date)) return;
+
     if (range === views.DAY) {
       onSelect(date);
     } else if (range === views.MONTH) {
@@ -174,10 +194,13 @@ const GoodweDateSelector = ({
                 <button
                   type="button"
                   onClick={() => handleDateSelect(day)}
+                  disabled={isFutureDate(day)}
                   className={`w-full h-6 text-xs flex items-center justify-center rounded
                     ${
                       isSelected(day)
                         ? "bg-custom-yellow text-custom-dark-blue font-medium"
+                        : isFutureDate(day)
+                        ? "text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50"
                         : isToday(day)
                         ? "bg-blue-100 dark:bg-blue-900 text-custom-dark-blue dark:text-custom-light-gray"
                         : "text-custom-dark-blue dark:text-custom-light-gray hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -203,10 +226,13 @@ const GoodweDateSelector = ({
             key={index}
             type="button"
             onClick={() => handleDateSelect(month)}
+            disabled={isFutureDate(month)}
             className={`h-8 text-xs flex items-center justify-center rounded
               ${
                 isSelected(month)
                   ? "bg-custom-yellow text-custom-dark-blue font-medium"
+                  : isFutureDate(month)
+                  ? "text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50"
                   : isToday(month)
                   ? "bg-blue-100 dark:bg-blue-900 text-custom-dark-blue dark:text-custom-light-gray"
                   : "text-custom-dark-blue dark:text-custom-light-gray hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -229,10 +255,13 @@ const GoodweDateSelector = ({
             key={index}
             type="button"
             onClick={() => handleDateSelect(year)}
+            disabled={isFutureDate(year)}
             className={`h-8 text-xs flex items-center justify-center rounded
               ${
                 isSelected(year)
                   ? "bg-custom-yellow text-custom-dark-blue font-medium"
+                  : isFutureDate(year)
+                  ? "text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50"
                   : isToday(year)
                   ? "bg-blue-100 dark:bg-blue-900 text-custom-dark-blue dark:text-custom-light-gray"
                   : "text-custom-dark-blue dark:text-custom-light-gray hover:bg-gray-100 dark:hover:bg-gray-700"

@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ComposedChart,
@@ -29,11 +35,13 @@ import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import PercentageBar from "@/components/solaredge/PercentageBar";
 import { useParams } from "next/navigation";
-import ExportModal from "../ExportModal";
+import { format } from "date-fns";
 import useCSVExport from "@/hooks/useCSVExport";
-import CustomSelect from "../ui/CustomSelect";
-import CustomTooltipEnergyFlowGraph from "./CustomTooltipEnergyFlowGraph.js";
-import NoDataErrorState from "../NoDataErrorState";
+import CustomSelect from "../../ui/CustomSelect";
+import CustomTooltipEnergyFlowGraph from "../tooltips/CustomTooltipEnergyFlowGraph.js";
+import NoDataErrorState from "../../NoDataErrorState";
+import { CiExport } from "react-icons/ci";
+import DateSelector from "@/components/DateSelector";
 
 // Constants
 const MAX_RETRIES = 3;
@@ -106,8 +114,11 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [retryCount, setRetryCount] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
+  const [isStartDateOpen, setStartDateOpen] = useState(false);
+  const [isEndDateOpen, setEndDateOpen] = useState(false);
+  const startDateRef = useRef(null);
+  const endDateRef = useRef(null);
 
   // Hooks
   const { downloadCSV } = useCSVExport();
@@ -436,42 +447,16 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
     }));
 
     downloadCSV(exportData, "solaredge_data.csv");
-    setIsModalOpen(false);
   }, [filteredData, downloadCSV]);
 
-  console.log("filteredData", filteredData);
-
   return (
-    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6">
+    <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6">
       <div className="flex flex-col gap-4 mb-6">
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <div className="flex flex-col md:flex-row justify-start md:items-center">
-            <div className="flex items-center justify-between">
-              <div className="flex gap-4 items-center">
-                <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
-                  {title}
-                </h2>
-                <button
-                  onClick={handleButtonClick}
-                  disabled={isLoading}
-                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
-                >
-                  <BiRefresh
-                    className={`text-2xl text-custom-dark-blue dark:text-custom-yellow mb-1 ${
-                      isLoading ? "animate-spin" : ""
-                    }`}
-                  />
-                </button>
-              </div>
-              {isMobile && (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
-                </button>
-              )}
-            </div>
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col md:gap-2 w-full">
+            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4 md:mb-0 max-w-[70%]">
+              {title}
+            </h2>
             {lastUpdateTime && (
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {t("lastUpdate")}:{" "}
@@ -479,54 +464,74 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
               </span>
             )}
           </div>
+
           <div className="flex items-center gap-4">
             <CustomSelect
-              value={range}
+              value={t(
+                RANGE_OPTIONS.find((option) => option.value === range)?.label
+              )}
               onChange={(value) => {
                 setRange(value);
                 setCustomRange(value === "CUSTOM");
               }}
-              options={RANGE_OPTIONS}
+              options={RANGE_OPTIONS.map((option) => ({
+                value: option.value,
+                label: t(option.label),
+              }))}
             />
-            {!isMobile && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
-              </button>
-            )}
+            <button
+              onClick={handleExportCSV}
+              className="w-10 h-10 p-2 bg-white hover:bg-white/50 transition-all duration-300 dark:bg-custom-dark-blue hover:dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
+            >
+              <CiExport className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+            </button>
           </div>
         </div>
 
         {customRange && (
           <div className="flex flex-col md:flex-row gap-4">
-            <DatePicker
-              selected={startDate}
-              onChange={setStartDate}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              maxDate={endDate}
-              className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full"
-              placeholderText={t("startDate")}
-              dateFormat="dd/MM/yyyy"
-              dropdownMode="select"
-              openToDate={new Date()}
-            />
-            <DatePicker
-              selected={endDate}
-              onChange={setEndDate}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              maxDate={new Date()}
-              className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full"
-              placeholderText={t("endDate")}
-              dateFormat="dd/MM/yyyy"
-              dropdownMode="select"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                ref={startDateRef}
+                value={startDate ? format(startDate, "dd/MM/yyyy") : ""}
+                onClick={() => setStartDateOpen(true)}
+                readOnly
+                placeholder={t("startDate")}
+                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full cursor-pointer"
+              />
+              <DateSelector
+                isOpen={isStartDateOpen}
+                onClose={() => setStartDateOpen(false)}
+                onSelect={(date) => {
+                  setStartDate(date);
+                  setStartDateOpen(false);
+                }}
+                value={startDate}
+                parentRef={startDateRef}
+              />
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                ref={endDateRef}
+                value={endDate ? format(endDate, "dd/MM/yyyy") : ""}
+                onClick={() => setEndDateOpen(true)}
+                readOnly
+                placeholder={t("endDate")}
+                className="p-2 border rounded-lg dark:bg-gray-800 dark:text-white w-full cursor-pointer"
+              />
+              <DateSelector
+                isOpen={isEndDateOpen}
+                onClose={() => setEndDateOpen(false)}
+                onSelect={(date) => {
+                  setEndDate(date);
+                  setEndDateOpen(false);
+                }}
+                value={endDate}
+                parentRef={endDateRef}
+              />
+            </div>
           </div>
         )}
       </div>
@@ -628,17 +633,6 @@ const SolarEdgeEnergyFlowGraph = ({ title, token }) => {
             </div>
           </div>
         </div>
-      )}
-
-      {isModalOpen && (
-        <ExportModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onExport={handleExportCSV}
-          t={t}
-          isLoading={isLoading}
-          hasData={filteredData?.length > 0}
-        />
       )}
     </div>
   );

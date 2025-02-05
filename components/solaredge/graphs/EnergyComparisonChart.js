@@ -28,12 +28,13 @@ import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import EnergyComparisonChartSkeleton from "@/components/loadingSkeletons/EnergyComparisonChartSkeleton";
 import useCSVExport from "@/hooks/useCSVExport";
-import PrimaryButton from "../ui/PrimaryButton";
-import SecondaryButton from "../ui/SecondaryButton";
-import ExportModal from "../ExportModal";
+import PrimaryButton from "../../ui/PrimaryButton";
+import SecondaryButton from "../../ui/SecondaryButton";
+import ExportModal from "../../ExportModal";
 import { Info } from "lucide-react";
-import CustomTooltipEnergyComparison from "./CustomTooltipEnergyComparison";
-import NoDataErrorState from "../NoDataErrorState";
+import CustomTooltipEnergyComparison from "../tooltips/CustomTooltipEnergyComparison";
+import NoDataErrorState from "../../NoDataErrorState";
+import { CiExport } from "react-icons/ci";
 
 const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   const dispatch = useDispatch();
@@ -165,30 +166,29 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   }, []);
 
   return (
-    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 my-6">
+    <div className="relative bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 my-6">
       <div className="flex justify-between items-center mb-6 gap-4">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+        <div className="flex flex-col md:gap-2 w-full">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4 md:mb-0 max-w-[70%]">
             {t("energyComparison")}
           </h2>
-          <button
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
-          >
-            <BiRefresh
-              className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                isLoading ? "animate-spin" : ""
-              }`}
-            />
-          </button>
         </div>
-
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          onClick={handleRefresh}
+          disabled={isLoading}
+          className="absolute top-4 right-16 w-10 h-10 p-2 bg-white hover:bg-white/50 transition-all duration-300 dark:bg-custom-dark-blue hover:dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
         >
-          <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+          <BiRefresh
+            className={`text-3xl text-custom-dark-blue dark:text-custom-yellow ${
+              isLoading ? "animate-spin" : ""
+            }`}
+          />
+        </button>
+        <button
+          onClick={handleExportCSV}
+          className="absolute right-4 top-4 w-10 h-10 p-2 bg-white hover:bg-white/50 transition-all duration-300 dark:bg-custom-dark-blue hover:dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
+        >
+          <CiExport className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
         </button>
       </div>
 

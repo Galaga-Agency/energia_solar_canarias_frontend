@@ -1,5 +1,6 @@
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import NoDataErrorState from "@/components/NoDataErrorState";
 
 const DEFAULT_CHART_DATA = {
   "Salida de CA": [
@@ -12,7 +13,13 @@ const DEFAULT_CHART_DATA = {
   ],
 };
 
-const EnergyStatisticsGraph = ({ data, theme }) => {
+const EnergyStatisticsGraph = ({
+  data,
+  theme,
+  isError,
+  onRetry,
+  onSelectRange,
+}) => {
   const transformedData = React.useMemo(() => {
     if (!data?.modelData) return DEFAULT_CHART_DATA;
 
@@ -43,13 +50,27 @@ const EnergyStatisticsGraph = ({ data, theme }) => {
       ],
     };
 
-    // If all values are 0, return the default data structure
+    // If all values are 0, return default data
     const allZero = Object.values(result).every((chartData) =>
       chartData.every((item) => !item.value)
     );
 
-    return allZero ? DEFAULT_CHART_DATA : result;
+    return allZero ? null : result;
   }, [data]);
+
+  if (isError) {
+    return (
+      <NoDataErrorState
+        isError={true}
+        onRetry={onRetry}
+        onSelectRange={onSelectRange}
+      />
+    );
+  }
+
+  if (!transformedData || transformedData == []) {
+    return <NoDataErrorState onRetry={onRetry} onSelectRange={onSelectRange} />;
+  }
 
   return (
     <div className="w-full">
@@ -60,13 +81,6 @@ const EnergyStatisticsGraph = ({ data, theme }) => {
             (sum, entry) => sum + entry.value,
             0
           );
-
-          // Even with no data, we still want to show the pie sections
-          // We'll create a special empty data structure that shows equal sections
-          const emptyPieData = chartData.map((item) => ({
-            ...item,
-            value: 1, // Equal sections for visual display only
-          }));
 
           return (
             <div
@@ -80,7 +94,7 @@ const EnergyStatisticsGraph = ({ data, theme }) => {
                 <ResponsiveContainer width={300} height={300}>
                   <PieChart>
                     <Pie
-                      data={hasData ? chartData : emptyPieData}
+                      data={chartData}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
@@ -88,21 +102,19 @@ const EnergyStatisticsGraph = ({ data, theme }) => {
                       outerRadius={120}
                       label={null}
                     >
-                      {(hasData ? chartData : emptyPieData).map((entry) => (
+                      {chartData.map((entry) => (
                         <Cell
                           key={`cell-${entry.name}`}
                           fill={
-                            hasData
-                              ? theme === "dark"
-                                ? entry.name === "Interno" ||
-                                  entry.name === "PV+BAT"
-                                  ? "#657880"
-                                  : "#FFD57B"
-                                : entry.name === "Interno" ||
-                                  entry.name === "PV+BAT"
-                                ? "#0B2738"
+                            theme === "dark"
+                              ? entry.name === "Interno" ||
+                                entry.name === "PV+BAT"
+                                ? "#657880"
                                 : "#FFD57B"
-                              : "#E5E7EB" // Light grey for empty state
+                              : entry.name === "Interno" ||
+                                entry.name === "PV+BAT"
+                              ? "#0B2738"
+                              : "#FFD57B"
                           }
                         />
                       ))}
@@ -118,29 +130,16 @@ const EnergyStatisticsGraph = ({ data, theme }) => {
                     return (
                       <div
                         key={`legend-${entry.name}`}
-                        className="flex items-center gap-2 text-sm whitespace-nowrap"
+                        className="flex items-center gap-2 text-sm"
                       >
                         <div
                           className="w-4 h-4"
                           style={{
-                            backgroundColor: hasData
-                              ? theme === "dark"
-                                ? entry.name === "Interno" ||
-                                  entry.name === "PV+BAT"
-                                  ? "#657880"
-                                  : "#FFD57B"
-                                : entry.name === "Interno" ||
-                                  entry.name === "PV+BAT"
-                                ? "#0B2738"
-                                : "#FFD57B"
-                              : "#E5E7EB",
+                            backgroundColor:
+                              theme === "dark" ? "#657880" : "#FFD57B",
                           }}
                         />
-                        <span
-                          className={`text-custom-dark-blue dark:text-custom-yellow ${
-                            !hasData ? "opacity-50" : ""
-                          }`}
-                        >
+                        <span className="text-custom-dark-blue dark:text-custom-yellow">
                           {entry.name}: {entry.value.toFixed(2)} {entry.unit} (
                           {percentage}%)
                         </span>

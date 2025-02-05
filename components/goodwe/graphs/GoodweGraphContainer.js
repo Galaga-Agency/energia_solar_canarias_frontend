@@ -26,6 +26,7 @@ import useCSVExport from "@/hooks/useCSVExport";
 import ProporcionUsoGraph from "@/components/goodwe/graphs/ProporcionUsoGraph";
 import GeneracionEnergiaGraph from "@/components/goodwe/graphs/GeneracionEnergiaGraph";
 import IndiceContribucionGraph from "@/components/goodwe/graphs/IndiceContribucionGraph";
+import { CiExport } from "react-icons/ci";
 
 const CHART_TYPE_OPTIONS = [
   { value: "potencia", label: "power" },
@@ -51,7 +52,7 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
   const error = useSelector(selectGraphError);
   const user = useSelector(selectUser);
   const { downloadCSV } = useCSVExport();
-
+  const [refreshKey, setRefreshKey] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [chartIndexId, setChartIndexId] = useState("potencia");
   const [range, setRange] = useState("dia");
@@ -71,6 +72,9 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
     if (!plantId || !user?.tokenIdentificador || !selectedDate) return;
 
     try {
+      // Clear previous graph data before making a new request
+      dispatch(clearGraphData());
+
       const formattedDate = selectedDate.toISOString().split("T")[0];
       const requestBody = {
         id: plantId,
@@ -87,6 +91,8 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
       const response = await dispatch(
         fetchGoodweGraphData(requestBody)
       ).unwrap();
+
+      console.log("Graph data fetched:", response);
 
       const lines = response?.data?.data?.lines || [];
       const todayPV = lines.length > 0 ? lines[0].xy.slice(-1)[0]?.y : null;
@@ -168,10 +174,7 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
         <div className="min-h-[400px] flex items-center justify-center">
           <NoDataErrorState
             isError={!!error}
-            onRetry={() => {
-              dispatch(clearGraphData());
-              handleFetchGraph();
-            }}
+            onRetry={handleFetchGraph}
             onSelectRange={() => setIsDateSelectorOpen(true)}
           />
         </div>
@@ -185,6 +188,9 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
             data={graphData?.data?.data}
             theme={theme}
             isMobile={isMobile}
+            onRetry={handleFetchGraph}
+            onSelectRange={() => setIsDateSelectorOpen(true)}
+            isError={error}
           />
         );
       case "estadisticas sobre energia":
@@ -193,6 +199,9 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
             data={graphData?.data?.data}
             theme={theme}
             isMobile={isMobile}
+            onRetry={handleFetchGraph}
+            onSelectRange={() => setIsDateSelectorOpen(true)}
+            isError={error}
           />
         );
       case "generacion de energia y ingresos":
@@ -201,6 +210,9 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
             data={graphData?.data?.data}
             theme={theme}
             isMobile={isMobile}
+            onRetry={handleFetchGraph}
+            onSelectRange={() => setIsDateSelectorOpen(true)}
+            isError={error}
           />
         );
       case "proporcion para uso personal":
@@ -209,6 +221,9 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
             data={graphData?.data?.data}
             theme={theme}
             isMobile={isMobile}
+            onRetry={handleFetchGraph}
+            onSelectRange={() => setIsDateSelectorOpen(true)}
+            isError={error}
           />
         );
       case "indice de contribucion":
@@ -217,6 +232,9 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
             data={graphData?.data?.data}
             theme={theme}
             isMobile={isMobile}
+            onRetry={handleFetchGraph}
+            onSelectRange={() => setIsDateSelectorOpen(true)}
+            isError={error}
           />
         );
       default:
@@ -236,72 +254,68 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
   };
 
   return (
-    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6">
-      <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center mb-6">
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left">
-            {title}
-          </h2>
-          <button
-            onClick={handleFetchGraph}
-            disabled={isLoading}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 mb-1"
-          >
-            <BiRefresh
-              className={`text-2xl text-custom-dark-blue dark:text-custom-yellow ${
-                isLoading ? "animate-spin" : ""
-              }`}
-            />
-          </button>
-        </div>
-
-        <div className="flex gap-4 mt-4 md:mt-0 w-full md:w-auto">
+    <div className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-6 relative">
+      <div className="flex flex-col mb-6">
+        <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow text-left max-w-[70%] mb-2 md:mb-4">
+          {title}
+        </h2>
+        <button
+          onClick={handleFetchGraph}
+          disabled={isLoading}
+          className="absolute top-4 right-16 w-10 h-10 p-2 bg-white hover:bg-white/50 transition-all duration-300 dark:bg-custom-dark-blue hover:dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
+        >
+          <BiRefresh
+            className={`text-3xl text-custom-dark-blue dark:text-custom-yellow  ${
+              isLoading ? "animate-spin" : ""
+            }`}
+          />
+        </button>
+        <div className="flex flex-col md:flex-row gap-4 mt-4 md:mt-0 w-full md:w-auto">
           {/* Range Selector - Only show if not potencia */}
-          {chartIndexId !== "potencia" && (
-            <CustomSelect
-              value={range}
-              onChange={handleRangeChange}
-              options={RANGE_OPTIONS}
-            />
-          )}
-
-          {/* Date Selector */}
-          <div className="relative">
-            <div ref={dateButtonRef}>
-              <button
-                onClick={() => setIsDateSelectorOpen((prev) => !prev)}
-                className="font-secondary dark:border dark:border-gray-200/50 text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
-              >
-                <span>
-                  {selectedDate
-                    ? format(
-                        selectedDate,
-                        range === "dia"
-                          ? "dd/MM/yyyy"
-                          : range === "mes"
-                          ? "MMM yyyy"
-                          : "yyyy",
-                        { locale: es }
-                      )
-                    : t("dateAll")}
-                </span>
-                <BsCalendar3 />
-              </button>
-            </div>
-
-            {isDateSelectorOpen && (
-              <GoodweDateSelector
-                isOpen={isDateSelectorOpen}
-                onClose={() => setIsDateSelectorOpen(false)}
-                onSelect={handleDateChange}
-                selectedDate={selectedDate}
-                parentRef={dateButtonRef}
-                range={range}
-                className="right-0"
+          <div className="flex items-center gap-4">
+            {chartIndexId !== "potencia" && (
+              <CustomSelect
+                value={range}
+                onChange={handleRangeChange}
+                options={RANGE_OPTIONS}
               />
             )}
+            {/* Date Selector */}
+            <div className="relative">
+              <div ref={dateButtonRef}>
+                <button
+                  onClick={() => setIsDateSelectorOpen((prev) => !prev)}
+                  className="font-secondary dark:border dark:border-gray-200/50 text-md flex gap-4 items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 hover:bg-custom-light-gray dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-yellow h-full"
+                >
+                  <span>
+                    {selectedDate
+                      ? format(
+                          selectedDate,
+                          range === "dia"
+                            ? "dd/MM/yyyy"
+                            : range === "mes"
+                            ? "MMM yyyy"
+                            : "yyyy",
+                          { locale: es }
+                        )
+                      : t("dateAll")}
+                  </span>
+                  <BsCalendar3 />
+                </button>
+              </div>
+              {isDateSelectorOpen && (
+                <GoodweDateSelector
+                  isOpen={isDateSelectorOpen}
+                  onClose={() => setIsDateSelectorOpen(false)}
+                  onSelect={handleDateChange}
+                  selectedDate={selectedDate}
+                  parentRef={dateButtonRef}
+                  range={range}
+                  className="right-0"
+                />
+              )}
+            </div>
           </div>
-
           <CustomSelect
             value={chartIndexId}
             onChange={(newChartId) => {
@@ -309,29 +323,17 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
               handleFetchGraph();
             }}
             options={CHART_TYPE_OPTIONS}
+            className="w-fit"
           />
-
           <button
-            onClick={() => setIsModalOpen(true)}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            onClick={handleExportCSV}
+            className="absolute right-4 top-4 w-10 h-10 p-2 bg-white hover:bg-white/50 transition-all duration-300 dark:bg-custom-dark-blue hover:dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
           >
-            <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+            <CiExport className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
           </button>
         </div>
       </div>
-
       <div className="relative">{renderGraphContent()}</div>
-
-      {isModalOpen && (
-        <ExportModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onExport={handleExportCSV}
-          t={t}
-          isLoading={isLoading}
-          hasData={graphData?.data?.data?.lines?.length > 0}
-        />
-      )}
     </div>
   );
 };

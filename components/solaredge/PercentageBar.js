@@ -68,7 +68,7 @@ const PercentageBar = ({
       <div className="flex justify-between mt-3 text-sm">
         <div className="flex items-center gap-2">
           <div
-            className="w-3 h-3 rounded-sm"
+            className="w-3 h-3 rounded-sm shrink-0"
             style={{ backgroundColor: color1 }}
           />
           <span className="text-custom-dark-blue dark:text-custom-light-gray">
@@ -77,7 +77,7 @@ const PercentageBar = ({
         </div>
         <div className="flex items-center gap-2">
           <div
-            className="w-3 h-3 rounded-sm"
+            className="w-3 h-3 rounded-sm shrink-0"
             style={{ backgroundColor: color2 }}
           />
           <span className="text-custom-dark-blue dark:text-custom-light-gray">

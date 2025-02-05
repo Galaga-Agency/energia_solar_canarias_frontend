@@ -9,6 +9,7 @@ import {
   startOfMonth,
   isValid,
   parseISO,
+  isAfter,
 } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -77,6 +78,12 @@ const DateSelector = ({ isOpen, onClose, onSelect, value, parentRef }) => {
     return format(date, "yyyy-MM-dd") === format(today, "yyyy-MM-dd");
   };
 
+  const isFutureDate = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return isAfter(date, today);
+  };
+
   const isSelected = (date) => {
     if (!value) return false;
 
@@ -92,6 +99,9 @@ const DateSelector = ({ isOpen, onClose, onSelect, value, parentRef }) => {
   };
 
   const handleDateSelect = (date) => {
+    // Prevent selecting future dates
+    if (isFutureDate(date)) return;
+
     // Return Date object for GoodweGraphDisplay
     if (value instanceof Date) {
       onSelect(date);
@@ -160,10 +170,13 @@ const DateSelector = ({ isOpen, onClose, onSelect, value, parentRef }) => {
                   <button
                     type="button"
                     onClick={() => handleDateSelect(day)}
+                    disabled={isFutureDate(day)}
                     className={`w-full h-6 text-xs flex items-center justify-center rounded
                       ${
                         isSelected(day)
                           ? "bg-custom-yellow text-custom-dark-blue font-medium"
+                          : isFutureDate(day)
+                          ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
                           : isToday(day)
                           ? "bg-blue-100 dark:bg-blue-900 text-custom-dark-blue dark:text-custom-light-gray"
                           : "text-custom-dark-blue dark:text-custom-light-gray hover:bg-gray-100 dark:hover:bg-gray-700"

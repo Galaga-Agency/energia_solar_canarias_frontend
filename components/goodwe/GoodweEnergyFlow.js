@@ -84,7 +84,7 @@ const GoodweEnergyFlow = memo(() => {
 
       const powerflowData = response.data.powerflow;
 
-      console.log("powerflowData", powerflowData);
+      // console.log("powerflowData", powerflowData);
 
       // Keep values in Watts as they come from the API
       const pvValue = parseFloat(powerflowData?.pv?.replace("W", "")) || 0;

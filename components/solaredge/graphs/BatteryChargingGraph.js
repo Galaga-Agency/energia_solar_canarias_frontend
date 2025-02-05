@@ -22,8 +22,9 @@ import {
 import { selectTheme } from "@/store/slices/themeSlice";
 import useCSVExport from "@/hooks/useCSVExport";
 import ExportModal from "@/components/ExportModal";
-import CustomTooltipBattery from "./CustomTooltipBattery";
-import NoDataErrorState from "../NoDataErrorState";
+import CustomTooltipBattery from "@/components/solaredge/tooltips/CustomTooltipBattery";
+import NoDataErrorState from "@/components/NoDataErrorState";
+import { CiExport } from "react-icons/ci";
 
 const BatteryChargingGraph = ({ token, plantId }) => {
   const { t } = useTranslation();
@@ -121,37 +122,37 @@ const BatteryChargingGraph = ({ token, plantId }) => {
   };
 
   return (
-    <div className="w-full bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm">
+    <div className="w-full bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6 backdrop-blur-sm relative">
       {/* Header Section */}
-      <div className="flex flex-row justify-between items-center">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl font-semibold text-custom-dark-blue dark:text-custom-yellow">
+      <div className="flex flex-col mb-6">
+        <div className="flex flex-col md:gap-2 w-full">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4 md:mb-0 max-w-[70%]">
             {t("batteryChargingState")}
           </h2>
-          <button
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
-          >
-            <BiRefresh
-              className={`text-2xl text-custom-dark-blue dark:text-custom-yellow mb-1 ${
-                isLoading ? "animate-spin" : ""
-              }`}
-            />
-          </button>
+          {lastUpdateTime && (
+            <span className="text-sm text-gray-500 dark:text-gray-400 max-w-[70%]">
+              {t("lastUpdate")}: {lastUpdateTime}
+            </span>
+          )}
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          onClick={handleRefresh}
+          disabled={isLoading}
+          className="absolute top-4 right-16 w-10 h-10 p-2 bg-white hover:bg-white/50 transition-all duration-300 dark:bg-custom-dark-blue hover:dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
         >
-          <BiDotsVerticalRounded className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
+          <BiRefresh
+            className={`text-3xl text-custom-dark-blue dark:text-custom-yellow ${
+              isLoading ? "animate-spin" : ""
+            }`}
+          />
+        </button>
+        <button
+          onClick={handleExportCSV}
+          className="absolute right-4 top-4 w-10 h-10 p-2 bg-white hover:bg-white/50 transition-all duration-300 dark:bg-custom-dark-blue hover:dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md text-custom-dark-blue dark:text-custom-yellow"
+        >
+          <CiExport className="text-2xl text-custom-dark-blue dark:text-custom-yellow" />
         </button>
       </div>
-      {lastUpdateTime && (
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          {t("lastUpdate")}: {lastUpdateTime}
-        </span>
-      )}
 
       {/* Content Section */}
       {isLoading ? (
@@ -198,18 +199,6 @@ const BatteryChargingGraph = ({ token, plantId }) => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      )}
-
-      {/* Export Modal */}
-      {isModalOpen && (
-        <ExportModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onExport={handleExportCSV}
-          t={t}
-          isLoading={isLoading}
-          hasData={processedData?.length > 0}
-        />
       )}
     </div>
   );

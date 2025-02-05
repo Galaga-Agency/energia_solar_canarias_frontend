@@ -1,11 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
-import {
-  IoArrowBackCircle,
-  IoLocationOutline,
-  IoFlashOutline,
-} from "react-icons/io5";
+import { IoArrowBackCircle, IoLocationOutline } from "react-icons/io5";
 import { PiSolarPanelFill } from "react-icons/pi";
 import { BiRefresh } from "react-icons/bi";
 import { HiOutlineStatusOnline } from "react-icons/hi";
@@ -18,23 +14,18 @@ import DetailRow from "@/components/DetailRow";
 import {
   selectAlerts,
   selectDetailsError,
-  selectLoadingBenefits,
   selectLoadingDetails,
-  selectRealtimeLoading,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
-import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
-import BatteryIndicator from "../BatteryIndicator";
 import GoodweEnergyStatistics from "./GoodweEnergyStatistics";
 import GoodwePerformanceMetrics from "./GoodwePerformanceMetrics";
 import GoodweEquipmentDetails from "./GoodweEquipmentDetails";
 import GoodweEnergyStatisticsSkeleton from "../loadingSkeletons/GoodweEnergyStatisticsSkeleton";
 import GoodweAlerts from "@/components/goodwe/GoodweAlerts";
-import AlertsModal from "../AlertsModal";
 import AssociatedUsers from "../AssociatedUsers";
 import GoodweAlertsModal from "./GoodweAlertsModal";
 import GoodweGraphContainer from "./graphs/GoodweGraphContainer";

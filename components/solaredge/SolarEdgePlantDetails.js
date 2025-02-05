@@ -8,7 +8,7 @@ import { PiSolarPanelFill } from "react-icons/pi";
 import { BiRefresh } from "react-icons/bi";
 import { HiOutlineStatusOnline } from "react-icons/hi";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
-import { Building2, Tag, Info } from "lucide-react";
+import { Building2, Tag } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import Texture from "@/components/Texture";
 import DetailRow from "@/components/DetailRow";
@@ -17,26 +17,17 @@ import {
   selectLoadingDetails,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/Tooltip";
 import WeatherWidget from "@/components/WeatherWidget";
 import { selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import PlantDetailsSkeleton from "@/components/loadingSkeletons/PlantDetailsSkeleton";
-import SolarEdgeEnergyFlowGraph from "@/components/solaredge/SolarEdgeEnergyFlowGraph";
+import SolarEdgeEnergyFlowGraph from "@/components/solaredge/graphs/SolarEdgeEnergyFlowGraph";
 import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import EnvironmentalBenefits from "@/components/solaredge/EnvironmentalBenefits";
-import BatteryIndicator from "@/components/BatteryIndicator";
 import EnergyStatistics from "@/components/solaredge/EnergyStatistics";
-import { IoFlashOutline } from "react-icons/io5";
 import SolarEdgeEquipmentDetails from "./SolarEdgeEquipmentDetails";
-import AlertsOverview from "./AlertsOverview";
-import EnergyComparisonChart from "./EnergyComparisonChart";
+import EnergyComparisonChart from "./graphs/EnergyComparisonChart";
 import useDeviceType from "@/hooks/useDeviceType";
-import BatteryChargingGraph from "./BatteryChargingGraph";
+import BatteryChargingGraph from "@/components/solaredge/graphs/BatteryChargingGraph";
 import AssociatedUsers from "../AssociatedUsers";
 import SolarEdgeEnergyFlow from "@/components/solaredge/SolarEdgeEnergyFlow";
 

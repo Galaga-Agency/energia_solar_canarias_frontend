@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import CustomTooltipGraph from "../CustomTooltipGraph";
+import NoDataErrorState from "@/components/NoDataErrorState";
 
 const getColors = (theme) => ({
   SelfUse: theme === "dark" ? "#FFD57B" : "#AD936A",
@@ -20,13 +21,20 @@ const getColors = (theme) => ({
   Sell: theme === "dark" ? "#657880" : "#FFD57B",
 });
 
-const ProporcionUsoGraph = ({ data, theme, isMobile }) => {
+const ProporcionUsoGraph = ({
+  data,
+  theme,
+  isMobile,
+  isError,
+  onRetry,
+  onSelectRange,
+}) => {
   const { t } = useTranslation();
 
   const transformedData = React.useMemo(() => {
-    if (!data?.lines?.length) return [];
+    if (!data?.lines?.length) return null;
 
-    return data.lines[0].xy.map((point, index) => {
+    const formattedData = data.lines[0].xy.map((point, index) => {
       const dataPoint = { date: point.x };
       data.lines.forEach((line) => {
         if (line.xy[index]) {
@@ -35,7 +43,28 @@ const ProporcionUsoGraph = ({ data, theme, isMobile }) => {
       });
       return dataPoint;
     });
+
+    // Check if all data values are 0 or missing
+    const allZero = formattedData.every((entry) =>
+      Object.values(entry).every((value) => value === 0 || value === null)
+    );
+
+    return allZero ? null : formattedData;
   }, [data]);
+
+  if (isError) {
+    return (
+      <NoDataErrorState
+        isError={true}
+        onRetry={onRetry}
+        onSelectRange={onSelectRange}
+      />
+    );
+  }
+
+  if (!transformedData || transformedData == []) {
+    return <NoDataErrorState onRetry={onRetry} onSelectRange={onSelectRange} />;
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -77,12 +106,21 @@ const ProporcionUsoGraph = ({ data, theme, isMobile }) => {
               }
             />
             <Legend
-              formatter={(value) => (
-                <span style={{ color: getColors(theme)[value] }}>
-                  {t(value)}
-                </span>
-              )}
+              formatter={(value) => {
+                const formattedValue = value
+                  .replace("PVGeneration", "PV(W)")
+                  .replace("SelfUse", "Autoconsumo(W)")
+                  .replace("SelfUseRatio", "Ratio Autoconsumo(%)")
+                  .replace("Sell", "Venta(W)");
+
+                return (
+                  <span style={{ color: getColors(theme)[value] }}>
+                    {t(formattedValue)}
+                  </span>
+                );
+              }}
             />
+
             <Bar
               dataKey="PVGeneration"
               fill={getColors(theme).PVGeneration}

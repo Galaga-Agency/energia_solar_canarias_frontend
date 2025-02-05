@@ -140,11 +140,11 @@ const GoodweEquipmentDetails = ({ t }) => {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-700 dark:text-slate-300 text-sm">
+                    <span className="text-slate-700 dark:text-slate-300 text-sm text-left">
                       {t(item.key)}
                     </span>
                   </div>
-                  <span className="text-custom-dark-blue dark:text-custom-yellow text-sm">
+                  <span className="text-custom-dark-blue dark:text-custom-yellow text-sm text-left">
                     {item.value || "--"} {item.unit}
                   </span>
                 </div>
@@ -180,11 +180,11 @@ const GoodweEquipmentDetails = ({ t }) => {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-700 dark:text-slate-300 text-sm">
+                    <span className="text-slate-700 dark:text-slate-300 text-sm text-left">
                       {t(item.key)}
                     </span>
                   </div>
-                  <span className="text-custom-dark-blue dark:text-custom-yellow text-sm">
+                  <span className="text-custom-dark-blue dark:text-custom-yellow text-sm text-left">
                     {item.value || "--"} {item.unit}
                   </span>
                 </div>

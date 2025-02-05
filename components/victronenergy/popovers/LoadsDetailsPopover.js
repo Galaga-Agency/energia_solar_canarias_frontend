@@ -13,6 +13,14 @@ const LoadsDetailsPopover = ({ loads }) => {
     return `${value.toFixed(0)} W`;
   };
 
+  // Get only phases that have actual data
+  const activePhases = Object.entries(loads).filter(
+    ([key, data]) =>
+      key !== "totalPower" && // Skip the totalPower entry
+      data.power !== 0 && // Only include if power exists and is non-zero
+      typeof data.frequency === "number" // And frequency exists
+  );
+
   return (
     <PopoverContent
       className={`z-[999] p-4 rounded-lg shadow-lg ${
@@ -25,31 +33,27 @@ const LoadsDetailsPopover = ({ loads }) => {
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
           {t("loadsDetails")}
         </div>
-        {Object.entries(loads)
-          .filter(([key]) => key !== "totalPower")
-          .map(([phase, data]) => (
-            <div key={phase} className="space-y-1">
-              <div className="font-medium text-sm border-b border-gray-200 dark:border-gray-700 pb-1 mb-2">
-                {t("phase")} {phase.replace("L", "")}
-              </div>
-              <div className="flex justify-between items-center gap-4 py-1">
-                <span className="flex items-center gap-2">
-                  <span>{t("power")}:</span>
-                </span>
-                <span className="font-medium">
-                  {formatPowerValue(data.power)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center gap-4 py-1">
-                <span className="flex items-center gap-2">
-                  <span>{t("frequency")}:</span>
-                </span>
-                <span className="font-medium">
-                  {data.frequency.toFixed(1)}Hz
-                </span>
-              </div>
+        {activePhases.map(([phase, data]) => (
+          <div key={phase} className="space-y-1">
+            <div className="font-medium text-sm border-b border-gray-200 dark:border-gray-700 pb-1 mb-2">
+              {t("phase")} {phase.replace("L", "")}
             </div>
-          ))}
+            <div className="flex justify-between items-center gap-4 py-1">
+              <span className="flex items-center gap-2">
+                <span>{t("power")}:</span>
+              </span>
+              <span className="font-medium">
+                {formatPowerValue(data.power)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center gap-4 py-1">
+              <span className="flex items-center gap-2">
+                <span>{t("frequency")}:</span>
+              </span>
+              <span className="font-medium">{data.frequency.toFixed(1)}Hz</span>
+            </div>
+          </div>
+        ))}
       </div>
     </PopoverContent>
   );

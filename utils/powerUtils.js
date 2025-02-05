@@ -5,8 +5,8 @@
  */
 
 export const formatPowerValue = (value) => {
-  if (!value) return "0 W";
-  return `${value.toFixed(0)} W`;
+  if (!value) return "0 w";
+  return `${value.toFixed(0)} w`;
 };
 
 export const calculateGridFlow = (energyData) => {

@@ -21,6 +21,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import SolarEdgeEnergyBlock from "@/components/solaredge/SolarEdgeEnergyBlock";
 import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton";
 import { HiHome, HiOutlineHome } from "react-icons/hi";
+import { breakWordWithHyphen } from "@/utils/textUtils";
 
 const SolarEdgeEnergyFlow = ({ provider }) => {
   const dispatch = useDispatch();
@@ -97,7 +98,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
     return <EnergyFlowSkeleton theme={theme} />;
   }
 
-  console.log("energyData", energyData);
+  // console.log("energyData", energyData);
 
   return (
     <>
@@ -156,7 +157,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
               </div>
 
               <div className="text-center mt-20 lg:mt-28 space-y-2">
-                <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                <h3 className="mx-auto max-w-[90%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                   {t("solarTitle")}
                 </h3>
                 <p
@@ -197,11 +198,12 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
         <div className="absolute top-0 right-0 w-[calc(50%-16px)] h-[calc(50%-16px)] bg-white dark:bg-custom-dark-blue rounded-lg [border-bottom-left-radius:250px] [border-top-right-radius:250px] p-6 backdrop-blur-sm shadow-lg group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-700 ease-in-out hover:translate-y-[-4px]">
           <div className="relative h-full w-full">
             <div className="flex-1 flex flex-col items-center justify-center relative">
-              <div className="overflow-auto absolute -top-6 right-0 md:right-[calc(50%-4rem)] lg:-top-10 w-24 h-24 lg:w-32 lg:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
+              <div className="absolute -top-6 right-0 md:right-[calc(50%-4rem)] lg:-top-10 w-24 h-24 lg:w-32 lg:h-32 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-all duration-700 ease-in-out group-hover:shadow-lg group-hover:scale-110">
                 <UtilityPole className="w-16 h-16 xl:w-24 xl:h-24 text-custom-dark-blue dark:text-custom-yellow transition-transform duration-700 ease-in-out group-hover:scale-110" />
               </div>
+
               <div className="text-center mt-20 lg:mt-28 space-y-2">
-                <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                <h3 className="mx-auto max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                   {energyData.grid.isImporting
                     ? t("gridImportTitle")
                     : t("gridExportTitle")}
@@ -248,18 +250,9 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
               </div>
             </div>
             <div className="flex flex-col items-center mt-10 md:mt-20 lg:mt-28 space-y-2">
-              {isMobile ? (
-                <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                  {t("batteryTitle").replace(
-                    "Almacenamiento",
-                    "Almaceni-\nmiento"
-                  )}
-                </h3>
-              ) : (
-                <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                  {t("batteryTitle")}
-                </h3>
-              )}
+              <h3 className="mx-auto mr-6 md:mr-auto max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                {breakWordWithHyphen(t("batteryTitle"), 8, isMobile)}
+              </h3>
               <p
                 className={`text-2xl md:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent whitespace-nowrap ${
                   isBlinking ? "animate-double-blink" : ""
@@ -278,7 +271,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
 
             <div className="overflow-hidden absolute w-full md:w-[75%] 2xl:w-[90%] bottom-14 md:bottom-8 lg:bottom-0 left-0 md:right-0 md:ml-auto mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-2 xl:pt-4">
               <div className="space-y-2">
-                <div className="flex flex-col items-start justify-start md:gap-4 md:flex-row md:justify-between md:items-center md:px-2">
+                <div className="flex flex-col items-end justify-start md:gap-4 md:flex-row md:justify-between md:items-center md:px-2">
                   <span className="md:ml-4 xl:ml-12 2xl:ml-20 text-gray-600 dark:text-gray-400 text-nowrap text-xs lg:text-base">
                     {t("batteryStatus")}
                   </span>
@@ -320,9 +313,10 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                 </p>
               </div>
             </div>
-            <div className="md:mr-12  absolute w-full md:w-[75%] 2xl:w-[90%] bottom-14 md:bottom-8 lg:bottom-0 right-0 md:left-0 mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-2 xl:pt-4">
+
+            <div className="md:mr-12 absolute w-full md:w-[75%] 2xl:w-[90%] bottom-14 md:bottom-8 lg:bottom-0 right-0 md:left-0 mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-2 xl:pt-4">
               <div className="space-y-2">
-                <div className="flex flex-col items-end justify-end md:flex-row md:justify-between md:items-center md:px-2">
+                <div className="flex flex-col items-start justify-end md:flex-row md:justify-between md:items-center md:px-2">
                   <span className="text-nowrap text-xs lg:text-base">
                     {t("loadsStatus")}
                   </span>

@@ -26,6 +26,7 @@ import EnergyFlowSkeleton from "@/components/loadingSkeletons/EnergyFlowSkeleton
 import BatteryIndicator from "@/components/BatteryIndicator";
 import goodweLogo from "@/public/assets/logos/goodwe-logo.png";
 import { Grid, UtilityPole } from "lucide-react";
+import { breakWordWithHyphen } from "@/utils/textUtils";
 
 const GoodweEnergyFlow = memo(() => {
   const params = useParams();
@@ -224,7 +225,7 @@ const GoodweEnergyFlow = memo(() => {
               </div>
 
               <div className="text-center mt-20 lg:mt-28 space-y-2">
-                <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                <h3 className="mx-auto max-w-[90%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                   {t("solarTitle")}
                 </h3>
                 <p
@@ -276,14 +277,17 @@ const GoodweEnergyFlow = memo(() => {
                 </p>
               </div>
             </div>
-            <div className="absolute w-full md:w-[75%] 2xl:w-[90%] bottom-0 md:bottom-10 lg:bottom-4 2xl:bottom-0 right-0 mb-4 lg:mb-0 lg:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-1 xl:pt-4">
+
+            <div className="absolute w-full md:w-[75%] 2xl:w-[90%] bottom-0 md:bottom-10 lg:bottom-4 2xl:bottom-0 right-0 lg:mb-0 lg:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-1 xl:pt-4">
               <div className="space-y-2">
                 <div className="flex flex-col items-end md:flex-row md:justify-between md:items-center md:px-2 py-1">
                   <span className="text-nowrap lg:ml-12 xl:ml-20 text-xs lg:text-base">
                     {t("gridStatus")}
                   </span>
-                  <span className="font-medium text-custom-dark-blue dark:text-custom-yellow lg:text-base">
-                    {grid !== 0 ? t("Connected") : t("Disconnected")}
+                  <span className="text-right font-medium text-custom-dark-blue dark:text-custom-yellow lg:text-base whitespace-pre-line">
+                    {grid !== 0
+                      ? breakWordWithHyphen(t("Connected"), 6, isMobile)
+                      : breakWordWithHyphen(t("Disconnected"), 6, isMobile)}
                   </span>
                 </div>
               </div>
@@ -300,18 +304,9 @@ const GoodweEnergyFlow = memo(() => {
               </div>
             </div>
             <div className="flex flex-col items-center mt-10 md:mt-20 lg:mt-28 space-y-2">
-              {isMobile ? (
-                <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                  {t("batteryTitle").replace(
-                    "Almacenamiento",
-                    "Almaceni-\nmiento"
-                  )}
-                </h3>
-              ) : (
-                <h3 className="max-w-[60%] md:max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                  {t("batteryTitle")}
-                </h3>
-              )}
+              <h3 className="mx-auto mr-6 md:mr-auto max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                {breakWordWithHyphen(t("batteryTitle"), 8, isMobile)}
+              </h3>
               <div className="flex flex-col items-center gap-1">
                 <p
                   className={`text-2xl md:text-3xl font-bold bg-gradient-to-r from-custom-dark-blue to-custom-dark-blue dark:from-custom-yellow dark:to-custom-yellow bg-clip-text text-transparent whitespace-nowrap ${
@@ -326,7 +321,7 @@ const GoodweEnergyFlow = memo(() => {
 
             <div className="overflow-hidden absolute w-full md:w-[75%] 2xl:w-[90%] bottom-14 md:bottom-8 lg:bottom-0 left-0 md:right-0 md:ml-auto mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-2 xl:pt-4">
               <div className="space-y-2">
-                <div className="flex flex-col items-start justify-start md:gap-4 md:flex-row md:justify-between md:items-center md:px-2">
+                <div className="flex flex-col items-end justify-start md:gap-4 md:flex-row md:justify-between md:items-center md:px-2">
                   <span className="md:ml-4 xl:ml-12 2xl:ml-20 text-gray-600 dark:text-gray-400 text-nowrap text-xs lg:text-base">
                     {t("batteryStatus")}
                   </span>
@@ -366,7 +361,7 @@ const GoodweEnergyFlow = memo(() => {
             </div>
             <div className="md:mr-12 absolute w-full md:w-[75%] 2xl:w-[90%] bottom-14 md:bottom-8 lg:bottom-0 right-0 md:left-0 mb-4 xl:mb-0 xl:mt-6 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/50 pt-2 xl:pt-4">
               <div className="space-y-2">
-                <div className="flex flex-col items-end justify-end md:flex-row md:justify-between md:items-center md:px-2">
+                <div className="flex flex-col items-start justify-end md:flex-row md:justify-between md:items-center md:px-2">
                   <span className="text-nowrap text-xs lg:text-base">
                     {t("loadsStatus")}
                   </span>

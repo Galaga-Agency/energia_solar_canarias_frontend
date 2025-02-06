@@ -395,20 +395,13 @@ export const fetchPlantDetailsAPI = async ({
 
     const responseData = await response.json();
 
-    // console.log("Plant details response:", {
-    //   status: response.status,
-    //   hasData: !!responseData,
-    //   hasDetails: !!responseData?.data?.details,
-    //   plantId: normalizedPlantId,
-    // });
-
     if (!response.ok) {
       throw new Error(
         `API Error: ${response.statusText} for plant ${normalizedPlantId} with provider ${providerParam}`
       );
     }
 
-    // console.log("Plant details API response: ", response);
+    console.log("Plant details API response: ", responseData);
     return responseData;
   } catch (error) {
     console.error("Error in fetchPlantDetailsAPI:", {

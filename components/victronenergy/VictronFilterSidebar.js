@@ -8,6 +8,8 @@ import DateSelector from "@/components/DateSelector";
 import { BsCalendar3 } from "react-icons/bs";
 import { parseISO, isValid, isAfter, isBefore, startOfDay } from "date-fns";
 import { motion } from "framer-motion";
+import { selectActiveVictronNotifications } from "@/store/slices/notificationsSlice";
+import { useSelector } from "react-redux";
 
 const VictronFilterSidebar = ({
   plants,
@@ -33,6 +35,9 @@ const VictronFilterSidebar = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const [isMinDateSelectorOpen, setIsMinDateSelectorOpen] = useState(false);
   const [isMaxDateSelectorOpen, setIsMaxDateSelectorOpen] = useState(false);
+  const activeVictronAlerts = useSelector(selectActiveVictronNotifications);
+
+  console.log("✅ Active Victron Alerts:", activeVictronAlerts);
 
   const VICTRON_TYPES = {
     solar: "type_Solar",
@@ -76,11 +81,18 @@ const VictronFilterSidebar = ({
         //   plant.alert_quantity
         // );
 
-        // Alert Filter - Updated logic
+        // Alert Filter
+        const hasActiveAlerts = activeVictronAlerts.some(
+          (alert) => alert.plantId === plant.id
+        );
+
         if (currentFilters.hasAlerts) {
-          // Only keep plants that have alert_quantity > 0
-          if (!plant.alert_quantity || plant.alert_quantity <= 0) {
-            // console.log("Filtering out plant due to no alerts:", plant.name);
+          console.log(
+            `🔍 Checking plant ${plant.name}, Alerts:`,
+            hasActiveAlerts
+          );
+          if (!hasActiveAlerts) {
+            console.log(`❌ Excluding ${plant.name} (No active alerts)`);
             return false;
           }
         }
@@ -142,11 +154,10 @@ const VictronFilterSidebar = ({
         let updatedFilters;
 
         if (filterType === "hasAlerts") {
-          updatedFilters = {
-            ...prevFilters,
-            hasAlerts: !prevFilters.hasAlerts,
-          };
-          // console.log("Alert filter changed to:", !prevFilters.hasAlerts);
+          const newHasAlerts = !prevFilters.hasAlerts; // Toggle the value
+          updatedFilters = { ...prevFilters, hasAlerts: newHasAlerts };
+
+          console.log("✅ Alert filter toggled:", newHasAlerts);
         } else {
           updatedFilters = {
             ...prevFilters,
@@ -157,13 +168,15 @@ const VictronFilterSidebar = ({
         }
 
         const filteredPlants = filterPlants(updatedFilters);
-        // console.log("Filtered plants:", filteredPlants);
-        onFilterChange(filteredPlants);
+        console.log("✅ Filtered plants after change:", filteredPlants);
+
+        onFilterChange(filteredPlants); // Ensure UI updates
         return updatedFilters;
       });
     },
     [filterPlants, onFilterChange]
   );
+
   const handleSearchChange = useCallback(
     (event) => {
       const searchTerm = event.target.value;
@@ -220,7 +233,7 @@ const VictronFilterSidebar = ({
       ref={sidebarRef}
       className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl text-custom-dark-blue dark:text-custom-yellow">

@@ -61,18 +61,18 @@ const ResolvedNotificationsTab = ({
         </motion.div>
       ) : !filteredResolved?.length ? (
         <motion.div
-          className="flex flex-col items-center justify-center py-12 px-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-200/30 dark:border-gray-700/30"
+          className="flex flex-col items-center justify-center py-12 px-4"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <CheckCircleIcon className="w-16 h-16 text-custom-yellow dark:text-custom-yellow/80 mb-4" />
+          <CheckCircleIcon className="w-16 h-16 text-custom-dark-blue dark:text-custom-yellow mb-4" />
           <p className="text-gray-600 dark:text-gray-300 text-lg text-center font-medium">
             {t("noResolvedNotifications")}
           </p>
         </motion.div>
       ) : (
-        <div className="space-y-4">
+        <div>
           <AnimatePresence mode="popLayout">
             {paginatedNotifications.map((notification, index) => (
               <motion.div
@@ -84,10 +84,7 @@ const ResolvedNotificationsTab = ({
                 className="group"
               >
                 <div className="relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-custom-yellow/10 to-custom-yellow/5 dark:from-custom-dark-blue/20 dark:to-custom-dark-blue/10 transform group-hover:translate-x-full transition-transform duration-500" />
-                  <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-200/30 dark:border-gray-700/30 transition-all duration-300 group-hover:translate-y-px group-hover:shadow-lg overflow-hidden">
-                    <NotificationListItem notification={notification} />
-                  </div>
+                  <NotificationListItem notification={notification} />
                 </div>
               </motion.div>
             ))}

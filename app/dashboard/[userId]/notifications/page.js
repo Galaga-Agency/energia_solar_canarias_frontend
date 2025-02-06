@@ -216,13 +216,56 @@ const NotificationsTab = () => {
                       <span className="sm:hidden">{t("active")}</span>
                     </span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      className={`min-w-[2rem] px-2 py-0.5 rounded-full text-xs font-medium ${
                         activeTab === "active"
                           ? "bg-custom-dark-blue/20 text-custom-dark-blue"
                           : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
                       }`}
                     >
-                      {activeTotalCount}
+                      {isInitializing ? (
+                        <div className="flex items-center justify-center min-w-[2rem] h-5">
+                          <div className="flex gap-[3px]">
+                            <motion.div
+                              className="w-1 h-1 bg-current rounded-full"
+                              animate={{ y: [0, -4, 0] }}
+                              transition={{
+                                duration: 0.6,
+                                repeat: Infinity,
+                                repeatType: "loop",
+                                ease: "easeInOut",
+                                times: [0, 0.5, 1],
+                                delay: 0,
+                              }}
+                            />
+                            <motion.div
+                              className="w-1 h-1 bg-current rounded-full"
+                              animate={{ y: [0, -4, 0] }}
+                              transition={{
+                                duration: 0.6,
+                                repeat: Infinity,
+                                repeatType: "loop",
+                                ease: "easeInOut",
+                                times: [0, 0.5, 1],
+                                delay: 0.2,
+                              }}
+                            />
+                            <motion.div
+                              className="w-1 h-1 bg-current rounded-full"
+                              animate={{ y: [0, -4, 0] }}
+                              transition={{
+                                duration: 0.6,
+                                repeat: Infinity,
+                                repeatType: "loop",
+                                ease: "easeInOut",
+                                times: [0, 0.5, 1],
+                                delay: 0.4,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        activeTotalCount
+                      )}
                     </span>
                   </div>
                 </motion.button>
@@ -247,13 +290,56 @@ const NotificationsTab = () => {
                       <span className="sm:hidden">{t("cleared")}</span>
                     </span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      className={`min-w-[2rem] px-2 py-0.5 rounded-full text-xs font-medium ${
                         activeTab === "resolved"
                           ? "bg-custom-dark-blue/20 text-custom-dark-blue"
                           : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
                       }`}
                     >
-                      {resolvedTotalCount}
+                      {isInitializing ? (
+                        <div className="flex items-center justify-center min-w-[2rem] h-5">
+                          <div className="flex gap-[3px]">
+                            <motion.div
+                              className="w-1 h-1 bg-current rounded-full"
+                              animate={{ y: [0, -4, 0] }}
+                              transition={{
+                                duration: 0.6,
+                                repeat: Infinity,
+                                repeatType: "loop",
+                                ease: "easeInOut",
+                                times: [0, 0.5, 1],
+                                delay: 0,
+                              }}
+                            />
+                            <motion.div
+                              className="w-1 h-1 bg-current rounded-full"
+                              animate={{ y: [0, -4, 0] }}
+                              transition={{
+                                duration: 0.6,
+                                repeat: Infinity,
+                                repeatType: "loop",
+                                ease: "easeInOut",
+                                times: [0, 0.5, 1],
+                                delay: 0.2,
+                              }}
+                            />
+                            <motion.div
+                              className="w-1 h-1 bg-current rounded-full"
+                              animate={{ y: [0, -4, 0] }}
+                              transition={{
+                                duration: 0.6,
+                                repeat: Infinity,
+                                repeatType: "loop",
+                                ease: "easeInOut",
+                                times: [0, 0.5, 1],
+                                delay: 0.4,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        resolvedTotalCount
+                      )}
                     </span>
                   </div>
                 </motion.button>

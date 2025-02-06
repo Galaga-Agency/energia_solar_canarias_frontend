@@ -4,7 +4,6 @@ import TranslationProvider from "@/components/TranslationProvider";
 import StoreProvider from "@/components/StoreProvider";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import ThemeWrapper from "@/components/ThemeWrapper";
-import NotificationsWrapper from "@/components/NotificationsWrapper";
 import { Toaster } from "sonner";
 
 export const metadata = {

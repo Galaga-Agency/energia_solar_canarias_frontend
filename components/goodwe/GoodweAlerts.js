@@ -61,10 +61,10 @@ const GoodweAlerts = ({ plantId, onViewAll }) => {
         </div>
         <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
           {t("System Alerts")}
-          <span className="text-slate-500 dark:text-slate-400 text-sm ml-2">
-            ({filteredRecords.length})
-          </span>
         </h2>
+        <span className="text-slate-500 dark:text-slate-400 text-md ml-1 mb-2">
+          ({filteredRecords.length})
+        </span>
       </div>
 
       {recentRecords.length === 0 ? (
@@ -80,7 +80,7 @@ const GoodweAlerts = ({ plantId, onViewAll }) => {
           </div>{" "}
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
           {recentRecords.map((alert) => (
             <NotificationListItem
               key={alert.id}

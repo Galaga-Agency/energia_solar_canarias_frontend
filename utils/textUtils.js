@@ -15,3 +15,15 @@ export function breakWordWithHyphen(word, maxLength = 6, isMobile = false) {
 
   return `${word.slice(0, breakIndex)}-\n${word.slice(breakIndex)}`;
 }
+
+export function capitalizeEachWord(text) {
+  if (!text || typeof text !== "string") return text;
+
+  return text
+    .split(" ")
+    .map((word) => {
+      if (word.length === 0) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}

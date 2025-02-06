@@ -79,7 +79,7 @@ const VictronEnergyAlerts = ({ plantId, onViewAll }) => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
           {recentRecords.map((alert) => (
             <NotificationListItem key={alert.id} notification={alert} />
           ))}

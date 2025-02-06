@@ -38,6 +38,8 @@ const NotificationListItem = ({ notification }) => {
     }
   };
 
+  console.log(notification);
+
   // Function to process notification content based on provider type
   const renderNotificationContent = () => {
     switch (notification.provider) {
@@ -99,7 +101,7 @@ const NotificationListItem = ({ notification }) => {
   return (
     <>
       <motion.div
-        className="overflow-hidden w-full max-w-[85vw] md:max-w-[92vw] mx-auto"
+        className="overflow-hidden w-full max-w-[85vw] md:max-w-[92vw] mx-auto mb-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}

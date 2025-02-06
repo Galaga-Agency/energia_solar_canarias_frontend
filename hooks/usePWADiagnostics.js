@@ -44,7 +44,7 @@ const usePWADiagnostics = () => {
       document.head.appendChild(newManifest);
       manifestRef.current = newManifest;
 
-      console.log("Manifest reloaded successfully");
+      // console.log("Manifest reloaded successfully");
     } catch (error) {
       console.error("Error reloading manifest:", error);
     }
@@ -76,7 +76,7 @@ const usePWADiagnostics = () => {
       if (!isMounted) return;
 
       e.preventDefault();
-      console.log("beforeinstallprompt fired");
+      // console.log("beforeinstallprompt fired");
 
       persistDeferredPrompt(e);
 
@@ -100,7 +100,7 @@ const usePWADiagnostics = () => {
       try {
         const savedPrompt = localStorage.getItem("deferredPrompt");
         if (savedPrompt) {
-          console.log("DeferredPrompt loaded from localStorage");
+          // console.log("DeferredPrompt loaded from localStorage");
           return JSON.parse(savedPrompt);
         }
       } catch (error) {

@@ -42,7 +42,7 @@ import GoodweStatsOverview from "@/components/goodwe/GoodweStatsOverview";
 import SolarEdgeStatsOverview from "@/components/solaredge/SolarEdgeStatsOverview";
 import BatteryStatuses from "@/components/BatteryStatuses";
 import VictronStatsOverview from "@/components/victronenergy/VictronStatsOverview";
-import { useOptimalItemsCount } from "@/hooks/useOptimalItemsCount";
+import { selectActiveGoodweNotifications } from "@/store/slices/notificationsSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import { PiSolarPanelFill } from "react-icons/pi";
 
@@ -81,8 +81,9 @@ const ProviderPage = () => {
     (p) => p.name.toLowerCase().replace(/\s+/g, "") === providerPassed
   );
   const { isDesktop } = useDeviceType();
+  const activeGoodweAlerts = useSelector(selectActiveGoodweNotifications);
 
-  console.log("plants", plants);
+  // console.log("plants", plants);
 
   useEffect(() => {
     if (isInitialLoad && !isDataFetched) {
@@ -113,7 +114,7 @@ const ProviderPage = () => {
   }, [plants, loading, provider, providerPassed]);
 
   const handleFilterChange = useCallback((newFilteredPlants) => {
-    // console.log("New filtered plants:", newFilteredPlants);
+    console.log("🛠 UI Update Check - Filtered Plants:", newFilteredPlants); // Debug UI update
     setFilteredPlants([...newFilteredPlants]);
     setCurrentPage(1);
   }, []);
@@ -246,7 +247,7 @@ const ProviderPage = () => {
             onFilterChange={handleFilterChange}
             isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
-            alerts={alerts?.goodwe?.data?.list || []}
+            alerts={activeGoodweAlerts}
           />
         );
       case "victronenergy":
@@ -318,7 +319,7 @@ const ProviderPage = () => {
           </h2>
         </div>
 
-        <div className="flex-grow lg:px-8">
+        <div className="flex-grow lg:px-8 mt-6">
           {(() => {
             switch (providerPassed) {
               case "goodwe":
@@ -354,7 +355,7 @@ const ProviderPage = () => {
         <div className="flex mt-6">
           {/* Button to open sidebar */}
           <button
-            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+            className="xl:hidden fixed bottom-20 left-5 z-40 text-custom-dark-blue bg-custom-yellow p-3 rounded-full justify-center button-shadow"
             onClick={toggleSidebar}
           >
             <IoFilter />
@@ -363,14 +364,14 @@ const ProviderPage = () => {
           {/* Sidebar */}
           {renderFilterSidebar()}
 
-          <div className="flex-grow lg:px-8">
+          <div className="flex-grow lg:pl-8">
             <div className="mb-4 text-lg text-custom-dark-blue dark:text-custom-yellow">
               <p>
                 {t("plantsFound")}: {filteredPlants.length} {t("plants")}
               </p>
             </div>
 
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 max-w-[85vw] md:max-w-[92vw] mx-auto">
               {renderSortMenu()}
               <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
                 <button

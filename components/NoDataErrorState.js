@@ -23,7 +23,7 @@ const NoDataErrorState = ({ isError, onRetry, onSelectRange }) => {
             </div>
             <button
               onClick={onRetry}
-              className="inline-flex items-center gap-2 px-6 py-2 bg-white dark:bg-custom-dark-blue hover:bg-white/80 dark:hover:bg-custom-dark-blue/80 transition-all duration-300 rounded-full shadow-md text-custom-dark-blue dark:text-custom-yellow"
+              className="flex items-center gap-2 px-6 py-2 bg-white/50 dark:bg-custom-dark-blue/50 hover:bg-white/30 dark:hover:bg-custom-dark-blue/30 transition-all duration-300 rounded-full shadow-md text-custom-dark-blue dark:text-custom-yellow w-auto mx-auto"
             >
               <RefreshCcw className="w-4 h-4" />
               {t("Reintentar")}
@@ -44,7 +44,7 @@ const NoDataErrorState = ({ isError, onRetry, onSelectRange }) => {
               {provider !== "solaredge" && (
                 <button
                   onClick={onSelectRange}
-                  className="inline-flex items-center gap-2 px-6 py-2 bg-white dark:bg-custom-dark-blue hover:bg-white/80 dark:hover:bg-custom-dark-blue/80 transition-all duration-300 rounded-full shadow-md text-custom-dark-blue dark:text-custom-yellow"
+                  className="flex items-center gap-2 px-6 py-2 bg-white/50 dark:bg-custom-dark-blue/50 hover:bg-white/30 dark:hover:bg-custom-dark-blue/30 transition-all duration-300 rounded-full shadow-md text-custom-dark-blue dark:text-custom-yellow w-auto mx-auto"
                 >
                   {t("Cambiar rango")}
                 </button>

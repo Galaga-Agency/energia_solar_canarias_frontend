@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import FormInput from "@/components/ui/FormInput";
 import { useTranslation } from "next-i18next";
 import Loading from "@/components/ui/Loading";
 import { useForm } from "react-hook-form";
@@ -16,18 +17,28 @@ const ResultContent = ({
   const { t } = useTranslation();
   const [hasSubmittedToken, setHasSubmittedToken] = useState(false);
   const [canResend, setCanResend] = useState(false);
-  const [countdown, setCountdown] = useState(60); // 60 seconds countdown
+  const [countdown, setCountdown] = useState(60);
 
   const {
     handleSubmit,
     register,
     reset,
     formState: { errors },
+    watch,
   } = useForm({
     defaultValues: {
       token: tokenInput,
     },
   });
+
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === "token") {
+        setTokenInput(value.token);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setTokenInput]);
 
   useEffect(() => {
     if (!canResend) {
@@ -53,7 +64,7 @@ const ResultContent = ({
       await resendTokenRequest();
     } catch (error) {
       console.error("Error resending token:", error);
-      setCanResend(true); // Allow retry in case of failure
+      setCanResend(true);
     }
   };
 
@@ -80,49 +91,49 @@ const ResultContent = ({
         {t("enterCode")}
       </h2>
       <p className="text-gray-600 dark:text-gray-400">{t("codeSentMessage")}</p>
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-        <div>
-          <input
-            {...register("token", {
-              required: t("tokenRequired"),
-              pattern: {
-                value: /^[a-fA-F0-9]{32}$/, // Assuming a 6-digit numeric code
-                message: t("invalidToken"),
-              },
-            })}
-            type="text"
-            value={tokenInput}
-            onChange={(e) => setTokenInput(e.target.value)}
-            placeholder={t("codePlaceholder")}
-            className={`w-full px-4 py-2 border rounded-md dark:text-black ${
-              errors.token ? "border-red-500" : "border-gray-300"
-            } focus:outline-none focus:border-custom-yellow`}
-          />
-          {errors.token && (
-            <p className="text-red-500 text-sm mt-2">{errors.token.message}</p>
-          )}
-        </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        className="space-y-4"
+      >
+        <FormInput
+          name="token"
+          type="text"
+          register={register}
+          error={errors.token}
+          placeholder={t("codePlaceholder")}
+          validation={{
+            required: t("tokenRequired"),
+            pattern: {
+              value: /^[a-fA-F0-9]{32}$/,
+              message: t("invalidToken"),
+            },
+          }}
+          disabled={isSubmitting}
+          className="w-full"
+        />
+
         <div>
           <PrimaryButton
             type="button"
+            disabled={isSubmitting}
             className={`w-full py-3 text-center ${
-              !tokenInput || errors.token
+              !tokenInput || errors.token || isSubmitting
                 ? "bg-gray-400 text-gray-700 cursor-not-allowed"
                 : "bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 cursor-pointer"
             }`}
             onClick={async () => {
               const isValid = await handleSubmit(onSubmit)();
-              if (!isValid) {
-                // Validation failed; ensure errors are shown
-                return;
-              }
-              // Proceed with token validation
+              if (!isValid) return;
             }}
           >
-            {t("validateCode")}
+            {isSubmitting ? t("validating") : t("validateCode")}
           </PrimaryButton>
         </div>
       </form>
+
       <div className="pt-12">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {t("didNotReceiveCode")}{" "}

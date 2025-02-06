@@ -76,7 +76,7 @@ const BottomNavbar = ({ userId }) => {
             onClick={() => handleNavigation(item.path)}
             className={`flex flex-col items-center justify-center cursor-pointer transition-transform transform duration-300 ${
               isActive ? "text-custom-yellow" : "text-custom-light-gray"
-            } hover:rotate-6 hover:text-custom-yellow`}
+            } hover:rotate-6 hover:text-custom-yellow select-none`}
           >
             {item.icon}
             <span className="mt-1 text-sm">{item.label}</span>

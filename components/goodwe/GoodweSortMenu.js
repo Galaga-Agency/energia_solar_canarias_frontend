@@ -67,7 +67,7 @@ const GoodweSortMenu = ({ onSortChange }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
+        className="w-full flex items-center justify-between text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2  bg-white dark:bg-custom-dark-blue rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
       >
         <span className="flex items-center gap-2">
           <span className="flex-shrink-0">{selectedOptionData.icon}</span>

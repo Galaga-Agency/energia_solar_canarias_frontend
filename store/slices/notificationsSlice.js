@@ -421,5 +421,15 @@ export const selectResolvedFetched = (state) =>
   state.notifications.resolvedFetched;
 export const selectActiveNotificationsCount = (state) =>
   state.notifications.activeTotalCount || 0;
+export const selectActiveVictronNotifications = (state) =>
+  state.notifications.activeNotifications.filter(
+    (n) => n.provider === "victron" && n.isActive === 1
+  );
+export const selectActiveGoodweNotifications = (state) => {
+  return state.notifications.activeNotifications.filter(
+    (notification) =>
+      notification.provider === "goodwe" && notification.status === 0
+  );
+};
 
 export default notificationsSlice.reducer;

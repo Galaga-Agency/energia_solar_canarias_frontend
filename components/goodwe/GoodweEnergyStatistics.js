@@ -16,7 +16,6 @@ const GoodweEnergyStatistics = ({
   theme,
   formatValueWithDecimals,
   batteryLevel,
-  todayPVGeneration,
 }) => {
   const stats = [
     {
@@ -43,7 +42,7 @@ const GoodweEnergyStatistics = ({
     {
       icon: IoTimeOutline,
       title: t("todayGeneration"),
-      value: formatValueWithDecimals(todayPVGeneration || 0, "kW"),
+      value: formatValueWithDecimals(goodwePlant?.kpi?.power || 0, "kW"),
       tooltip: t("todayGenerationTooltip"),
     },
     {

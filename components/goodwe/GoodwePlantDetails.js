@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import { IoArrowBackCircle, IoLocationOutline } from "react-icons/io5";
@@ -116,10 +116,9 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
     return `${formattedNumber} ${unit}`;
   };
 
-  const handleValueUpdate = (value) => {
-    // console.log("Today's PV Generation from child:", value);
+  const handleValueUpdate = useCallback((value) => {
     setTodayPVGeneration(value);
-  };
+  }, []);
 
   const memoizedGraph = useMemo(() => {
     return (
@@ -301,7 +300,7 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
         </div>
 
         <section className="bg-white/50 dark:bg-custom-dark-blue/50 rounded-lg p-4 md:p-6  backdrop-blur-sm shadow-lg mb-6 pb-8 ">
-          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
+          <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4 max-w-[70%]">
             {t("Real-Time Energy Flow")}
           </h2>
           <GoodweEnergyFlow
@@ -320,7 +319,6 @@ const GoodwePlantDetails = React.memo(({ plant, handleRefresh }) => {
             theme={theme}
             formatValueWithDecimals={formatValueWithDecimals}
             batteryLevel={goodwePlant?.soc?.[0]?.power}
-            todayPVGeneration={todayPVGeneration}
           />
         )}
 

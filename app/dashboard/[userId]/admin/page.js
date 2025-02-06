@@ -339,7 +339,7 @@ const AdminDashboard = () => {
                     transition={{ delay: 1.1 }}
                   >
                     {loading ? (
-                      <div className="py-8">
+                      <div className="lg:pl-8">
                         <PlantsListSkeleton theme={theme} rows={itemsPerPage} />
                       </div>
                     ) : filteredPlants.length > 0 ? (

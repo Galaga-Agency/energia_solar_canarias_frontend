@@ -1,28 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { AlertTriangle, BarChart2, CircleDollarSign, Sun } from "lucide-react";
-import { MdOutlineEnergySavingsLeaf } from "react-icons/md";
+import { AlertTriangle, BarChart2, Sun, Activity } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   selectActiveNotifications,
   fetchActiveNotifications,
 } from "@/store/slices/notificationsSlice";
 import { selectUser } from "@/store/slices/userSlice";
+import StatsDetailModal from "../StatsDetailModal";
+import PlantsListTableItem from "../PlantsListTableItem";
+import EmptyState from "../EmptyState";
+import PlantProductionListItem from "../PlantProductionListItem";
+import NotificationListItem from "../notifications/NotificationListItem";
 
-const GoodweStatsOverview = ({ plants, t, alerts }) => {
+const GoodweStatsOverview = ({ plants, t }) => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const activeNotifications = useSelector(selectActiveNotifications);
+  const [selectedModal, setSelectedModal] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
-  // Dispatch fetch on component mount if no notifications
   useEffect(() => {
     if (user?.tokenIdentificador && activeNotifications.length === 0) {
       dispatch(fetchActiveNotifications({ pageIndex: 1, pageSize: 100 }));
     }
   }, [dispatch, user, activeNotifications]);
-
-  const goodweActiveAlertsCount = activeNotifications.filter(
-    (notification) => notification.provider === "goodwe"
-  ).length;
 
   const stats = {
     working: plants?.filter((p) => p.status === "working").length || 0,
@@ -32,117 +34,208 @@ const GoodweStatsOverview = ({ plants, t, alerts }) => {
     waiting: plants?.filter((p) => p.status === "waiting").length || 0,
     currentProduction:
       plants?.reduce((acc, p) => acc + (p.current_power || 0), 0) || 0,
-    dailyEnergy:
-      plants?.reduce((acc, p) => acc + (p.daily_energy || 0), 0) || 0,
     totalProduction:
       plants?.reduce((acc, p) => acc + (p.total_energy || 0), 0) || 0,
+    plantsInProduction: plants?.filter((p) => p.current_power > 0) || [],
   };
 
-  // Convert kWh to MWh for total production
-  const totalMWh = (stats.totalProduction / 1000).toFixed(2);
-  // Convert W to kW for current production
   const currentKW = (stats.currentProduction / 1000).toFixed(2);
+  const totalMWh = (stats.totalProduction / 1000000).toFixed(2);
+  const goodweActiveAlertsCount = activeNotifications.filter(
+    (notification) => notification.provider === "goodwe"
+  ).length;
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-      {/* Status Overview */}
-      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue rounded-full flex items-center justify-center shadow-md">
-            <BarChart2 className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
-          </div>
-          <h3 className="text-lg text-slate-700 dark:text-slate-200">
-            {t("status_overview")}
-          </h3>
-        </div>
-        <div className="flex justify-around gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-              {stats.working}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-slate-400"></div>
-            <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-              {stats.disconnected}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-              {stats.waiting}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-              {stats.error}
-            </span>
-          </div>
-        </div>
-      </div>
+  const handleStatusClick = (status) => {
+    setSelectedStatus(status);
+    setSelectedModal("status");
+  };
 
-      {/* Current Production */}
-      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue rounded-full flex items-center justify-center shadow-md">
-            <Sun className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
-          </div>
-          <h3 className="text-lg text-slate-700 dark:text-slate-200">
-            {t("current_production")}
-          </h3>
+  const metrics = [
+    {
+      icon: BarChart2,
+      title: "status_overview",
+      onClick: () => setSelectedModal("status"),
+      value: (
+        <div className="flex gap-2">
+          {["working", "disconnected", "waiting", "error"].map((status) => (
+            <div
+              key={status}
+              className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              onClick={() => handleStatusClick(status)}
+            >
+              <div
+                className={`w-3 h-3 rounded-full bg-${
+                  status === "working"
+                    ? "green"
+                    : status === "disconnected"
+                    ? "gray"
+                    : status === "waiting"
+                    ? "yellow"
+                    : "red"
+                }-500`}
+              />
+              <span className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                {stats[status]}
+              </span>
+            </div>
+          ))}
         </div>
-        <div className="flex items-baseline justify-center gap-2">
-          <span className="text-2xl font-medium text-slate-700 dark:text-slate-200">
+      ),
+    },
+    {
+      icon: Sun,
+      title: "current_production",
+      onClick: () => setSelectedModal("production"),
+      value: (
+        <div className="text-center">
+          <span className="text-3xl font-bold text-gray-800 dark:text-gray-100">
             {currentKW}
           </span>
-          <span className="text-sm text-slate-600 dark:text-slate-400">kW</span>
-        </div>
-      </div>
-
-      {/* Total Production */}
-      {/* <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue rounded-full flex items-center justify-center shadow-md">
-            <MdOutlineEnergySavingsLeaf className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
-          </div>
-          <h3 className="text-lg text-slate-700 dark:text-slate-200">
-            {t("total_production")}
-          </h3>
-        </div>
-        <div className="flex items-baseline justify-center gap-2">
-          <span className="text-2xl font-medium text-slate-700 dark:text-slate-200">
-            {totalMWh}
-          </span>
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            MWh
+          <span className="ml-1 text-lg text-gray-500 dark:text-gray-400">
+            kW
           </span>
         </div>
-      </div> */}
+      ),
+    },
+    {
+      icon: AlertTriangle,
+      title: "alerts",
+      onClick: () => setSelectedModal("alerts"),
+      value: (
+        <div className="text-center">
+          <span className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+            {goodweActiveAlertsCount}
+          </span>
+          <span className="ml-1 text-lg text-gray-500 dark:text-gray-400">
+            {t("total")}
+          </span>
+        </div>
+      ),
+    },
+  ];
 
-      {/* Alerts Overview */}
-      <div className="flex-1 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue rounded-full flex items-center justify-center shadow-md">
-            <AlertTriangle className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
+  return (
+    <>
+      <div className="flex flex-col md:flex-row gap-6 max-w-[85vw] md:max-w-[92vw] mx-auto">
+        {metrics.map(({ icon: Icon, title, onClick, value }) => (
+          <div
+            key={title}
+            className="flex-1 group relative text-center bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl 
+                   hover:shadow-lg hover:rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 
+                   cursor-pointer p-4 flex flex-col items-center gap-3 hover:scale-105 transition-transform duration-700 "
+            onClick={onClick}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <div className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute -top-6 w-14 h-14 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
+                <Icon className="w-8 h-8 text-custom-dark-blue dark:text-custom-yellow" />
+              </div>
+              <h3 className="text-sm mt-8 text-slate-600 dark:text-slate-300 font-medium">
+                {t(title)}
+              </h3>
+            </div>
+            {value}
           </div>
-          <h3 className="text-lg text-slate-700 dark:text-slate-200">
-            {t("alerts")}
-          </h3>
-        </div>
-        <div className="flex justify-center items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-medium text-slate-700 dark:text-slate-200">
-              {goodweActiveAlertsCount}
-            </span>
-            <span className="text-sm text-slate-600 dark:text-slate-400">
-              {t("total")}
-            </span>
-          </div>
-        </div>
+        ))}
       </div>
-    </div>
+
+      {/* Status Modal */}
+      <StatsDetailModal
+        isOpen={selectedModal === "status"}
+        onClose={() => {
+          setSelectedModal(null);
+          setSelectedStatus(null);
+        }}
+        title={t(`status_${selectedStatus || "overview"}`)}
+        icon={BarChart2}
+      >
+        {plants?.filter(
+          (plant) => !selectedStatus || plant.status === selectedStatus
+        ).length > 0 ? (
+          plants
+            .filter(
+              (plant) => !selectedStatus || plant.status === selectedStatus
+            )
+            .map((plant) => (
+              <PlantsListTableItem key={plant.id} plant={plant} />
+            ))
+        ) : (
+          <EmptyState
+            icon={BarChart2}
+            title={t("no_plants_found")}
+            description={t("no_plants_status_description", {
+              status: t(`status_${selectedStatus}`),
+            })}
+          />
+        )}
+      </StatsDetailModal>
+
+      {/* Production Modal */}
+      <StatsDetailModal
+        isOpen={selectedModal === "production"}
+        onClose={() => setSelectedModal(null)}
+        title={t("current_production")}
+        icon={Sun}
+      >
+        {stats.plantsInProduction.length > 0 ? (
+          stats.plantsInProduction.map((plant) => (
+            <PlantProductionListItem key={plant.id} plant={plant} t={t} />
+          ))
+        ) : (
+          <EmptyState
+            icon={Sun}
+            title={t("no_production_data")}
+            description={t("no_active_production_plants")}
+          />
+        )}
+      </StatsDetailModal>
+
+      {/* Total Production Modal */}
+      <StatsDetailModal
+        isOpen={selectedModal === "total-production"}
+        onClose={() => setSelectedModal(null)}
+        title={t("total_production")}
+        icon={Activity}
+      >
+        {plants?.length > 0 ? (
+          plants.map((plant) => (
+            <PlantsListTableItem key={plant.id} plant={plant} />
+          ))
+        ) : (
+          <EmptyState
+            icon={Activity}
+            title={t("no_production_data")}
+            description={t("no_plants_found")}
+          />
+        )}
+      </StatsDetailModal>
+
+      {/* Alerts Modal */}
+      <StatsDetailModal
+        isOpen={selectedModal === "alerts"}
+        onClose={() => setSelectedModal(null)}
+        title={t("alerts")}
+        icon={AlertTriangle}
+      >
+        {activeNotifications.filter(
+          (notification) => notification.provider === "goodwe"
+        ).length > 0 ? (
+          activeNotifications
+            .filter((notification) => notification.provider === "goodwe")
+            .map((notification) => (
+              <NotificationListItem
+                key={notification.warningid}
+                notification={notification}
+              />
+            ))
+        ) : (
+          <EmptyState
+            icon={AlertTriangle}
+            title={t("no_alerts")}
+            description={t("no_active_alerts_description")}
+          />
+        )}
+      </StatsDetailModal>
+    </>
   );
 };
 

@@ -24,30 +24,28 @@ const Modal = ({
 
   return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-[1000]">
-        {/* Backdrop */}
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center">
+        {/* Clickable Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className={`absolute inset-0 bg-black/40 backdrop-blur-sm ${backdropClass}`}
-          onClick={onClose}
+          onClick={onClose} // Clicking backdrop closes modal
         />
+
         {/* Modal Content */}
-        <div className="fixed inset-0 flex items-center justify-center max-w-[90vw] mx-auto">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className={`relative z-10 rounded-lg shadow-lg ${className}`}
-            onClick={(e) => e.stopPropagation()} // Prevent click propagation to backdrop
-          >
-            {" "}
-            {children}
-          </motion.div>
-        </div>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className={`relative z-10 rounded-lg shadow-lg ${className}`}
+          onClick={(e) => e.stopPropagation()} // Prevent click inside from closing modal
+        >
+          {children}
+        </motion.div>
       </div>
     </AnimatePresence>,
     document.body

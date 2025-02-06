@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import {
@@ -72,9 +72,7 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
     if (!plantId || !user?.tokenIdentificador || !selectedDate) return;
 
     try {
-      // Clear previous graph data before making a new request
       dispatch(clearGraphData());
-
       const formattedDate = selectedDate.toISOString().split("T")[0];
       const requestBody = {
         id: plantId,
@@ -83,7 +81,6 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
         token: user.tokenIdentificador,
       };
 
-      // Only add range if not "potencia"
       if (chartIndexId !== "potencia") {
         requestBody.range = range;
       }
@@ -91,9 +88,6 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
       const response = await dispatch(
         fetchGoodweGraphData(requestBody)
       ).unwrap();
-
-      console.log("Graph data fetched:", response);
-
       const lines = response?.data?.data?.lines || [];
       const todayPV = lines.length > 0 ? lines[0].xy.slice(-1)[0]?.y : null;
 
@@ -338,4 +332,4 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
   );
 };
 
-export default GoodweGraphContainer;
+export default memo(GoodweGraphContainer);

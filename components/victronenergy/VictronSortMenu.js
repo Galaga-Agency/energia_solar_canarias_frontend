@@ -24,12 +24,6 @@ const VictronSortMenu = ({ onSortChange }) => {
       label: t("sortByInstallationDate"),
       path: "installation_date",
     },
-    {
-      value: "alertQuantity",
-      icon: <BsExclamationTriangle />,
-      label: t("sortByAlerts"),
-      path: "alert_quantity",
-    },
   ];
 
   const handleSelect = (value) => {

@@ -14,9 +14,7 @@ const InstallationTypesModal = ({
   installations,
   t,
 }) => {
-  const [activeTab, setActiveTab] = useState(
-    Object.keys(installations)[0] || ""
-  );
+  const [activeTab, setActiveTab] = useState(Object.keys(installations)[0]);
 
   const getFilteredPlantsByType = (type) => {
     return plants?.filter((plant) => plant.type === type) || [];

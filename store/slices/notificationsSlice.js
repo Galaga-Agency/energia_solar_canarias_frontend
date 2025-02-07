@@ -397,14 +397,42 @@ export const {
 // Selectors
 export const selectActiveNotifications = (state) => {
   const { activeNotifications, organizationFilter } = state.notifications;
-  if (!organizationFilter) return activeNotifications;
-  return activeNotifications.filter((n) => n.provider === organizationFilter);
+  const user = state.user.user;
+  const associatedPlants = state.plants.associatedPlants;
+
+  let filteredNotifications = organizationFilter
+    ? activeNotifications.filter((n) => n.provider === organizationFilter)
+    : activeNotifications;
+
+  if (user?.clase !== "admin" && associatedPlants?.length > 0) {
+    const plantIds = new Set(associatedPlants.map((plant) => plant.id));
+    filteredNotifications = filteredNotifications.filter((notification) =>
+      plantIds.has(notification.stationId)
+    );
+  }
+
+  return filteredNotifications;
 };
 
 export const selectResolvedNotifications = (state) => {
   const { resolvedNotifications, organizationFilter } = state.notifications;
-  if (!organizationFilter) return resolvedNotifications;
-  return resolvedNotifications.filter((n) => n.provider === organizationFilter);
+  const user = state.user.user;
+  const associatedPlants = state.plants.associatedPlants;
+
+  // First apply organization filter
+  let filteredNotifications = organizationFilter
+    ? resolvedNotifications.filter((n) => n.provider === organizationFilter)
+    : resolvedNotifications;
+
+  // Then apply access control for non-admin users
+  if (user?.clase !== "admin" && associatedPlants?.length > 0) {
+    const plantIds = new Set(associatedPlants.map((plant) => plant.id));
+    filteredNotifications = filteredNotifications.filter((notification) =>
+      plantIds.has(notification.stationId)
+    );
+  }
+
+  return filteredNotifications;
 };
 
 export const selectActiveTotalCount = (state) =>

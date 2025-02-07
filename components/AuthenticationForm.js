@@ -103,26 +103,20 @@ const AuthenticationForm = () => {
       dispatch(setUser(response.data));
       router.push(`/dashboard/${userToValidate}`);
 
-      const fetchNotificationsIfReady = async () => {
-        const state = store.getState();
-        const user = state.user.user;
-        const associatedPlants = state.plants.associatedPlants;
-        const isPlantsLoaded = state.plants.isDataFetched; // Track plant loading status
+      // Fetch all notifications immediately regardless of user type
+      const fetchAllNotifications = async () => {
+        try {
+          // Fetch initial notifications
+          await Promise.all([
+            dispatch(
+              fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
+            ).unwrap(),
+            dispatch(
+              fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
+            ).unwrap(),
+          ]);
 
-        if (!user?.id || !user?.tokenIdentificador) {
-          console.error(" No user data found, aborting fetch!");
-          return;
-        }
-
-        // 🔥 If ADMIN: Fetch notifications immediately
-        if (user?.clase === "admin") {
-          await dispatch(
-            fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
-          ).unwrap();
-          await dispatch(
-            fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
-          ).unwrap();
-
+          // Start background loading
           dispatch(
             loadAllNotificationsInBackground({ status: 0, pageSize: 200 })
           );
@@ -130,39 +124,14 @@ const AuthenticationForm = () => {
             loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
           );
 
-          console.log("✅ Admin notifications fetched.");
-          return;
-        }
-
-        // If CLIENT: Wait for plants to load before fetching notifications
-        if (associatedPlants.length > 0 && isPlantsLoaded) {
-          console.log(
-            "👤 Client detected, plants loaded. Fetching notifications..."
-          );
-
-          await dispatch(
-            fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
-          ).unwrap();
-          await dispatch(
-            fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
-          ).unwrap();
-
-          dispatch(
-            loadAllNotificationsInBackground({ status: 0, pageSize: 200 })
-          );
-          dispatch(
-            loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
-          );
-
-          console.log("✅ Client notifications fetched.");
-        } else {
-          console.warn("⏳ Plants not loaded yet, retrying in 500ms...");
-          setTimeout(fetchNotificationsIfReady, 500); // Retry after 500ms
+          console.log("✅ All notifications fetched successfully");
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
         }
       };
 
-      // ✅ Call fetchNotificationsIfReady() after login validation
-      fetchNotificationsIfReady();
+      // Execute notification fetching
+      fetchAllNotifications();
 
       if (isInitialLoad) {
         dispatch(setInitialLoad(false));

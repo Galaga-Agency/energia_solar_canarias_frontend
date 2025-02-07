@@ -23,6 +23,7 @@ import {
 import {
   fetchBatteryChargingStateAPI,
   fetchSolarEdgeComparisonGraphAPI,
+  fetchSolarEdgeEnergyDataAPI,
   fetchSolarEdgeGraphDataAPI,
   fetchSolarEdgeInventoryAPI,
   fetchSolarEdgeOverviewAPI,
@@ -280,6 +281,27 @@ export const fetchSolarEdgeGraphData = createAsyncThunk(
   }
 );
 
+export const fetchSolarEdgeEnergyData = createAsyncThunk(
+  "plants/fetchSolarEdgeEnergyData",
+  async (
+    { plantIds, timeUnit, startTime, endTime, token },
+    { rejectWithValue }
+  ) => {
+    try {
+      const data = await fetchSolarEdgeEnergyDataAPI({
+        plantIds,
+        timeUnit,
+        startTime,
+        endTime,
+        token,
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const fetchSolarEdgeRealtimeData = createAsyncThunk(
   "plants/fetchSolarEdgeRealtimeData",
   async ({ plantId, token }, { rejectWithValue }) => {
@@ -527,6 +549,9 @@ const initialState = {
   statsData: null,
   statsLoading: false,
   statsError: null,
+  energyData: null,
+  energyDataLoading: false,
+  energyDataError: null,
 };
 
 const plantsSlice = createSlice({
@@ -825,6 +850,18 @@ const plantsSlice = createSlice({
         state.batteryChargingLoading = false;
         state.batteryChargingError = action.payload;
       })
+      .addCase(fetchSolarEdgeEnergyData.pending, (state) => {
+        state.energyDataLoading = true;
+        state.energyDataError = null;
+      })
+      .addCase(fetchSolarEdgeEnergyData.fulfilled, (state, action) => {
+        state.energyDataLoading = false;
+        state.energyData = action.payload;
+      })
+      .addCase(fetchSolarEdgeEnergyData.rejected, (state, action) => {
+        state.energyDataLoading = false;
+        state.energyDataError = action.payload;
+      })
 
       // Victron Energy
       .addCase(fetchVictronEnergyWeatherData.pending, (state) => {
@@ -1013,6 +1050,10 @@ export const selectIsDataFetched = (state) => state.plants.isDataFetched;
 export const selectStatsData = (state) => state.plants.statsData;
 export const selectStatsLoading = (state) => state.plants.statsLoading;
 export const selectStatsError = (state) => state.plants.statsError;
+export const selectEnergyData = (state) => state.plants.energyData;
+export const selectEnergyDataLoading = (state) =>
+  state.plants.energyDataLoading;
+export const selectEnergyDataError = (state) => state.plants.energyDataError;
 
 export const {
   clearPlants,

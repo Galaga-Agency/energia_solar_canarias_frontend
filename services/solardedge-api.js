@@ -277,3 +277,49 @@ export const fetchBatteryChargingStateAPI = async ({
     }
   }
 };
+
+export const fetchSolarEdgeEnergyDataAPI = async ({
+  plantIds,
+  timeUnit,
+  startTime,
+  endTime,
+  token,
+}) => {
+  console.log("fetchSolarEdgeEnergyDataAPI", {
+    plantIds,
+    timeUnit,
+    startTime,
+    endTime,
+    token,
+  });
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/plants/energy/${plantIds.join(",")}?proveedor=solaredge`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          time: timeUnit,
+          startTime,
+          endTime,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to fetch energy data");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching SolarEdge energy data:", error);
+    throw error;
+  }
+};

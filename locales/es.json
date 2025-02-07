@@ -2062,5 +2062,12 @@
   "Solar": "Solar",
   "Bateria": "Batería",
   "no_installations": "No Se Encontraron Instalaciones",
-  "no_installations_description": "Actualmente no hay instalaciones para mostrar"
+  "no_installations_description": "Actualmente no hay instalaciones para mostrar",
+  "status_overview_tooltip": "Muestra la cantidad de plantas en diferentes estados.",
+  "alertsTooltip": "Muestra la cantidad de alertas activas.",
+  "currentProductionTooltip": "Muestra la producción de energía actual en kilovatios.",
+  "this_year": "Este Año",
+  "last_30_days": "Últimos 30 Días",
+  "last_7_days": "Últimos 7 Días",
+  "energia_producida": "Energía Producida"
 }

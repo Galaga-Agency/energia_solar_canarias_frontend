@@ -23,6 +23,7 @@ import {
   setInitialLoad,
 } from "@/store/slices/notificationsSlice";
 import Cookies from "js-cookie";
+import store from "@/store/store";
 
 const AuthenticationForm = () => {
   const [currentFace, setCurrentFace] = useState("login");
@@ -102,10 +103,66 @@ const AuthenticationForm = () => {
       dispatch(setUser(response.data));
       router.push(`/dashboard/${userToValidate}`);
 
-      dispatch(fetchActiveNotifications({ pageIndex: 1, pageSize: 200 }));
-      dispatch(loadAllNotificationsInBackground({ status: 0, pageSize: 200 }));
-      dispatch(fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 }));
-      dispatch(loadAllNotificationsInBackground({ status: 1, pageSize: 200 }));
+      const fetchNotificationsIfReady = async () => {
+        const state = store.getState();
+        const user = state.user.user;
+        const associatedPlants = state.plants.associatedPlants;
+        const isPlantsLoaded = state.plants.isDataFetched; // Track plant loading status
+
+        if (!user?.id || !user?.tokenIdentificador) {
+          console.error(" No user data found, aborting fetch!");
+          return;
+        }
+
+        // 🔥 If ADMIN: Fetch notifications immediately
+        if (user?.clase === "admin") {
+          await dispatch(
+            fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
+          ).unwrap();
+          await dispatch(
+            fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
+          ).unwrap();
+
+          dispatch(
+            loadAllNotificationsInBackground({ status: 0, pageSize: 200 })
+          );
+          dispatch(
+            loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
+          );
+
+          console.log("✅ Admin notifications fetched.");
+          return;
+        }
+
+        // If CLIENT: Wait for plants to load before fetching notifications
+        if (associatedPlants.length > 0 && isPlantsLoaded) {
+          console.log(
+            "👤 Client detected, plants loaded. Fetching notifications..."
+          );
+
+          await dispatch(
+            fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
+          ).unwrap();
+          await dispatch(
+            fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
+          ).unwrap();
+
+          dispatch(
+            loadAllNotificationsInBackground({ status: 0, pageSize: 200 })
+          );
+          dispatch(
+            loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
+          );
+
+          console.log("✅ Client notifications fetched.");
+        } else {
+          console.warn("⏳ Plants not loaded yet, retrying in 500ms...");
+          setTimeout(fetchNotificationsIfReady, 500); // Retry after 500ms
+        }
+      };
+
+      // ✅ Call fetchNotificationsIfReady() after login validation
+      fetchNotificationsIfReady();
 
       if (isInitialLoad) {
         dispatch(setInitialLoad(false));
@@ -122,6 +179,7 @@ const AuthenticationForm = () => {
       setIsSubmitting(false);
     }
   };
+
   const resendTokenRequest = async () => {
     if (!userToValidate) return;
     try {

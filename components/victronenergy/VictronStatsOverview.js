@@ -89,7 +89,6 @@ const VictronStatsOverview = ({ plants, t, alerts }) => {
     {
       icon: BsBatteryFull,
       title: "battery_overview",
-      onClick: () => setSelectedModal("status"),
       value: (
         <div className="flex gap-2">
           {Object.entries(batteryStateIcons).map(
@@ -97,10 +96,7 @@ const VictronStatsOverview = ({ plants, t, alerts }) => {
               <div
                 key={status}
                 className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleStatusClick(status);
-                }}
+                onClick={() => handleStatusClick(status)}
               >
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${bgColor}`} />
@@ -156,9 +152,11 @@ const VictronStatsOverview = ({ plants, t, alerts }) => {
         {metrics.map(({ icon: Icon, title, onClick, value }) => (
           <div
             key={title}
-            className="flex-1 group relative text-center bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl 
+            className={`flex-1 group relative text-center bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl 
                      hover:shadow-lg hover:rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 
-                     cursor-pointer p-4 flex flex-col items-center gap-3 hover:scale-105 transition-transform duration-700"
+                     ${
+                       onClick ? "cursor-pointer" : ""
+                     } p-4 flex flex-col items-center gap-3 hover:scale-105 transition-transform duration-700`}
             onClick={onClick}
           >
             <div className="flex flex-col items-center gap-2">

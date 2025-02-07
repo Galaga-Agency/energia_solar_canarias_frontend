@@ -33,6 +33,9 @@ import { motion } from "framer-motion";
 import DeleteUserModal from "@/components/DeleteUserModal";
 import { deleteUser } from "@/store/slices/usersListSlice";
 import Loading from "@/components/ui/Loading";
+import { persistor } from "@/store/store";
+import { clearPlants } from "@/store/slices/plantsSlice";
+import { clearNotifications } from "@/store/slices/notificationsSlice";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();
@@ -110,30 +113,41 @@ const SettingsTab = () => {
   };
 
   // Handle logout
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsLoginOut(true);
 
+    // Ensure Redux is cleared before redirecting
+    await dispatch(logoutUser());
+    await dispatch(clearPlants());
+    await dispatch(clearNotifications());
+
+    // Pause persistence to avoid restoring old data
+    persistor.pause();
+    await persistor.flush();
+    await persistor.purge(); // Fully clear stored Redux state
+
+    // Clear all cookies
     const cookieOptions = {
       secure: true,
       sameSite: "strict",
       path: "/",
       domain: window.location.hostname,
     };
-
-    // Clear all cookies
     Cookies.remove("user", cookieOptions);
     Cookies.remove("authToken", cookieOptions);
 
-    // Force clear any remaining cookies
+    // Force remove any remaining cookies
     document.cookie.split(";").forEach((cookie) => {
       document.cookie = cookie
         .replace(/^ +/, "")
         .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
     });
 
-    dispatch(logoutUser());
-    router.replace("/");
-    setIsLoginOut(false);
+    // Delay redirect to ensure state clears properly
+    setTimeout(() => {
+      router.replace("/");
+      setIsLoginOut(false);
+    }, 300);
   };
 
   isLoginOut && <Loading theme={theme} />;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X, Zap } from "lucide-react";
 import Modal from "@/components/ui/Modal";
@@ -14,7 +14,19 @@ const InstallationTypesModal = ({
   installations,
   t,
 }) => {
-  const [activeTab, setActiveTab] = useState(Object.keys(installations)[0]);
+  // Set default tab to 'solar' if it exists in installations, otherwise use first available type
+  const [activeTab, setActiveTab] = useState("solar");
+
+  // Update activeTab when installations prop changes
+  useEffect(() => {
+    if (installations && Object.keys(installations).length > 0) {
+      if (installations.hasOwnProperty("solar")) {
+        setActiveTab("solar");
+      } else {
+        setActiveTab(Object.keys(installations)[0]);
+      }
+    }
+  }, [installations]);
 
   const getFilteredPlantsByType = (type) => {
     return plants?.filter((plant) => plant.type === type) || [];

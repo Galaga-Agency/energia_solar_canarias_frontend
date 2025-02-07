@@ -263,7 +263,7 @@ export const fetchAllPlantsAPI = async ({
   userId,
   token,
   page = 1,
-  pageSize = 20,
+  pageSize = 200,
 }) => {
   try {
     const response = await fetch(
@@ -354,6 +354,7 @@ export const getUserPlantsAPI = async ({ userId, token }) => {
       throw new Error(errorData.message || "Failed to fetch user plants");
     }
 
+    console.log("response from user plants api call: ", response.json);
     return await response.json();
   } catch (error) {
     console.error("Error fetching user plants:", error);
@@ -536,6 +537,10 @@ export const fetchUserAssociatedPlantsAPI = async ({ userId, token }) => {
       );
     }
 
+    console.log(
+      "response from user associated plants api call: ",
+      response.json
+    );
     const data = await response.json();
     return data.data;
   } catch (error) {

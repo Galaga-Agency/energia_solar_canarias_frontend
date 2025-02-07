@@ -10,6 +10,8 @@ import { selectUser } from "@/store/slices/userSlice";
 import {
   clearPlantDetails,
   fetchPlants,
+  fetchUserAssociatedPlants,
+  selectAssociatedPlants,
   selectIsDataFetched,
   selectLoading,
   selectPlants,
@@ -38,7 +40,7 @@ const ClientDashboardPage = ({ params }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const loading = useSelector(selectLoading);
-  const plants = useSelector(selectPlants);
+  const plants = useSelector(selectAssociatedPlants);
   const theme = useSelector(selectTheme);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -76,9 +78,9 @@ const ClientDashboardPage = ({ params }) => {
   }, []);
 
   const fetchPlantsIfNeeded = useCallback(() => {
-    if (user?.id && !isDataFetched) {
+    if (user?.id) {
       dispatch(
-        fetchPlants({
+        fetchUserAssociatedPlants({
           userId: user.id,
           token: user.tokenIdentificador,
         })

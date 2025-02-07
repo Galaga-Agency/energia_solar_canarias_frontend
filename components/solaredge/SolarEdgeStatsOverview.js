@@ -1,18 +1,14 @@
 import React, { useState } from "react";
-import { BarChart2, Zap } from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
+import { BarChart2 } from "lucide-react";
 import CustomSelect from "@/components/ui/CustomSelect";
-import EmptyState from "../EmptyState";
-import PlantsListTableItem from "../PlantsListTableItem";
-import StatsDetailModal from "../StatsDetailModal";
+import StatsDetailModal from "@/components/StatsDetailModal";
+import EmptyState from "@/components/EmptyState";
+import PlantsListTableItem from "@/components/PlantsListTableItem";
+import StatusOverview from "./StatusOverview";
+import PeakPower from "./PeakPower";
+import MiniPerformanceChart from "./graphs/MiniPerformanceChart";
 
+// Mock data for performance metrics
 const mockPerformanceData = {
   yesterday: [
     { time: "06:00", value: 0 },
@@ -60,19 +56,6 @@ const mockPerformanceData = {
   ],
 };
 
-const CustomTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white dark:bg-gray-800 p-2 rounded shadow-lg border border-gray-200 dark:border-gray-700">
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          {`${payload[0].payload.time}: ${payload[0].value.toFixed(2)} kWh`}
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
-
 const SolarEdgeStatsOverview = ({ plants, t }) => {
   const [selectedModal, setSelectedModal] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -111,66 +94,9 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
 
   return (
     <div className="flex flex-col md:flex-row gap-4 max-w-[85vw] md:max-w-[92vw] mx-auto">
-      {/* Status Overview */}
-      <div
-        className="flex-1 group relative text-center bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl 
-                    hover:shadow-lg hover:rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 
-                    cursor-pointer p-4 flex flex-col items-center hover:scale-105 transition-transform duration-700 h-[160px]"
-        onClick={() => setSelectedModal("status")}
-      >
-        <div className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute -top-6 w-14 h-14 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
-          <BarChart2 className="w-8 h-8 text-custom-dark-blue dark:text-custom-yellow" />
-        </div>
+      <StatusOverview stats={stats} onStatusClick={handleStatusClick} t={t} />
 
-        <h3 className="text-sm mt-8 mb-4 text-slate-600 dark:text-slate-300 font-medium">
-          {t("status_overview")}
-        </h3>
-
-        <div className="flex justify-around gap-4 w-full">
-          {[
-            { status: "working", color: "bg-green-500" },
-            { status: "waiting", color: "bg-amber-500" },
-            { status: "error", color: "bg-red-500" },
-            { status: "disconnected", color: "bg-slate-400" },
-          ].map(({ status, color }) => (
-            <div
-              key={status}
-              className="flex items-center gap-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleStatusClick(status);
-              }}
-            >
-              <div className={`w-3 h-3 rounded-full ${color}`} />
-              <span className="text-xl font-medium text-slate-700 dark:text-slate-200">
-                {stats[status]}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Peak Power */}
-      <div
-        className="flex-1 group relative text-center bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl 
-                    hover:shadow-lg hover:rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 
-                    p-4 flex flex-col items-center h-[160px]"
-      >
-        <div className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute -top-6 w-14 h-14 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
-          <Zap className="w-8 h-8 text-custom-dark-blue dark:text-custom-yellow" />
-        </div>
-
-        <h3 className="text-sm mt-8 mb-4 text-slate-600 dark:text-slate-300 font-medium">
-          {t("peak_power")}
-        </h3>
-
-        <div className="flex items-baseline justify-center gap-2">
-          <span className="text-3xl font-bold text-slate-700 dark:text-slate-200">
-            {stats.totalPower.toFixed(2)}
-          </span>
-          <span className="text-lg text-slate-600 dark:text-slate-400">kW</span>
-        </div>
-      </div>
+      <PeakPower totalPower={stats.totalPower} t={t} />
 
       {/* Performance Display */}
       <div
@@ -205,52 +131,7 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
               </span>
             </div>
 
-            <div className="flex-1 h-24 ml-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={mockPerformanceData[selectedPeriod]}
-                  margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor="var(--custom-dark-blue)"
-                        stopOpacity={0.3}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="var(--custom-yellow)"
-                        stopOpacity={0}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <XAxis
-                    dataKey="time"
-                    tick={{ fontSize: 10, fill: "#888888" }}
-                    tickLine={false}
-                    axisLine={false}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10, fill: "#888888" }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `${value} kWh`}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="var(--custom-dark-blue)"
-                    fill="url(#colorValue)"
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4, fill: "var(--custom-dark-blue)" }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            <MiniPerformanceChart data={mockPerformanceData[selectedPeriod]} />
           </div>
         </div>
       </div>

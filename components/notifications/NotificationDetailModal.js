@@ -5,14 +5,13 @@ import { X } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Texture from "@/components/Texture";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { FaBell } from "react-icons/fa";
-import { useParams } from "next/navigation";
 
 const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { userId } = useParams();
+  const { userId, plantId: currentPlantId } = useParams();
 
   const handleRedirect = () => {
     if (!notification?.provider || !userId) {
@@ -342,9 +341,16 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
           transition={{ delay: 0.5 }}
           className="flex justify-end gap-4 mt-6"
         >
-          <PrimaryButton onClick={handleRedirect}>
-            {t("goToPlant")}
-          </PrimaryButton>
+          {(!currentPlantId ||
+            currentPlantId !==
+              (notification.stationId ||
+                notification.stationid ||
+                notification.plantId ||
+                notification.idSite)) && (
+            <PrimaryButton onClick={handleRedirect}>
+              {t("goToPlant")}
+            </PrimaryButton>
+          )}
         </motion.div>
       </div>
     </Modal>

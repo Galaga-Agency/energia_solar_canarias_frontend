@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AlertTriangle, BarChart2, Sun, Activity } from "lucide-react";
-import { motion } from "framer-motion";
 import {
   selectActiveNotifications,
   fetchActiveNotifications,
@@ -12,6 +11,49 @@ import PlantsListTableItem from "../PlantsListTableItem";
 import EmptyState from "../EmptyState";
 import PlantProductionListItem from "../PlantProductionListItem";
 import NotificationListItem from "../notifications/NotificationListItem";
+
+const StatusBlock = ({ stats, onStatusClick }) => (
+  <div className="flex gap-2">
+    {[
+      { status: "working", color: "green" },
+      { status: "disconnected", color: "gray" },
+      { status: "waiting", color: "yellow" },
+      { status: "error", color: "red" },
+    ].map(({ status, color }) => (
+      <div
+        key={status}
+        className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        onClick={() => onStatusClick(status)}
+      >
+        <div className={`w-3 h-3 rounded-full bg-${color}-500`} />
+        <span className="text-lg font-medium text-gray-800 dark:text-gray-200">
+          {stats[status]}
+        </span>
+      </div>
+    ))}
+  </div>
+);
+
+const StatCard = ({ Icon, title, children, onClick, t }) => (
+  <div
+    className={`flex-1 group relative text-center bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl 
+              hover:shadow-lg hover:rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 
+              ${
+                onClick ? "cursor-pointer" : ""
+              } p-4 flex flex-col items-center gap-3 hover:scale-105 transition-transform duration-700`}
+    onClick={onClick}
+  >
+    <div className="flex flex-col items-center gap-2">
+      <div className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute -top-6 w-14 h-14 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
+        <Icon className="w-8 h-8 text-custom-dark-blue dark:text-custom-yellow" />
+      </div>
+      <h3 className="text-sm mt-8 text-slate-600 dark:text-slate-300 font-medium">
+        {t(title)}
+      </h3>
+    </div>
+    {children}
+  </div>
+);
 
 const GoodweStatsOverview = ({ plants, t }) => {
   const dispatch = useDispatch();
@@ -52,41 +94,15 @@ const GoodweStatsOverview = ({ plants, t }) => {
 
   const metrics = [
     {
-      icon: BarChart2,
+      Icon: BarChart2,
       title: "status_overview",
-      onClick: () => setSelectedModal("status"),
-      value: (
-        <div className="flex gap-2">
-          {["working", "disconnected", "waiting", "error"].map((status) => (
-            <div
-              key={status}
-              className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              onClick={() => handleStatusClick(status)}
-            >
-              <div
-                className={`w-3 h-3 rounded-full bg-${
-                  status === "working"
-                    ? "green"
-                    : status === "disconnected"
-                    ? "gray"
-                    : status === "waiting"
-                    ? "yellow"
-                    : "red"
-                }-500`}
-              />
-              <span className="text-lg font-medium text-gray-800 dark:text-gray-200">
-                {stats[status]}
-              </span>
-            </div>
-          ))}
-        </div>
-      ),
+      content: <StatusBlock stats={stats} onStatusClick={handleStatusClick} />,
     },
     {
-      icon: Sun,
+      Icon: Sun,
       title: "current_production",
       onClick: () => setSelectedModal("production"),
-      value: (
+      content: (
         <div className="text-center">
           <span className="text-3xl font-bold text-gray-800 dark:text-gray-100">
             {currentKW}
@@ -98,10 +114,10 @@ const GoodweStatsOverview = ({ plants, t }) => {
       ),
     },
     {
-      icon: AlertTriangle,
+      Icon: AlertTriangle,
       title: "alerts",
       onClick: () => setSelectedModal("alerts"),
-      value: (
+      content: (
         <div className="text-center">
           <span className="text-3xl font-bold text-gray-800 dark:text-gray-100">
             {goodweActiveAlertsCount}
@@ -117,24 +133,16 @@ const GoodweStatsOverview = ({ plants, t }) => {
   return (
     <>
       <div className="flex flex-col md:flex-row gap-6 max-w-[85vw] md:max-w-[92vw] mx-auto">
-        {metrics.map(({ icon: Icon, title, onClick, value }) => (
-          <div
+        {metrics.map(({ Icon, title, content, onClick }) => (
+          <StatCard
             key={title}
-            className="flex-1 group relative text-center bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl 
-                   hover:shadow-lg hover:rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 
-                   cursor-pointer p-4 flex flex-col items-center gap-3 hover:scale-105 transition-transform duration-700 "
+            Icon={Icon}
+            title={title}
             onClick={onClick}
+            t={t}
           >
-            <div className="flex flex-col items-center gap-2">
-              <div className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)] absolute -top-6 w-14 h-14 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110">
-                <Icon className="w-8 h-8 text-custom-dark-blue dark:text-custom-yellow" />
-              </div>
-              <h3 className="text-sm mt-8 text-slate-600 dark:text-slate-300 font-medium">
-                {t(title)}
-              </h3>
-            </div>
-            {value}
-          </div>
+            {content}
+          </StatCard>
         ))}
       </div>
 
@@ -185,26 +193,6 @@ const GoodweStatsOverview = ({ plants, t }) => {
             icon={Sun}
             title={t("no_production_data")}
             description={t("no_active_production_plants")}
-          />
-        )}
-      </StatsDetailModal>
-
-      {/* Total Production Modal */}
-      <StatsDetailModal
-        isOpen={selectedModal === "total-production"}
-        onClose={() => setSelectedModal(null)}
-        title={t("total_production")}
-        icon={Activity}
-      >
-        {plants?.length > 0 ? (
-          plants.map((plant) => (
-            <PlantsListTableItem key={plant.id} plant={plant} />
-          ))
-        ) : (
-          <EmptyState
-            icon={Activity}
-            title={t("no_production_data")}
-            description={t("no_plants_found")}
           />
         )}
       </StatsDetailModal>

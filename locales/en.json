@@ -1143,5 +1143,12 @@
   "Solar": "Solar",
   "Bateria": "Battery",
   "no_installations": "No Installations Found",
-  "no_installations_description": "There are currently no installations to display"
+  "no_installations_description": "There are currently no installations to display",
+  "status_overview_tooltip": "Displays the number of plants in different statuses.",
+  "alertsTooltip": "Shows the number of active alerts.",
+  "currentProductionTooltip": "Shows the current energy production in kilowatts.",
+  "this_year": "This Year",
+  "last_30_days": "Last 30 Days",
+  "last_7_days": "Last 7 Days",
+  "energia_producida": "Energy Produced"
 }

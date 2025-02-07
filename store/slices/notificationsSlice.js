@@ -16,7 +16,7 @@ export const fetchActiveNotifications = createAsyncThunk(
 
       let activeNotifications = [];
 
-      // Fetch first batch of Goodwe active alerts
+      // Fetch Goodwe active alerts
       try {
         const goodweResponse = await fetchGoodweActiveNotificationsAPI({
           token,
@@ -25,29 +25,26 @@ export const fetchActiveNotifications = createAsyncThunk(
         });
 
         if (goodweResponse?.data?.list) {
-          const formattedGoodweAlerts = goodweResponse.data.list.map(
-            (alert) => ({
-              ...alert,
-              id: alert.warningid,
-              read: false,
-              archived: false,
-              provider: "goodwe",
-              severity: (() => {
-                switch (alert.warninglevel) {
-                  case 1:
-                    return "low";
-                  case 2:
-                    return "medium";
-                  case 3:
-                    return "high";
-                  default:
-                    return "medium";
-                }
-              })(),
-              timestamp: new Date(alert.happentime).toISOString(),
-            })
-          );
-          activeNotifications = formattedGoodweAlerts;
+          activeNotifications = goodweResponse.data.list.map((alert) => ({
+            ...alert,
+            id: alert.warningid,
+            read: false,
+            archived: false,
+            provider: "goodwe",
+            severity: (() => {
+              switch (alert.warninglevel) {
+                case 1:
+                  return "low";
+                case 2:
+                  return "medium";
+                case 3:
+                  return "high";
+                default:
+                  return "medium";
+              }
+            })(),
+            timestamp: new Date(alert.happentime).toISOString(),
+          }));
         }
       } catch (error) {
         console.error("Error fetching Goodwe alerts:", error);
@@ -55,9 +52,12 @@ export const fetchActiveNotifications = createAsyncThunk(
 
       // Fetch Victron alerts
       const state = getState();
-      const victronPlants = state.plants.plants.filter(
-        (plant) => plant.organization === "victronenergy" && plant.alarm
-      );
+      const plants = state.plants.plants || [];
+      const victronPlants = Array.isArray(plants)
+        ? plants.filter(
+            (plant) => plant.organization === "victronenergy" && plant.alarm
+          )
+        : [];
 
       const victronResults = await Promise.allSettled(
         victronPlants.map((plant) =>
@@ -94,15 +94,9 @@ export const fetchActiveNotifications = createAsyncThunk(
         }
       });
 
-      // Combine and sort all notifications
-      const allNotifications = [
-        ...activeNotifications,
-        ...victronNotifications,
-      ];
-      const sortedNotifications = allNotifications.sort(
+      return [...activeNotifications, ...victronNotifications].sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
-      return sortedNotifications;
     } catch (error) {
       console.error("Error in fetchActiveNotifications:", error);
       return rejectWithValue(error.message);
@@ -110,7 +104,6 @@ export const fetchActiveNotifications = createAsyncThunk(
   }
 );
 
-// Initial fetch of resolved notifications
 export const fetchResolvedNotifications = createAsyncThunk(
   "notifications/fetchResolvedNotifications",
   async ({ pageIndex = 1, pageSize = 50 }, { rejectWithValue, getState }) => {
@@ -156,9 +149,10 @@ export const fetchResolvedNotifications = createAsyncThunk(
 
       // Fetch Victron resolved notifications
       const state = getState();
-      const victronPlants = state.plants.plants.filter(
-        (plant) => plant.organization === "victronenergy"
-      );
+      const plants = state.plants.plants || [];
+      const victronPlants = Array.isArray(plants)
+        ? plants.filter((plant) => plant.organization === "victronenergy")
+        : [];
 
       const victronResults = await Promise.allSettled(
         victronPlants.map((plant) =>
@@ -195,13 +189,7 @@ export const fetchResolvedNotifications = createAsyncThunk(
         }
       });
 
-      // Combine and sort all resolved notifications
-      const allResolvedNotifications = [
-        ...resolvedNotifications,
-        ...victronResolvedNotifications,
-      ];
-
-      return allResolvedNotifications.sort(
+      return [...resolvedNotifications, ...victronResolvedNotifications].sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
     } catch (error) {
@@ -435,10 +423,19 @@ export const selectResolvedNotifications = (state) => {
   return filteredNotifications;
 };
 
-export const selectActiveTotalCount = (state) =>
-  state.notifications.activeTotalCount;
-export const selectResolvedTotalCount = (state) =>
-  state.notifications.resolvedTotalCount;
+export const selectActiveTotalCount = (state) => {
+  const filteredNotifications = selectActiveNotifications(state);
+  return filteredNotifications.length;
+};
+
+export const selectResolvedTotalCount = (state) => {
+  const filteredNotifications = selectResolvedNotifications(state);
+  return filteredNotifications.length;
+};
+export const selectActiveNotificationsCount = (state) => {
+  const filteredNotifications = selectActiveNotifications(state);
+  return filteredNotifications.length;
+};
 export const selectIsLoadingMore = (state) => state.notifications.isLoadingMore;
 export const selectIsInitialLoad = (state) => state.notifications.isInitialLoad;
 export const selectActiveError = (state) => state.notifications.activeError;
@@ -447,8 +444,6 @@ export const selectOrganizationFilter = (state) =>
   state.notifications.organizationFilter;
 export const selectResolvedFetched = (state) =>
   state.notifications.resolvedFetched;
-export const selectActiveNotificationsCount = (state) =>
-  state.notifications.activeTotalCount || 0;
 export const selectActiveVictronNotifications = (state) =>
   state.notifications.activeNotifications.filter(
     (n) => n.provider === "victron" && n.isActive === 1

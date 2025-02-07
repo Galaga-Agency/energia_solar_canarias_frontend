@@ -82,7 +82,14 @@ const persistConfig = {
 const plantsPersistConfig = {
   key: "plants",
   storage,
-  blacklist: volatileStates.plants,
+  whitelist: [
+    "plants",
+    "associatedPlants",
+    "isDataFetched",
+    "currentProvider",
+    "lastUpdated",
+  ],
+  transforms: [cleanDataTransform],
 };
 
 // Combine all reducers with persisted notifications

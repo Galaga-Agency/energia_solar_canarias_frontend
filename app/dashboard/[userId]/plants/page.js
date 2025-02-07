@@ -80,7 +80,8 @@ const ClientDashboardPage = ({ params }) => {
   }, []);
 
   const fetchPlantsIfNeeded = useCallback(() => {
-    if (user?.id) {
+    if (user?.id && !plants.length) {
+      // Only fetch if no plants exist
       dispatch(
         fetchUserAssociatedPlants({
           userId: user.id,
@@ -89,7 +90,7 @@ const ClientDashboardPage = ({ params }) => {
       );
       dispatch(clearPlantDetails());
     }
-  }, [dispatch, user, isDataFetched]);
+  }, [dispatch, user, plants.length]);
 
   useEffect(() => {
     if (!user?.id) {

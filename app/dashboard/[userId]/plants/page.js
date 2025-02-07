@@ -15,6 +15,7 @@ import {
   selectIsDataFetched,
   selectLoading,
   selectPlants,
+  selectLoadingAssociatedPlants,
 } from "@/store/slices/plantsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -53,6 +54,7 @@ const ClientDashboardPage = ({ params }) => {
   const { isMobile } = useDeviceType();
   const { t } = useTranslation();
   const sidebarRef = useRef(null);
+  const loadingAssociatedPlants = useSelector(selectLoadingAssociatedPlants);
 
   const GRID_ITEMS_PER_PAGE = isMobile ? 6 : 9;
   const LIST_ITEMS_PER_PAGE = 7;
@@ -196,7 +198,7 @@ const ClientDashboardPage = ({ params }) => {
               </div>
             </div>
 
-            {loading ? (
+            {loading || loadingAssociatedPlants ? (
               <PlantsListSkeleton theme={theme} rows={itemsPerPage} />
             ) : (
               <div className="w-full">

@@ -119,7 +119,7 @@ const SettingsTab = () => {
     // Ensure Redux is cleared before redirecting
     await dispatch(logoutUser());
     await dispatch(clearPlants());
-    await dispatch(clearNotifications());
+    // await dispatch(clearNotifications());
 
     // Pause persistence to avoid restoring old data
     persistor.pause();

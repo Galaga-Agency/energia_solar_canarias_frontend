@@ -87,7 +87,7 @@ const ApiKeyRequestCard = ({ onClose = () => {} }) => {
             )}
           </button>
           {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-          <div className="flex mt-6 items-center">
+          <div className="absolute bottom-6 flex mt-6 items-center">
             <Link
               href="/api-guide"
               passHref

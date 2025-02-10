@@ -46,7 +46,7 @@ const SettingsTab = () => {
   const [theme] = useLocalStorageState("theme", { defaultValue: "dark" });
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { isTablet } = useDeviceType();
+  const { isTablet, isMobile } = useDeviceType();
   const pathname = usePathname();
   const isLoading = useSelector(selectLoading);
   const [isSaving, setIsSaving] = useState(false);
@@ -214,69 +214,51 @@ const SettingsTab = () => {
         </motion.div>
 
         {/* Settings Content */}
-        <div className="w-full space-y-6 transition-all duration-500 flex flex-col max-w-full lg:max-w-[70vw] 2xl:max-w-[60vw] mx-auto mb-16">
-          {/* Profile Section */}
-          <motion.div
-            className="flex flex-col gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.5 }}
-          >
-            <ProfileOverviewCard
-              user={user}
-              profilePic={profilePic}
-              setProfilePic={handleProfilePicUpdate}
-              isSaving={isSaving}
-              onProfileUpdate={handleUserUpdate}
-            />
-            <PasswordChangeCard />
-          </motion.div>
+        <div className="w-full space-y-6 flex flex-col max-w-full lg:max-w-[70vw] 2xl:max-w-[60vw] mx-auto mb-16">
+          {/* Two-Column Layout with Full Height */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {/* Left Column (Profile & Company Docs) */}
+            <div className="flex flex-col gap-6 h-full flex-grow">
+              <ProfileOverviewCard
+                user={user}
+                profilePic={profilePic}
+                setProfilePic={setProfilePic}
+              />
 
-          {/* API Key Section */}
-          <motion.div
-            className="flex flex-col gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, duration: 0.5 }}
-          >
-            <ApiKeyRequestCard />
-          </motion.div>
-
-          {/* Company Documents Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.5 }}
-          >
-            <CompanyDocumentsCard />
-          </motion.div>
-
-          {/* Account Actions Section */}
-          <motion.div
-            className="flex flex-col gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.8, duration: 0.5 }}
-          >
-            <div className="bg-gray-100 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
-              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
-                {t("accountActions")}
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {t("logoutDescription")}
-              </p>
-              <motion.button
-                onClick={handleLogout}
-                className="w-full bg-gray-800 text-white hover:bg-gray-900 py-2.5 px-4 rounded-lg transition-all duration-200 mb-6"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {t("logout")}
-              </motion.button>
-
-              <DangerZone onDelete={() => setIsModalOpen(true)} t={t} />
+              {/* Company Documents - Fills Remaining Space */}
+              <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter  flex-grow">
+                <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-4">
+                  {t("companyDocuments")}
+                </h2>
+                <CompanyDocumentsCard />
+              </div>
             </div>
-          </motion.div>
+
+            {/* Right Column (API Key, Security, and Actions) */}
+            <div className="flex flex-col gap-6 h-full flex-grow">
+              <ApiKeyRequestCard />
+
+              {/* Security Section  */}
+              <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter flex-grow">
+                <PasswordChangeCard />
+              </div>
+
+              {/* Full-Width Logout & Danger Zone */}
+              <div className="flex flex-col gap-6 justify-between mt-auto">
+                <motion.button
+                  onClick={handleLogout}
+                  className="w-full md:w-auto bg-gray-800 text-white hover:bg-gray-900 py-2.5 px-4 rounded-lg transition-all duration-200"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {t("logout")}
+                </motion.button>
+                <div className="w-full md:w-auto">
+                  <DangerZone onDelete={() => setIsModalOpen(true)} t={t} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Confirmation Modal */}

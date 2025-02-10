@@ -70,7 +70,7 @@ const LanguageSelector = () => {
           src={currentLanguage.flagPath}
           alt={currentLanguage.alt}
           fill
-          className={`rounded-full object-cover ${
+          className={`rounded-full object-cover z-50 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
@@ -82,8 +82,7 @@ const LanguageSelector = () => {
       {/* Sliding Flag */}
       {isOpen && otherLanguage && (
         <div
-          className="absolute w-8 h-8 rounded-full cursor-pointer flex items-center justify-center overflow-hidden shadow-md bg-white transition-transform duration-300 ease-in-out"
-          style={{ top: "40px" }}
+          className="absolute w-8 h-8 rounded-full cursor-pointer flex items-center justify-center overflow-hidden shadow-md bg-white transition-transform duration-300 ease-in-out top-[40px] z-50"
           onClick={() => changeLanguage(otherLanguage.code)}
         >
           <Image

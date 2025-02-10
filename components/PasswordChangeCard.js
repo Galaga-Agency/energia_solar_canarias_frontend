@@ -113,7 +113,7 @@ const PasswordChangeCard = () => {
   };
 
   return (
-    <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter">
+    <>
       <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
         {t("security")}
       </h2>
@@ -193,7 +193,7 @@ const PasswordChangeCard = () => {
           )}
         </button>
       </form>
-    </div>
+    </>
   );
 };
 

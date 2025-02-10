@@ -2,24 +2,18 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { PiSolarPanelFill } from "react-icons/pi";
-import { useTranslation } from "next-i18next";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/store/slices/userSlice";
-
 import {
   BsBatteryCharging,
   BsBatteryFull,
   BsBatteryHalf,
 } from "react-icons/bs";
-import useDeviceType from "@/hooks/useDeviceType";
+import { useTranslation } from "react-i18next";
 
-const PlantCard = ({ plant }) => {
-  const { t } = useTranslation();
+const PlantCard = ({ plant, user, isMobile }) => {
   const router = useRouter();
-  const user = useSelector(selectUser);
   const userId = user?.id;
   const provider = plant?.organization?.toLowerCase();
-  const { isMobile } = useDeviceType();
+  const { t } = useTranslation();
 
   const statusColors = {
     working: "bg-green-500",
@@ -32,17 +26,43 @@ const PlantCard = ({ plant }) => {
     cargando: {
       icon: BsBatteryCharging,
       color: "text-green-500",
-      size: "text-2xl",
+      label: "status.Cargando",
+      bgColor: "bg-green-100 dark:bg-green-900/30",
     },
     descargando: {
       icon: BsBatteryHalf,
       color: "text-red-500",
-      size: "text-2xl",
+      label: "status.Descargando",
+      bgColor: "bg-red-100 dark:bg-red-900/30",
     },
     "en reposo": {
       icon: BsBatteryFull,
-      color: "text-gray-400",
-      size: "text-2xl",
+      color: "text-blue-500",
+      label: "status.En reposo",
+      bgColor: "bg-blue-100 dark:bg-blue-900/30",
+    },
+  };
+
+  const statusConfig = {
+    working: {
+      color: "text-green-500",
+      bgColor: "bg-green-100 dark:bg-green-900/30",
+      dotColor: "bg-green-500",
+    },
+    error: {
+      color: "text-red-500",
+      bgColor: "bg-red-100 dark:bg-red-900/30",
+      dotColor: "bg-red-500",
+    },
+    waiting: {
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
+      dotColor: "bg-yellow-500",
+    },
+    disconnected: {
+      color: "text-gray-500",
+      bgColor: "bg-gray-100 dark:bg-gray-900/30",
+      dotColor: "bg-gray-500",
     },
   };
 
@@ -63,15 +83,7 @@ const PlantCard = ({ plant }) => {
     }
   };
 
-  const capitalizeWords = (str) => {
-    if (!str) return "";
-    return str
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  };
-
-  const getBatteryStateLabel = (state, t) => {
+  const getBatteryStateLabel = (state) => {
     switch (state?.toLowerCase()) {
       case "cargando":
         return t("status.Cargando");
@@ -94,101 +106,86 @@ const PlantCard = ({ plant }) => {
         return t("status.waiting");
       case "disconnected":
         return t("status.disconnected");
-      case "cargando":
-        return t("Charging");
-      case "descargando":
-        return t("Discharging");
-      case "en reposo":
-        return t("Resting");
       default:
         return "";
     }
   };
 
-  const statusTextColors = {
-    working: "text-green-500",
-    error: "text-red-500",
-    waiting: "text-yellow-500",
-    disconnected: "text-gray-500",
-  };
-
   const handleCardClick = () => {
+    console.log("redirection...");
     router.push(`/dashboard/${userId}/plants/${provider}/${plant.id}`);
   };
+
+  const currentStatus = plant.status?.toLowerCase();
+  const statusStyle = statusConfig[currentStatus] || statusConfig.disconnected;
+  const batteryState = batteryStateIcons[currentStatus];
 
   return (
     <div
       onClick={handleCardClick}
-      className="p-6 relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer transform hover:-translate-y-1 w-full h-full"
+      className="group relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
     >
-      {/* Status or Battery Icon */}
-      {provider === "victronenergy" ? (
-        <div className="absolute top-4 right-4 flex items-center gap-1">
-          <span
-            className={`text-sm font-medium ${
-              batteryStateIcons[plant.status?.toLowerCase()]?.color ||
-              "text-gray-500"
-            }`}
-          >
-            {!isMobile && getBatteryStateLabel(plant.status, t)}
-          </span>
-          {React.createElement(
-            batteryStateIcons[plant.status?.toLowerCase()]?.icon ||
-              BsBatteryFull,
-            {
-              className: `${
-                batteryStateIcons[plant.status?.toLowerCase()]?.color ||
-                "text-gray-500"
-              } ${
-                batteryStateIcons[plant.status?.toLowerCase()]?.size ||
-                "text-2xl "
-              }`,
-            }
-          )}
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          {!isMobile && (
-            <span
-              className={`absolute top-4 right-10 text-sm font-medium ${
-                statusTextColors[plant.status.toLowerCase()] || "text-gray-500"
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-custom-yellow/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      <div className="relative p-6 flex flex-col h-full">
+        {/* Top Section with Icon and Status */}
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-custom-yellow/20 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+              <PiSolarPanelFill className="text-3xl text-custom-yellow" />
+            </div>
+          </div>
+
+          {/* Status Badge */}
+          {provider === "victronenergy" ? (
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+                batteryState?.bgColor || "bg-gray-100 dark:bg-gray-900/30"
               }`}
             >
-              {getStatusText(plant.status)}
-            </span>
+              {!isMobile && (
+                <span
+                  className={`text-sm font-medium ${
+                    batteryState?.color || "text-gray-500"
+                  }`}
+                >
+                  {t(batteryState?.label || "status.Unknown")}
+                </span>
+              )}
+              {React.createElement(batteryState?.icon || BsBatteryFull, {
+                className: `${batteryState?.color || "text-gray-500"} text-xl`,
+              })}
+            </div>
+          ) : (
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusStyle.bgColor}`}
+            >
+              <div className={`w-2 h-2 rounded-full ${statusStyle.dotColor}`} />
+              <span className={`text-sm font-medium ${statusStyle.color}`}>
+                {getStatusText(currentStatus)}
+              </span>
+            </div>
           )}
-          <div
-            className={`absolute top-4 right-4 w-5 h-5 rounded-full ${
-              statusColors[plant.status] || "bg-gray-400"
-            } border-2 border-white dark:border-gray-800`}
-            title={t(plant.status || "Unknown")}
-          />
         </div>
-      )}
 
-      {/* Title Section */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-full bg-custom-yellow/20 flex items-center justify-center shadow-md">
-          <PiSolarPanelFill className="text-3xl text-custom-yellow" />
-        </div>
-        <h3 className="text-xl font-bold text-custom-dark-blue dark:text-custom-yellow  max-w-[60%]">
-          {capitalizeWords(plant.name)}
+        {/* Plant Name */}
+        <h3 className="text-xl font-bold text-custom-dark-blue dark:text-custom-yellow mb-4">
+          {plant.name}
         </h3>
-      </div>
 
-      {/* Details Section */}
-      <div className="space-y-4">
-        <div className="flex items-center text-gray-700 dark:text-custom-light-gray text-sm">
-          <FaMapMarkerAlt className="text-custom-yellow mr-2" />
-          <span>{parseAddress(plant.address)}</span>
+        {/* Location Info */}
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-6">
+          <FaMapMarkerAlt className="text-custom-yellow" />
+          <span className="text-sm">{parseAddress(plant.address)}</span>
         </div>
-      </div>
 
-      {/* Footer Section */}
-      <div className="mt-10 flex justify-end">
-        <button className="absolute bottom-4 right-4 px-4 py-2 rounded-full bg-custom-yellow text-custom-dark-blue font-medium text-sm shadow-md hover:shadow-lg hover:bg-yellow-500 transition">
-          {t("viewDetails")}
-        </button>
+        {/* View Details Button */}
+        <div className="mt-auto">
+          <button className="w-full px-4 py-2.5 rounded-lg bg-custom-yellow text-custom-dark-blue font-medium text-sm shadow-md group-hover:shadow-lg transition-all duration-300 transform group-hover:translate-y-0 translate-y-1 opacity-90 group-hover:opacity-100">
+            {t("viewDetails")}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import MiniPerformanceChart from "./graphs/MiniPerformanceChart";
 import {
   fetchSolarEdgeEnergyData,
   selectEnergyData,
+  selectEnergyDataError,
   selectEnergyDataLoading,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
@@ -21,7 +22,7 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
   const token = user.tokenIdentificador;
   const energyData = useSelector(selectEnergyData);
   const loading = useSelector(selectEnergyDataLoading);
-
+  const error = useSelector(selectEnergyDataError);
   const [selectedModal, setSelectedModal] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState("yesterday");
@@ -34,38 +35,65 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
   ];
 
   const getTimeRange = (period) => {
-    const end = new Date();
-    const start = new Date();
+    const now = new Date();
+    const end = new Date(now);
+    let start = new Date(now);
+    let timeUnit = "QUARTER_OF_AN_HOUR";
 
     switch (period) {
-      case "yesterday":
+      case "yesterday": {
         start.setDate(start.getDate() - 1);
-        return { timeUnit: "DAY", start, end };
-      case "week":
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        timeUnit = "QUARTER_OF_AN_HOUR";
+        break;
+      }
+
+      case "week": {
         start.setDate(start.getDate() - 7);
-        return { timeUnit: "DAY", start, end };
-      case "month":
+        end.setHours(23, 59, 59, 999);
+        timeUnit = "DAY";
+        break;
+      }
+      case "month": {
         start.setMonth(start.getMonth() - 1);
-        return { timeUnit: "MONTH", start, end };
-      case "year":
-        start.setFullYear(start.getFullYear() - 1);
-        return { timeUnit: "YEAR", start, end };
-      default:
-        return { timeUnit: "DAY", start, end };
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        timeUnit = "DAY";
+        break;
+      }
+      case "year": {
+        start = new Date(now.getFullYear(), 0, 1);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        timeUnit = "MONTH";
+        break;
+      }
+      default: {
+        timeUnit = "DAY";
+      }
     }
+
+    const result = {
+      timeUnit,
+      startTime: start.toISOString().split("T")[0],
+      endTime: end.toISOString().split("T")[0],
+    };
+
+    return result;
   };
 
   useEffect(() => {
     if (plants?.length && token) {
       const plantIds = plants.map((p) => p.id);
-      const { timeUnit, start, end } = getTimeRange(selectedPeriod);
+      const { timeUnit, startTime, endTime } = getTimeRange(selectedPeriod);
 
       dispatch(
         fetchSolarEdgeEnergyData({
           plantIds,
           timeUnit,
-          startTime: start.toISOString().split("T")[0],
-          endTime: end.toISOString().split("T")[0],
+          startTime,
+          endTime,
           token,
         })
       );
@@ -99,8 +127,10 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
     }));
   };
 
+  // console.log("energy data", energyData);
+
   return (
-    <div className="flex flex-col md:flex-row gap-4 max-w-[85vw] md:max-w-[92vw] mx-auto">
+    <div className="flex flex-col md:flex-row gap-6 max-w-[85vw] md:max-w-[92vw] mx-auto">
       <StatusOverview stats={stats} onStatusClick={handleStatusClick} t={t} />
       <PeakPower totalPower={stats.totalPower} t={t} />
 
@@ -126,18 +156,37 @@ const SolarEdgeStatsOverview = ({ plants, t }) => {
           <div className="flex h-full items-center">
             <div className="flex flex-col items-start">
               <span className="text-3xl font-bold text-slate-700 dark:text-slate-200">
-                {loading ? "..." : (energyData?.totalEnergy || 0).toFixed(2)}{" "}
-                <span className="text-lg text-slate-600 dark:text-slate-400">
-                  kW
-                </span>
+                {loading
+                  ? "..."
+                  : (() => {
+                      const totalEnergy = Object.values(
+                        energyData?.chartEnergy || {}
+                      ).reduce((sum, value) => sum + value, 0);
+                      const isMWh = totalEnergy >= 1000;
+                      return (
+                        <>
+                          {isMWh
+                            ? (totalEnergy / 1000).toFixed(2)
+                            : totalEnergy.toFixed(2)}
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            {" "}
+                            {isMWh ? "MWh" : "kW"}
+                          </span>
+                        </>
+                      );
+                    })()}
               </span>
+
               <span className="text-sm text-slate-500 dark:text-slate-400">
                 {t("energia_producida")}
               </span>
             </div>
 
             <MiniPerformanceChart
-              data={formatEnergyData(energyData?.energyValues)}
+              data={energyData}
+              isLoading={loading}
+              error={error}
+              selectedRange="yesterday"
             />
           </div>
         </div>

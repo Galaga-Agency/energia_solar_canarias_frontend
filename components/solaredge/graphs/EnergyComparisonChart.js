@@ -128,6 +128,8 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
     return [];
   }, [comparisonData, timeUnit, monthNames]);
 
+  console.log("transformedData", transformedData);
+
   const getMinWidth = () => {
     if (!transformedData[0]) return 600;
     const numberOfBars = Object.keys(transformedData[0]).length - 1; // subtract 1 for 'name' key

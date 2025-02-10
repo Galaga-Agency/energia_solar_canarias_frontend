@@ -75,7 +75,6 @@ const ProviderPage = () => {
   const isDataFetched = useSelector(selectIsDataFetched);
   const router = useRouter();
   const { providerName, userId } = useParams();
-  console.log("---------------- ", { providerName, userId });
   const providerPassed = providerName.toLowerCase();
   const provider = providers.find(
     (p) => p.name.toLowerCase().replace(/\s+/g, "") === providerPassed
@@ -114,7 +113,6 @@ const ProviderPage = () => {
   }, [plants, loading, provider, providerPassed]);
 
   const handleFilterChange = useCallback((newFilteredPlants) => {
-    console.log("🛠 UI Update Check - Filtered Plants:", newFilteredPlants); // Debug UI update
     setFilteredPlants([...newFilteredPlants]);
     setCurrentPage(1);
   }, []);

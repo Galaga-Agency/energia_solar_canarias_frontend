@@ -285,35 +285,35 @@ export const fetchSolarEdgeEnergyDataAPI = async ({
   endTime,
   token,
 }) => {
-  console.log("fetchSolarEdgeEnergyDataAPI", {
-    plantIds,
-    timeUnit,
-    startTime,
-    endTime,
-    token,
-  });
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/plants/energy/${plantIds.join(",")}?proveedor=solaredge`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          usuario: USUARIO,
-          apiKey: API_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          time: timeUnit,
-          startTime,
-          endTime,
-        }),
-      }
-    );
+    // Join plantIds with commas but don't encode
+    const plantIdsString = plantIds.join(",");
+
+    // Construct URL directly without encoding the plantIds
+    const url = `${API_BASE_URL}/plants/energy/${plantIdsString}?proveedor=solaredge`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        usuario: USUARIO,
+        apiKey: API_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        time: timeUnit,
+        startTime,
+        endTime,
+      }),
+    });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Failed to fetch energy data");
+      const errorData = await response.json().catch(() => ({
+        message: `HTTP error! status: ${response.status}`,
+      }));
+      throw new Error(
+        errorData.message || `Failed to fetch energy data: ${response.status}`
+      );
     }
 
     const data = await response.json();

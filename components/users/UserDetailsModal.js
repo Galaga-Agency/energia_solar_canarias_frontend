@@ -119,6 +119,7 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
       >
         <div className="relative w-full max-w-[90vw] md:max-w-4xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg p-6 rounded-xl">
           <Texture className="opacity-30" />
+
           <div className="relative z-10 flex flex-col h-full max-h-[75vh]">
             <UserDetailsModalHeader
               user={user}
@@ -129,41 +130,44 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
 
             <div className="overflow-y-auto max-h-[calc(100vh-12rem)] custom-scrollbar">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Side - User Details & Security */}
                 <div className="space-y-6">
+                  {/* User Management */}
                   <UserDetailsSection editedUser={editedUser} t={t} />
 
+                  {/* Security */}
                   <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
                     <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-4">
                       {t("security")}
                     </h2>
-                    <div className="space-y-6">
-                      <PasswordForm userId={editedUser.usuario_id} t={t} />
+                    <PasswordForm userId={editedUser.usuario_id} t={t} />
 
-                      <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-                          {t("resetPasswordEmail")}
-                        </h4>
-                        <button
-                          onClick={handlePasswordReset}
-                          disabled={isPasswordResetSent}
-                          className="w-full bg-custom-yellow text-custom-dark-blue py-2.5 px-4 rounded-lg hover:bg-custom-yellow/50 disabled:opacity-50 flex items-center justify-center gap-2"
-                        >
-                          {isPasswordResetSent ? (
-                            <>
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                              {t("sendingReset")}
-                            </>
-                          ) : (
-                            t("sendResetLink")
-                          )}
-                        </button>
-                      </div>
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                        {t("resetPasswordEmail")}
+                      </h4>
+                      <button
+                        onClick={handlePasswordReset}
+                        disabled={isPasswordResetSent}
+                        className="w-full bg-custom-yellow text-custom-dark-blue py-2.5 px-4 rounded-lg hover:bg-custom-yellow/50 disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {isPasswordResetSent ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            {t("sendingReset")}
+                          </>
+                        ) : (
+                          t("sendResetLink")
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm mt-2">
+                {/* Right Side - Status, Plants, Danger Zone */}
+                <div className="space-y-6 flex flex-col">
+                  {/* Status & Last Login */}
+                  <div className="bg-white/90 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-gray-600 dark:text-gray-300">
                         {t("state")}
@@ -193,6 +197,7 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
                     </div>
                   </div>
 
+                  {/* Associated Plants */}
                   <AssociatedPlantsSection
                     onRemovePlant={handleRemovePlant}
                     onAddPlantClick={() => setIsAddModalOpen(true)}
@@ -202,7 +207,10 @@ const UserDetailsModal = ({ user, isOpen, onClose }) => {
                     userClass={editedUser.clase}
                   />
 
-                  <DangerZone onDelete={handleDeleteUser} t={t} />
+                  {/* Delete Account - Aligned at Bottom */}
+                  <div className="flex-1 flex items-end">
+                    <DangerZone onDelete={handleDeleteUser} t={t} />
+                  </div>
                 </div>
               </div>
             </div>

@@ -45,7 +45,7 @@ const UserDetailsModalHeader = React.memo(
           {/* User Info */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-bold text-custom-dark-blue dark:text-custom-yellow truncate w-full">
+              <h2 className="text-2xl text-custom-dark-blue dark:text-custom-yellow truncate w-full">
                 {userName || t("unnamed")}
               </h2>
             </div>

@@ -55,51 +55,19 @@ const cleanDataTransform = createTransform(
   }
 );
 
-// Special config for notifications slice
-const notificationsPersistConfig = {
-  key: "notifications",
-  storage,
-  whitelist: [
-    "activeNotifications",
-    "resolvedNotifications",
-    "activeTotalCount",
-    "resolvedTotalCount",
-    "organizationFilter",
-    "resolvedFetched",
-  ],
-  transforms: [cleanDataTransform],
-};
-
 // Main persistence configuration
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "theme", "dashboardView"],
+  whitelist: ["user", "theme", "dashboardView", "plants", "notifications"],
   transforms: [cleanDataTransform],
 };
 
-// Special config for plants slice
-const plantsPersistConfig = {
-  key: "plants",
-  storage,
-  whitelist: [
-    "plants",
-    "associatedPlants",
-    "isDataFetched",
-    "currentProvider",
-    "lastUpdated",
-  ],
-  transforms: [cleanDataTransform],
-};
-
-// Combine all reducers with persisted notifications
+// Combine all reducers
 const rootReducer = combineReducers({
   user: userReducer,
-  plants: persistReducer(plantsPersistConfig, plantsReducer),
-  notifications: persistReducer(
-    notificationsPersistConfig,
-    notificationsReducer
-  ),
+  plants: plantsReducer,
+  notifications: notificationsReducer,
   theme: themeReducer,
   usersList: usersListReducer,
   providers: providersReducer,
@@ -114,6 +82,9 @@ const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
+      immutableCheck: {
+        warnAfter: 100,
+      },
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
         ignoredPaths: [
@@ -126,15 +97,5 @@ const store = configureStore({
   devTools: process.env.NODE_ENV !== "production",
 });
 
-// Create persistor
 export const persistor = persistStore(store);
-
-// Clear sensitive data after rehydration
-persistor.subscribe(() => {
-  const state = persistor.getState();
-  if (state.bootstrapped) {
-    store.dispatch({ type: "plants/clearPlantDetails" });
-  }
-});
-
 export default store;

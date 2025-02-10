@@ -10,6 +10,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import {
   fetchSolarEdgeRealtimeData,
   selectLoadingDetails,
+  selectRealtimeError,
 } from "@/store/slices/plantsSlice";
 import BatteryIndicator from "@/components/BatteryIndicator";
 import { Info, UtilityPole } from "lucide-react";
@@ -36,6 +37,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
   const { isMobile } = useDeviceType();
   const lastUpdatedRef = useRef(new Date().toLocaleString());
   const [isBlinking, setIsBlinking] = useState(false);
+  const error = useSelector(selectRealtimeError);
 
   const fetchRealtimeData = useCallback(async () => {
     if (!plantId || !token) return;
@@ -94,7 +96,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
     return () => clearInterval(intervalId);
   }, [fetchRealtimeData]);
 
-  if (isComponentLoading || !energyData) {
+  if (isComponentLoading) {
     return <EnergyFlowSkeleton theme={theme} />;
   }
 
@@ -204,7 +206,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
 
               <div className="text-center mt-20 lg:mt-28 space-y-2">
                 <h3 className="mx-auto max-w-full text-center text-base font-medium text-gray-600 dark:text-gray-400 transition-colors duration-700 group-hover:text-gray-900 dark:group-hover:text-gray-200">
-                  {energyData.grid.isImporting
+                  {energyData?.grid?.isImporting
                     ? t("gridImportTitle")
                     : t("gridExportTitle")}
                 </h3>
@@ -215,12 +217,12 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                 >
                   {energyData?.grid?.currentPower !== null &&
                   energyData?.grid?.currentPower !== undefined
-                    ? Math.abs(energyData.grid.currentPower)
+                    ? Math.abs(energyData?.grid?.currentPower)
                     : "-"}
                   {energyData?.grid?.currentPower !== null &&
                     energyData?.grid?.currentPower !== undefined && (
                       <span className="text-sm xl:text-base ml-1">
-                        {energyData.unit}
+                        {energyData?.unit}
                       </span>
                     )}
                 </p>
@@ -260,7 +262,7 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
               >
                 {energyData?.storage?.currentPower !== null &&
                 energyData?.storage?.currentPower !== undefined
-                  ? energyData.storage.currentPower
+                  ? energyData?.storage?.currentPower
                   : "-"}
                 {energyData?.storage?.currentPower !== null &&
                   energyData?.storage?.currentPower !== undefined && (
@@ -302,12 +304,12 @@ const SolarEdgeEnergyFlow = ({ provider }) => {
                 >
                   {energyData?.load?.currentPower !== null &&
                   energyData?.load?.currentPower !== undefined
-                    ? energyData.load.currentPower
+                    ? energyData?.load?.currentPower
                     : "-"}
                   {energyData?.load?.currentPower !== null &&
                     energyData?.load?.currentPower !== undefined && (
                       <span className="text-sm xl:text-base ml-1">
-                        {energyData.unit}
+                        {energyData?.unit}
                       </span>
                     )}
                 </p>

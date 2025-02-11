@@ -104,6 +104,22 @@ const rootReducer = combineReducers({
   dashboardView: dashboardViewReducer,
 });
 
+// Add logout handling middleware
+const logoutMiddleware = (store) => (next) => (action) => {
+  if (action.type === "user/logoutUser") {
+    // Clear all states except theme
+    const themeState = store.getState().theme;
+    storage.removeItem("persist:root");
+    return next({
+      ...action,
+      payload: {
+        theme: themeState,
+      },
+    });
+  }
+  return next(action);
+};
+
 // Wrap the root reducer with persistence capabilities
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -117,7 +133,7 @@ const store = configureStore({
     getDefaultMiddleware({
       // Configure immutability checking
       immutableCheck: {
-        warnAfter: 100, // Only warn after 100 checks to reduce noise
+        warnAfter: 1000, // Only warn after 100 checks to reduce noise
       },
       // Configure serialization checking
       serializableCheck: {
@@ -142,12 +158,13 @@ const store = configureStore({
           "notifications.resolvedNotifications",
         ],
       },
-    }),
+    }).concat(logoutMiddleware),
   // Enable Redux DevTools in development, disable in production
   devTools: process.env.NODE_ENV !== "production",
 });
 
 // Create a persistor object to handle state persistence
 export const persistor = persistStore(store);
+
 // Export the store as the default export
 export default store;

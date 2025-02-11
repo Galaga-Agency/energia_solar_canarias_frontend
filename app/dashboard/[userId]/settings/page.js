@@ -117,26 +117,32 @@ const SettingsTab = () => {
     try {
       setIsLoginOut(true);
 
-      // thunk to handle state clearing
-      await dispatch(logoutUserThunk()).unwrap();
+      // Execute logout thunk and get result
+      const logoutResult = await dispatch(logoutUserThunk()).unwrap();
 
       // Handle persistence
       persistor.pause();
       await persistor.flush();
       await persistor.purge();
 
-      // Clear cookies
+      // Clear cookies with proper options
       const cookieOptions = {
-        secure: true,
-        sameSite: "strict",
         path: "/",
         domain: window.location.hostname,
+        secure: true,
+        sameSite: "strict",
       };
 
+      // Remove all auth-related cookies
       Cookies.remove("user", cookieOptions);
       Cookies.remove("authToken", cookieOptions);
 
+      // Force clear localStorage
+      localStorage.clear();
+
+      // Ensure we redirect to login page and prevent back navigation
       router.push("/");
+      router.refresh(); // Force refresh to clear any cached states
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error(t("logoutFailed"));

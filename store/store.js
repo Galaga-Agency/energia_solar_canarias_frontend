@@ -1,7 +1,17 @@
 // Import necessary dependencies from Redux Toolkit and Redux Persist
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 // Redux Persist helps in storing Redux state in localStorage/sessionStorage
-import { persistStore, persistReducer, createTransform } from "redux-persist";
+import {
+  persistStore,
+  persistReducer,
+  createTransform,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 // Default storage engine (localStorage in web browsers)
 import storage from "redux-persist/lib/storage";
 
@@ -104,24 +114,31 @@ const rootReducer = combineReducers({
   dashboardView: dashboardViewReducer,
 });
 
-// Add logout handling middleware
-const logoutMiddleware = (store) => (next) => (action) => {
-  if (action.type === "user/logoutUser") {
-    // Clear all states except theme
-    const themeState = store.getState().theme;
-    storage.removeItem("persist:root");
-    return next({
-      ...action,
-      payload: {
-        theme: themeState,
-      },
-    });
-  }
-  return next(action);
-};
-
 // Wrap the root reducer with persistence capabilities
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// Define middleware configuration
+const middlewareConfig = {
+  immutableCheck: { warnAfter: 1000 },
+  serializableCheck: {
+    ignoredActions: [
+      FLUSH,
+      REHYDRATE,
+      PAUSE,
+      PERSIST,
+      PURGE,
+      REGISTER,
+      "user/logoutUserThunk/pending",
+      "user/logoutUserThunk/fulfilled",
+      "user/logoutUserThunk/rejected",
+    ],
+    ignoredPaths: [
+      "plants.plantDetails",
+      "notifications.activeNotifications",
+      "notifications.resolvedNotifications",
+    ],
+  },
+};
 
 /**
  * Create and configure the Redux store
@@ -129,37 +146,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
  */
 const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      // Configure immutability checking
-      immutableCheck: {
-        warnAfter: 1000, // Only warn after 100 checks to reduce noise
-      },
-      // Configure serialization checking
-      serializableCheck: {
-        // Actions that are allowed to contain non-serializable values
-        ignoredActions: [
-          // Redux Persist internal actions
-          "persist/PERSIST", // Initial persist action
-          "persist/REHYDRATE", // State restoration action
-          "persist/PAUSE", // Pause persistence
-          "persist/PURGE", // Clear persisted state
-          "persist/FLUSH", // Force state persistence
-          "persist/REGISTER", // Register persist configuration
-          // Our custom actions that might contain non-serializable data
-          "user/logoutUserThunk/pending",
-          "user/logoutUserThunk/fulfilled",
-          "user/logoutUserThunk/rejected",
-        ],
-        // State paths that are allowed to contain non-serializable values
-        ignoredPaths: [
-          "plants.plantDetails",
-          "notifications.activeNotifications",
-          "notifications.resolvedNotifications",
-        ],
-      },
-    }).concat(logoutMiddleware),
-  // Enable Redux DevTools in development, disable in production
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(middlewareConfig),
   devTools: process.env.NODE_ENV !== "production",
 });
 

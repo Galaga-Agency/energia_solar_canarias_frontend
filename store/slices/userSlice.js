@@ -285,29 +285,6 @@ export const deleteProfilePicture = createAsyncThunk(
   }
 );
 
-export const logoutUserThunk = createAsyncThunk(
-  "user/logoutUserThunk",
-  async (_, { dispatch, getState }) => {
-    try {
-      // Get current state before clearing
-      const currentState = getState();
-      const isAdmin = currentState.user?.user?.clase === "admin";
-
-      // Clear all related states
-      dispatch(clearPlants());
-      dispatch(clearNotifications());
-
-      // Clear user state last
-      dispatch(logoutUser());
-
-      return { success: true, wasAdmin: isAdmin };
-    } catch (error) {
-      console.error("Logout error:", error);
-      throw error;
-    }
-  }
-);
-
 // Initial State
 const initialState = {
   user: null,

@@ -7,7 +7,6 @@ import {
   logoutUser,
   selectLoading,
   fetchUserById,
-  logoutUserThunk,
 } from "@/store/slices/userSlice";
 import { useTranslation } from "next-i18next";
 import ProfileOverviewCard from "@/components/ProfileOverviewCard";
@@ -114,41 +113,40 @@ const SettingsTab = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      setIsLoginOut(true);
+    setIsLoginOut(true);
 
-      // Execute logout thunk and get result
-      const logoutResult = await dispatch(logoutUserThunk()).unwrap();
+    // Ensure Redux is cleared before redirecting
+    await dispatch(logoutUser());
+    await dispatch(clearPlants());
+    await dispatch(clearNotifications());
 
-      // Handle persistence
-      persistor.pause();
-      await persistor.flush();
-      await persistor.purge();
+    // Pause persistence to avoid restoring old data
+    persistor.pause();
+    await persistor.flush();
+    await persistor.purge(); // Fully clear stored Redux state
 
-      // Clear cookies with proper options
-      const cookieOptions = {
-        path: "/",
-        domain: window.location.hostname,
-        secure: true,
-        sameSite: "strict",
-      };
+    // Clear all cookies
+    const cookieOptions = {
+      secure: true,
+      sameSite: "strict",
+      path: "/",
+      domain: window.location.hostname,
+    };
+    Cookies.remove("user", cookieOptions);
+    Cookies.remove("authToken", cookieOptions);
 
-      // Remove all auth-related cookies
-      Cookies.remove("user", cookieOptions);
-      Cookies.remove("authToken", cookieOptions);
+    // Force remove any remaining cookies
+    document.cookie.split(";").forEach((cookie) => {
+      document.cookie = cookie
+        .replace(/^ +/, "")
+        .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+    });
 
-      // Force clear localStorage
-      localStorage.clear();
-
-      // Ensure we redirect to login page and prevent back navigation
-      router.push("/");
-      router.refresh(); // Force refresh to clear any cached states
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast.error(t("logoutFailed"));
-    } finally {
+    // Delay redirect to ensure state clears properly
+    setTimeout(() => {
+      router.replace("/");
       setIsLoginOut(false);
-    }
+    }, 300);
   };
 
   isLoginOut && <Loading theme={theme} />;

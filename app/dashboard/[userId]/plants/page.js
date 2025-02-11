@@ -56,17 +56,14 @@ const ClientDashboardPage = ({ params }) => {
   const sidebarRef = useRef(null);
   const loadingAssociatedPlants = useSelector(selectLoadingAssociatedPlants);
 
-  const GRID_ITEMS_PER_PAGE = isMobile ? 6 : 9;
-  const LIST_ITEMS_PER_PAGE = 7;
+  const ITEMS_PER_PAGE = 6;
+  const PAGINATION_THRESHOLD = 6;
 
-  const itemsPerPage =
-    viewMode === "grid" ? GRID_ITEMS_PER_PAGE : LIST_ITEMS_PER_PAGE;
-
-  const totalPages = Math.ceil(sortedPlants.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  const totalPages = Math.ceil(sortedPlants.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedPlants = sortedPlants.slice(
     startIndex,
-    startIndex + itemsPerPage
+    startIndex + ITEMS_PER_PAGE
   );
 
   const handleFilterChange = useCallback((filteredResults) => {
@@ -81,7 +78,6 @@ const ClientDashboardPage = ({ params }) => {
 
   const fetchPlantsIfNeeded = useCallback(() => {
     if (user?.id && !plants.length) {
-      // Only fetch if no plants exist
       dispatch(
         fetchUserAssociatedPlants({
           userId: user.id,
@@ -106,7 +102,6 @@ const ClientDashboardPage = ({ params }) => {
     setFilteredPlants(plants);
   }, [plants, dispatch]);
 
-  // Reset page when view mode changes
   useEffect(() => {
     setCurrentPage(1);
   }, [viewMode]);
@@ -129,7 +124,7 @@ const ClientDashboardPage = ({ params }) => {
 
       <div className="relative h-auto z-10 p-4 md:p-8">
         <motion.div
-          className="flex items-center mb-6 md:mb-10 z-10 px-2"
+          className="flex items-center my-6 xl:mt-0 z-10 px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
@@ -200,7 +195,7 @@ const ClientDashboardPage = ({ params }) => {
             </div>
 
             {loading || loadingAssociatedPlants ? (
-              <PlantsListSkeleton theme={theme} rows={itemsPerPage} />
+              <PlantsListSkeleton theme={theme} rows={ITEMS_PER_PAGE} />
             ) : (
               <div className="w-full">
                 {paginatedPlants.length > 0 ? (
@@ -252,8 +247,8 @@ const ClientDashboardPage = ({ params }) => {
                   </motion.div>
                 )}
 
-                {totalPages > 1 && (
-                  <div className="flex justify-center">
+                {sortedPlants.length > PAGINATION_THRESHOLD && (
+                  <div className="flex justify-center mt-6">
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}

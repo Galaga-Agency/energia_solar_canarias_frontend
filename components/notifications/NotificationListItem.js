@@ -38,8 +38,6 @@ const NotificationListItem = ({ notification }) => {
     }
   };
 
-  console.log(notification);
-
   // Function to process notification content based on provider type
   const renderNotificationContent = () => {
     switch (notification.provider) {

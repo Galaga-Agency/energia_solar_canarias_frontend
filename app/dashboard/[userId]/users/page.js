@@ -177,14 +177,14 @@ const UsersTab = () => {
       </motion.div>
       <Texture />
       <motion.div
-        className="p-8"
+        className="p-4 md:p-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
         {/* Title Section */}
         <motion.div
-          className="flex items-center mb-10 md:mb-2"
+          className="flex items-center my-6 xl:mt-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
@@ -194,7 +194,7 @@ const UsersTab = () => {
             alt="Company Icon"
             className="w-12 h-12 mr-2 z-10"
           />
-          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue">
+          <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue max-w-[60vw]">
             {t("usersList")}
           </h2>
         </motion.div>

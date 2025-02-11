@@ -55,7 +55,6 @@ export default function Home() {
   useEffect(() => {
     const handleUserRedirect = () => {
       if (userData && !redirectAttempted.current) {
-        console.log("User data loaded:", userData);
         redirectAttempted.current = true;
 
         userData?.clase === "admin"
@@ -80,9 +79,9 @@ export default function Home() {
       <div className="flex justify-center items-center h-full">
         <LogoAnimation />
       </div>
-      <div className="fixed bottom-4 right-4 z-50">
+      {/* <div className="fixed bottom-4 right-4 z-50">
         <InstallationGuide debug={true} />
-      </div>
+      </div> */}
     </div>
   );
 }

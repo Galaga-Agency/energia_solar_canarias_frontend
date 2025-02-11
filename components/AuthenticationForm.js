@@ -45,7 +45,7 @@ const AuthenticationForm = () => {
 
     try {
       const response = await dispatch(authenticateUser(data)).unwrap();
-      console.log("Auth response:", response);
+      // console.log("Auth response:", response);
 
       if (type === "login") {
         setUserToValidate(response.data.id);
@@ -123,8 +123,6 @@ const AuthenticationForm = () => {
           dispatch(
             loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
           );
-
-          console.log("✅ All notifications fetched successfully");
         } catch (error) {
           console.error("Error fetching notifications:", error);
         }

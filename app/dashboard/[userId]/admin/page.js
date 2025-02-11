@@ -170,9 +170,9 @@ const AdminDashboard = () => {
           <LanguageSelector />
         </motion.div>
 
-        <div className="relative h-auto p-8">
+        <div className="relative h-auto p-4 md:p-8">
           <motion.div
-            className="flex items-center mb-10 md:mb-2"
+            className="flex items-center my-6 xl:mt-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.5 }}

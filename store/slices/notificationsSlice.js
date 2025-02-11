@@ -289,6 +289,18 @@ const notificationsSlice = createSlice({
     resolvedFetched: false,
   },
   reducers: {
+    clearNotifications: (state) => {
+      state.activeNotifications = [];
+      state.resolvedNotifications = [];
+      state.activeTotalCount = 0;
+      state.resolvedTotalCount = 0;
+      state.isLoadingMore = false;
+      state.isInitialLoad = true;
+      state.activeError = null;
+      state.resolvedError = null;
+      state.organizationFilter = null;
+      state.resolvedFetched = false;
+    },
     appendActiveNotifications: (state, action) => {
       const uniqueNotifications = new Set(
         state.activeNotifications.map((n) => n.warningid)
@@ -380,6 +392,7 @@ export const {
   markNotificationAsRead,
   markAllAsRead,
   setOrganizationFilter,
+  clearNotifications,
 } = notificationsSlice.actions;
 
 // Selectors

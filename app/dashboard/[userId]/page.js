@@ -15,8 +15,6 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const theme = useSelector(selectTheme);
 
-  console.log("current user: ", user);
-
   useEffect(() => {
     if (user) {
       if (isAdmin) {

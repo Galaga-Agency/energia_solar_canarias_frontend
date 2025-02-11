@@ -18,6 +18,8 @@ import {
   deleteProfilePictureAPI,
 } from "@/services/shared-api";
 import { updateUserInList } from "./usersListSlice";
+import { clearPlants } from "./plantsSlice";
+import { clearNotifications } from "./notificationsSlice";
 
 // Async Thunks
 export const authenticateUser = createAsyncThunk(
@@ -44,8 +46,6 @@ export const fetchUserById = createAsyncThunk(
       if (!response.status || response.code !== 200) {
         throw new Error(response.message || "Failed to fetch user");
       }
-      console.log("API Response:", response); // Add this log
-      // Keep the tokenIdentificador from the current state
       return {
         ...response.data,
         tokenIdentificador: token,
@@ -213,7 +213,6 @@ export const addUser = createAsyncThunk(
     try {
       const token = getState().user.user?.tokenIdentificador;
       const response = await createUserAPI({ userData, token });
-      console.log("addUser API response:", response);
       return response;
     } catch (error) {
       console.error("addUser error:", error);
@@ -283,6 +282,20 @@ export const deleteProfilePicture = createAsyncThunk(
       console.error("Error in deleteProfilePicture thunk:", error);
       return rejectWithValue(error.message || "Delete failed");
     }
+  }
+);
+
+export const logoutUserThunk = createAsyncThunk(
+  "user/logoutUserThunk",
+  async (_, { dispatch }) => {
+    // First clear other slices
+    dispatch(clearPlants());
+    dispatch(clearNotifications());
+
+    // Clear user state
+    dispatch(logoutUser());
+
+    return null;
   }
 );
 
@@ -359,7 +372,6 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(validateToken.fulfilled, (state, action) => {
-        console.log("action.payload.data", action.payload.data);
         state.loading = false;
         if (action.payload.status === true) {
           state.user = action.payload.data;

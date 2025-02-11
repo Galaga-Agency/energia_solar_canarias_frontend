@@ -15,13 +15,6 @@ const PlantCard = ({ plant, user, isMobile }) => {
   const provider = plant?.organization?.toLowerCase();
   const { t } = useTranslation();
 
-  const statusColors = {
-    working: "bg-green-500",
-    error: "bg-red-500",
-    waiting: "bg-yellow-500",
-    disconnected: "bg-gray-500",
-  };
-
   const batteryStateIcons = {
     cargando: {
       icon: BsBatteryCharging,
@@ -123,14 +116,15 @@ const PlantCard = ({ plant, user, isMobile }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="group relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer"
+      className="group relative bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer w-full h-64"
     >
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-custom-yellow/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
+      {/* Content Container */}
       <div className="relative p-6 flex flex-col h-full">
         {/* Top Section with Icon and Status */}
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-4 h-12">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-custom-yellow/20 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
               <PiSolarPanelFill className="text-3xl text-custom-yellow" />
@@ -170,18 +164,20 @@ const PlantCard = ({ plant, user, isMobile }) => {
         </div>
 
         {/* Plant Name */}
-        <h3 className="text-xl font-bold text-custom-dark-blue dark:text-custom-yellow mb-4">
+        <h3 className="text-xl font-bold text-custom-dark-blue dark:text-custom-yellow mb-4 truncate">
           {plant.name}
         </h3>
 
         {/* Location Info */}
-        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-6">
-          <FaMapMarkerAlt className="text-custom-yellow" />
-          <span className="text-sm">{parseAddress(plant.address)}</span>
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-auto">
+          <FaMapMarkerAlt className="text-custom-yellow flex-shrink-0" />
+          <span className="text-sm truncate">
+            {parseAddress(plant.address)}
+          </span>
         </div>
 
         {/* View Details Button */}
-        <div className="mt-auto">
+        <div className="mt-4">
           <button className="w-full px-4 py-2.5 rounded-lg bg-custom-yellow text-custom-dark-blue font-medium text-sm shadow-md group-hover:shadow-lg transition-all duration-300 transform group-hover:translate-y-0 translate-y-1 opacity-90 group-hover:opacity-100">
             {t("viewDetails")}
           </button>

@@ -99,7 +99,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
-    <div className="flex justify-center items-center space-x-2 mt-8 overflow-x-auto z-10">
+    <div className="flex justify-center items-center space-x-2 mt-4 overflow-x-auto z-10">
       <button
         className={`w-10 h-10 flex items-center justify-center rounded-md transition-colors duration-300 z-10 ${
           currentPage === 1

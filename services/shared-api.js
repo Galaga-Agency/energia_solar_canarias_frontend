@@ -34,7 +34,6 @@ export const loginRequestAPI = async (userData) => {
 
 export const validateTokenRequestAPI = async (id, token) => {
   try {
-    console.log("API calll ----- Validating token with data:", { id, token });
     const response = await fetch(`${API_BASE_URL}/token`, {
       method: "POST",
       headers: {
@@ -402,7 +401,7 @@ export const fetchPlantDetailsAPI = async ({
       );
     }
 
-    console.log("Plant details API response: ", responseData);
+    // console.log("Plant details API response: ", responseData);
     return responseData;
   } catch (error) {
     console.error("Error in fetchPlantDetailsAPI:", {
@@ -537,10 +536,6 @@ export const fetchUserAssociatedPlantsAPI = async ({ userId, token }) => {
       );
     }
 
-    console.log(
-      "response from user associated plants api call: ",
-      response.json
-    );
     const data = await response.json();
     return data.data;
   } catch (error) {

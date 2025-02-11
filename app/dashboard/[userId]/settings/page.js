@@ -7,6 +7,7 @@ import {
   logoutUser,
   selectLoading,
   fetchUserById,
+  logoutUserThunk,
 } from "@/store/slices/userSlice";
 import { useTranslation } from "next-i18next";
 import ProfileOverviewCard from "@/components/ProfileOverviewCard";
@@ -112,42 +113,36 @@ const SettingsTab = () => {
     }
   };
 
-  // Handle logout
   const handleLogout = async () => {
-    setIsLoginOut(true);
+    try {
+      setIsLoginOut(true);
 
-    // Ensure Redux is cleared before redirecting
-    await dispatch(logoutUser());
-    await dispatch(clearPlants());
-    // await dispatch(clearNotifications());
+      // thunk to handle state clearing
+      await dispatch(logoutUserThunk()).unwrap();
 
-    // Pause persistence to avoid restoring old data
-    persistor.pause();
-    await persistor.flush();
-    await persistor.purge(); // Fully clear stored Redux state
+      // Handle persistence
+      persistor.pause();
+      await persistor.flush();
+      await persistor.purge();
 
-    // Clear all cookies
-    const cookieOptions = {
-      secure: true,
-      sameSite: "strict",
-      path: "/",
-      domain: window.location.hostname,
-    };
-    Cookies.remove("user", cookieOptions);
-    Cookies.remove("authToken", cookieOptions);
+      // Clear cookies
+      const cookieOptions = {
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+        domain: window.location.hostname,
+      };
 
-    // Force remove any remaining cookies
-    document.cookie.split(";").forEach((cookie) => {
-      document.cookie = cookie
-        .replace(/^ +/, "")
-        .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
-    });
+      Cookies.remove("user", cookieOptions);
+      Cookies.remove("authToken", cookieOptions);
 
-    // Delay redirect to ensure state clears properly
-    setTimeout(() => {
-      router.replace("/");
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error(t("logoutFailed"));
+    } finally {
       setIsLoginOut(false);
-    }, 300);
+    }
   };
 
   isLoginOut && <Loading theme={theme} />;

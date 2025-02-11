@@ -146,9 +146,9 @@ const NotificationsTab = () => {
           <LanguageSelector />
         </motion.div>
 
-        <div className="relative h-auto p-8">
+        <div className="relative h-auto z-10 p-4 md:p-8">
           <motion.h2
-            className="text-4xl dark:text-custom-yellow text-custom-dark-blue mb-8"
+            className="text-4xl dark:text-custom-yellow text-custom-dark-blue my-6 xl:mt-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}

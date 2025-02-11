@@ -10,6 +10,7 @@ import { FaUserCog } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/slices/userSlice";
 import { selectActiveNotificationsCount } from "@/store/slices/notificationsSlice";
+import usePlatformDetection from "@/hooks/usePlatformDetection";
 
 const BottomNavbar = ({ userId }) => {
   const { t } = useTranslation();
@@ -17,6 +18,7 @@ const BottomNavbar = ({ userId }) => {
   const currentPath = usePathname();
   const isAdmin = useSelector(selectIsAdmin);
   const activeNotificationsCount = useSelector(selectActiveNotificationsCount);
+  const platformInfo = usePlatformDetection();
 
   const icons = [
     {
@@ -65,7 +67,11 @@ const BottomNavbar = ({ userId }) => {
   };
 
   return (
-    <div className="footer fixed bottom-0 left-0 right-0 flex justify-around p-2 bg-custom-dark-blue shadow-dark-shadow z-[999]">
+    <div
+      className={`footer fixed bottom-0 left-0 right-0 flex justify-around p-2 bg-custom-dark-blue shadow-dark-shadow z-[999] ${
+        platformInfo.os === "iOS" && "pb-4"
+      }`}
+    >
       {icons.map((item, index) => {
         const pathToMatch = item.path.replace("[userId]", userId);
         const isActive = currentPath === pathToMatch;

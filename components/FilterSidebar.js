@@ -288,7 +288,7 @@ const FilterSidebar = forwardRef(
 
           <div className="mb-4">
             <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-              {t("capacity")}
+              {t("capacity")} (kW)
             </h3>
             <div className="flex gap-4">
               <div className="flex flex-col flex-1 min-w-0">

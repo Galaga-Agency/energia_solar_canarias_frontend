@@ -12,6 +12,8 @@ import { useParams } from "next/navigation";
 import { selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
+import useDeviceType from "@/hooks/useDeviceType";
+import { breakWordWithHyphen } from "@/utils/textUtils";
 
 const GoodweEquipmentDetails = ({ t }) => {
   const dispatch = useDispatch();
@@ -22,13 +24,12 @@ const GoodweEquipmentDetails = ({ t }) => {
   const user = useSelector(selectUser);
   const token = user.tokenIdentificador;
   const theme = useSelector(selectTheme);
-
+  const { isMobile } = useDeviceType();
   const [expanded, setExpanded] = useState(false);
   const specsRef = useRef(null);
   const statusRef = useRef(null);
   const itemHeight = 44;
   const previewItems = 3;
-
   const provider = "goodwe";
 
   useEffect(() => {
@@ -81,27 +82,28 @@ const GoodweEquipmentDetails = ({ t }) => {
         <div className="w-10 h-10 bg-white dark:bg-custom-dark-blue/50 rounded-full flex items-center justify-center shadow-md">
           <Cpu className="text-custom-dark-blue dark:text-custom-yellow text-xl" />
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
+            <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow truncate">
               {deviceTitle}
             </h2>
             <Popover showArrow offset={20} placement="right">
               <PopoverTrigger>
                 <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
               </PopoverTrigger>
-              <PopoverContent className="bg-slate-800 text-white p-2 rounded-lg shadow-xl">
+              <PopoverContent className="bg-slate-800 text-white p-2 rounded-lg shadow-xl max-w-xs">
                 <div className="px-1 py-2">
                   <div className="text-sm space-y-1">
-                    <p>
+                    <p className="break-words">
                       {t(
                         "An inverter converts DC power from solar panels into AC power for your home"
                       )}
                     </p>
-                    <p>
-                      {t("Model")}: {deviceType}
+                    <p className="break-words">
+                      {t("Model")}:{" "}
+                      {breakWordWithHyphen(deviceType, 6, isMobile)}
                     </p>
-                    <p>
+                    <p className="break-words">
                       {t("Capacity")}: {deviceCapacity}kW
                     </p>
                   </div>
@@ -139,13 +141,17 @@ const GoodweEquipmentDetails = ({ t }) => {
                       : "opacity-100"
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-700 dark:text-slate-300 text-sm text-left">
-                      {t(item.key)}
-                    </span>
-                  </div>
-                  <span className="text-custom-dark-blue dark:text-custom-yellow text-sm text-left">
-                    {item.value || "--"} {item.unit}
+                  <span className="text-sm text-slate-700 dark:text-slate-300 break-words text-left">
+                    {breakWordWithHyphen(t(item.key), 6, isMobile)}
+                  </span>
+                  <span className="text-sm text-custom-dark-blue dark:text-custom-yellow break-words ml-2 text-right">
+                    {item.value
+                      ? `${breakWordWithHyphen(
+                          item.value.toString(),
+                          6,
+                          isMobile
+                        )} ${item.unit}`
+                      : "--"}
                   </span>
                 </div>
               ))}
@@ -179,13 +185,15 @@ const GoodweEquipmentDetails = ({ t }) => {
                       : "opacity-100"
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-700 dark:text-slate-300 text-sm text-left">
-                      {t(item.key)}
-                    </span>
-                  </div>
-                  <span className="text-custom-dark-blue dark:text-custom-yellow text-sm text-left">
-                    {t(item.value) || "--"} {item.unit}
+                  <span className="text-sm text-slate-700 dark:text-slate-300 break-words text-left">
+                    {breakWordWithHyphen(t(item.key), 6, isMobile)}
+                  </span>
+                  <span className="text-sm text-custom-dark-blue dark:text-custom-yellow break-words ml-2 text-right">
+                    {item.value
+                      ? `${breakWordWithHyphen(t(item.value), 6, isMobile)} ${
+                          item.unit
+                        }`
+                      : "--"}
                   </span>
                 </div>
               ))}

@@ -37,8 +37,6 @@ const VictronFilterSidebar = ({
   const [isMaxDateSelectorOpen, setIsMaxDateSelectorOpen] = useState(false);
   const activeVictronAlerts = useSelector(selectActiveVictronNotifications);
 
-  console.log("✅ Active Victron Alerts:", activeVictronAlerts);
-
   const VICTRON_TYPES = {
     solar: "type_Solar",
     generator: "type_Generator",

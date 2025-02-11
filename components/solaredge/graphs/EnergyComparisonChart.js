@@ -102,8 +102,9 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
 
   const transformedData = useMemo(() => {
     if (!comparisonData || !Array.isArray(comparisonData)) return [];
+
     if (timeUnit === "MONTH") {
-      return monthNames.map((month, index) => {
+      const monthlyData = monthNames.map((month, index) => {
         const monthData = { name: month };
         comparisonData.forEach((item) => {
           const year = new Date(item.date).getFullYear();
@@ -113,6 +114,15 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
         });
         return monthData;
       });
+
+      // Check if all values are 0
+      const hasNonZeroValue = monthlyData.some((monthData) => {
+        return Object.entries(monthData).some(([key, value]) => {
+          return key !== "name" && value !== 0;
+        });
+      });
+
+      return hasNonZeroValue ? monthlyData : [];
     } else if (timeUnit === "YEAR") {
       const years = {};
       comparisonData.forEach((item) => {
@@ -120,10 +130,18 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
         if (!years[year]) years[year] = { name: year, total: 0 };
         years[year].total += item.value || 0;
       });
-      return Object.values(years).map((yearData) => ({
+
+      const yearlyData = Object.values(years).map((yearData) => ({
         ...yearData,
         name: `${yearData.name}`,
       }));
+
+      // Check if all totals are 0
+      const hasNonZeroValue = yearlyData.some(
+        (yearData) => yearData.total !== 0
+      );
+
+      return hasNonZeroValue ? yearlyData : [];
     }
     return [];
   }, [comparisonData, timeUnit, monthNames]);

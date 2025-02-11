@@ -7,6 +7,7 @@ import {
   selectPlantDetails,
   selectLoadingDetails,
   selectDetailsError,
+  selectAssociatedPlants,
 } from "@/store/slices/plantsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import GoodwePlantDetails from "@/components/goodwe/GoodwePlantDetails";
@@ -19,6 +20,7 @@ import { IoArrowBackCircle } from "react-icons/io5";
 import Texture from "@/components/Texture";
 import TransitionEffect from "@/components/TransitionEffect";
 import BottomNavbar from "@/components/BottomNavbar";
+import { useRouter } from "next/navigation";
 
 const PlantDetailsPage = ({ params }) => {
   const { plantId, userId, provider } = params;
@@ -28,9 +30,31 @@ const PlantDetailsPage = ({ params }) => {
   const detailedPlant = useSelector(selectPlantDetails);
   const isLoadingDetails = useSelector(selectLoadingDetails);
   const detailsError = useSelector(selectDetailsError);
+  const associatedPlants = useSelector(selectAssociatedPlants);
+  const [isChecking, setIsChecking] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    if (user?.tokenIdentificador && plantId && provider) {
+    if (!user) {
+      router.replace("/");
+      return;
+    }
+
+    // Check if user has access to this plant
+    const hasAccess = associatedPlants?.some(
+      (plant) => plant.id.toString() === plantId.toString()
+    );
+
+    if (!hasAccess && !user.clase === "admin") {
+      router.replace("/unauthorized");
+      return;
+    }
+
+    setIsChecking(false);
+  }, [user, plantId, associatedPlants, router]);
+
+  useEffect(() => {
+    if (!isChecking && user?.tokenIdentificador && plantId && provider) {
       dispatch(
         fetchPlantDetails({
           userId,
@@ -40,7 +64,14 @@ const PlantDetailsPage = ({ params }) => {
         })
       );
     }
-  }, [dispatch, plantId, provider, userId, user?.tokenIdentificador]);
+  }, [
+    dispatch,
+    plantId,
+    provider,
+    userId,
+    user?.tokenIdentificador,
+    isChecking,
+  ]);
 
   const renderError = () => (
     <div className="min-h-screen p-6 w-auto">
@@ -57,7 +88,7 @@ const PlantDetailsPage = ({ params }) => {
     </div>
   );
 
-  if (isLoadingDetails || !detailedPlant) {
+  if (isLoadingDetails || !detailedPlant || isChecking) {
     return (
       <div className="h-screen w-screen">
         <Loading />

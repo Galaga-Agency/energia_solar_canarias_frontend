@@ -5,6 +5,7 @@ import StoreProvider from "@/components/StoreProvider";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import { Toaster } from "sonner";
+import AuthWrapper from "@/components/AuthWrapper";
 
 export const metadata = {
   title:
@@ -58,17 +59,19 @@ export default function RootLayout({ children }) {
         <StoreProvider>
           <ThemeWrapper>
             <TranslationProvider>
-              {children}
-              <Toaster
-                position="top-center"
-                theme="system"
-                richColors
-                closeButton
-                toastOptions={{
-                  className: "dark:bg-custom-dark-blue dark:text-white",
-                  duration: 3000,
-                }}
-              />
+              <AuthWrapper>
+                {children}
+                <Toaster
+                  position="top-center"
+                  theme="system"
+                  richColors
+                  closeButton
+                  toastOptions={{
+                    className: "dark:bg-custom-dark-blue dark:text-white",
+                    duration: 3000,
+                  }}
+                />
+              </AuthWrapper>
             </TranslationProvider>
           </ThemeWrapper>
         </StoreProvider>

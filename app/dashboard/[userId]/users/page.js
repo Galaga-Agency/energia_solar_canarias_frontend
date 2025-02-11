@@ -29,11 +29,12 @@ import {
   selectUsersError,
   updateUserInList,
 } from "@/store/slices/usersListSlice";
-import { addUser, selectUser } from "@/store/slices/userSlice";
+import { addUser, selectIsAdmin, selectUser } from "@/store/slices/userSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
 import AddUserForm from "@/components/AddUserForm";
 import { MdPersonAdd } from "react-icons/md";
 import { RiUserAddLine } from "react-icons/ri";
+import withAdminGuard from "@/components/AdminGuard";
 
 const INITIAL_FILTERS = {
   role: ["all"],
@@ -59,6 +60,7 @@ const UsersTab = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [sortPath, setSortPath] = useState("nombre");
   const [sortOrder, setSortOrder] = useState("asc");
+  const isAdmin = useSelector(selectIsAdmin);
 
   const usersPerPage = useMemo(() => {
     if (isMobile) return 6;
@@ -407,4 +409,4 @@ const UsersTab = () => {
   );
 };
 
-export default UsersTab;
+export default withAdminGuard(UsersTab);

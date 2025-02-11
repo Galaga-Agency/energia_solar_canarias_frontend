@@ -41,6 +41,7 @@ import {
   setDashboardView,
 } from "@/store/slices/dashboardViewSlice";
 import { IoFilter } from "react-icons/io5";
+import withAdminGuard from "@/components/AdminGuard";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -410,4 +411,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default withAdminGuard(AdminDashboard);

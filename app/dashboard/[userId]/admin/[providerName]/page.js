@@ -45,6 +45,7 @@ import VictronStatsOverview from "@/components/victronenergy/VictronStatsOvervie
 import { selectActiveGoodweNotifications } from "@/store/slices/notificationsSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import { PiSolarPanelFill } from "react-icons/pi";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const GRID_ITEMS_PER_PAGE = 6;
 const LIST_ITEMS_PER_PAGE = 6;
@@ -81,6 +82,7 @@ const ProviderPage = () => {
   );
   const { isDesktop } = useDeviceType();
   const activeGoodweAlerts = useSelector(selectActiveGoodweNotifications);
+  const isTouchDevice = useTouchDevice();
 
   // console.log("plants", plants);
 
@@ -295,14 +297,14 @@ const ProviderPage = () => {
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-20">
       <TransitionEffect />
-      <div className="fixed top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-[999]">
+      <div className="absolute top-4 right-4 flex flex-col md:flex-row items-center gap-2 ">
         <ThemeToggle />
         <LanguageSelector />
       </div>
 
       <Texture />
       <div className="relative h-auto z-10 p-6 md:p-8">
-        <div className="flex items-center mb-10 md:mb-2 z-10 header">
+        <div className="flex items-center my-6 xl:mt-0 z-10 header">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -317,7 +319,7 @@ const ProviderPage = () => {
           </h2>
         </div>
 
-        <div className="flex-grow lg:px-8 mt-6">
+        <div className="flex-grow lg:px-8 mt-10">
           {(() => {
             switch (providerPassed) {
               case "goodwe":
@@ -352,12 +354,14 @@ const ProviderPage = () => {
 
         <div className="flex mt-6">
           {/* Button to open sidebar */}
-          <button
-            className="xl:hidden fixed bottom-20 left-5 z-40 text-custom-dark-blue bg-custom-yellow p-3 rounded-full justify-center button-shadow"
-            onClick={toggleSidebar}
-          >
-            <IoFilter />
-          </button>
+          {isTouchDevice && !isSidebarOpen && (
+            <button
+              className="xl:hidden fixed bottom-20 left-5 z-40 text-custom-dark-blue bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+              onClick={toggleSidebar}
+            >
+              <IoFilter />
+            </button>
+          )}
 
           {/* Sidebar */}
           {renderFilterSidebar()}

@@ -1,4 +1,4 @@
-const {heroui} = require('@heroui/theme');
+const { heroui } = require("@heroui/theme");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -6,7 +6,7 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@heroui/theme/dist/components/(popover|button|ripple|spinner).js"
+    "./node_modules/@heroui/theme/dist/components/(popover|button|ripple|spinner).js",
   ],
   theme: {
     extend: {
@@ -301,7 +301,15 @@ module.exports = {
       perspective: {
         1000: "1000px",
       },
+      zIndex: {
+        1000: "1000",
+        900: "900",
+        800: "800",
+        700: "700",
+        600: "600",
+        500: "500",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate"),heroui()],
+  plugins: [require("tailwindcss-animate"), heroui()],
 };

@@ -34,7 +34,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={handleToggleTheme}
-      className="p-1 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-300 button-shadow"
+      className="z-action-buttons p-1 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-300 button-shadow"
     >
       {theme === "dark" ? (
         <SunIcon className="h-6 w-6 text-yellow-500" />

@@ -5,6 +5,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import { IoMdClose } from "react-icons/io";
 import { RotateCcw, X } from "lucide-react";
 import { motion } from "framer-motion";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const INITIAL_FILTERS = {
   status: [],
@@ -32,6 +33,7 @@ const GoodweFilterSidebar = ({
   const sidebarRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const isTouchDevice = useTouchDevice();
 
   const filterPlants = useCallback(
     (currentFilters) => {
@@ -181,7 +183,7 @@ const GoodweFilterSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
+      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-600 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
@@ -198,7 +200,7 @@ const GoodweFilterSidebar = ({
             {isDesktop && <span>{t("reset")}</span>}{" "}
             <RotateCcw className="w-5 h-5" />
           </button>
-          {(isMobile || isTablet) && (
+          {isTouchDevice && (
             <motion.button
               whileHover={{ rotate: 90 }}
               whileTap={{ scale: 0.9 }}

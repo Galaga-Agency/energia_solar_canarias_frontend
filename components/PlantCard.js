@@ -126,8 +126,8 @@ const PlantCard = ({ plant, user, isMobile }) => {
         {/* Top Section with Icon and Status */}
         <div className="flex justify-between items-start mb-4 h-12">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-custom-yellow/20 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-              <PiSolarPanelFill className="text-3xl text-custom-yellow" />
+            <div className="w-12 h-12 rounded-full bg-custom-yellow/20 flex items-center justify-center box-shadow-[0_2px_2px_rgba(0,0,0,0.6)] transform group-hover:scale-110 transition-transform duration-300">
+              <PiSolarPanelFill className="text-3xl text-custom-yellow drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]" />
             </div>
           </div>
 

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import useDeviceType from "@/hooks/useDeviceType";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/slices/userSlice";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const INITIAL_FILTERS = {
   pw_type: [],
@@ -42,6 +43,7 @@ const NotificationFilterSidebar = ({
 }) => {
   const { t } = useTranslation();
   const { isMobile, isTablet, isDesktop } = useDeviceType();
+  const isTouchDevice = useTouchDevice();
   const sidebarRef = useRef(null);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const isAdmin = useSelector(selectIsAdmin);
@@ -203,9 +205,20 @@ const NotificationFilterSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`min-w-72 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
-        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+      className={`
+        min-w-72 overflow-auto filter-sidebar-selector
+        ${
+          isTouchDevice
+            ? "fixed z-600 top-0 left-0 h-screen" // Full height for mobile/tablet
+            : "h-[calc(100vh-64px)]" // Subtract navbar height for desktop
+        }
+        transform transition-all duration-300 ease-in-out
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        xl:static xl:block xl:translate-x-0 
+        bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 
+        rounded-r-lg xl:rounded-lg shadow-lg 
+        max-w-xs w-full md:w-auto
+      `}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
@@ -220,7 +233,7 @@ const NotificationFilterSidebar = ({
             {isDesktop && <span>{t("reset")}</span>}
             <RotateCcw className="w-7 h-7" />
           </button>
-          {(isMobile || isTablet) && (
+          {isTouchDevice && (
             <motion.button
               whileHover={{ rotate: 90 }}
               whileTap={{ scale: 0.9 }}

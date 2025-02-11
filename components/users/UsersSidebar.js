@@ -4,6 +4,7 @@ import CustomCheckbox from "@/components/ui/CustomCheckbox";
 import { X, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import useDeviceType from "@/hooks/useDeviceType";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const INITIAL_FILTERS = {
   role: ["all"],
@@ -20,6 +21,7 @@ const UsersSidebar = ({
   const { t } = useTranslation();
   const { isMobile, isTablet, isDesktop } = useDeviceType();
   const sidebarRef = useRef(null);
+  const isTouchDevice = useTouchDevice();
 
   const handleResetFilters = useCallback(() => {
     onFilterChange(INITIAL_FILTERS);
@@ -80,9 +82,9 @@ const UsersSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
+      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-600 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter p-4 pb-0 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 pb-0 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
@@ -97,7 +99,7 @@ const UsersSidebar = ({
             {isDesktop && <span>{t("reset")}</span>}
             <RotateCcw className="w-7 h-7" />
           </button>
-          {(isMobile || isTablet) && (
+          {isTouchDevice && (
             <motion.button
               whileHover={{ rotate: 90 }}
               whileTap={{ scale: 0.9 }}

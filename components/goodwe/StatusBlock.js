@@ -2,7 +2,7 @@ import React from "react";
 
 const StatusBlock = ({ stats, onStatusClick }) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 z-0">
       {["working", "disconnected", "waiting", "error"].map((status) => (
         <div
           key={status}

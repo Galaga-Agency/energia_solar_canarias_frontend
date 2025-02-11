@@ -58,9 +58,9 @@ const LanguageSelector = () => {
   }
 
   return (
-    <div className="relative z-50">
+    <div className="relative">
       <div
-        className="relative w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"
+        className="z-action-buttons relative w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"
         onClick={() => setIsOpen(!isOpen)}
       >
         {!imageLoaded && (
@@ -70,7 +70,7 @@ const LanguageSelector = () => {
           src={currentLanguage.flagPath}
           alt={currentLanguage.alt}
           fill
-          className={`rounded-full object-cover z-50 ${
+          className={`rounded-full object-cover ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
@@ -82,7 +82,7 @@ const LanguageSelector = () => {
       {/* Sliding Flag */}
       {isOpen && otherLanguage && (
         <div
-          className="absolute w-8 h-8 rounded-full cursor-pointer flex items-center justify-center overflow-hidden shadow-md bg-white transition-transform duration-300 ease-in-out top-[40px] z-50"
+          className="absolute w-8 h-8 rounded-full cursor-pointer flex items-center justify-center overflow-hidden shadow-md bg-white transition-transform duration-300 ease-in-out top-[40px]"
           onClick={() => changeLanguage(otherLanguage.code)}
         >
           <Image

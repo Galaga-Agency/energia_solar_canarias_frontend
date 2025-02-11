@@ -14,6 +14,7 @@ import { RotateCcw, X } from "lucide-react";
 import { IoFilter } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/slices/userSlice";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const STATUS_OPTIONS = [
   "working",
@@ -47,6 +48,7 @@ const FilterSidebar = forwardRef(
   ({ plants, onFilterChange, initialSearchTerm, view }, ref) => {
     const { t } = useTranslation();
     const { isMobile, isTablet, isDesktop } = useDeviceType();
+    const isTouchDevice = useTouchDevice();
     const sidebarRef = useRef(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [filters, setFilters] = useState({
@@ -177,18 +179,18 @@ const FilterSidebar = forwardRef(
 
     // Sidebar visibility logic (matching UsersSidebar)
     useEffect(() => {
-      if (isMobile || isTablet) {
+      if (isTouchDevice) {
         setIsSidebarOpen(false); // Mobile/tablet: close by default
       } else {
         setIsSidebarOpen(view === "plants"); // Ensure sidebar stays open only in "plants" view for desktop
       }
-    }, [isMobile, isTablet, view]); // Trigger on device type or view change
+    }, [isTouchDevice, view]); // Trigger on device type or view change
 
     return (
       <div>
         <div
           ref={sidebarRef}
-          className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
+          className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-600 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
         >
@@ -206,7 +208,7 @@ const FilterSidebar = forwardRef(
                 {isDesktop && <span>{t("reset")}</span>}
                 <RotateCcw className="w-7 h-7" />
               </button>
-              {(isMobile || isTablet) && (
+              {isTouchDevice && (
                 <motion.button
                   whileHover={{ rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
@@ -320,7 +322,7 @@ const FilterSidebar = forwardRef(
         </div>
 
         {/* Mobile filter button */}
-        {(isMobile || isTablet) && (
+        {isTouchDevice && !isSidebarOpen && (
           <motion.button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"

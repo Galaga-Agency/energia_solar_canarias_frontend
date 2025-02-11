@@ -35,6 +35,7 @@ import AddUserForm from "@/components/AddUserForm";
 import { MdPersonAdd } from "react-icons/md";
 import { RiUserAddLine } from "react-icons/ri";
 import withAdminGuard from "@/components/AdminGuard";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const INITIAL_FILTERS = {
   role: ["all"],
@@ -61,6 +62,7 @@ const UsersTab = () => {
   const [sortPath, setSortPath] = useState("nombre");
   const [sortOrder, setSortOrder] = useState("asc");
   const isAdmin = useSelector(selectIsAdmin);
+  const isTouchDevice = useTouchDevice();
 
   const usersPerPage = useMemo(() => {
     if (isMobile) return 6;
@@ -165,7 +167,7 @@ const UsersTab = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar mb-12">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-36 md:pb-16">
       <TransitionEffect />
       {/* Theme and Language Controls */}
       <motion.div
@@ -202,17 +204,19 @@ const UsersTab = () => {
         </motion.div>
 
         {/* Filter Button - Mobile/Tablet Only */}
-        <motion.button
-          className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
-          onClick={() => setIsSidebarOpen(true)}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8, duration: 0.3 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <IoFilter className="text-2xl text-custom-dark-blue" />
-        </motion.button>
+        {isTouchDevice && (
+          <motion.button
+            className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
+            onClick={() => setIsSidebarOpen(true)}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.3 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <IoFilter className="text-2xl text-custom-dark-blue" />
+          </motion.button>
+        )}
 
         <motion.div
           className="flex mt-8 gap-6"
@@ -360,7 +364,7 @@ const UsersTab = () => {
             {/* Pagination */}
             {filteredUsers.length > usersPerPage && (
               <motion.div
-                className="mt-6 mb-16"
+                className="mt-6 "
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.4, duration: 0.5 }}

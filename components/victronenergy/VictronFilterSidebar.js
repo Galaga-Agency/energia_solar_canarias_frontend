@@ -10,6 +10,7 @@ import { parseISO, isValid, isAfter, isBefore, startOfDay } from "date-fns";
 import { motion } from "framer-motion";
 import { selectActiveVictronNotifications } from "@/store/slices/notificationsSlice";
 import { useSelector } from "react-redux";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const VictronFilterSidebar = ({
   plants,
@@ -36,6 +37,7 @@ const VictronFilterSidebar = ({
   const [isMinDateSelectorOpen, setIsMinDateSelectorOpen] = useState(false);
   const [isMaxDateSelectorOpen, setIsMaxDateSelectorOpen] = useState(false);
   const activeVictronAlerts = useSelector(selectActiveVictronNotifications);
+  const isTouchDevice = useTouchDevice();
 
   const VICTRON_TYPES = {
     solar: "type_Solar",
@@ -246,7 +248,7 @@ const VictronFilterSidebar = ({
             {isDesktop && <span>{t("reset")}</span>}{" "}
             <RotateCcw className="w-5 h-5" />
           </button>
-          {(isMobile || isTablet) && (
+          {isTouchDevice && (
             <motion.button
               whileHover={{ rotate: 90 }}
               whileTap={{ scale: 0.9 }}

@@ -132,7 +132,7 @@ const GoodweStatsOverview = ({ plants, t }) => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-6 max-w-[85vw] md:max-w-[92vw] mx-auto">
+      <div className="flex flex-col md:flex-row gap-6 max-w-[85vw] md:max-w-[92vw] mx-auto z-0">
         {metrics.map(({ Icon, title, content, onClick }) => (
           <StatCard
             key={title}

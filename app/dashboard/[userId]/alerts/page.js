@@ -28,13 +28,17 @@ import NotificationSortMenu from "@/components/notifications/NotificationSortMen
 import ActiveNotificationsTab from "@/components/notifications/ActiveNotificationsTab";
 import ResolvedNotificationsTab from "@/components/notifications/ResolvedNotificationsTab";
 import { selectTheme } from "@/store/slices/themeSlice";
+import usePlatformDetection from "@/hooks/usePlatformDetection";
+import useTouchDevice from "@/hooks/useTouchDevice";
+import companyIcon from "@/public/assets/icons/icon-512x512.png";
+import Image from "next/image";
 
 const ITEMS_PER_PAGE = 6;
 
 const NotificationsTab = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { isMobile, isTablet } = useDeviceType();
+  const { isMobile, isTablet, isDesktop } = useDeviceType();
   const user = useSelector(selectUser);
   const activeNotifications = useSelector(selectActiveNotifications);
   const resolvedNotifications = useSelector(selectResolvedNotifications);
@@ -47,6 +51,7 @@ const NotificationsTab = () => {
   const [filteredResolved, setFilteredResolved] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isInitializing, setIsInitializing] = useState(true);
+  const isTouchDevice = useTouchDevice();
 
   // Initialize notifications if they're not already loaded
   useEffect(() => {
@@ -131,13 +136,13 @@ const NotificationsTab = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar mb-12">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-36 md:pb-16">
       <TransitionEffect />
       <Texture />
 
       <div className="relative z-20">
         <motion.div
-          className="fixed top-4 right-4 flex items-center gap-2 z-30"
+          className="absolute top-4 right-4 flex items-center gap-2"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
@@ -147,14 +152,22 @@ const NotificationsTab = () => {
         </motion.div>
 
         <div className="relative h-auto z-10 p-4 md:p-8">
-          <motion.h2
-            className="text-4xl dark:text-custom-yellow text-custom-dark-blue my-6 xl:mt-0"
+          {/* Title Section */}
+          <motion.div
+            className="flex items-center my-6 xl:mt-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
           >
-            {t("notifications")}
-          </motion.h2>
+            <Image
+              src={companyIcon}
+              alt="Company Icon"
+              className="w-12 h-12 mr-2 z-10"
+            />
+            <h2 className="z-10 text-4xl dark:text-custom-yellow text-custom-dark-blue max-w-[60vw]">
+              {t("notifications")}
+            </h2>
+          </motion.div>
 
           <motion.div
             className="flex gap-6"
@@ -375,7 +388,7 @@ const NotificationsTab = () => {
         </div>
       </div>
 
-      {(isMobile || isTablet) && !isSidebarOpen && (
+      {isTouchDevice && !isSidebarOpen && (
         <motion.button
           className="xl:hidden fixed bottom-20 left-5 z-30 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}

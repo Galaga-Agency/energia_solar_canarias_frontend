@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { parseISO, isValid, isAfter, isBefore, startOfDay } from "date-fns";
 import DateSelector from "@/components/DateSelector";
 import { BsCalendar3 } from "react-icons/bs";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 const SolarEdgeFilterSidebar = ({
   plants,
@@ -32,6 +33,7 @@ const SolarEdgeFilterSidebar = ({
   const [isMaxDateSelectorOpen, setIsMaxDateSelectorOpen] = useState(false);
   const minDateInputRef = useRef(null);
   const maxDateInputRef = useRef(null);
+  const isTouchDevice = useTouchDevice();
 
   const isDateValid = (dateString) => {
     if (!dateString) return false;
@@ -219,7 +221,7 @@ const SolarEdgeFilterSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
+      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-600 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
@@ -236,7 +238,7 @@ const SolarEdgeFilterSidebar = ({
             {isDesktop && <span>{t("reset")}</span>}{" "}
             <RotateCcw className="w-5 h-5" />
           </button>
-          {(isMobile || isTablet) && (
+          {isTouchDevice && (
             <motion.button
               whileHover={{ rotate: 90 }}
               whileTap={{ scale: 0.9 }}

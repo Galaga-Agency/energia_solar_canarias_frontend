@@ -40,7 +40,7 @@ const BottomNavbar = ({ userId }) => {
         </div>
       ),
       label: t("notifications"),
-      path: "/dashboard/[userId]/notifications",
+      path: "/dashboard/[userId]/alerts",
     },
     ...(isAdmin
       ? [
@@ -68,7 +68,7 @@ const BottomNavbar = ({ userId }) => {
 
   return (
     <div
-      className={`footer fixed bottom-0 left-0 right-0 flex justify-around p-2 bg-custom-dark-blue shadow-dark-shadow z-[999] ${
+      className={`footer fixed bottom-0 left-0 right-0 flex justify-around p-2 bg-custom-dark-blue shadow-dark-shadow z-1000 ${
         platformInfo.os === "iOS" && "pb-4"
       }`}
     >

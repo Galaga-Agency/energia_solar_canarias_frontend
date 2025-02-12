@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/slices/userSlice";
 import { selectActiveNotificationsCount } from "@/store/slices/notificationsSlice";
 import usePlatformDetection from "@/hooks/usePlatformDetection";
+import { GoAlert, GoAlertFill } from "react-icons/go";
 
 const BottomNavbar = ({ userId }) => {
   const { t } = useTranslation();
@@ -31,7 +32,7 @@ const BottomNavbar = ({ userId }) => {
     {
       icon: (
         <div className="relative">
-          <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
+          <GoAlertFill className="text-2xl" />
           {activeNotificationsCount > 0 && (
             <div className="absolute -top-1 -right-3 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
               {activeNotificationsCount}

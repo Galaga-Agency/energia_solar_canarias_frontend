@@ -297,7 +297,7 @@ const ProviderPage = () => {
   return (
     <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-20">
       <TransitionEffect />
-      <div className="absolute top-4 right-4 flex flex-col md:flex-row items-center gap-2 ">
+      <div className="absolute top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-500">
         <ThemeToggle />
         <LanguageSelector />
       </div>

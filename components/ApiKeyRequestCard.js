@@ -89,7 +89,7 @@ const ApiKeyRequestCard = ({ onClose = () => {} }) => {
           {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
           <div className="absolute bottom-6 flex mt-6 items-center">
             <Link
-              href="/api-guide"
+              href="https://app-energiasolarcanarias-backend.com/"
               passHref
               className="text-custom-dark-blue dark:text-custom-yellow underline underline-offset-2 hover:opacity-80 transition-opacity text-sm font-secondary"
               target="_blank"

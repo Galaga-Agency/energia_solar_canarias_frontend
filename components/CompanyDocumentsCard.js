@@ -23,19 +23,21 @@ const CompanyDocumentsCard = () => {
   ];
 
   return (
-    <ul className="space-y-3">
+    <ul className="flex flex-col h-full">
       {documents.map((doc) => (
-        <li key={doc.key}>
+        <li key={doc.key} className="mb-8 last:mb-0">
           <a
             href={doc.url}
-            className="text-custom-dark-blue dark:text-custom-light-gray underline underline-offset-2 hover:opacity-80 transition-opacity font-secondary"
+            className="text-custom-dark-blue dark:text-custom-light-gray underline underline-offset-2 hover:opacity-80 transition-opacity font-secondary inline-flex items-center gap-2"
             target="_blank"
             rel="noopener noreferrer"
           >
             {t(doc.key)}
-            <FaExternalLinkAlt className="inline ml-1" />
+            <FaExternalLinkAlt className="w-3 h-3 opacity-80" />
           </a>
-          <p className="text-gray-600 dark:text-gray-400">{doc.description}</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1.5">
+            {doc.description}
+          </p>
         </li>
       ))}
     </ul>

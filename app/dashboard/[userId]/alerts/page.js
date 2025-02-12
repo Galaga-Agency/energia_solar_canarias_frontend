@@ -33,7 +33,7 @@ import useTouchDevice from "@/hooks/useTouchDevice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 7;
 
 const NotificationsTab = () => {
   const dispatch = useDispatch();
@@ -142,7 +142,7 @@ const NotificationsTab = () => {
 
       <div className="relative z-20">
         <motion.div
-          className="absolute top-4 right-4 flex items-center gap-2"
+          className="absolute top-4 right-4 flex items-center gap-2 z-500"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}

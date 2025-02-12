@@ -225,7 +225,7 @@ const SettingsTab = () => {
               />
 
               {/* Company Documents - Fills Remaining Space */}
-              <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter  flex-grow">
+              <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter flex-grow">
                 <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-4">
                   {t("companyDocuments")}
                 </h2>

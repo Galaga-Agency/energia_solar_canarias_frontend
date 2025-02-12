@@ -46,9 +46,10 @@ import { selectActiveGoodweNotifications } from "@/store/slices/notificationsSli
 import useDeviceType from "@/hooks/useDeviceType";
 import { PiSolarPanelFill } from "react-icons/pi";
 import useTouchDevice from "@/hooks/useTouchDevice";
+import { motion } from "framer-motion";
 
 const GRID_ITEMS_PER_PAGE = 6;
-const LIST_ITEMS_PER_PAGE = 6;
+const LIST_ITEMS_PER_PAGE = 7;
 
 const ProviderPage = () => {
   const user = useSelector(selectUser);
@@ -295,7 +296,7 @@ const ProviderPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-20">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar pb-32 md:pb-16">
       <TransitionEffect />
       <div className="absolute top-4 right-4 flex flex-col md:flex-row items-center gap-2 z-500">
         <ThemeToggle />
@@ -355,12 +356,17 @@ const ProviderPage = () => {
         <div className="flex mt-6">
           {/* Button to open sidebar */}
           {isTouchDevice && !isSidebarOpen && (
-            <button
-              className="xl:hidden fixed bottom-20 left-5 z-40 text-custom-dark-blue bg-custom-yellow p-3 rounded-full justify-center button-shadow"
+            <motion.button
+              className="xl:hidden fixed bottom-20 left-5 z-40 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
               onClick={toggleSidebar}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.8, duration: 0.3 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              <IoFilter />
-            </button>
+              <IoFilter className="text-2xl text-custom-dark-blue" />
+            </motion.button>
           )}
 
           {/* Sidebar */}

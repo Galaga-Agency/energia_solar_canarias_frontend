@@ -77,7 +77,7 @@ const LoginForm = ({
         <form
           onSubmit={handleLoginSubmit(onSubmit)}
           noValidate
-          className="space-y-6"
+          className="space-y-4 md:space-y-6"
         >
           <div
             className={`transform transition-all duration-200 ${

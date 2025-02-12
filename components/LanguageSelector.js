@@ -60,7 +60,7 @@ const LanguageSelector = () => {
   return (
     <div className="relative">
       <div
-        className="z-action-buttons relative w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"
+        className="relative w-8 h-8 rounded-full cursor-pointer flex items-center justify-center p-0 overflow-hidden button-shadow transition-all duration-300 ease-in-out"
         onClick={() => setIsOpen(!isOpen)}
       >
         {!imageLoaded && (

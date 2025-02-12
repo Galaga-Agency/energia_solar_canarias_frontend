@@ -51,7 +51,7 @@ const InstallationGuide = () => {
     showButton && (
       <div className="fixed bottom-4 right-4 z-50">
         <PrimaryButton onClick={handleInstallClick}>
-          <FaDownload className="text-lg" />
+          <FaDownload className="text-xl md:text-lg pl-2 shrink-0" />
           <span className="px-2">{t("install_app")}</span>
         </PrimaryButton>
       </div>

@@ -160,7 +160,7 @@ const SettingsTab = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto custom-scrollbar">
+    <div className="min-h-screen flex flex-col light:bg-gradient-to-b light:from-gray-200 light:to-custom-dark-gray dark:bg-gray-900 relative overflow-y-auto overflow-x-hidden custom-scrollbar">
       <TransitionEffect />
 
       {/* Theme and Language Controls */}

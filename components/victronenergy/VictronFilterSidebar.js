@@ -231,9 +231,9 @@ const VictronFilterSidebar = ({
   return (
     <div
       ref={sidebarRef}
-      className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-50 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
+      className={`p-4 min-w-80 h-[100dvh] xl:h-auto flex flex-col fixed z-600 top-0 left-0 transform transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+      } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm backdrop-filter rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl text-custom-dark-blue dark:text-custom-yellow">
@@ -246,7 +246,7 @@ const VictronFilterSidebar = ({
             title={t("reset_filters")}
           >
             {isDesktop && <span>{t("reset")}</span>}{" "}
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-7 h-7" />
           </button>
           {isTouchDevice && (
             <motion.button
@@ -255,7 +255,7 @@ const VictronFilterSidebar = ({
               onClick={closeSidebar}
               className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
-              <X className="h-6 w-6 text-custom-dark-blue dark:text-custom-yellow " />
+              <X className="h-9 w-9 text-custom-dark-blue dark:text-custom-yellow " />
             </motion.button>
           )}
         </div>

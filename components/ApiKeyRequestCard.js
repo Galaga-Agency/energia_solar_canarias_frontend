@@ -39,7 +39,21 @@ const ApiKeyRequestCard = ({ onClose = () => {} }) => {
 
   const handleCopyApiKey = async () => {
     try {
-      await navigator.clipboard.writeText(actualApiKey);
+      const inputElement = document.getElementById("apiKeyInput");
+      if (!inputElement) return;
+
+      // Explicitly select the input content (Fix for Safari)
+      inputElement.select();
+      inputElement.setSelectionRange(0, 99999); // For mobile devices
+
+      // Try clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(actualApiKey);
+      } else {
+        // Fallback for Safari (execCommand)
+        document.execCommand("copy");
+      }
+
       setCopySuccess(true);
       toast.success(t("apiKeyCopied"));
       setTimeout(() => setCopySuccess(false), 2000);
@@ -125,6 +139,7 @@ const ApiKeyRequestCard = ({ onClose = () => {} }) => {
             </h2>
             <div className="relative">
               <input
+                id="apiKeyInput"
                 type="text"
                 value={actualApiKey}
                 readOnly
@@ -132,6 +147,7 @@ const ApiKeyRequestCard = ({ onClose = () => {} }) => {
                 onMouseLeave={() => setIsInputHovered(false)}
                 className="w-full p-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-custom-yellow focus:border-transparent outline-none"
               />
+
               <button
                 onClick={handleCopyApiKey}
                 className={`absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-custom-dark-blue dark:hover:text-custom-yellow transition-all duration-200 ${

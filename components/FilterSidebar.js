@@ -177,7 +177,7 @@ const FilterSidebar = forwardRef(
       []
     );
 
-    // Sidebar visibility logic (matching UsersSidebar)
+    // Sidebar visibility
     useEffect(() => {
       if (isTouchDevice) {
         setIsSidebarOpen(false); // Mobile/tablet: close by default
@@ -190,132 +190,145 @@ const FilterSidebar = forwardRef(
       <div>
         <div
           ref={sidebarRef}
-          className={`min-w-80 overflow-auto filter-sidebar-selector fixed z-600 top-0 left-0 h-screen xl:h-full transform transition-all duration-300 ease-in-out ${
+          className={`min-w-80 h-[100dvh] xl:h-auto flex flex-col fixed z-600 top-0 left-0 transform transition-all duration-300 ease-in-out ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50  backdrop-blur-sm backdrop-filter p-4 rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
+          } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm backdrop-filter rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
         >
-          {/* Sidebar content */}
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
-              {t("filter")}
-            </h3>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={handleResetFilters}
-                className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
-                title={t("reset_filters")}
-              >
-                {isDesktop && <span>{t("reset")}</span>}
-                <RotateCcw className="w-7 h-7" />
-              </button>
-              {isTouchDevice && (
-                <motion.button
-                  whileHover={{ rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setIsSidebarOpen(false)}
-                  className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                >
-                  <X className="h-9 w-9 text-custom-dark-blue dark:text-custom-yellow" />
-                </motion.button>
-              )}
-            </div>
-          </div>
-
-          {/* Filters */}
-          <div className="mb-4">
-            <input
-              type="text"
-              value={filters.search}
-              onChange={handleSearchChange}
-              placeholder={t("filterPlaceholder")}
-              className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
-            />
-          </div>
-
-          <div className="mb-4">
-            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-              {t("plantStatus")}
-            </h3>
-            <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-              {STATUS_OPTIONS.map((status) => (
-                <CustomCheckbox
-                  key={status}
-                  label={t(`status.${status}`)}
-                  checked={filters.status.includes(normalizeString(status))}
-                  onChange={() => handleCheckboxChange("status", status)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {isAdmin && (
-            <div className="mb-4">
-              <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-                {t("organization")}
+          {/* Fixed Header */}
+          <div className="sticky top-0 p-4 rounded-t-xl pb-0">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow">
+                {t("filter")}
               </h3>
-              <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
-                {ORGANIZATION_OPTIONS.map((org) => (
-                  <div
-                    key={org.name}
-                    className={!org.isAvailable ? "opacity-50" : undefined}
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={handleResetFilters}
+                  className="p-2 text-custom-dark-blue dark:text-custom-yellow hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
+                  title={t("reset_filters")}
+                >
+                  {isDesktop && <span>{t("reset")}</span>}
+                  <RotateCcw className="w-7 h-7" />
+                </button>
+                {isTouchDevice && (
+                  <motion.button
+                    whileHover={{ rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                   >
+                    <X className="h-9 w-9 text-custom-dark-blue dark:text-custom-yellow" />
+                  </motion.button>
+                )}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                value={filters.search}
+                onChange={handleSearchChange}
+                placeholder={t("filterPlaceholder")}
+                className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+              />
+            </div>
+          </div>
+
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-24 xl:pb-4">
+            <div className="space-y-6 pt-4">
+              {/* Status Filters */}
+              <div>
+                <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+                  {t("plantStatus")}
+                </h3>
+                <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+                  {STATUS_OPTIONS.map((status) => (
                     <CustomCheckbox
-                      label={
-                        <span className="flex items-center gap-2 text-nowrap">
-                          {org.name}
-                          {!org.isAvailable && (
-                            <span className="text-xs italic text-custom-dark-blue dark:text-custom-light-gray">
-                              ({t("comingSoon")})
+                      key={status}
+                      label={t(`status.${status}`)}
+                      checked={filters.status.includes(normalizeString(status))}
+                      onChange={() => handleCheckboxChange("status", status)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Organization Filters */}
+              {isAdmin && (
+                <div>
+                  <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+                    {t("organization")}
+                  </h3>
+                  <div className="flex flex-col gap-1 text-custom-dark-blue dark:text-custom-light-gray">
+                    {ORGANIZATION_OPTIONS.map((org) => (
+                      <div
+                        key={org.name}
+                        className={!org.isAvailable ? "opacity-50" : undefined}
+                      >
+                        <CustomCheckbox
+                          label={
+                            <span className="flex items-center gap-2 text-nowrap">
+                              {org.name}
+                              {!org.isAvailable && (
+                                <span className="text-xs italic text-custom-dark-blue dark:text-custom-light-gray">
+                                  ({t("comingSoon")})
+                                </span>
+                              )}
                             </span>
+                          }
+                          checked={filters.organization.includes(
+                            normalizeString(org.name)
                           )}
-                        </span>
+                          onChange={() =>
+                            handleCheckboxChange(
+                              "organization",
+                              org.name,
+                              org.isAvailable
+                            )
+                          }
+                          disabled={!org.isAvailable}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Capacity Filters */}
+              <div>
+                <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
+                  {t("capacity")} (kW)
+                </h3>
+                <div className="flex gap-4">
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
+                      {t("min")}
+                    </label>
+                    <input
+                      type="number"
+                      value={filters.capacity.min}
+                      onChange={(e) =>
+                        handleCapacityChange("min", e.target.value)
                       }
-                      checked={filters.organization.includes(
-                        normalizeString(org.name)
-                      )}
-                      onChange={() =>
-                        handleCheckboxChange(
-                          "organization",
-                          org.name,
-                          org.isAvailable
-                        )
-                      }
-                      disabled={!org.isAvailable}
+                      className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+                      placeholder={t("min")}
                     />
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mb-4">
-            <h3 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-2">
-              {t("capacity")} (kW)
-            </h3>
-            <div className="flex gap-4">
-              <div className="flex flex-col flex-1 min-w-0">
-                <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
-                  {t("min")}
-                </label>
-                <input
-                  type="number"
-                  value={filters.capacity.min}
-                  onChange={(e) => handleCapacityChange("min", e.target.value)}
-                  className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
-                  placeholder={t("min")}
-                />
-              </div>
-              <div className="flex flex-col flex-1 min-w-0">
-                <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
-                  {t("max")}
-                </label>
-                <input
-                  type="number"
-                  value={filters.capacity.max}
-                  onChange={(e) => handleCapacityChange("max", e.target.value)}
-                  className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
-                  placeholder={t("max")}
-                />
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <label className="text-sm text-custom-dark-blue dark:text-custom-light-gray mb-1">
+                      {t("max")}
+                    </label>
+                    <input
+                      type="number"
+                      value={filters.capacity.max}
+                      onChange={(e) =>
+                        handleCapacityChange("max", e.target.value)
+                      }
+                      className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+                      placeholder={t("max")}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

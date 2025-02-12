@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "next-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { IoFilter } from "react-icons/io5";
 import Texture from "@/components/Texture";
 import TransitionEffect from "@/components/TransitionEffect";
@@ -16,7 +16,6 @@ import {
   loadAllNotificationsInBackground,
   selectActiveTotalCount,
   selectResolvedTotalCount,
-  selectIsLoadingMore,
   setInitialLoad,
   selectActiveNotifications,
   selectResolvedNotifications,
@@ -27,8 +26,6 @@ import NotificationFilterSidebar from "@/components/notifications/NotificationFi
 import NotificationSortMenu from "@/components/notifications/NotificationSortMenu";
 import ActiveNotificationsTab from "@/components/notifications/ActiveNotificationsTab";
 import ResolvedNotificationsTab from "@/components/notifications/ResolvedNotificationsTab";
-import { selectTheme } from "@/store/slices/themeSlice";
-import usePlatformDetection from "@/hooks/usePlatformDetection";
 import useTouchDevice from "@/hooks/useTouchDevice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
@@ -38,13 +35,12 @@ const ITEMS_PER_PAGE = 7;
 const NotificationsTab = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { isMobile, isTablet, isDesktop } = useDeviceType();
+  const { isMobile, isDesktop } = useDeviceType();
   const user = useSelector(selectUser);
   const activeNotifications = useSelector(selectActiveNotifications);
   const resolvedNotifications = useSelector(selectResolvedNotifications);
   const activeTotalCount = useSelector(selectActiveTotalCount);
   const resolvedTotalCount = useSelector(selectResolvedTotalCount);
-  const theme = useSelector(selectTheme);
   const [activeTab, setActiveTab] = useState("active");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filteredActive, setFilteredActive] = useState([]);
@@ -142,7 +138,7 @@ const NotificationsTab = () => {
 
       <div className="relative z-20">
         <motion.div
-          className="absolute top-4 right-4 flex items-center gap-2 z-500"
+          className="absolute top-4 right-4 flex items-center gap-2 z-30"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
@@ -151,7 +147,7 @@ const NotificationsTab = () => {
           <LanguageSelector />
         </motion.div>
 
-        <div className="relative h-auto z-10 p-4 md:p-8">
+        <div className="relative h-auto p-4 md:p-8">
           {/* Title Section */}
           <motion.div
             className="flex items-center my-6 xl:mt-0"
@@ -388,10 +384,11 @@ const NotificationsTab = () => {
         </div>
       </div>
 
+      {/* Mobile filter button */}
       {isTouchDevice && !isSidebarOpen && (
         <motion.button
-          className="xl:hidden fixed bottom-20 left-5 z-30 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="xl:hidden fixed bottom-20 left-5 z-50 bg-custom-yellow w-12 h-12 flex rounded-full justify-center items-center button-shadow"
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 }}

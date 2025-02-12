@@ -65,7 +65,7 @@ const ManageUsersModal = ({
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        className="relative w-auto min-w-[80vw] md:min-w-[70vw] lg:min-w-[40vw] h-[80vh] rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg shadow-xl"
+        className="relative w-auto min-w-[80vw] md:min-w-[70vw] lg:min-w-[40vw] h-[80vh] max-w-[90vw] md:max-w-4xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 backdrop-blur-lg shadow-xl"
       >
         <Texture className="opacity-30" />
 

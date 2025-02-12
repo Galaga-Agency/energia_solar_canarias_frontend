@@ -17,7 +17,7 @@ const FormFace = ({ isActive, rotation, children, formType }) => (
   >
     <div className="relative h-full w-full flex items-center justify-center p-4">
       <div className="w-full max-h-full overflow-y-auto custom-scrollbar">
-        <div className="min-h-min px-4 py-6 space-y-4">
+        <div className="min-h-min px-4 space-y-4">
           <Texture />
           {children}
         </div>

@@ -8,7 +8,7 @@ const DeleteUserModal = ({ isOpen, onClose, onConfirm, t }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="relative max-w-md rounded-2xl bg-gradient-to-br from-white/90 to-white/50 
+      className="relative max-w-[95vw] md:max-w-md rounded-2xl bg-gradient-to-br from-white/90 to-white/50 
       dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-6 backdrop-blur-lg shadow-xl"
     >
       <Texture className="opacity-30" />

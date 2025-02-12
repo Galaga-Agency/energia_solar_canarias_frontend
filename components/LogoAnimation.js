@@ -22,6 +22,10 @@ const LogoAnimation = () => {
   const theme = useSelector(selectTheme);
   const initialLogoSize = isMobile ? 350 : isTablet ? 500 : 350;
   const finalLogoSize = isMobile ? 150 : isTablet ? 200 : 200;
+  const finalPosition = {
+    top: isMobile ? "8px" : "16px", // 8px (top-2) for mobile, 16px (top-4) for others
+    left: isMobile ? "0" : "16px", // 8px (left-2) for mobile, 16px (left-4) for others
+  };
 
   useEffect(() => {
     const transitionTimer = setTimeout(() => setShowTransition(false), 1500);
@@ -57,8 +61,8 @@ const LogoAnimation = () => {
               opacity: 1,
               width: showForm ? finalLogoSize : initialLogoSize,
               height: showForm ? finalLogoSize : initialLogoSize,
-              top: showForm ? "20px" : "50%",
-              left: showForm ? "20px" : "50%",
+              top: showForm ? finalPosition.top : "50%",
+              left: showForm ? finalPosition.left : "50%",
               x: showForm ? 0 : "-50%",
               y: showForm ? 0 : "-50%",
             }}
@@ -67,7 +71,7 @@ const LogoAnimation = () => {
               duration: 1.5,
               ease: "easeInOut",
             }}
-            className="z-40 fixed"
+            className="z-40 absolute"
           >
             <Image
               src={theme === "light" ? logoLight : logoDark}

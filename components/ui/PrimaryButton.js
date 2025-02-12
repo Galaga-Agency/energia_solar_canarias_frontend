@@ -13,9 +13,13 @@ const PrimaryButton = ({
       disabled={disabled}
       aria-disabled={disabled}
       tabIndex={disabled ? -1 : 0}
-      className={`text-nowrap relative text-custom-dark-blue flex items-center backdrop-blur-sm justify-center mx-auto px-6 py-2 w-full max-w-[200px] h-10 rounded-md font-secondary tracking-wide transition-all duration-300 ease-in-out bg-custom-yellow
+      className={`text-nowrap relative text-custom-dark-blue flex items-center backdrop-blur-sm justify-center mx-auto mt-5 mb-7 px-2 py-2 w-full max-w-[200px] h-10 rounded-lg font-secondary tracking-wide transition-all duration-300 ease-in-out bg-custom-yellow
         ${disabled ? "opacity-50 cursor-not-allowed" : "hover:scale-105"} 
-        ${!disabled ? "font-semibold shadow-lg hover:shadow-white" : ""} 
+        ${
+          !disabled
+            ? "font-semibold shadow-lg hover:shadow-lg hover:shadow-white"
+            : ""
+        } 
         overflow-hidden ${className}`}
       style={{ perspective: "1000px" }}
     >

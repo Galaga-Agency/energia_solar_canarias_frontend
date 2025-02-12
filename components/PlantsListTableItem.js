@@ -6,7 +6,6 @@ import { useTranslation } from "next-i18next";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import {
   BsBatteryCharging,
   BsBatteryFull,
@@ -20,6 +19,7 @@ const PlantsListTableItem = ({ plant }) => {
   const userId = user?.id;
   const { isMobile } = useDeviceType();
   const provider = plant.organization?.toLowerCase();
+  const status = plant?.status?.toLowerCase();
 
   const statusColors = {
     working: "bg-green-500",
@@ -46,35 +46,16 @@ const PlantsListTableItem = ({ plant }) => {
     },
   };
 
-  const getBatteryStateLabel = (state) => {
-    switch (state) {
-      case "Cargando":
-        return t("status.Cargando");
-      case "Descargando":
-        return t("status.Descargando");
-      case "En reposo":
-        return t("status.En reposo");
-      default:
-        return "";
-    }
+  const statusTextColors = {
+    working: "text-green-500",
+    error: "text-red-500",
+    waiting: "text-yellow-500",
+    disconnected: "text-gray-500",
   };
 
   const handleClick = () => {
     router.push(`/dashboard/${userId}/plants/${provider}/${plant.id}`);
   };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES");
-  };
-
-  // const getInstallationDate = () => {
-  //   if (provider === "victronenergy") {
-  //     return formatDate(plant.installation_date);
-  //   }
-  //   return "-";
-  // };
 
   const capitalizeWords = (str) => {
     if (!str) return "";
@@ -105,13 +86,6 @@ const PlantsListTableItem = ({ plant }) => {
     }
   };
 
-  const statusTextColors = {
-    working: "text-green-500",
-    error: "text-red-500",
-    waiting: "text-yellow-500",
-    disconnected: "text-gray-500",
-  };
-
   const parseAddress = (address) => {
     try {
       const parsed = JSON.parse(address);
@@ -127,13 +101,6 @@ const PlantsListTableItem = ({ plant }) => {
     } catch {
       return address || "N/A";
     }
-  };
-
-  const capitalize = (value) => {
-    if (typeof value === "string") {
-      return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-    }
-    return value;
   };
 
   return (
@@ -169,38 +136,30 @@ const PlantsListTableItem = ({ plant }) => {
               <div className="flex items-center gap-2 justify-center">
                 {!isMobile && (
                   <span
-                    className={`text-sm font-medium ${
-                      batteryStateIcons[plant.status.toLowerCase()].color
-                    }`}
+                    className={`text-sm font-medium ${batteryStateIcons[status]?.color}`}
                   >
-                    {getBatteryStateLabel(plant.status)}
+                    {getStatusText(plant.status)}
                   </span>
                 )}
-                {React.createElement(
-                  batteryStateIcons[plant.status.toLowerCase()].icon,
-                  {
-                    className: `${
-                      batteryStateIcons[plant?.status?.toLowerCase()].color
-                    } ${batteryStateIcons[plant?.status?.toLowerCase()].size}`,
-                  }
-                )}
+                {batteryStateIcons[status]?.icon &&
+                  React.createElement(batteryStateIcons[status].icon, {
+                    className: `${batteryStateIcons[status].color} ${batteryStateIcons[status].size}`,
+                  })}
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 {!isMobile && (
                   <span
                     className={`text-sm font-medium ${
-                      statusTextColors[plant?.status?.toLowerCase()] ||
-                      "text-gray-500"
+                      statusTextColors[status] || "text-gray-500"
                     }`}
                   >
                     {getStatusText(plant.status)}
                   </span>
                 )}
                 <div
-                  className={`w-3 h-3 rounded-full ${
-                    statusTextColors[plant?.status?.toLowerCase()] ||
-                    "text-gray-500"
+                  className={`w-3 h-3 shrink-0 rounded-full ${
+                    statusColors[status] || "bg-gray-500"
                   }`}
                 />
               </div>

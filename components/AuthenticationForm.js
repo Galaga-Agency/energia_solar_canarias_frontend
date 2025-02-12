@@ -175,8 +175,7 @@ const AuthenticationForm = () => {
   const getRotation = () =>
     ({
       login: 0,
-      register: 180,
-      result: 360,
+      result: 180,
     }[currentFace]);
 
   return (
@@ -211,7 +210,7 @@ const AuthenticationForm = () => {
         )}
       </AnimatePresence>
       <div
-        className="relative w-full min-h-[72vh] "
+        className="relative w-full min-h-[72vh]"
         style={{ perspective: "1500px" }}
       >
         <motion.div
@@ -221,46 +220,30 @@ const AuthenticationForm = () => {
             transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
-          {/* Login Form */}
-          <FormFace
-            isActive={currentFace === "login"}
-            rotation={0}
-            formType="login"
-          >
-            <LoginForm
-              handleSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              loading={loading}
-              setCurrentFace={setCurrentFace}
-              t={t}
-            />
-          </FormFace>
-
-          {/* Register Form */}
-          {/* Uncomment to enable the RegisterForm */}
-          {/* 
-          <FormFace isActive={currentFace === "register"} rotation={180}>
-            <RegisterForm
-              handleSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              setCurrentFace={setCurrentFace}
-              t={t}
-            />
-          </FormFace>
-          */}
-
-          {/* Result Feedback */}
-          <FormFace isActive={currentFace === "result"} rotation={360}>
-            <ResultContent
-              isSubmitting={isSubmitting}
-              submissionResult={submissionResult}
-              tokenInput={tokenInput}
-              setTokenInput={setTokenInput}
-              handleTokenSubmit={handleTokenSubmit}
-              setCurrentFace={setCurrentFace}
-              resendTokenRequest={resendTokenRequest}
-            />
-          </FormFace>
+          {currentFace === "login" && (
+            <FormFace isActive={true} rotation={0} formType="login">
+              <LoginForm
+                handleSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                loading={loading}
+                setCurrentFace={setCurrentFace}
+                t={t}
+              />
+            </FormFace>
+          )}
+          {currentFace === "result" && (
+            <FormFace isActive={true} rotation={180}>
+              <ResultContent
+                isSubmitting={isSubmitting}
+                submissionResult={submissionResult}
+                tokenInput={tokenInput}
+                setTokenInput={setTokenInput}
+                handleTokenSubmit={handleTokenSubmit}
+                setCurrentFace={setCurrentFace}
+                resendTokenRequest={resendTokenRequest}
+              />
+            </FormFace>
+          )}
         </motion.div>
       </div>
     </div>

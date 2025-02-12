@@ -147,7 +147,7 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
     <>
       <div className="relative w-full perspective">
         <div
-          className={`relative h-[650px] transition-transform duration-700 transform-style-3d ${
+          className={`relative h-[690px] md:h-[650px] transition-transform duration-700 transform-style-3d ${
             isFlipped ? "rotate-y-180" : ""
           }`}
         >

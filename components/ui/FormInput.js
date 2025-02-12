@@ -12,7 +12,7 @@ const FormInput = ({
   disabled = false,
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`space-y-2 mx-2 relative ${className}`}>
       {label && (
         <label
           htmlFor={name}
@@ -29,8 +29,8 @@ const FormInput = ({
           {...register(name, validation)}
           disabled={disabled}
           placeholder={placeholder}
-          className={`w-full p-2 rounded-lg transition-colors appearance-none
-            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+          className={`w-full p-2 rounded-lg transition-colors 
+            ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-text"}
             ${
               error
                 ? "border-2 border-red-500 focus:ring-red-500"
@@ -40,11 +40,14 @@ const FormInput = ({
             text-gray-900 dark:text-gray-100
             placeholder-gray-400 dark:placeholder-gray-500
             focus:outline-none focus:ring-2
-            touch-manipulation
           `}
           style={{
-            WebkitAppearance: "none",
-            cursor: "text",
+            WebkitAppearance: "none", // Fix Safari appearance issues
+            WebkitTapHighlightColor: "transparent",
+            touchAction: "manipulation", // Ensure taps work correctly
+            pointerEvents: "auto", // Ensure clicks register
+            position: "relative",
+            zIndex: 50, // Fix layering issues
           }}
         />
       </div>

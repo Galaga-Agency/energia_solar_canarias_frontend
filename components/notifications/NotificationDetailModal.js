@@ -309,7 +309,7 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="relative w-full max-w-4xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-4 md:p-6 backdrop-blur-lg shadow-xl overflow-hidden"
+      className="relative w-full max-w-[90vw] z-900 md:max-w-4xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-4 md:p-6 backdrop-blur-lg shadow-xl overflow-hidden"
     >
       <Texture className="opacity-30" />
 

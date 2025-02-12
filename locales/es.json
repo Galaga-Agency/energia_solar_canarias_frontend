@@ -1709,7 +1709,7 @@
   "Everything is running smoothly": "Todo funciona correctamente",
   "No alerts have been cleared yet": "Aún no se han resuelto alertas",
   "addToHomeScreen": "Añadir a la Pantalla de Inicio",
-  "installApp": "Instalar Aplicación",
+  "installApp": "Descargar App",
   "installable": "Instalable",
   "iosDevice": "Dispositivo iOS",
   "pwaMode": "Modo PWA",
@@ -1935,7 +1935,7 @@
       "description": "No se pudo abrir el menú compartir"
     }
   },
-  "install_app": "Instalar Aplicación",
+  "install_app": "Descargar App",
   "install_description": "¿Te gustaría instalar nuestra aplicación para una mejor experiencia?",
   "install_button": "Instalar",
   "cancel_button": "Cancelar",
@@ -2096,5 +2096,6 @@
   "profile_delete_picture_error": "Error al eliminar la foto de perfil.",
   "profile_loading": "Cargando...",
   "profile_save_changes": "Guardar Cambios",
-  "profile_delete": "Eliminar"
+  "profile_delete": "Eliminar",
+  "Resting": "En Reposo"
 }

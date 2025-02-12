@@ -33,6 +33,7 @@ const AuthenticationForm = () => {
   const [userToValidate, setUserToValidate] = useState(null);
   const [showGlow, setShowGlow] = useState(false);
   const isInitialLoad = useSelector(selectIsInitialLoad);
+  const [userCredentials, setUserCredentials] = useState(null);
 
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading);
@@ -45,10 +46,14 @@ const AuthenticationForm = () => {
 
     try {
       const response = await dispatch(authenticateUser(data)).unwrap();
-      // console.log("Auth response:", response);
 
       if (type === "login") {
         setUserToValidate(response.data.id);
+        // Store credentials for resending
+        setUserCredentials({
+          email: data.email,
+          password: data.password,
+        });
         setSubmissionResult({ status: "loginSuccess" });
         setCurrentFace("result");
       }
@@ -148,10 +153,14 @@ const AuthenticationForm = () => {
   };
 
   const resendTokenRequest = async () => {
-    if (!userToValidate) return;
+    if (!userToValidate || !userCredentials) return;
+
     try {
       await dispatch(
-        authenticateUser({ email: userEmail, password: userPassword })
+        authenticateUser({
+          email: userCredentials.email,
+          password: userCredentials.password,
+        })
       );
     } catch (error) {
       console.error("Failed to resend token:", error);

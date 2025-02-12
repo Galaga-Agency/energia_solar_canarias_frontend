@@ -119,7 +119,7 @@ const ResultContent = ({
           <PrimaryButton
             type="button"
             disabled={isSubmitting}
-            className={`w-full py-3 text-center ${
+            className={`w-full my-6 text-center ${
               !tokenInput || errors.token || isSubmitting
                 ? "bg-gray-400 text-gray-700 cursor-not-allowed"
                 : "bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/80 cursor-pointer"

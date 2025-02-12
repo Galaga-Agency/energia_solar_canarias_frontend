@@ -142,3 +142,8 @@ label {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+input[type="text"] {
+  -webkit-user-select: text;
+  user-select: text;
+}

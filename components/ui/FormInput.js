@@ -21,26 +21,33 @@ const FormInput = ({
           {label}
         </label>
       )}
-      <input
-        id={name}
-        name={name}
-        type={type}
-        {...register(name, validation)}
-        disabled={disabled}
-        placeholder={placeholder}
-        className={`w-full p-2 rounded-lg transition-colors
-          ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-          ${
-            error
-              ? "border-2 border-red-500 focus:ring-red-500"
-              : "border-2 border-gray-300 dark:border-gray-600 focus:ring-custom-yellow"
-          }
-          bg-white dark:bg-gray-800 
-          text-gray-900 dark:text-gray-100
-          placeholder-gray-400 dark:placeholder-gray-500
-          focus:outline-none focus:ring-2
-        `}
-      />
+      <div className="relative">
+        <input
+          id={name}
+          name={name}
+          type={type}
+          {...register(name, validation)}
+          disabled={disabled}
+          placeholder={placeholder}
+          className={`w-full p-2 rounded-lg transition-colors appearance-none
+            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+            ${
+              error
+                ? "border-2 border-red-500 focus:ring-red-500"
+                : "border-2 border-gray-300 dark:border-gray-600 focus:ring-custom-yellow"
+            }
+            bg-white dark:bg-gray-800 
+            text-gray-900 dark:text-gray-100
+            placeholder-gray-400 dark:placeholder-gray-500
+            focus:outline-none focus:ring-2
+            touch-manipulation
+          `}
+          style={{
+            WebkitAppearance: "none",
+            cursor: "text",
+          }}
+        />
+      </div>
       {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
     </div>
   );

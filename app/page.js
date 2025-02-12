@@ -79,9 +79,9 @@ export default function Home() {
       <div className="flex justify-center items-center h-full">
         <LogoAnimation />
       </div>
-      {/* <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 right-4 z-50">
         <InstallationGuide debug={true} />
-      </div> */}
+      </div>
     </div>
   );
 }

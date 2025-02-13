@@ -2097,5 +2097,19 @@
   "profile_loading": "Cargando...",
   "profile_save_changes": "Guardar Cambios",
   "profile_delete": "Eliminar",
-  "Resting": "En Reposo"
+  "Resting": "En Reposo",
+  "download_mobile_app": "Descargar App",
+  "download_android_app": "Descargar App Android",
+  "download_ios_app": "Descargar App iOS",
+  "apk_download_success": "La descarga comenzó correctamente",
+  "apk_download_error": "Error al descargar la aplicación",
+  "ios_store_coming_soon": "App iOS próximamente en la App Store",
+  "mobile_download_error": "Error al descargar la aplicación móvil. Por favor, inténtalo de nuevo",
+  "store_download_message": "Descarga nuestra app desde la tienda oficial",
+  "downloading_message": "Iniciando descarga...",
+  "open_store": "Abrir Tienda",
+  "continue_in_browser": "Continuar en Navegador",
+  "download_started": "Descarga iniciada",
+  "download_failed": "Error en la descarga",
+  "try_again": "Intentar de nuevo"
 }

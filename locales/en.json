@@ -1177,5 +1177,19 @@
   "profile_delete_picture_error": "Failed to delete profile picture.",
   "profile_loading": "Loading...",
   "profile_save_changes": "Save Changes",
-  "profile_delete": "Delete"
+  "profile_delete": "Delete",
+  "download_mobile_app": "Download App",
+  "download_android_app": "Download Android App",
+  "download_ios_app": "Download iOS App",
+  "apk_download_success": "App download started successfully",
+  "apk_download_error": "Error downloading the app",
+  "ios_store_coming_soon": "iOS app coming soon to the App Store",
+  "mobile_download_error": "Error downloading mobile app. Please try again",
+  "store_download_message": "Download our app from the official store",
+  "downloading_message": "Starting download...",
+  "open_store": "Open Store",
+  "continue_in_browser": "Continue in Browser",
+  "download_started": "Download started",
+  "download_failed": "Download failed",
+  "try_again": "Try Again"
 }

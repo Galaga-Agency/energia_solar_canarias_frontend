@@ -5,24 +5,32 @@ import { FaDownload } from "react-icons/fa";
 import { toast } from "sonner";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import usePWADiagnostics from "@/hooks/usePWADiagnostics";
+import usePlatformDetection from "@/hooks/usePlatformDetection";
 import { useTranslation } from "react-i18next";
+import { downloadMobileAppAPI } from "@/services/shared-api";
+import useDeviceType from "@/hooks/useDeviceType";
+import { BsDownload } from "react-icons/bs";
 
 const InstallationGuide = () => {
-  const { deferredPrompt, isInstalled, showButton, isIOS } =
-    usePWADiagnostics();
+  const { deferredPrompt, isInstalled, showButton } = usePWADiagnostics();
+  const { deviceType } = usePlatformDetection();
   const { t } = useTranslation();
-
-  // console.log("Installation Guide States:");
-  // console.log("isInstalled:", isInstalled);
-  // console.log("deferredPrompt:", deferredPrompt);
-  // console.log("showButton:", showButton);
-  // console.log("isIOS:", isIOS);
+  const { isDesktop } = useDeviceType();
 
   const handleInstallClick = async () => {
-    if (isIOS) {
-      // Show a custom instruction for iOS users to add to Home Screen
-      toast.info(t("install_ios_message"));
-    } else if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
+    if (deviceType === "Mobile" || deviceType === "Tablet") {
+      try {
+        toast.info(t("downloading_message"));
+        await downloadMobileAppAPI();
+        toast.success(t("download_complete"));
+      } catch (error) {
+        console.error("Download error:", error);
+        toast.error(t("download_error"));
+      }
+      return;
+    }
+
+    if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
       try {
         deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
@@ -44,18 +52,18 @@ const InstallationGuide = () => {
     }
   };
 
-  // Hide the button if the app is already installed
-  if (isInstalled) return null;
+  if (!showButton || isInstalled) return null;
 
   return (
-    showButton && (
-      <div className="fixed bottom-4 right-4 z-50">
-        <PrimaryButton onClick={handleInstallClick}>
-          <FaDownload className="text-xl md:text-lg pl-2 shrink-0" />
-          <span className="px-2">{t("install_app")}</span>
-        </PrimaryButton>
-      </div>
-    )
+    <button
+      onClick={handleInstallClick}
+      className="fixed bottom-6 right-6 z-50 rounded-full bg-custom-yellow hover:bg-custom-yellow/90 transition-all duration-300 text-custom-dark-blue shadow-lg hover:shadow-xl p-3 flex items-center justify-center gap-3 group"
+    >
+      <BsDownload className="text-2xl shrink-0 group-hover:scale-110 transition-transform duration-300" />
+      {isDesktop && (
+        <span className="pr-3 font-medium">{t("install_app")}</span>
+      )}
+    </button>
   );
 };
 

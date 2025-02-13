@@ -864,3 +864,46 @@ export const deleteProfilePictureAPI = async ({ token }) => {
     throw error;
   }
 };
+
+export const downloadMobileAppAPI = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/mobile-app/download`, {
+      method: "GET",
+      headers: {
+        usuario: USUARIO,
+        apiKey: API_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to download app");
+    }
+
+    // Get the blob from response
+    const blob = await response.blob();
+
+    // Create download URL
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    // Create temporary link
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+
+    // Set correct filename based on platform
+    const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
+    link.download = isIOS ? "app.apfs" : "app.apk";
+
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+
+    return true;
+  } catch (error) {
+    console.error("Download error:", error);
+    throw error;
+  }
+};

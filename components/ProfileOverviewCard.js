@@ -153,7 +153,7 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
         >
           {/* Front Face */}
           <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden">
-            <div className="flex items-center justify-between mb-4">
+            <div className="relative flex items-center justify-between mb-4">
               <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
                 {t("profile_overview")}
               </h2>
@@ -161,7 +161,7 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsFlipped(true)}
-                className="p-2 rounded-full bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/30 transition-colors"
+                className="absolute -top-1 -right-1 p-2 rounded-full bg-custom-yellow text-custom-dark-blue hover:bg-custom-yellow/30 transition-colors"
                 aria-label={t("profile_edit")}
               >
                 <FaPencilAlt className="w-4 h-4" />
@@ -199,11 +199,11 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
 
           {/* Back Face */}
           <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden rotate-y-180">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-custom-dark-blue dark:text-custom-yellow">
+            <div className="relative flex items-center justify-between mb-4">
+              <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
                 {t("profile_edit")}
-              </h3>
-              <div className="flex gap-2">
+              </h2>
+              <div className="absolute -top-1 -right-1 flex gap-2">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

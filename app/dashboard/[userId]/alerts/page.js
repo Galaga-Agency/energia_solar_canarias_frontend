@@ -30,7 +30,7 @@ import useTouchDevice from "@/hooks/useTouchDevice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
 
-const ITEMS_PER_PAGE = 7;
+const ITEMS_PER_PAGE = 6;
 
 const NotificationsTab = () => {
   const dispatch = useDispatch();

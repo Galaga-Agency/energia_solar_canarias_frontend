@@ -64,7 +64,7 @@ const SortPlantsMenu = ({ onSortChange, className = "" }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between bg-white/50 backdrop-blur-sm dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-yellow font-secondary px-3 py-1.5 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-custom-yellow focus:ring-opacity-50 transition-all duration-300 min-w-[180px] w-full"
+        className="flex items-center justify-between border-2 border-gray-300 dark:border-gray-600 bg-white/50 dark:bg-custom-dark-blue backdrop-blur-sm text-custom-dark-blue dark:text-custom-yellow font-secondary px-3 py-1.5 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-custom-yellow focus:ring-opacity-50 transition-all duration-300 min-w-[180px] w-full"
       >
         <span className="flex items-center gap-2 min-w-0">
           <span className="flex-shrink-0">{selectedOptionData.icon}</span>

@@ -104,7 +104,7 @@ const PlantsListTableItem = ({ plant }) => {
   };
 
   return (
-    <div className="overflow-hidden w-full mb-3 max-w-[85vw] md:max-w-[92vw] mx-auto">
+    <div className="overflow-hidden w-full mb-3 max-w-[85vw] md:max-w-[92vw] mx-auto select-none">
       <div
         onClick={handleClick}
         className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl hover:shadow-lg hover:rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 cursor-pointer"
@@ -118,12 +118,12 @@ const PlantsListTableItem = ({ plant }) => {
               </div>
             </div>
             <div className="min-w-0">
-              <h3 className="font-medium text-custom-dark-blue dark:text-custom-yellow truncate">
+              <h3 className="font-medium text-custom-dark-blue dark:text-custom-yellow truncate select-none">
                 {capitalizeWords(plant.name)}
               </h3>
               <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mt-1">
                 <FaLocationDot className="text-custom-yellow flex-shrink-0" />
-                <p className="truncate max-w-full break-words">
+                <p className="truncate max-w-full break-words select-none">
                   {parseAddress(plant.address)}
                 </p>
               </div>

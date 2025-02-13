@@ -190,7 +190,7 @@ const FilterSidebar = forwardRef(
       <div>
         <div
           ref={sidebarRef}
-          className={`min-w-80 h-[100dvh] xl:h-auto flex flex-col fixed z-600 top-0 left-0 transform transition-all duration-300 ease-in-out ${
+          className={`min-w-80 xl:min-h-[calc(85vh-64px)] h-[100dvh] xl:h-auto flex flex-col fixed z-600 top-0 left-0 transform transition-all duration-300 ease-in-out ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } xl:static xl:block xl:translate-x-0 bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm backdrop-filter rounded-r-lg xl:rounded-lg shadow-lg max-w-xs w-full md:w-auto`}
         >

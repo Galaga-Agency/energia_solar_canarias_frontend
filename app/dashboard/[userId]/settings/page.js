@@ -194,7 +194,7 @@ const SettingsTab = () => {
             alt="Company Icon"
             className="w-12 h-12 mr-2 z-10 mb-1 transition-transform duration-300 hover:scale-110"
           />
-          <div className="flex flex-wrap items-center">
+          <div className="flex flex-wrap items-center max-w-[50vw] md:max-w-full">
             <h2 className="text-4xl font-extrabold text-custom-dark-blue dark:text-custom-yellow leading-tight">
               {`${t("welcome")},`}
             </h2>

@@ -5,6 +5,7 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import FormInput from "@/components/ui/FormInput";
 import Loading from "@/components/ui/Loading";
 import { useTranslation } from "next-i18next";
+import AnimatedInputWrapper from "@/components/ui/AnimatedInputWrapper";
 
 const ResultContent = ({
   isSubmitting,
@@ -21,6 +22,7 @@ const ResultContent = ({
   const [countdown, setCountdown] = useState(60);
   const [focusedField, setFocusedField] = useState(null);
   const [showGlow, setShowGlow] = useState(false);
+  const [tokenError, setTokenError] = useState(null);
 
   const {
     handleSubmit: handleTokenSubmitForm,
@@ -66,12 +68,16 @@ const ResultContent = ({
   }, []);
 
   const onSubmit = async (data) => {
+    setTokenError(null);
     setHasSubmittedToken(true);
     setTokenInput(data.token);
 
     const result = await handleTokenSubmit();
 
     if (result === false) {
+      setTokenError({
+        message: t("invalidToken"),
+      });
       setHasSubmittedToken(false);
       setTokenInput("");
       reset({ token: "" });
@@ -131,10 +137,11 @@ const ResultContent = ({
 
             <form
               onSubmit={handleTokenSubmitForm(onSubmit)}
-              className="space-y-4 md:space-y-6 "
+              className="space-y-4 md:space-y-6"
               noValidate
             >
-              <div
+              <AnimatedInputWrapper
+                shouldShake={!!tokenError}
                 className={`transform transition-all duration-200 ${
                   focusedField === "token" ? "scale-[1.02]" : "scale-100"
                 }`}
@@ -143,11 +150,16 @@ const ResultContent = ({
                   name="token"
                   type="text"
                   register={register}
-                  error={errors.token}
+                  error={errors.token || tokenError}
                   placeholder={t("codePlaceholder")}
-                  onFocus={() => setFocusedField("token")}
+                  onFocus={() => {
+                    setFocusedField("token");
+                    setTokenError(null);
+                  }}
                   onBlur={() => setFocusedField(null)}
-                  className="transition-all duration-200 focus:ring-2 focus:ring-custom-yellow/50"
+                  className={`transition-all duration-200 focus:ring-2 focus:ring-custom-yellow/50 ${
+                    errors.token || tokenError ? "border-red-500" : ""
+                  }`}
                   validation={{
                     required: t("tokenRequired"),
                     pattern: {
@@ -156,7 +168,7 @@ const ResultContent = ({
                     },
                   }}
                 />
-              </div>
+              </AnimatedInputWrapper>
 
               <div>
                 <PrimaryButton

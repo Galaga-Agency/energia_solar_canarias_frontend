@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import CustomCheckbox from "./ui/CustomCheckbox";
 import FormInput from "@/components/ui/FormInput";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import AnimatedInputWrapper from "@/components/ui/AnimatedInputWrapper";
 
 const LoginForm = ({
   handleSubmit,
@@ -13,6 +14,8 @@ const LoginForm = ({
   loading,
   setCurrentFace,
   t,
+  serverError,
+  setServerError,
 }) => {
   const {
     handleSubmit: handleLoginSubmit,
@@ -49,11 +52,25 @@ const LoginForm = ({
 
   const isFormFilled = email?.length > 0 && password?.length > 0;
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (!acceptTerms) {
       return;
     }
-    handleSubmit(data, "login");
+    try {
+      await handleSubmit(data, "login");
+    } catch (error) {
+      if (error.includes("contraseña es inválida")) {
+        setServerError({
+          field: "password",
+          message: t("invalidPassword"),
+        });
+      } else if (error.includes("usuario no existe")) {
+        setServerError({
+          field: "email",
+          message: t("invalidUser"),
+        });
+      }
+    }
   };
 
   return (
@@ -65,7 +82,7 @@ const LoginForm = ({
         y: 0,
         transition: {
           duration: 0.6,
-          ease: [0.16, 1, 0.3, 1], // Custom ease with nice deceleration
+          ease: [0.16, 1, 0.3, 1],
         },
       }}
     >
@@ -79,21 +96,34 @@ const LoginForm = ({
           noValidate
           className="space-y-4 md:space-y-6"
         >
-          <div
+          <AnimatedInputWrapper
+            shouldShake={serverError?.field === "email"}
             className={`transform transition-all duration-200 ${
               focusedField === "email" ? "scale-[1.02]" : "scale-100"
             }`}
           >
             <FormInput
               label={t("email")}
-              error={errors.email}
+              error={
+                errors.email ||
+                (serverError?.field === "email"
+                  ? { message: serverError.message }
+                  : null)
+              }
               register={register}
               name="email"
               type="email"
               placeholder={t("emailPlaceholder")}
-              onFocus={() => setFocusedField("email")}
+              onFocus={() => {
+                setFocusedField("email");
+                if (serverError?.field === "email") setServerError(null);
+              }}
               onBlur={() => setFocusedField(null)}
-              className="transition-all duration-200 focus:ring-2 focus:ring-custom-yellow/50"
+              className={`transition-all duration-200 focus:ring-2 focus:ring-custom-yellow/50 ${
+                errors.email || serverError?.field === "email"
+                  ? "border-red-500"
+                  : ""
+              }`}
               validation={{
                 required: t("emailRequired"),
                 pattern: {
@@ -102,37 +132,50 @@ const LoginForm = ({
                 },
               }}
             />
-          </div>
+          </AnimatedInputWrapper>
 
-          <div
+          <AnimatedInputWrapper
+            shouldShake={serverError?.field === "password"}
             className={`relative transform transition-all duration-200 ${
               focusedField === "password" ? "scale-[1.02]" : "scale-100"
             }`}
           >
             <FormInput
               label={t("password")}
-              error={errors.password}
+              error={
+                errors.password ||
+                (serverError?.field === "password"
+                  ? { message: serverError.message }
+                  : null)
+              }
               register={register}
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder={t("passwordPlaceholder")}
-              onFocus={() => setFocusedField("password")}
+              onFocus={() => {
+                setFocusedField("password");
+                if (serverError?.field === "password") setServerError(null);
+              }}
               onBlur={() => setFocusedField(null)}
-              className="transition-all duration-200 focus:ring-2 focus:ring-custom-yellow/50"
+              className={`transition-all duration-200 focus:ring-2 focus:ring-custom-yellow/50 ${
+                errors.password || serverError?.field === "password"
+                  ? "border-red-500"
+                  : ""
+              }`}
               validation={{
                 required: t("passwordRequired"),
               }}
             />
             <motion.button
               type="button"
-              className="absolute right-3 top-10 text-xl text-custom-dark-blue dark:text-gray-400 hover:text-custom-yellow transition-colors duration-200"
+              className="absolute right-5 top-10 text-xl text-custom-dark-blue dark:text-gray-400 hover:text-custom-yellow transition-colors duration-200 z-50"
               onClick={() => setShowPassword((prev) => !prev)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
               {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
             </motion.button>
-          </div>
+          </AnimatedInputWrapper>
 
           <div>
             <CustomCheckbox

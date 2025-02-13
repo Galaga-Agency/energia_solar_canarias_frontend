@@ -34,7 +34,7 @@ const AuthenticationForm = () => {
   const [showGlow, setShowGlow] = useState(false);
   const isInitialLoad = useSelector(selectIsInitialLoad);
   const [userCredentials, setUserCredentials] = useState(null);
-
+  const [serverError, setServerError] = useState(null);
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading);
   const { t } = useTranslation();
@@ -43,13 +43,14 @@ const AuthenticationForm = () => {
   const handleSubmit = async (data, type) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setServerError(null); // Reset any previous errors
 
     try {
       const response = await dispatch(authenticateUser(data)).unwrap();
 
       if (type === "login") {
+        // Only proceed with card flip if authentication is successful
         setUserToValidate(response.data.id);
-        // Store credentials for resending
         setUserCredentials({
           email: data.email,
           password: data.password,
@@ -58,15 +59,23 @@ const AuthenticationForm = () => {
         setCurrentFace("result");
       }
     } catch (err) {
-      setSubmissionResult({
-        status: "loginError",
-        message: err.includes("contraseña es inválida")
-          ? t("invalidPassword")
-          : err.includes("usuario no existe")
-          ? t("invalidUser")
-          : t("internalServerError"),
-      });
-      setCurrentFace("result");
+      // Handle specific error cases with inline validation
+      if (err.includes("contraseña es inválida")) {
+        setServerError({
+          field: "password",
+          message: t("invalidPassword"),
+        });
+      } else if (err.includes("usuario no existe")) {
+        setServerError({
+          field: "email",
+          message: t("invalidUser"),
+        });
+      } else {
+        setServerError({
+          field: "email",
+          message: t("internalServerError"),
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -228,6 +237,8 @@ const AuthenticationForm = () => {
                 loading={loading}
                 setCurrentFace={setCurrentFace}
                 t={t}
+                serverError={serverError}
+                setServerError={setServerError}
               />
             </FormFace>
           )}

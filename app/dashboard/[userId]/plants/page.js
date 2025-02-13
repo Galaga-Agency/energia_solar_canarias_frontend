@@ -111,7 +111,7 @@ const ClientDashboardPage = ({ params }) => {
       <TransitionEffect />
 
       <motion.div
-        className="absolute top-4 right-4 flex items-center gap-2 "
+        className="absolute top-4 right-4 flex items-center gap-2 z-10 lg:z-500"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.5 }}
@@ -122,9 +122,9 @@ const ClientDashboardPage = ({ params }) => {
 
       <Texture />
 
-      <div className="relative h-auto z-10 p-4 md:p-8">
+      <div className="relative h-auto p-4 md:p-8">
         <motion.div
-          className="flex items-center my-6 xl:mt-0 z-10 px-2"
+          className="flex items-center my-6 xl:mt-0 px-2 z-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
@@ -132,7 +132,7 @@ const ClientDashboardPage = ({ params }) => {
           <Image
             src={companyIcon}
             alt="Company Icon"
-            className="w-10 h-10 md:w-12 md:h-12 mr-2 z-10 transition-transform duration-300 hover:scale-110"
+            className="w-10 h-10 md:w-12 md:h-12 mr-2 transition-transform duration-300 hover:scale-110"
           />
           <h2 className="z-10 text-3xl md:text-4xl dark:text-custom-yellow text-custom-dark-blue">
             {t("plants")}

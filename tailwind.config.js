@@ -311,5 +311,15 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), heroui()],
+  plugins: [
+    require("tailwindcss-animate"),
+    heroui(),
+    function ({ addUtilities }) {
+      addUtilities({
+        ".no-tap-highlight": {
+          "-webkit-tap-highlight-color": "transparent",
+        },
+      });
+    },
+  ],
 };

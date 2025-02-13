@@ -14,7 +14,7 @@ import NotificationsListSkeleton from "@/components/loadingSkeletons/Notificatio
 import { AlertCircle, BellIcon } from "lucide-react";
 import Pagination from "@/components/ui/Pagination";
 
-const ITEMS_PER_PAGE = 7;
+const ITEMS_PER_PAGE = 6;
 
 const ActiveNotificationsTab = ({
   filteredActive,

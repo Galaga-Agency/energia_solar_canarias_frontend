@@ -207,11 +207,11 @@ const NotificationFilterSidebar = ({
     <div
       ref={sidebarRef}
       className={`
-      min-w-80 z-600 overflow-auto filter-sidebar-selector
+      min-w-80 xl:min-h-[calc(85vh-64px)] z-600 overflow-auto filter-sidebar-selector
       ${
         isTouchDevice
           ? "fixed top-0 left-0 h-screen" // Full height for mobile/tablet
-          : "h-[calc(100vh-64px)]" // Subtract navbar height for desktop
+          : "h-[calc(85vh-64px)]" // Subtract navbar height for desktop
       }
       transform transition-all duration-300 ease-in-out
       ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}

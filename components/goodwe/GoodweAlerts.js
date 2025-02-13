@@ -11,7 +11,7 @@ import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import AlertsSkeleton from "@/components/loadingSkeletons/AlertsSkeleton";
 import { selectTheme } from "@/store/slices/themeSlice";
-import NotificationListItem from "@/components/notifications/NotificationListItem";
+import NotificationListItem from "@/components/alerts/AlertsListItem";
 
 const GoodweAlerts = ({ plantId, onViewAll }) => {
   const { t } = useTranslation();

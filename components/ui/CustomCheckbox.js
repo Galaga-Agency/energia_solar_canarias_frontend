@@ -20,7 +20,7 @@ const CustomCheckbox = ({
         />
         <div
           className={`
-          w-6 h-6 rounded-md border-2 
+          w-6 h-6 rounded-md border-1
           transition-all duration-200 ease-in-out
           ${
             checked

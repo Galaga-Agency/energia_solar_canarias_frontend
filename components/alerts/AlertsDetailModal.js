@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useTranslation } from "next-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { X, AlertTriangle, Info, Clock } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Texture from "@/components/Texture";
@@ -10,7 +10,7 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useRouter, useParams } from "next/navigation";
 import { FaBell } from "react-icons/fa";
 
-const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
+const AlertsDetailModal = ({ isOpen, onClose, notification }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { userId, plantId: currentPlantId } = useParams();
@@ -27,12 +27,10 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
     let plantId;
     let provider = notification.provider.toLowerCase();
 
-    // First, handle the provider name conversion
     if (provider === "victron") {
       provider = "victronenergy";
     }
 
-    // Then determine the correct plant ID based on provider
     if (provider === "goodwe") {
       plantId = notification.stationId || notification.stationid;
     } else if (provider === "victronenergy") {
@@ -44,7 +42,6 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
       return;
     }
 
-    // Store navigation context before redirecting
     localStorage.setItem(
       "plantNavigationContext",
       JSON.stringify({
@@ -54,7 +51,6 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
       })
     );
 
-    // Navigate using the correct URL pattern with the converted provider name
     const url = `/dashboard/${userId}/plants/${provider}/${plantId}`;
     router.push(url);
     onClose();
@@ -125,7 +121,6 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
                 </>
               ),
             })}
-
             {renderSection({
               title: t("alertDetails"),
               icon: AlertTriangle,
@@ -168,7 +163,6 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
                 </>
               ),
             })}
-
             {renderSection({
               title: t("timeInformation"),
               icon: Clock,
@@ -213,7 +207,6 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
                 </>
               ),
             })}
-
             {renderSection({
               title: t("alertDetails"),
               icon: AlertTriangle,
@@ -243,7 +236,6 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
                 </>
               ),
             })}
-
             {renderSection({
               title: t("timeInformation"),
               icon: Clock,
@@ -267,99 +259,64 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[999]">
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            transition={{ duration: 0.3 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          />
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="w-full max-w-[90vw] md:max-w-4xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-4 md:p-6 backdrop-blur-lg shadow-xl max-h-[80vh] xl:max-h-[85vh] overflow-y-auto custom-scrollbar"
+    >
+      <Texture className="opacity-30" />
 
-          {/* Modal Container */}
-          <div className="fixed inset-0 overflow-y-auto custom-scrollbar">
-            <div className="flex min-h-full items-center justify-center p-4">
-              {/* Modal Content */}
-              <motion.div
-                initial={{ scale: 0.9, y: 20, opacity: 0 }}
-                animate={{ scale: 1, y: 0, opacity: 1 }}
-                exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 25,
-                  delay: 0.1,
-                }}
-                className="relative w-full max-w-4xl rounded-2xl bg-gradient-to-br from-white/90 to-white/50 dark:from-custom-dark-blue/90 dark:to-custom-dark-blue/50 p-4 md:p-6 backdrop-blur-lg shadow-xl max-h-[80vh] xl:max-h-[85vh] overflow-y-auto custom-scrollbar"
-              >
-                <Texture className="opacity-30" />
-
-                {/* Header */}
-                <motion.div
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex items-center justify-between gap-4 mb-6 md:mb-8 bg-gradient-to-r from-custom-yellow to-custom-yellow/90 p-4 rounded-xl"
-                >
-                  <div className="flex items-center gap-3">
-                    <FaBell className="text-2xl text-custom-dark-blue" />
-                    <h2 className="text-xl md:text-2xl font-semibold text-custom-dark-blue">
-                      {t("alertDetails")}
-                    </h2>
-                  </div>
-
-                  <motion.button
-                    whileHover={{ rotate: 90 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={onClose}
-                    className="p-2 rounded-full hover:bg-black/5 transition-colors"
-                  >
-                    <X className="h-6 w-6 text-custom-dark-blue" />
-                  </motion.button>
-                </motion.div>
-
-                {/* Content */}
-                <div className="space-y-6">
-                  {renderProviderSpecificContent()}
-
-                  {/* Actions */}
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="flex justify-end gap-4 mt-8"
-                  >
-                    {(!currentPlantId ||
-                      currentPlantId !==
-                        (notification.stationId ||
-                          notification.stationid ||
-                          notification.plantId ||
-                          notification.idSite)) && (
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <PrimaryButton
-                          onClick={handleRedirect}
-                          className="px-4"
-                        >
-                          {t("goToPlant")}
-                        </PrimaryButton>
-                      </motion.div>
-                    )}
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
+      {/* Header */}
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="flex items-center justify-between gap-4 mb-6 md:mb-8 bg-gradient-to-r from-custom-yellow to-custom-yellow/90 p-4 rounded-xl"
+      >
+        <div className="flex items-center gap-3">
+          <FaBell className="text-2xl text-custom-dark-blue" />
+          <h2 className="text-xl md:text-2xl font-semibold text-custom-dark-blue">
+            {t("alertDetails")}
+          </h2>
         </div>
-      )}
-    </AnimatePresence>
+
+        <motion.button
+          whileHover={{ rotate: 90 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={onClose}
+          className="p-2 rounded-full hover:bg-black/5 transition-colors"
+        >
+          <X className="h-6 w-6 text-custom-dark-blue" />
+        </motion.button>
+      </motion.div>
+
+      {/* Content */}
+      <div className="space-y-6">
+        {renderProviderSpecificContent()}
+
+        {/* Actions */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="flex justify-end gap-4 mt-8"
+        >
+          {(!currentPlantId ||
+            currentPlantId !==
+              (notification.stationId ||
+                notification.stationid ||
+                notification.plantId ||
+                notification.idSite)) && (
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <PrimaryButton onClick={handleRedirect} className="px-4">
+                {t("goToPlant")}
+              </PrimaryButton>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
+    </Modal>
   );
 };
 
-export default NotificationDetailModal;
+export default AlertsDetailModal;

@@ -10,7 +10,7 @@ import StatsDetailModal from "../StatsDetailModal";
 import PlantsListTableItem from "../PlantsListTableItem";
 import EmptyState from "../EmptyState";
 import PlantProductionListItem from "../PlantProductionListItem";
-import NotificationListItem from "../notifications/NotificationListItem";
+import NotificationListItem from "../alerts/AlertsListItem";
 
 const StatusBlock = ({ stats, onStatusClick }) => (
   <div className="flex gap-2">

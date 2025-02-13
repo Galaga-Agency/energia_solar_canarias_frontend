@@ -381,7 +381,7 @@ const ProviderPage = () => {
 
             <div className="flex items-center justify-between mb-4 max-w-[85vw] md:max-w-[92vw] mx-auto">
               {renderSortMenu()}
-              <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-lg p-1 flex">
+              <div className="bg-white/50 dark:bg-custom-dark-blue/50 backdrop-blur-sm rounded-xl p-1 flex border-1 border-gray-300 dark:border-gray-600">
                 <button
                   onClick={() => setViewMode("list")}
                   className={`p-2 rounded-lg transition-colors ${

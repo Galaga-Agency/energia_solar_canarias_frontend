@@ -267,7 +267,7 @@ const VictronFilterSidebar = ({
           value={filters.search}
           onChange={handleSearchChange}
           placeholder={t("filterPlaceholder")}
-          className="w-full p-3 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+          className="w-full p-3 border-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
         />
       </div>
 
@@ -331,7 +331,7 @@ const VictronFilterSidebar = ({
                   setIsMaxDateSelectorOpen(false);
                   setIsMinDateSelectorOpen(!isMinDateSelectorOpen);
                 }}
-                className="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                className="w-full p-2 rounded-lg border-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue dark:text-white flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
                 type="button"
               >
                 <span className="text-custom-dark-blue dark:text-custom-light-gray">
@@ -366,7 +366,7 @@ const VictronFilterSidebar = ({
                   setIsMinDateSelectorOpen(false);
                   setIsMaxDateSelectorOpen(!isMaxDateSelectorOpen);
                 }}
-                className="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
+                className="w-full p-2 rounded-lg border-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-light-gray flex items-center justify-between focus:ring-2 focus:ring-custom-yellow"
                 type="button"
               >
                 <span className="text-custom-dark-blue dark:text-custom-light-gray">

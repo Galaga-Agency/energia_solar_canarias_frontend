@@ -26,7 +26,7 @@ import VictronAlertsModal from "./VictronAlertsModal";
 import useCSVExport from "@/hooks/useCSVExport";
 import ExportModal from "../ExportModal";
 import AssociatedUsers from "../AssociatedUsers";
-import NotificationListItem from "@/components/notifications/NotificationListItem";
+import NotificationListItem from "@/components/alerts/AlertsListItem";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();

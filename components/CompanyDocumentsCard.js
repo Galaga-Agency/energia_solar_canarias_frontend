@@ -23,24 +23,29 @@ const CompanyDocumentsCard = () => {
   ];
 
   return (
-    <ul className="flex flex-col h-full">
-      {documents.map((doc) => (
-        <li key={doc.key} className="mb-8 last:mb-0">
-          <a
-            href={doc.url}
-            className="text-custom-dark-blue dark:text-custom-light-gray underline underline-offset-2 hover:opacity-80 transition-opacity font-secondary inline-flex items-center gap-2"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t(doc.key)}
-            <FaExternalLinkAlt className="w-3 h-3 opacity-80" />
-          </a>
-          <p className="text-gray-600 dark:text-gray-400 mt-1.5">
-            {doc.description}
-          </p>
-        </li>
-      ))}
-    </ul>
+    <div className="bg-white/50 dark:bg-custom-dark-blue/40 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter flex-grow">
+      <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-4">
+        {t("companyDocuments")}
+      </h2>
+      <ul className="flex flex-col h-full">
+        {documents.map((doc) => (
+          <li key={doc.key} className="mb-8 last:mb-0">
+            <a
+              href={doc.url}
+              className="text-custom-dark-blue dark:text-custom-light-gray underline underline-offset-2 hover:opacity-80 transition-opacity font-secondary inline-flex items-center gap-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t(doc.key)}
+              <FaExternalLinkAlt className="w-3 h-3 opacity-80" />
+            </a>
+            <p className="text-gray-600 dark:text-gray-400 mt-1.5">
+              {doc.description}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

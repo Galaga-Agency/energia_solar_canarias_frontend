@@ -152,7 +152,7 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
           }`}
         >
           {/* Front Face */}
-          <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden">
+          <div className="absolute w-full h-full rounded-xl shadow-lg p-6 bg-white/40 dark:bg-custom-dark-blue/40 backdrop-blur-sm backdrop-filter backface-hidden">
             <div className="relative flex items-center justify-between mb-4">
               <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
                 {t("profile_overview")}
@@ -198,7 +198,7 @@ const ProfileOverviewCard = ({ profilePic, setProfilePic }) => {
           </div>
 
           {/* Back Face */}
-          <div className="absolute w-full h-full bg-white/30 dark:bg-gray-800/50 rounded-xl shadow-lg p-6 backdrop-blur-lg backdrop-filter backface-hidden rotate-y-180">
+          <div className="absolute w-full h-full bg-white/40 dark:bg-custom-dark-blue/40 rounded-xl shadow-lg p-6 backdrop-blur-sm backdrop-filter backface-hidden rotate-y-180">
             <div className="relative flex items-center justify-between mb-4">
               <h2 className="text-xl text-custom-dark-blue dark:text-custom-yellow mb-4">
                 {t("profile_edit")}

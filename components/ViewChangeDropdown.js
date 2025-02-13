@@ -28,7 +28,7 @@ const ViewChangeDropdown = ({ onChange, view }) => {
     <div className="relative w-full z-30">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-white/50 backdrop-blur-sm dark:bg-custom-dark-blue text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
+        className="w-full flex items-center justify-between bg-slate-50 dark:bg-slate-700/50 backdrop-blur-sm text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
       >
         <span className="flex items-center gap-2">
           <span className="flex-shrink-0">
@@ -57,7 +57,7 @@ const ViewChangeDropdown = ({ onChange, view }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-30 mt-1 bg-white/50 backdrop-blur-sm dark:bg-custom-dark-blue border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-lg min-w-[100%] whitespace-nowrap">
+        <div className="absolute z-30 mt-1 bg-slate-50 dark:bg-slate-700/50 backdrop-blur-sm border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-lg min-w-[100%] whitespace-nowrap">
           {options.map((option, index) => (
             <button
               key={option.value}

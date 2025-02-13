@@ -3,7 +3,7 @@ import { useTranslation } from "next-i18next";
 import { BsExclamationTriangle, BsCalendar } from "react-icons/bs";
 import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 
-const NotificationSortMenu = ({ onSortChange }) => {
+const AlertsSortMenu = ({ onSortChange }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("happentime");
@@ -50,7 +50,7 @@ const NotificationSortMenu = ({ onSortChange }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border-2 border-gray-300 dark:border-gray-600 bg-white/50 dark:bg-custom-dark-blue rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
+        className="w-full flex items-center justify-between text-custom-dark-blue dark:text-custom-yellow font-secondary px-4 py-2 border- border-gray-300 dark:border-gray-600 bg-slate-50 dark:bg-slate-700/50 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-custom-yellow focus:ring-opacity-50 transition duration-300"
       >
         <span className="flex items-center gap-2">
           <span className="flex-shrink-0">{selectedOptionData.icon}</span>
@@ -75,7 +75,7 @@ const NotificationSortMenu = ({ onSortChange }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 bg-white/50 backdrop-blur-sm dark:bg-custom-dark-blue border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-lg min-w-[100%] whitespace-nowrap">
+        <div className="absolute z-10 mt-1 bg-slate-50 dark:bg-slate-700/50 backdrop-blur-sm border border-gray-300 dark:border-custom-light-gray rounded-lg shadow-lg min-w-[100%] whitespace-nowrap">
           {options.map((option) => (
             <button
               key={option.value}
@@ -113,4 +113,4 @@ const NotificationSortMenu = ({ onSortChange }) => {
   );
 };
 
-export default NotificationSortMenu;
+export default AlertsSortMenu;

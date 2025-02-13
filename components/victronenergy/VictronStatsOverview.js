@@ -6,7 +6,7 @@ import {
   BsBatteryHalf,
 } from "react-icons/bs";
 import EmptyState from "../EmptyState";
-import NotificationListItem from "../notifications/NotificationListItem";
+import NotificationListItem from "../alerts/AlertsListItem";
 import InstallationTypesModal from "./InstallationTypesModal";
 import PlantsListTableItem from "../PlantsListTableItem";
 import StatsDetailModal from "../StatsDetailModal";

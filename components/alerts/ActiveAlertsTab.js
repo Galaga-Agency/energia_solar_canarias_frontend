@@ -3,32 +3,36 @@ import { useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  selectResolvedNotifications,
-  selectResolvedTotalCount,
-  selectResolvedFetched,
-  selectResolvedError,
+  selectActiveNotifications,
+  selectActiveTotalCount,
+  selectIsInitialLoad,
+  selectActiveError,
 } from "@/store/slices/notificationsSlice";
 import { selectTheme } from "@/store/slices/themeSlice";
-import NotificationListItem from "@/components/notifications/NotificationListItem";
+import NotificationListItem from "@/components/alerts/AlertsListItem";
 import NotificationsListSkeleton from "@/components/loadingSkeletons/NotificationsListSkeleton";
-import { AlertCircle, CheckCircleIcon } from "lucide-react";
+import { AlertCircle, BellIcon } from "lucide-react";
 import Pagination from "@/components/ui/Pagination";
 
 const ITEMS_PER_PAGE = 6;
 
-const ResolvedNotificationsTab = ({
-  filteredResolved,
+const ActiveAlertsTab = ({
+  filteredActive,
   currentPage,
   totalPages,
   onPageChange,
 }) => {
   const { t } = useTranslation();
   const theme = useSelector(selectTheme);
-  const isLoading = !useSelector(selectResolvedFetched);
-  const error = useSelector(selectResolvedError);
+  const isInitialLoad = useSelector(selectIsInitialLoad);
+  const notifications = useSelector(selectActiveNotifications);
+  const error = useSelector(selectActiveError);
+
+  // Determine loading state based on both initial load and data availability
+  const isLoading = isInitialLoad && !notifications.length;
 
   // Calculate pagination
-  const paginatedNotifications = filteredResolved.slice(
+  const paginatedNotifications = filteredActive.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -37,7 +41,7 @@ const ResolvedNotificationsTab = ({
     <>
       {isLoading ? (
         <motion.div
-          className="space-y-4"
+          className="mb-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -59,16 +63,16 @@ const ResolvedNotificationsTab = ({
             {t("tryAgainLater")}
           </p>
         </motion.div>
-      ) : !filteredResolved?.length ? (
+      ) : !filteredActive?.length ? (
         <motion.div
           className="flex flex-col items-center justify-center py-12 px-4"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <CheckCircleIcon className="w-16 h-16 text-custom-dark-blue dark:text-custom-yellow mb-4" />
+          <BellIcon className="w-16 h-16 text-custom-dark-blue dark:text-custom-yellow mb-4" />
           <p className="text-gray-600 dark:text-gray-300 text-lg text-center font-medium">
-            {t("noResolvedNotifications")}
+            {t("noActiveNotifications")}
           </p>
         </motion.div>
       ) : (
@@ -109,4 +113,4 @@ const ResolvedNotificationsTab = ({
   );
 };
 
-export default ResolvedNotificationsTab;
+export default ActiveAlertsTab;

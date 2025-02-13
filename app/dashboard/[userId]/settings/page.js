@@ -225,12 +225,7 @@ const SettingsTab = () => {
               />
 
               {/* Company Documents - Fills Remaining Space */}
-              <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter flex-grow">
-                <h2 className="text-lg text-custom-dark-blue dark:text-custom-yellow mb-4">
-                  {t("companyDocuments")}
-                </h2>
-                <CompanyDocumentsCard />
-              </div>
+              <CompanyDocumentsCard />
             </div>
 
             {/* Right Column (API Key, Security, and Actions) */}
@@ -238,9 +233,7 @@ const SettingsTab = () => {
               <ApiKeyRequestCard />
 
               {/* Security Section  */}
-              <div className="bg-white/30 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm backdrop-blur-sm backdrop-filter flex-grow">
-                <PasswordChangeCard />
-              </div>
+              <PasswordChangeCard />
 
               {/* Full-Width Logout & Danger Zone */}
               <div className="flex flex-col gap-6 justify-between mt-auto">

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useTranslation } from "next-i18next";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
-import NotificationDetailModal from "./NotificationDetailModal";
+import NotificationDetailModal from "./AlertsDetailModal";
 import { FiAlertCircle } from "react-icons/fi";
 
 // This mapping helps determine visual indicators based on notification severity
@@ -25,7 +25,7 @@ const SEVERITY_MAPPING = {
   },
 };
 
-const NotificationListItem = ({ notification }) => {
+const AlertsListItem = ({ notification }) => {
   const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
 
@@ -177,4 +177,4 @@ const NotificationListItem = ({ notification }) => {
   );
 };
 
-export default NotificationListItem;
+export default AlertsListItem;

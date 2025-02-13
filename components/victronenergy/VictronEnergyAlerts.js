@@ -10,7 +10,7 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
 import { selectTheme } from "@/store/slices/themeSlice";
-import NotificationListItem from "@/components/notifications/NotificationListItem";
+import NotificationListItem from "@/components/alerts/AlertsListItem";
 
 const VictronEnergyAlerts = ({ plantId, onViewAll }) => {
   const { t } = useTranslation();

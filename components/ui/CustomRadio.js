@@ -19,7 +19,7 @@ const CustomRadio = ({
         />
         <div
           className={`
-            w-5 h-5 rounded-full border-2 
+            w-5 h-5 rounded-full border-1 
             transition-all duration-200 ease-in-out
             ${
               checked

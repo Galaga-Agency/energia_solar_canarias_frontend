@@ -22,10 +22,10 @@ import {
 } from "@/store/slices/notificationsSlice";
 import { selectUser } from "@/store/slices/userSlice";
 import useDeviceType from "@/hooks/useDeviceType";
-import NotificationFilterSidebar from "@/components/notifications/NotificationFilterSidebar";
-import NotificationSortMenu from "@/components/notifications/NotificationSortMenu";
-import ActiveNotificationsTab from "@/components/notifications/ActiveNotificationsTab";
-import ResolvedNotificationsTab from "@/components/notifications/ResolvedNotificationsTab";
+import AlertsFilterSidebar from "@/components/alerts/AlertsFilterSidebar";
+import AlertsSortMenu from "@/components/alerts/AlertsSortMenu";
+import ActiveAlertsTab from "@/components/alerts/ActiveAlertsTab";
+import ResolvedAlertsTab from "@/components/alerts/ResolvedAlertsTab";
 import useTouchDevice from "@/hooks/useTouchDevice";
 import companyIcon from "@/public/assets/icons/icon-512x512.png";
 import Image from "next/image";
@@ -172,7 +172,7 @@ const NotificationsTab = () => {
             transition={{ delay: 0.7 }}
           >
             {isMobile ? (
-              <NotificationFilterSidebar
+              <AlertsFilterSidebar
                 activeNotifications={activeNotifications}
                 resolvedNotifications={resolvedNotifications}
                 onFilterChange={handleFilterChange}
@@ -186,7 +186,7 @@ const NotificationsTab = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.4 }}
               >
-                <NotificationFilterSidebar
+                <AlertsFilterSidebar
                   activeNotifications={activeNotifications}
                   resolvedNotifications={resolvedNotifications}
                   onFilterChange={handleFilterChange}
@@ -197,20 +197,20 @@ const NotificationsTab = () => {
               </motion.div>
             )}
 
+            {/* Tab navigation */}
             <motion.div
               className="flex-1 space-y-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
             >
-              {/* Tab navigation */}
-              <div className="flex space-x-1 mb-6 w-full bg-white/30 dark:bg-gray-800/50 backdrop-blur-sm p-1 rounded-full">
+              <div className="flex space-x-2 mb-6 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-2 rounded-2xl shadow-lg">
                 {/* Active tab button */}
                 <motion.button
-                  className={`flex-1 py-2 rounded-full text-sm relative overflow-hidden group ${
+                  className={`flex-1 py-1.5 rounded-xl text-sm relative overflow-hidden group ${
                     activeTab === "active"
-                      ? "bg-custom-yellow text-custom-dark-blue"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-gray-700/50"
+                      ? "bg-custom-yellow text-custom-dark-blue shadow-md"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/40"
                   }`}
                   onClick={() => setActiveTab("active")}
                   whileHover={{ scale: 0.98 }}
@@ -225,17 +225,17 @@ const NotificationsTab = () => {
                       <span className="sm:hidden">{t("active")}</span>
                     </span>
                     <span
-                      className={`min-w-[2rem] px-2 py-0.5 rounded-full text-xs font-medium ${
+                      className={`min-w-[2rem] px-2 py-1 rounded-full text-xs font-medium ${
                         activeTab === "active"
-                          ? "bg-custom-dark-blue/20 text-custom-dark-blue"
+                          ? "bg-white/40 text-custom-dark-blue"
                           : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
                       }`}
                     >
                       {isInitializing ? (
                         <div className="flex items-center justify-center min-w-[2rem] h-5">
-                          <div className="flex gap-[3px]">
+                          <div className="flex gap-1">
                             <motion.div
-                              className="w-1 h-1 bg-current rounded-full"
+                              className="w-1.5 h-1.5 bg-current rounded-full"
                               animate={{ y: [0, -4, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -247,7 +247,7 @@ const NotificationsTab = () => {
                               }}
                             />
                             <motion.div
-                              className="w-1 h-1 bg-current rounded-full"
+                              className="w-1.5 h-1.5 bg-current rounded-full"
                               animate={{ y: [0, -4, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -259,7 +259,7 @@ const NotificationsTab = () => {
                               }}
                             />
                             <motion.div
-                              className="w-1 h-1 bg-current rounded-full"
+                              className="w-1.5 h-1.5 bg-current rounded-full"
                               animate={{ y: [0, -4, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -281,10 +281,10 @@ const NotificationsTab = () => {
 
                 {/* Resolved tab button */}
                 <motion.button
-                  className={`flex-1 py-2 rounded-full text-sm relative overflow-hidden group ${
+                  className={`flex-1 py-1.5 rounded-xl text-sm relative overflow-hidden group ${
                     activeTab === "resolved"
-                      ? "bg-custom-yellow text-custom-dark-blue"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-gray-700/50"
+                      ? "bg-custom-yellow text-custom-dark-blue shadow-md"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/40"
                   }`}
                   onClick={() => setActiveTab("resolved")}
                   whileHover={{ scale: 0.98 }}
@@ -299,17 +299,17 @@ const NotificationsTab = () => {
                       <span className="sm:hidden">{t("cleared")}</span>
                     </span>
                     <span
-                      className={`min-w-[2rem] px-2 py-0.5 rounded-full text-xs font-medium ${
+                      className={`min-w-[2rem] px-2 py-1 rounded-full text-xs font-medium ${
                         activeTab === "resolved"
-                          ? "bg-custom-dark-blue/20 text-custom-dark-blue"
+                          ? "bg-white/40 text-custom-dark-blue"
                           : "bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
                       }`}
                     >
                       {isInitializing ? (
                         <div className="flex items-center justify-center min-w-[2rem] h-5">
-                          <div className="flex gap-[3px]">
+                          <div className="flex gap-1">
                             <motion.div
-                              className="w-1 h-1 bg-current rounded-full"
+                              className="w-1.5 h-1.5 bg-current rounded-full"
                               animate={{ y: [0, -4, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -321,7 +321,7 @@ const NotificationsTab = () => {
                               }}
                             />
                             <motion.div
-                              className="w-1 h-1 bg-current rounded-full"
+                              className="w-1.5 h-1.5 bg-current rounded-full"
                               animate={{ y: [0, -4, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -333,7 +333,7 @@ const NotificationsTab = () => {
                               }}
                             />
                             <motion.div
-                              className="w-1 h-1 bg-current rounded-full"
+                              className="w-1.5 h-1.5 bg-current rounded-full"
                               animate={{ y: [0, -4, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -360,19 +360,19 @@ const NotificationsTab = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 }}
               >
-                <NotificationSortMenu onSortChange={handleSort} />
+                <AlertsSortMenu onSortChange={handleSort} />
               </motion.div>
 
               {/* Content tabs */}
               {activeTab === "active" ? (
-                <ActiveNotificationsTab
+                <ActiveAlertsTab
                   filteredActive={filteredActive}
                   currentPage={currentPage}
                   totalPages={totalActivePages}
                   onPageChange={setCurrentPage}
                 />
               ) : (
-                <ResolvedNotificationsTab
+                <ResolvedAlertsTab
                   filteredResolved={filteredResolved}
                   currentPage={currentPage}
                   totalPages={totalResolvedPages}

@@ -118,7 +118,7 @@ const UsersSidebar = ({
           value={filters.search}
           onChange={handleSearchChange}
           placeholder={t("filterPlaceholder")}
-          className="w-full p-2 border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-custom-dark-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
+          className="w-full p-2 border-1 border-gray-300 dark:border-gray-600 bg-slate-50 dark:bg-slate-700/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow dark:text-custom-yellow transition duration-300"
         />
       </div>
 

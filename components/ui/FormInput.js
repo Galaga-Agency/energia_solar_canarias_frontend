@@ -33,8 +33,8 @@ const FormInput = ({
             ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-text"}
             ${
               error
-                ? "border-2 border-red-500 focus:ring-red-500"
-                : "border-2 border-gray-300 dark:border-gray-600 focus:ring-custom-yellow"
+                ? "border-1 border-red-500 focus:ring-red-500"
+                : "border-1 border-gray-300 dark:border-gray-600 focus:ring-custom-yellow"
             }
             bg-white dark:bg-gray-800 
             text-gray-900 dark:text-gray-100

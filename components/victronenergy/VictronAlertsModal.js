@@ -7,7 +7,7 @@ import { FiAlertCircle, FiX } from "react-icons/fi";
 import { useTranslation } from "next-i18next";
 import Texture from "@/components/Texture";
 import Modal from "@/components/ui/Modal";
-import NotificationListItem from "@/components/notifications/NotificationListItem";
+import NotificationListItem from "@/components/alerts/AlertsListItem";
 import {
   fetchActiveNotifications,
   fetchResolvedNotifications,

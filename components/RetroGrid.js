@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/styles";
 
 const RetroGrid = ({ className, angle = 65 }) => {
   return (

@@ -22,11 +22,11 @@ const SortPlantsMenu = ({ onSortChange, className = "" }) => {
       icon: <BsCalendar />,
       label: t("sortByCreationDate"),
     },
-    {
-      value: "powerOutput",
-      icon: <BsLightningFill />,
-      label: t("sortByPowerOutput"),
-    },
+    // {
+    //   value: "powerOutput",
+    //   icon: <BsLightningFill />,
+    //   label: t("sortByPowerOutput"),
+    // },
     { value: "capacity", icon: <GiElectric />, label: t("sortByCapacity") },
     { value: "status", icon: <GiPowerButton />, label: t("sortByStatus") },
   ];

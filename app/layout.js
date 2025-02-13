@@ -1,6 +1,6 @@
 import React from "react";
 import "./globals.css";
-import TranslationProvider from "@/components/TranslationProvider";
+import TranslationProvider from "@/locales/TranslationProvider";
 import StoreProvider from "@/components/StoreProvider";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import ThemeWrapper from "@/components/ThemeWrapper";

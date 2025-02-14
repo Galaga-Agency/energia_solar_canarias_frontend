@@ -13,11 +13,53 @@ Este proyecto es una aplicación de **PWA (Progressive Web App)** desarrollada c
 ## 📋 **Índice**
 
 1. [Cómo Empezar](#cómo-empezar)
+
+   - Clonar el Repositorio
+   - Instalar Dependencias
+   - Iniciar el Servidor de Desarrollo
+
 2. [Estructura Detallada del Proyecto](#estructura-detallada-del-proyecto)
+
+   - `/app` - Sistema de Rutas y Layouts
+   - `/components` - Componentes por Proveedor y UI
+   - `/hooks` - Hooks Personalizados
+   - `/data` - Datos Estáticos
+   - `/locales` - Internacionalización
+   - `/services` - Llamadas a API
+   - `/store` - Gestión de Estado
+   - `/utils` - Funciones de Utilidad
+
 3. [Despliegue en AWS Amplify](#despliegue-en-aws-amplify)
-4. [Características de la Aplicación](#características-de-la-aplicación)
-5. [Gestión del Estado con Redux Toolkit](#gestión-del-estado-con-redux-toolkit)
-6. [Licencia](#licencia)
+
+   - Configuración
+   - Pasos para el Despliegue
+
+4. [Gestión del Estado con Redux Toolkit](#gestión-del-estado-con-redux-toolkit)
+
+   - Store Configuration
+   - Slices y Reducers
+   - Thunks y Acciones Asíncronas
+   - Selectores
+   - Persistencia de Estado
+
+5. [Estilos y Tema con Tailwind CSS](#estilos-y-tema-con-tailwind-css)
+
+   - Configuración Base
+   - Tema Personalizado
+   - Sistema de Colores
+   - Sistema de Animaciones
+   - Plugins y Utilidades
+
+6. [Animaciones con Framer Motion](#animaciones-con-framer-motion)
+
+   - Animaciones de Página
+   - Animaciones de Componentes
+   - Transiciones entre Estados
+   - Gestos e Interacciones
+   - AnimatePresence
+
+7. [Licencia](#licencia)
+   - MIT License
 
 ## **Cómo Empezar**
 
@@ -266,23 +308,244 @@ El sistema de internacionalización se implementa mediante:
      <TranslationProvider>{children}</TranslationProvider>
      ```
 
-La configuración está simplificada para manejar solo dos idiomas, lo cual es suficiente para las necesidades actuales de la aplicación.
+La configuración maneja dos idiomas (español e inglés) mediante un TranslationProvider separado. Este enfoque es necesario debido a las limitaciones de Next.js 14 con los Server Components: el archivo layout.js se renderiza en el servidor y no puede utilizar hooks de React (como useEffect o useState) directamente. Al crear un Cliente Component separado (TranslationProvider), podemos inicializar i18next y manejar el estado de la traducción del lado del cliente, donde sí podemos usar hooks.
 
 #### `/services`
 
-Servicios y llamadas a API:
+Esta carpeta contiene toda la lógica de comunicación con la API, organizada estratégicamente para separar las llamadas genéricas de las específicas por proveedor. Para proteger datos sensibles y mantener la seguridad de la aplicación, se utilizan variables de entorno almacenadas en el archivo .env en lugar de hardcodear estos valores directamente en el código:
 
-- Configuración de axios
-- Servicios por entidad
-- Interceptores
-- Manejo de errores
+```javascript
+// Variables de entorno utilizadas en cada archivo de servicio
+// Evitamos exponer datos sensibles directamente en el código del cliente
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const USUARIO = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
+// De esta manera, en el código compilado solo se ven las referencias
+// y no los valores reales de las credenciales
+```
+
+Estructura de archivos:
+
+```plaintext
+services/
+├── shared-api.js          # Funciones API genéricas (auth, usuarios, alertas)
+├── goodwe-api.js          # Llamadas específicas para GoodWe
+├── solaredge-api.js       # Llamadas específicas para SolarEdge
+└── victron-api.js         # Llamadas específicas para Victron
+```
+
+##### Organización y Propósito
+
+1. **shared-api.js**
+
+   - Contiene todas las llamadas API que no son específicas de ningún proveedor
+   - Maneja funcionalidades comunes como:
+     - Autenticación
+     - Gestión de usuarios
+     - Sistema de alertas
+     - Otras funcionalidades compartidas
+
+2. **APIs por Proveedor**
+   - Cada proveedor tiene su propio archivo
+   - Contiene solo las llamadas específicas para ese proveedor
+   - Facilita:
+     - Mantenimiento por proveedor
+     - Escalabilidad (fácil añadir nuevos proveedores)
+     - Separación clara de responsabilidades
+
+Esta estructura permite escalar la aplicación fácilmente al añadir nuevos proveedores sin afectar la lógica compartida, manteniendo el código organizado y fácil de mantener.
 
 #### `/store`
 
-Gestión del estado con Redux Toolkit:
+Esta carpeta maneja todo el estado global de la aplicación usando Redux Toolkit:
 
-- **slices/**: Reducers y acciones por feature
-- **store.js**: Configuración central de Redux
+```plaintext
+store/
+├── slices/                  # Reducers y acciones separados por funcionalidad
+│   ├── userSlice.js        # Estado del usuario y autenticación
+│   ├── plantsSlice.js      # Estado de las plantas solares
+│   ├── themeSlice.js       # Configuración del tema (dark/light)
+│   ├── notificationsSlice.js # Sistema de notificaciones
+│   └── ...                 # Otros slices
+└── store.js                # Configuración central de Redux y persistencia
+```
+
+#### `/utils`
+
+Esta carpeta contiene funciones de utilidad puras de JavaScript que no dependen de React y pueden ser reutilizadas en cualquier parte de la aplicación. A diferencia de los hooks, estas funciones no manejan estado ni efectos secundarios.
+
+```plaintext
+utils/
+├── date-range-utils.js     # Utilidades para manejo de rangos de fechas
+├── roundNumbers.js         # Funciones para redondeo de números
+└── ... otros archivos
+```
+
+##### Ejemplo de Utilidad: date-range-utils.js
+
+```javascript
+// Función pura que recibe parámetros y devuelve un resultado
+export const getDateRangeParams = (rangeType, { isMobile = false } = {}) => {
+  switch (rangeType) {
+    case "last7days":
+      return { interval: "days", type: "live_feed" };
+    case "last30days":
+      return { interval: "days", type: "live_feed" };
+    // ... más casos
+  }
+};
+
+// Puede ser usada en cualquier lugar sin preocuparse por el estado de React
+const params = getDateRangeParams("last7days");
+```
+
+##### ¿Por qué las Utilizamos?
+
+1. **Separación de Lógica**
+
+   - Mantiene la lógica de negocio separada de los componentes
+   - Código más limpio y mantenible
+   - Facilita las pruebas unitarias
+
+2. **Reusabilidad**
+
+   - Las mismas funciones pueden usarse en:
+     - Componentes React
+     - Hooks personalizados
+     - Otros archivos de utilidades
+     - Backend (si es código isomórfico)
+
+3. **Performance**
+   - No hay overhead de React
+   - No causan re-renders
+   - Pueden ser fácilmente memoizadas
+
+##### Diferencia con Hooks
+
+```javascript
+// Hook - Maneja estado y efectos de React
+const useDeviceType = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    // Lógica con efectos secundarios
+  }, []);
+  return isMobile;
+};
+
+// Utilidad - Función pura sin estado
+const formatDate = (timestamp, rangeType) => {
+  const date = new Date(timestamp);
+  return format(date, "dd MMM");
+};
+```
+
+##### Anatomía de un Slice
+
+Tomando `userSlice.js` como ejemplo:
+
+```javascript
+// 1. Thunks (Acciones Asíncronas)
+export const authenticateUser = createAsyncThunk(
+  "user/authenticateUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await loginRequestAPI(userData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// 2. Estado Inicial
+const initialState = {
+  user: null,
+  loading: false,
+  error: null,
+};
+
+// 3. Selectores
+const selectUserState = (state) => state.user;
+
+export const selectUser = createSelector(
+  [selectUserState],
+  (userState) => userState?.user
+);
+
+export const selectIsAdmin = createSelector(
+  [selectUserState],
+  (userState) => userState?.isAdmin
+);
+
+// 4. Slice con Reducers
+const userSlice = createSlice({
+  name: "user",
+  initialState,
+  reducers: {
+    setUser: (state, action) => {
+      state.user = action.payload;
+      state.isLoggedIn = true;
+    },
+    logoutUser: (state) => {
+      state.user = null;
+      state.isLoggedIn = false;
+    },
+  },
+});
+```
+
+##### Uso en Componentes
+
+```javascript
+const UserProfile = () => {
+  const dispatch = useDispatch();
+  // Usando selectores para acceder al estado
+  const currentUser = useSelector(selectUser);
+  const isAdmin = useSelector(selectIsAdmin);
+
+  const handleLogin = () => {
+    dispatch(authenticateUser(userData));
+  };
+};
+```
+
+##### Persistencia (store.js)
+
+```javascript
+// 1. Configuración de persistencia
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["user", "theme"], // Solo estos estados persisten
+  transforms: [cleanDataTransform], // Limpia estados temporales
+};
+
+// 2. Estados volátiles que no deben persistir
+const volatileStates = {
+  plants: ["loading", "error"],
+  notifications: ["loading", "error"],
+};
+```
+
+##### Beneficios de Esta Estructura
+
+1. **Organización y Mantenibilidad**
+
+   - Código organizado por funcionalidad
+   - Selectores memoizados para mejor performance
+   - Persistencia selectiva de datos importantes
+
+2. **Performance**
+
+   - Memoización de selectores evita recálculos
+   - Limpieza automática de estados temporales
+   - Persistencia solo de datos necesarios
+
+3. **Desarrollo Eficiente**
+   - Acciones asíncronas con thunks
+   - Estados de loading/error automáticos
+   - Selectores reutilizables
 
 ## Despliegue en AWS Amplify
 
@@ -342,13 +605,15 @@ En este proyecto, la estructura de Redux Toolkit se encuentra en la carpeta /sto
 ├── store.js          # Configuración del store de Redux
 └── slices
     └── userSlice.js  # Manejo del estado del usuario (autenticación, registro)
+    y más ...
 ```
 
 ### ¿Cómo Funciona Redux Toolkit en la Aplicación?
 
-- Store Global: La configuración del store global se encuentra en el archivo /store/store.js. Este archivo combina todos los slices (fragmentos de estado) y los registra en un solo almacenamiento centralizado.
-- Slices: Cada aspecto del estado que queremos manejar tiene un slice específico. En este caso, comenzamos con el userSlice.js para manejar la autenticación del usuario.
+- Store Global: La configuración del store global se encuentra en el archivo /store/store.js. Este archivo combina todos los slices (fragmentos de estado) y los registra en un solo almacenamiento centralizado. Tambien se configura ahi lo que debe persistir en la app ya que si no configuramos nada, los estados pueden perderse entre paginas o sesiones.
+- Slices: Cada aspecto del estado que queremos manejar tiene un slice específico. En este caso, tenemos por ejemplo el userSlice.js para manejar la autenticación del usuario, o notificationsSlice para manejar todo lo de las alertas.
 - Reducers: Son funciones que manejan cómo se actualiza el estado cuando se disparan ciertas acciones.
+- Selectors: son funciones que extraen y memoizan datos específicos del estado global, evitando recálculos innecesarios y mejorando el rendimiento al asegurar que los componentes solo se re-rendericen cuando los datos que realmente utilizan han cambiado.
 - Async Thunks: Redux Toolkit proporciona una manera sencilla de manejar llamadas asíncronas (por ejemplo, llamadas a la API para iniciar sesión) con createAsyncThunk.
 
 ### Ejemplo de userSlice.js
@@ -459,6 +724,270 @@ const handleLogin = (email, password) => {
 - Escalabilidad: A medida que la aplicación crece, es fácil agregar nuevos slices para manejar otros aspectos del estado (por ejemplo, productos, carrito de compras, preferencias del usuario, etc.).
 - Depuración: Con herramientas como Redux DevTools, es fácil ver el flujo de acciones y cómo cambia el estado de la aplicación en cada paso, lo que facilita la depuración y el mantenimiento.
   <br/><br/>Con este enfoque, Energia Solar Canarias garantiza una gestión de estado sólida y escalable que permite manejar eficientemente el flujo de datos y la lógica de negocio en toda la aplicación.
+
+### Animaciones con Framer Motion
+
+Framer Motion se utiliza añadiendo el prefijo motion. a cualquier elemento HTML (como motion.div, motion.p, motion.button), lo que permite agregar propiedades de animación como initial, animate, transition y whileHover a ese elemento; por ejemplo, <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}> creará un div que aparece con un fade in.
+La aplicación utiliza Framer Motion para crear animaciones fluidas y mejorar la experiencia de usuario. Algunos ejemplos de implementación:
+
+#### 1. Animaciones de Entrada
+
+```javascript
+// Animación del título principal
+<motion.div
+  className="flex items-center my-6"
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.8, duration: 0.5 }}
+>
+  <Image src={companyIcon} alt="Company Icon" className="w-12 h-12 mr-2" />
+  <h2 className="text-4xl">{t("usersList")}</h2>
+</motion.div>
+```
+
+#### 2. Animaciones de Botones
+
+```javascript
+// Botón flotante de añadir usuario
+<motion.button
+  onClick={() => setIsFormOpen(true)}
+  className="fixed bottom-20 right-4 button-shadow"
+  initial={{ opacity: 0, scale: 0 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ delay: 1.6, duration: 0.3 }}
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+>
+  <motion.div
+    whileHover={{ rotateY: 360, scale: 1.1 }}
+    transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
+  >
+    <RiUserAddLine className="text-2xl" />
+  </motion.div>
+</motion.button>
+```
+
+#### 3. Transiciones entre Estados
+
+```javascript
+<AnimatePresence mode="wait">
+  {isLoading ? (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.3 }}
+    >
+      <UsersListView isLoading={true} users={[]} />
+    </motion.div>
+  ) : !users || filteredUsers.length === 0 ? (
+    <motion.div
+      className="flex flex-col justify-center items-center"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 1.2, duration: 0.5 }}
+    >
+      <FaUserAltSlash className="text-9xl" />
+      <p className="text-center">{t("noUsersFound")}</p>
+    </motion.div>
+  ) : (
+    // Contenido principal
+  )}
+</AnimatePresence>
+```
+
+#### 4. Controles de Tema y Lenguaje
+
+```javascript
+<motion.div
+  className="fixed top-4 right-4 flex items-center gap-2 z-50"
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.8, duration: 0.5 }}
+>
+  <ThemeToggle />
+  <LanguageSelector />
+</motion.div>
+```
+
+#### 5. Sidebar Mobile/Tablet
+
+```javascript
+<AnimatePresence>
+  {(isMobile || isTablet) && isSidebarOpen && (
+    <UsersSidebar
+      filters={filters}
+      onFilterChange={setFilters}
+      isOpen={isSidebarOpen}
+      onClose={() => setIsSidebarOpen(false)}
+    />
+  )}
+</AnimatePresence>
+```
+
+#### Características Principales:
+
+1. **AnimatePresence**
+
+   - Maneja animaciones de montaje/desmontaje de componentes
+   - Ideal para modales, sidebars y transiciones de página
+
+2. **Variants**
+
+   - Permite definir estados de animación reutilizables
+   - Facilita la coordinación de animaciones múltiples
+
+3. **Gestos**
+
+   - `whileHover` y `whileTap` para interacciones
+   - Mejora el feedback visual para el usuario
+
+4. **Transiciones**
+   - Delays escalonados para crear secuencias de animación
+   - Diferentes tipos de easing para movimientos naturales
+
+Las animaciones se usan estratégicamente para:
+
+- Mejorar el feedback visual
+- Guiar la atención del usuario
+- Crear transiciones suaves entre estados
+- Hacer la interfaz más dinámica y atractiva
+
+### Estilos y Tema con Tailwind CSS
+
+La aplicación utiliza Tailwind CSS con una configuración personalizada extensa que incluye animaciones, colores personalizados y extensiones del tema base. Se ha optado por centralizar la mayor parte de la lógica de estilos en el archivo `tailwind.config.js` en lugar de utilizar `global.css`, lo que nos proporciona varias ventajas:
+
+- Una única fuente de verdad para los estilos
+- Mejor mantenibilidad al tener todo en un solo lugar
+- Prevención de problemas de especificidad de CSS
+- `global.css` se mantiene limpio y mínimo
+- Mejor optimización mediante tree-shaking
+
+De esta manera, `global.css` solo se utiliza para:
+
+- CSS Reset
+- Variables root
+- Estilos que absolutamente no se pueden lograr a través de Tailwind
+
+#### Configuración Base
+
+```javascript
+const { heroui } = require("@heroui/theme");
+
+module.exports = {
+  darkMode: ["class"],
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  // ...
+};
+```
+
+#### Personalización del Tema
+
+1. **Fuentes Personalizadas**
+
+   ```javascript
+   fontFamily: {
+     primary: ['"Adam Bold"', "sans-serif"],
+     secondary: ['"Corbert"', "sans-serif"],
+   }
+   ```
+
+2. **Colores de Marca**
+
+   ```javascript
+   colors: {
+     "custom-yellow": "rgb(255, 213, 122)",
+     "custom-dark-blue": "rgb(0, 44, 63)",
+     "custom-light-gray": "rgb(201, 202, 202)",
+     "custom-dark-gray": "rgb(161, 161, 170)",
+   }
+   ```
+
+3. **Sistema de Sombras**
+   ```javascript
+   boxShadow: {
+     "dark-shadow": "rgba(0, 0, 0, 1) 0px 0px 8px",
+     "white-shadow": "rgba(255, 255, 255, 1) 0px 0px 8px",
+     "hover-white-shadow": "rgba(255, 255, 255, 0.8) 0px 0px 32px",
+     "hover-dark-shadow": "rgba(0, 0, 0, 0.8) 0px 0px 32px",
+   }
+   ```
+
+#### Sistema de Animaciones
+
+La configuración incluye un extenso sistema de animaciones para mejorar la experiencia de usuario:
+
+1. **Animaciones de UI**
+
+   ```javascript
+   animation: {
+     slideDown: "slideDown 600ms ease-in-out",
+     slideUp: "slideUp 600ms ease-in-out",
+     shimmer: "shimmer 2s infinite",
+     fade: "fadeIn 0.5s ease-in-out",
+   }
+   ```
+
+2. **Animaciones Temáticas**
+
+   ```javascript
+   animation: {
+     "rise-sun": "riseSun 4s ease-in-out infinite",
+     "rain-drop": "rainDrop 1.5s ease-in-out infinite",
+     "energy-flow": "energyFlow 2s ease-in-out infinite",
+   }
+   ```
+
+3. **Animaciones de Carga y Estado**
+   ```javascript
+   animation: {
+     "spin-slow": "spin 3s linear infinite",
+     "double-blink": "doubleBlink 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+   }
+   ```
+
+#### Plugins y Utilidades
+
+```javascript
+plugins: [
+  require("tailwindcss-animate"),
+  heroui(),
+  // Utilidad para eliminar el highlight en dispositivos táctiles
+  function ({ addUtilities }) {
+    addUtilities({
+      ".no-tap-highlight": {
+        "-webkit-tap-highlight-color": "transparent",
+      },
+    });
+  },
+];
+```
+
+#### Uso en Componentes
+
+```jsx
+// Ejemplo de uso de clases personalizadas
+<div className="font-primary text-custom-yellow bg-custom-dark-blue
+                shadow-dark-shadow hover:shadow-hover-dark-shadow
+                animate-fade-in-up">
+  Contenido
+</div>
+
+// Ejemplo de animaciones
+<div className="animate-rise-sun">
+  <SunIcon />
+</div>
+```
+
+La configuración está diseñada para:
+
+- Mantener consistencia visual en toda la aplicación
+- Proporcionar animaciones fluidas y significativas
+- Soportar modo oscuro/claro
+- Optimizar la experiencia en dispositivos móviles
 
 ## Licencia
 

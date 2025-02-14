@@ -84,22 +84,6 @@ label {
   transition: opacity 0.3s ease;
 }
 
-.animate-slow-rise {
-  animation: slow-rise 4s ease-in-out infinite;
-}
-
-.animate-drizzle {
-  animation: drizzle 2s linear infinite;
-}
-
-.animate-snowfall {
-  animation: snowfall 3s linear infinite;
-}
-
-.animate-flash {
-  animation: flash 1s ease-in-out infinite;
-}
-
 .recharts-wrapper .recharts-surface {
   fill: rgba(255, 255, 255, 0.05) !important;
 }

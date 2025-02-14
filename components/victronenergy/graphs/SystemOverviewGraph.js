@@ -97,18 +97,24 @@ const SystemOverviewGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     }
 
     const exportData = chartData.map((entry) => ({
-      timestamp: new Date(entry.timestamp * 1000).toISOString(),
-      consumption: entry.consumption || 0,
-      solar: entry.solar || 0,
-      battery: entry.battery || null,
-      batteryStateMin: entry.batteryStateMin || null,
-      batteryStateMax: entry.batteryStateMax || null,
-      batteryVoltage: entry.batteryVoltage || null,
+      "Fecha y Hora": new Date(entry.timestamp * 1000).toLocaleString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      "Consumo (kWh)": entry.consumption?.toFixed(2) || "0.00",
+      "Producción Solar (kWh)": entry.solar?.toFixed(2) || "0.00",
+      "Estado de Batería (%)": entry.battery?.toFixed(1) || "-",
+      "Batería Mínima (%)": entry.batteryStateMin?.toFixed(1) || "-",
+      "Batería Máxima (%)": entry.batteryStateMax?.toFixed(1) || "-",
+      "Voltaje de Batería (V)": entry.batteryVoltage?.toFixed(2) || "-",
     }));
 
-    const filename = `system_overview_${
-      currentRange.type
-    }_${new Date().toISOString()}.csv`;
+    const filename = `sistema_resumen_${currentRange.type}_${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
     downloadCSV(exportData, filename);
   };
 

@@ -91,8 +91,8 @@ const BatteryChargingGraph = ({ token, plantId }) => {
 
   const handleExportCSV = () => {
     const exportData = processedData.map((item) => ({
-      "Hora de medición": item.date,
-      "Estado de Carga (%)": item.batteryState,
+      "Hora de medición": `${item.date} ${item.time}`,
+      "Estado de Carga (%)": item.batteryPercentageState,
     }));
 
     downloadCSV(exportData, "battery_charging_data.csv");

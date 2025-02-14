@@ -69,13 +69,26 @@ const SolarGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
     }
 
     const csvData = data.map(({ timestamp, toBattery, directUse, toGrid }) => ({
-      timestamp: new Date(timestamp).toISOString(),
-      "A la batería (kWh)": toBattery.toFixed(2),
-      "Uso directo (kWh)": directUse.toFixed(2),
-      "A la red (kWh)": toGrid.toFixed(2),
+      "Fecha y Hora": new Date(timestamp * 1000).toLocaleString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      "Energía a Batería (kWh)": toBattery?.toFixed(2) || "0.00",
+      "Uso Directo (kWh)": directUse?.toFixed(2) || "0.00",
+      "Energía a Red (kWh)": toGrid?.toFixed(2) || "0.00",
+      "Total (kWh)": (
+        (toBattery || 0) +
+        (directUse || 0) +
+        (toGrid || 0)
+      ).toFixed(2),
     }));
 
-    const filename = `solar_${new Date().toISOString()}.csv`;
+    const filename = `produccion_solar_${currentRange.type}_${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
     downloadCSV(csvData, filename);
   };
 

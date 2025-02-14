@@ -73,14 +73,24 @@ const GridGraph = ({
 
     const csvData = data.map(
       ({ timestamp, import: importValue, export: exportValue, balance }) => ({
-        timestamp: new Date(timestamp).toISOString(),
-        "Importación de red (kWh)": importValue.toFixed(2),
-        "Exportación a red (kWh)": exportValue.toFixed(2),
-        "Balance neto (kWh)": balance.toFixed(2),
+        "Fecha y Hora": new Date(timestamp * 1000).toLocaleString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        "Importación (kWh)": importValue?.toFixed(2) || "0.00",
+        "Exportación (kWh)": exportValue?.toFixed(2) || "0.00",
+        "Balance Neto (kWh)": balance?.toFixed(2) || "0.00",
+        "Flujo Dominante":
+          balance > 0 ? "Exportación" : balance < 0 ? "Importación" : "Neutral",
       })
     );
 
-    const filename = `grid_${new Date().toISOString()}.csv`;
+    const filename = `red_electrica_${currentRange.type}_${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
     downloadCSV(csvData, filename);
   };
 

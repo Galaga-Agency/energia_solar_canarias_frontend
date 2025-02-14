@@ -61,17 +61,19 @@ const GeneratorGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
 
   const handleExportClick = (data) => {
     if (!data || !data.length) {
-      console.warn("No data available for export");
+      console.warn("No hay datos disponibles para exportar.");
       return;
     }
 
     const csvData = data.map(({ timestamp, toBattery, directUse }) => ({
-      timestamp: new Date(timestamp).toISOString(),
-      "A la batería (kWh)": toBattery.toFixed(2),
-      "Uso directo (kWh)": directUse.toFixed(2),
+      "Fecha y Hora": new Date(timestamp * 1000).toLocaleString("es-ES"),
+      "Energía a la batería (kWh)": `${toBattery.toFixed(2)} kWh`,
+      "Uso directo (kWh)": `${directUse.toFixed(2)} kWh`,
     }));
 
-    const filename = `generator_${new Date().toISOString()}.csv`;
+    const filename = `generador_${new Date()
+      .toISOString()
+      .replace(/[:.]/g, "-")}.csv`;
     downloadCSV(csvData, filename);
   };
 

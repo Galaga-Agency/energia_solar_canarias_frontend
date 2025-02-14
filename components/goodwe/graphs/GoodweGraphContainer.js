@@ -122,32 +122,74 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
     return () => dispatch(clearGraphData());
   }, [dispatch]);
 
+  console.log("Graph Data:", graphData);
+
   const handleExportCSV = useCallback(() => {
     if (!graphData?.data?.data) {
       console.warn("No data available for export");
       return;
     }
 
-    const transformedData =
-      chartIndexId === "potencia"
-        ? graphData.data.data.lines[0]?.xy.map((point, index) => {
-            const row = { timestamp: point.x };
-            graphData.data.data.lines.forEach((line) => {
-              row[line.key] = line.xy[index]?.y || 0;
-            });
-            return row;
-          })
-        : graphData.data.data.lines[0]?.xy.map((point, index) => {
-            const row = { date: point.x };
-            graphData.data.data.lines.forEach((line) => {
-              row[line.name] = line.xy[index]?.y || 0;
-            });
-            return row;
-          });
+    let transformedData = [];
 
-    if (transformedData) {
-      const filename = `goodwe-${chartIndexId}-${new Date().toISOString()}.csv`;
+    // If graph data contains 'lines', process it normally
+    if (graphData.data.data.lines && graphData.data.data.lines.length > 0) {
+      transformedData =
+        chartIndexId === "potencia"
+          ? graphData.data.data.lines[0]?.xy.map((point, index) => {
+              const row = { "Fecha y Hora": point.x };
+              graphData.data.data.lines.forEach((line) => {
+                const unit = line.unit ? `(${line.unit})` : "";
+                row[`${line.key} ${unit}`] = line.xy[index]?.y || 0;
+              });
+              return row;
+            })
+          : graphData.data.data.lines[0]?.xy.map((point, index) => {
+              const row = { Fecha: point.x };
+              graphData.data.data.lines.forEach((line) => {
+                const unit = line.unit ? `(${line.unit})` : "";
+                row[`${line.name} ${unit}`] = line.xy[index]?.y || 0;
+              });
+              return row;
+            });
+    }
+    // If 'lines' are empty, check 'modelData' (for Estadísticas sobre Energía)
+    else if (graphData.data.data.modelData) {
+      const modelData = graphData.data.data.modelData;
+
+      // **Define correct units for 'modelData'**
+      const unitMapping = {
+        buy: "kWh",
+        buyPercent: "%",
+        charge: "kWh",
+        consumptionOfLoad: "kWh",
+        contributionRatio: "%",
+        disCharge: "kWh",
+        etotal: "kWh",
+        gensetGen: "kWh",
+        in_House: "kWh",
+        outPut: "kWh",
+        selfUseOfPv: "kWh",
+        selfUseRatio: "%",
+        sell: "kWh",
+        sellPercent: "%",
+        sum: "kWh",
+        yesterdayEtotal: "kWh",
+      };
+
+      transformedData = Object.keys(modelData).map((key) => ({
+        Métrica: `${key} (${unitMapping[key] || ""})`.trim(), // Add unit dynamically
+        Valor: modelData[key],
+      }));
+    }
+
+    if (transformedData.length > 0) {
+      const filename = `goodwe-${chartIndexId}-${new Date()
+        .toISOString()
+        .replace(/[:.]/g, "-")}.csv`;
       downloadCSV(transformedData, filename);
+    } else {
+      console.warn("No valid data for export.");
     }
 
     setIsModalOpen(false);

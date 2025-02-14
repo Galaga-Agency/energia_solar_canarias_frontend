@@ -160,7 +160,48 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
   };
 
   const handleExportCSV = () => {
-    downloadCSV(comparisonData, "energy_comparison_data.csv");
+    if (
+      !comparisonData ||
+      !Array.isArray(comparisonData) ||
+      comparisonData.length === 0
+    ) {
+      console.warn("No data available for export");
+      return;
+    }
+
+    // **Dynamically determine the unit** (assuming units come from API or need mapping)
+    const unit = timeUnit === "MONTH" ? "kWh" : "MWh"; // Adjust this if API provides unit info
+
+    // Transform data for CSV export
+    const transformedData =
+      timeUnit === "MONTH"
+        ? monthNames.map((month, index) => {
+            const monthData = { Mes: month };
+            comparisonData.forEach((item) => {
+              const year = new Date(item.date).getFullYear();
+              if (new Date(item.date).getMonth() === index) {
+                monthData[`${year} (${unit})`] =
+                  item.value?.toFixed(2) || "0.00";
+              }
+            });
+            return monthData;
+          })
+        : comparisonData.reduce((acc, item) => {
+            const year = new Date(item.date).getFullYear();
+            const value = item.value?.toFixed(2) || "0.00";
+            acc.push({ Año: year, [`Total (${unit})`]: value });
+            return acc;
+          }, []);
+
+    if (transformedData.length > 0) {
+      const filename = `energy_comparison_${new Date()
+        .toISOString()
+        .replace(/[:.]/g, "-")}.csv`;
+      downloadCSV(transformedData, filename);
+    } else {
+      console.warn("No valid data for export.");
+    }
+
     setIsModalOpen(false);
   };
 

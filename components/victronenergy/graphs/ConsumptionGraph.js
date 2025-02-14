@@ -70,15 +70,17 @@ const ConsumptionGraph = ({ plantId, currentRange, setIsDateModalOpen }) => {
 
     const csvData = chartData.map(
       ({ timestamp, fromBattery, fromPV, fromGrid, fromGenset }) => ({
-        timestamp: new Date(timestamp * 1000).toISOString(),
-        "Desde la batería (kWh)": fromBattery.toFixed(2),
-        "Desde el sistema FV (kWh)": fromPV.toFixed(2),
-        "Desde la red (kWh)": fromGrid.toFixed(2),
-        "Desde el grupo electrógeno (kWh)": fromGenset.toFixed(2),
+        Timestamp: new Date(timestamp * 1000).toLocaleString(),
+        "Desde la batería (kWh)": `${fromBattery.toFixed(2)} kWh`,
+        "Desde el sistema FV (kWh)": `${fromPV.toFixed(2)} kWh`,
+        "Desde la red (kWh)": `${fromGrid.toFixed(2)} kWh`,
+        "Desde el grupo electrógeno (kWh)": `${fromGenset.toFixed(2)} kWh`,
       })
     );
 
-    const filename = `consumption_${new Date().toISOString()}.csv`;
+    const filename = `consumo_${new Date()
+      .toISOString()
+      .replace(/[:.]/g, "-")}.csv`;
     downloadCSV(csvData, filename);
   };
 

@@ -15,7 +15,7 @@ const PasswordInput = ({
     <div className="relative">
       {/* Input and Icon Wrapper */}
       <div
-        className={`flex items-center border rounded-lg transition duration-300
+        className={`relative flex items-center border rounded-lg transition duration-300
           ${
             error
               ? "border-red-500 focus-within:ring-red-500"
@@ -41,7 +41,7 @@ const PasswordInput = ({
         <button
           type="button"
           onClick={onTogglePassword}
-          className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+          className="absolute top-2 right-2 p-2 text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
         >
           {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>

@@ -142,13 +142,13 @@ const GoodweEquipmentDetails = ({ t }) => {
                   }`}
                 >
                   <span className="text-sm text-slate-700 dark:text-slate-300 break-words text-left">
-                    {breakWordWithHyphen(t(item.key), 6, isMobile)}
+                    {t(item.key)}
                   </span>
                   <span className="text-sm text-custom-dark-blue dark:text-custom-yellow break-words ml-2 text-right">
                     {item.value
                       ? `${breakWordWithHyphen(
                           item.value.toString(),
-                          6,
+                          10,
                           isMobile
                         )} ${item.unit}`
                       : "--"}
@@ -186,11 +186,11 @@ const GoodweEquipmentDetails = ({ t }) => {
                   }`}
                 >
                   <span className="text-sm text-slate-700 dark:text-slate-300 break-words text-left">
-                    {breakWordWithHyphen(t(item.key), 6, isMobile)}
+                    {t(item.key)}
                   </span>
                   <span className="text-sm text-custom-dark-blue dark:text-custom-yellow break-words ml-2 text-right">
                     {item.value
-                      ? `${breakWordWithHyphen(t(item.value), 6, isMobile)} ${
+                      ? `${breakWordWithHyphen(t(item.value), 10, isMobile)} ${
                           item.unit
                         }`
                       : "--"}

@@ -146,12 +146,10 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
     return [];
   }, [comparisonData, timeUnit, monthNames]);
 
-  console.log("transformedData", transformedData);
-
   const getMinWidth = () => {
     if (!transformedData[0]) return 600;
-    const numberOfBars = Object.keys(transformedData[0]).length - 1; // subtract 1 for 'name' key
-    return Math.max(600, numberOfBars * 100); // Adjust 100 to your preferred bar spacing
+    const numberOfBars = Object.keys(transformedData[0]).length - 1;
+    return Math.max(600, numberOfBars * 100);
   };
 
   const getBarSize = () => {
@@ -169,8 +167,7 @@ const EnergyComparisonChart = ({ plantId, installationDate, token }) => {
       return;
     }
 
-    // **Dynamically determine the unit** (assuming units come from API or need mapping)
-    const unit = timeUnit === "MONTH" ? "kWh" : "MWh"; // Adjust this if API provides unit info
+    const unit = timeUnit === "MONTH" ? "kWh" : "MWh";
 
     // Transform data for CSV export
     const transformedData =

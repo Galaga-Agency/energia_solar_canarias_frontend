@@ -2,15 +2,16 @@ import React from "react";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import Texture from "@/components/Texture";
 import Modal from "@/components/ui/Modal";
+import { useTranslation } from "react-i18next";
 
 const DeleteProfilePictureConfirmModal = ({
   isOpen,
   onClose,
   onConfirm,
   isDeleting,
-  t,
 }) => {
   if (!isOpen) return null;
+  const { t } = useTranslation();
 
   return (
     <Modal

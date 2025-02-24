@@ -256,6 +256,11 @@ export const uploadProfilePicture = createAsyncThunk(
         throw new Error("No image path received");
       }
 
+      // Convert HTTP URLs to HTTPS to avoid mixed content issues
+      if (response.data.path) {
+        response.data.path = response.data.path.replace('http://', 'https://');
+      }
+
       console.log("Upload successful, image path:", response.data.path);
       return response;
     } catch (error) {

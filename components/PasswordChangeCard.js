@@ -19,10 +19,10 @@ const PasswordChangeCard = () => {
 
   // Password validation requirements - exact match from PasswordForm
   const requirements = {
-    minLength: {
-      test: (password) => password.length >= 8,
-      messageKey: "passwordMinLengthRequirement",
-    },
+    // minLength: {
+    //   test: (password) => password.length >= 8,
+    //   messageKey: "passwordMinLengthRequirement",
+    // },
     hasUppercase: {
       test: (password) => /[A-Z]/.test(password),
       messageKey: "passwordUppercaseRequirement",

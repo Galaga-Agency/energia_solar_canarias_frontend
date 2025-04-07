@@ -16,10 +16,10 @@ const PasswordForm = ({ userId, t }) => {
 
   // Password validation requirements
   const requirements = {
-    minLength: {
-      test: (password) => password.length >= 8,
-      messageKey: "passwordMinLengthRequirement",
-    },
+    // minLength: {
+    //   test: (password) => password.length >= 8,
+    //   messageKey: "passwordMinLengthRequirement",
+    // },
     hasUppercase: {
       test: (password) => /[A-Z]/.test(password),
       messageKey: "passwordUppercaseRequirement",

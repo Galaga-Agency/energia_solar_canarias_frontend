@@ -3,10 +3,10 @@ import { Check, X } from "lucide-react";
 
 const PasswordRequirements = ({ password = "" }) => {
   const requirements = {
-    minLength: {
-      test: (pass) => pass.length >= 8,
-      message: "Must be at least 8 characters",
-    },
+    // minLength: {
+    //   test: (pass) => pass.length >= 8,
+    //   message: "Must be at least 8 characters",
+    // },
     hasUppercase: {
       test: (pass) => /[A-Z]/.test(pass),
       message: "Must contain uppercase letter",

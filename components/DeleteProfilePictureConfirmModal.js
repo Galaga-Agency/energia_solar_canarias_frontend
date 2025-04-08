@@ -10,8 +10,10 @@ const DeleteProfilePictureConfirmModal = ({
   onConfirm,
   isDeleting,
 }) => {
-  if (!isOpen) return null;
   const { t } = useTranslation();
+
+  // Early return after hooks are called
+  if (!isOpen) return null;
 
   return (
     <Modal

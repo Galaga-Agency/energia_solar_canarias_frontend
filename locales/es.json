@@ -2112,5 +2112,7 @@
   "download_started": "Descarga iniciada",
   "download_failed": "Error en la descarga",
   "try_again": "Intentar de nuevo",
-  "add": "Añadir"
+  "add": "Añadir",
+  "Search": "Buscar",
+  "Select Provider": "Seleccionar Proveedor"
 }

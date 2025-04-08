@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const FilterPlantsInput = ({ onSearch, providers }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("");
+  const {t} = useTranslation();
 
   const handleSearch = () => {
     if (searchTerm && selectedProvider) {
@@ -24,7 +26,7 @@ const FilterPlantsInput = ({ onSearch, providers }) => {
         value={selectedProvider}
         onChange={(e) => setSelectedProvider(e.target.value)}
       >
-        <option value="">Select Provider</option>
+        <option value="">{t("Select Provider")}</option>
         {providers.map((provider) => (
           <option key={provider.name} value={provider.name}>
             <img
@@ -41,7 +43,7 @@ const FilterPlantsInput = ({ onSearch, providers }) => {
         className="ml-2 px-4 py-2 bg-blue-500 text-white"
         disabled={!searchTerm || !selectedVendor}
       >
-        Search
+        {t("Search")}
       </button>
     </div>
   );

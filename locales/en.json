@@ -1191,5 +1191,6 @@
   "continue_in_browser": "Continue in Browser",
   "download_started": "Download started",
   "download_failed": "Download failed",
-  "try_again": "Try Again"
+  "try_again": "Try Again",
+  "add": "add"
 }

@@ -162,8 +162,12 @@ const ResultContent = ({
                   }`}
                   validation={{
                     required: t("tokenRequired"),
-                    pattern: {
-                      value: /^[a-fA-F0-9]{32}$/,
+                    minLength: {
+                      value: 1,
+                      message: t("invalidToken"),
+                    },
+                    maxLength: {
+                      value: 50,
                       message: t("invalidToken"),
                     },
                   }}

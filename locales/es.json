@@ -2111,5 +2111,6 @@
   "continue_in_browser": "Continuar en Navegador",
   "download_started": "Descarga iniciada",
   "download_failed": "Error en la descarga",
-  "try_again": "Intentar de nuevo"
+  "try_again": "Intentar de nuevo",
+  "add": "Añadir"
 }

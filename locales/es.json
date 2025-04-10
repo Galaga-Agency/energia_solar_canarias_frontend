@@ -2114,5 +2114,11 @@
   "try_again": "Intentar de nuevo",
   "add": "Añadir",
   "Search": "Buscar",
-  "Select Provider": "Seleccionar Proveedor"
+  "Select Provider": "Seleccionar Proveedor",
+  "get_app": "Instalar App",
+  "redirecting_to_store": "Abriendo tienda de aplicaciones...",
+  "redirection_error": "Error al abrir la tienda de aplicaciones",
+  "open_in_app": "Abrir en la app",
+  "opening_app": "Abriendo la aplicación...",
+  "interaction_error": "Error al interactuar con la aplicación"
 }

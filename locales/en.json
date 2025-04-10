@@ -1192,5 +1192,11 @@
   "download_started": "Download started",
   "download_failed": "Download failed",
   "try_again": "Try Again",
-  "add": "add"
+  "add": "add",
+  "get_app": "Get App",
+  "redirecting_to_store": "Opening app store...",
+  "redirection_error": "Error opening app store",
+  "open_in_app": "Open in app",
+  "opening_app": "Opening app...",
+  "interaction_error": "Error interacting with the app"
 }

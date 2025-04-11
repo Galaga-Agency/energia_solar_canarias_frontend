@@ -40,7 +40,7 @@ import VictronEnergyGraphSkeleton from "@/components/loadingSkeletons/VictronGra
 import { FaSolarPanel } from "react-icons/fa";
 import { MdOutlineGrid4X4 } from "react-icons/md";
 import { GiPieChart, GiPowerGenerator } from "react-icons/gi";
-import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
+import { roundToOneDecimal, roundToWhole } from "@/utils/numbers";
 
 const getColors = (theme) => ({
   batteria: theme === "dark" ? "#BDBFC0" : "#BDBFC0",

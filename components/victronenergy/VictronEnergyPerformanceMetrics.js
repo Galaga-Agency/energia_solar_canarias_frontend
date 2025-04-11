@@ -14,7 +14,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import { selectUser } from "@/store/slices/userSlice";
 import { useParams } from "next/navigation";
 
-const GoodwePerformanceMetrics = ({ theme, goodwePlant, t }) => {
+const VictronEnergyPerformanceMetrics = ({ theme, t }) => {
   const dispatch = useDispatch();
   const { plantId } = useParams();
   const isLoading = useSelector(selectLoadingDetails);
@@ -24,30 +24,15 @@ const GoodwePerformanceMetrics = ({ theme, goodwePlant, t }) => {
   const { isSmallDesktop } = useDeviceType();
   const user = useSelector(selectUser);
 
-  console.log("🟠 Component render with:", {
-    plantId,
-    totalRealPrice,
-    isLoading,
-    totalRealPriceLoading,
-    totalRealPriceError,
-    userToken: user?.tokenIdentificador ? "exists" : "missing",
-  });
-
   useEffect(() => {
     if (plantId && user?.tokenIdentificador) {
-      console.log("🟠 Dispatching fetch with plantId:", plantId);
       dispatch(
         fetchTotalRealPrice({
           plantId: plantId,
-          provider: "goodwe",
+          provider: "victronenergy",
           token: user.tokenIdentificador,
         })
       );
-    } else {
-      console.log("🟠 Missing data for fetch:", {
-        plantId: plantId || "missing",
-        token: user?.tokenIdentificador ? "exists" : "missing",
-      });
     }
   }, [dispatch, plantId, user?.tokenIdentificador]);
 
@@ -56,45 +41,55 @@ const GoodwePerformanceMetrics = ({ theme, goodwePlant, t }) => {
   if (loading) {
     return <PerformanceMetricsSkeleton theme={theme} />;
   }
-  
+
+  // Get the first item if totalRealPrice is an array
+  const dataItem =
+    Array.isArray(totalRealPrice) && totalRealPrice.length > 0
+      ? totalRealPrice[0]
+      : totalRealPrice;
+
   // Safe formatting function
   const formatValue = (value) => {
     if (value === null || value === undefined) {
       return "0.00";
     }
-    return typeof value === "number" ? value.toFixed(2) : "0.00";
+
+    // Convert to number if it's a string
+    const numValue = typeof value === "string" ? parseFloat(value) : value;
+
+    // Check if it's a valid number
+    if (typeof numValue === "number" && !isNaN(numValue)) {
+      return numValue.toFixed(2);
+    }
+
+    return "0.00";
   };
 
-  // Get currency - use moneda from totalRealPrice if available, otherwise fallback
-  const currency =
-    totalRealPrice?.moneda || goodwePlant?.kpi?.currency || "EUR";
+  // Get currency from total real price data
+  const currency = dataItem?.moneda || "EUR";
 
   const metrics = [
     {
       icon: Wallet,
       title: "dayIncome",
       tooltip: "dayIncomeTooltip",
-      value: `${formatValue(totalRealPrice?.hoy?.ingreso)} ${
-        totalRealPrice?.moneda || goodwePlant?.kpi?.currency || "EUR"
-      }`,
+      value: `${formatValue(dataItem?.hoy?.ingreso)} ${currency}`,
     },
     {
       icon: PiggyBank,
       title: "monthlyIncome",
       tooltip: "monthlyIncomeTooltip",
-      value: `${formatValue(totalRealPrice?.mes_actual?.ingreso)} ${
-        totalRealPrice?.moneda || goodwePlant?.kpi?.currency || "EUR"
-      }`,
+      value: `${formatValue(dataItem?.mes_actual?.ingreso)} ${currency}`,
     },
     {
       icon: BarChart2,
       title: "totalIncome",
       tooltip: "totalIncomeTooltip",
-      value: `${formatValue(totalRealPrice?.total?.ingreso)} ${
-        totalRealPrice?.moneda || goodwePlant?.kpi?.currency || "EUR"
-      }`,
+      value: `${formatValue(dataItem?.total?.ingreso)} ${currency}`,
     },
   ];
+
+  console.log("Metrics to display:", metrics);
 
   return (
     <section className="flex-1 xl:min-w-[40vw] bg-white/50 dark:bg-custom-dark-blue/50 shadow-lg rounded-lg p-4 md:p-6 transition-all duration-300 backdrop-blur-sm mb-6">
@@ -137,4 +132,4 @@ const GoodwePerformanceMetrics = ({ theme, goodwePlant, t }) => {
   );
 };
 
-export default GoodwePerformanceMetrics;
+export default VictronEnergyPerformanceMetrics;

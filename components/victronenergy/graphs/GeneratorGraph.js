@@ -39,7 +39,7 @@ import {
 } from "@/utils/date-range-utils";
 import GeneratorTooltip from "../tooltips/GeneratorTooltip";
 import NoDataErrorState from "@/components/NoDataErrorState";
-import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
+import { roundToOneDecimal, roundToWhole } from "@/utils/numbers";
 
 const getColors = (theme) => ({
   toBattery: theme === "dark" ? "#FFD57B" : "#FFD57B",

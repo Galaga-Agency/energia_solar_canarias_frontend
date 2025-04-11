@@ -38,7 +38,7 @@ import {
   formatAxisDate,
 } from "@/utils/date-range-utils";
 import GridTooltip from "../tooltips/GridTooltip";
-import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
+import { roundToOneDecimal, roundToWhole } from "@/utils/numbers";
 
 const getColors = (theme) => ({
   import: theme === "dark" ? "#FFD57B" : "#FFD57B",

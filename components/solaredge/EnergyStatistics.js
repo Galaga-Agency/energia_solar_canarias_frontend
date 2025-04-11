@@ -2,76 +2,98 @@ import React, { useEffect } from "react";
 import { PiSunHorizon } from "react-icons/pi";
 import { BsCalendar2Month } from "react-icons/bs";
 import { IoAnalyticsOutline, IoCashOutline } from "react-icons/io5";
-import { GiSpeedometer } from "react-icons/gi";
 import { FaEuroSign } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import {
-  fetchSolarEdgeOverview,
-  selectOverviewLoading,
-  selectPlantOverview,
+  fetchTotalRealPrice,
+  selectTotalRealPrice,
+  selectTotalRealPriceLoading,
+  selectTotalRealPriceError,
 } from "@/store/slices/plantsSlice";
+import { selectUser } from "@/store/slices/userSlice";
+import { formatLargeNumber } from "@/utils/numbers";
+import { useParams } from "next/navigation";
 
-const formatLargeNumber = (value) => {
-  if (value >= 1000000) {
-    return (value / 1000000).toFixed(2) + "M";
-  } else if (value >= 1000) {
-    return (value / 1000).toFixed(2) + "K";
-  }
-  return value.toFixed(2);
-};
-
-const EnergyStatistics = ({ plant, t, theme, token, batteryLevel }) => {
+const SolarEdgeEnergyStatistics = ({
+  plant,
+  t,
+  theme,
+  token,
+  batteryLevel,
+}) => {
   const dispatch = useDispatch();
-  const overviewData = useSelector(selectPlantOverview);
-  const overviewLoading = useSelector(selectOverviewLoading);
+  const totalRealPrice = useSelector(selectTotalRealPrice);
+  const totalRealPriceLoading = useSelector(selectTotalRealPriceLoading);
+  const totalRealPriceError = useSelector(selectTotalRealPriceError);
+  const user = useSelector(selectUser);
+  const { plantId } = useParams();
 
   useEffect(() => {
-    if (plant?.id) {
-      dispatch(fetchSolarEdgeOverview({ plantId: plant.id, token }));
+    if (plantId) {
+      dispatch(
+        fetchTotalRealPrice({
+          plantId: plantId,
+          provider: "solaredge",
+          token: user.tokenIdentificador,
+        })
+      );
     }
-  }, [dispatch, plant?.id, token]);
+  }, [dispatch, plantId, token, user.tokenIdentificador]);
 
-  if (overviewLoading) {
+  if (totalRealPriceLoading) {
     return <EnergyStatisticsSkeleton theme={theme} />;
   }
+
+  console.log("totalRealPrice in component:", totalRealPrice);
+
+  // Calculate energy values from the income data (can be adjusted based on actual data relationships)
+  const energyToday = totalRealPrice?.hoy?.energia_kwh || 0;
+  const energyMonth = totalRealPrice?.mes_actual?.energia_kwh || 0;
+  const energyTotal = totalRealPrice?.total?.energia_kwh || 0;
+  const incomeToday = totalRealPrice?.hoy?.ingreso || 0;
+  const incomeMonth = totalRealPrice?.mes_actual?.ingreso || 0;
+  const incomeTotal = totalRealPrice?.total?.ingreso || 0;
+
+  // Get currency from total real price data
+  const currency = totalRealPrice?.moneda || "€";
 
   const stats = [
     {
       icon: PiSunHorizon,
       title: t("energyToday"),
-      value: overviewData?.overview?.lastDayData?.energy || 0,
+      value: energyToday,
       unit: "kW",
     },
     {
       icon: BsCalendar2Month,
       title: t("energyThisMonth"),
-      value: overviewData?.overview?.lastMonthData?.energy || 0,
+      value: energyMonth,
       unit: "kW",
     },
     {
       icon: IoAnalyticsOutline,
       title: t("energyTotal"),
-      value: overviewData?.overview?.lifeTimeData?.energy || 0,
+      value: energyTotal,
       unit: "kW",
     },
     {
       icon: FaEuroSign,
-      title: t("todayMoney"),
-      value: overviewData?.overview?.lastDayData?.revenue || 0,
-      unit: "€",
+      title: t("todayIncome"),
+      value: incomeToday,
+      unit: currency,
     },
     {
       icon: IoCashOutline,
-      title: t("totalMoney"),
-      value: overviewData?.overview?.lifeTimeData?.revenue || 0,
-      unit: "€",
+      title: t("monthlyIncome"),
+      value: incomeMonth,
+      unit: currency,
     },
     {
-      icon: GiSpeedometer,
-      title: t("maxPower"),
-      value: plant?.peakPower || 0,
-      unit: "kW",
+      icon: IoCashOutline,
+      title: t("totalIncome"),
+      value: incomeTotal,
+      unit: currency,
     },
   ];
 
@@ -112,4 +134,4 @@ const EnergyStatistics = ({ plant, t, theme, token, batteryLevel }) => {
   );
 };
 
-export default EnergyStatistics;
+export default SolarEdgeEnergyStatistics;

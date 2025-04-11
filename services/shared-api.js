@@ -907,3 +907,32 @@ export const downloadMobileAppAPI = async () => {
     throw error;
   }
 };
+
+export const fetchTotalRealPriceAPI = async ({ plantId, provider, token }) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/totalrealprice?plantId=${plantId}&proveedor=${provider}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usuario: USUARIO,
+          apiKey: API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Error fetching total real price: ${response.statusText}`
+      );
+    }
+
+    const responseData = await response.json();
+    return responseData.data;
+  } catch (error) {
+    console.error("Error fetching total real price:", error);
+    throw error;
+  }
+};

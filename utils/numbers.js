@@ -34,3 +34,16 @@ export const formatNumber = (value) => {
   }
   return numValue.toFixed(1);
 };
+
+export const formatLargeNumber = (value) => {
+  if (!value && value !== 0) return "0.00";
+
+  const numValue = Number(value);
+
+  if (numValue >= 1000000) {
+    return (numValue / 1000000).toFixed(2) + "M";
+  } else if (numValue >= 1000) {
+    return (numValue / 1000).toFixed(2) + "K";
+  }
+  return numValue.toFixed(2);
+};

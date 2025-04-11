@@ -122,8 +122,6 @@ const GoodweGraphContainer = ({ plantId, title, onValueUpdate }) => {
     return () => dispatch(clearGraphData());
   }, [dispatch]);
 
-  console.log("Graph Data:", graphData);
-
   const handleExportCSV = useCallback(() => {
     if (!graphData?.data?.data) {
       console.warn("No data available for export");

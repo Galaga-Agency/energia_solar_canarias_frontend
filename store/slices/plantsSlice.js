@@ -12,6 +12,7 @@ import {
   fetchPlantDetailsAPI,
   fetchPlantsByProviderAPI,
   fetchUserAssociatedPlantsAPI,
+  fetchTotalRealPriceAPI,
 } from "@/services/shared-api";
 import {
   fetchGoodweAlertsAPI,
@@ -116,7 +117,6 @@ export const fetchPlantDetails = createAsyncThunk(
         provider,
       });
       if (!plantDetails) throw new Error("Plant details not found");
-      // console.log("plant details in redux: ", plantDetails);
       return plantDetails;
     } catch (error) {
       console.error("Fetch plant details error:", error);
@@ -171,6 +171,25 @@ export const fetchAssociatedUsers = createAsyncThunk(
       return activeUsers;
     } catch (error) {
       return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchTotalRealPrice = createAsyncThunk(
+  "plants/fetchTotalRealPrice",
+  async ({ plantId, provider, token }, { rejectWithValue }) => {
+    try {
+
+      const totalRealPrice = await fetchTotalRealPriceAPI({
+        plantId,
+        provider,
+        token,
+      });
+
+      return totalRealPrice;
+    } catch (error) {
+      console.error("🔵 Thunk error:", error);
+      return rejectWithValue(error.message || "Failed to fetch benefits data");
     }
   }
 );
@@ -552,6 +571,9 @@ const initialState = {
   energyData: null,
   energyDataLoading: false,
   energyDataError: null,
+  totalRealPrice: null,
+  totalRealPriceLoading: false,
+  totalRealPriceError: null,
 };
 
 const plantsSlice = createSlice({
@@ -696,6 +718,23 @@ const plantsSlice = createSlice({
         state.associatedUsers = [];
       })
 
+      // Get $$$ benefits for a plant (day, month, all time)
+      .addCase(fetchTotalRealPrice.pending, (state) => {
+        state.totalRealPriceLoading = true;
+        state.totalRealPriceError = null;
+      })
+      .addCase(fetchTotalRealPrice.fulfilled, (state, action) => {
+        state.totalRealPriceLoading = false;
+        state.totalRealPrice = action.payload;
+        state.totalRealPriceError = null;
+      })
+      .addCase(fetchTotalRealPrice.rejected, (state, action) => {
+        state.totalRealPriceLoading = false;
+        state.totalRealPrice = null;
+        state.totalRealPriceError =
+          action.payload || "Failed to fetch benefits data";
+      })
+
       // Goodwe
       .addCase(fetchGoodweGraphData.pending, (state, action) => {
         state.graphLoading = true;
@@ -732,12 +771,10 @@ const plantsSlice = createSlice({
         state.weatherError = action.payload || "Failed to fetch weather data";
       })
       .addCase(fetchGoodweRealtimeData.pending, (state) => {
-        // console.log("Fetching real-time data: pending...");
         state.realtimeLoading = true;
         state.realtimeError = null;
       })
       .addCase(fetchGoodweRealtimeData.fulfilled, (state, action) => {
-        // console.log("Real-time data fetched successfully:", action.payload);
         state.realtimeLoading = false;
         state.realtimeData = action.payload;
         state.realtimeError = null;
@@ -1054,6 +1091,11 @@ export const selectEnergyData = (state) => state.plants.energyData;
 export const selectEnergyDataLoading = (state) =>
   state.plants.energyDataLoading;
 export const selectEnergyDataError = (state) => state.plants.energyDataError;
+export const selectTotalRealPrice = (state) => state.plants.totalRealPrice;
+export const selectTotalRealPriceLoading = (state) =>
+  state.plants.totalRealPriceLoading;
+export const selectTotalRealPriceError = (state) =>
+  state.plants.totalRealPriceError;
 
 export const {
   clearPlants,

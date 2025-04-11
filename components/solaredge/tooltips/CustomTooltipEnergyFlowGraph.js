@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { selectTheme } from "@/store/slices/themeSlice";
 import { format, isValid, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
+import { roundToOneDecimal, roundToWhole } from "@/utils/numbers";
 
 const getColors = (theme) => ({
   consumption: theme === "dark" ? "#BDBFC0" : "#0B2738",

@@ -1,11 +1,7 @@
 import React from "react";
 import { Info } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
-import {
-  roundToWhole,
-  roundToOneDecimal,
-  formatNumber,
-} from "@/utils/roundNumbers";
+import { roundToWhole, roundToOneDecimal, formatNumber } from "@/utils/numbers";
 
 const PercentageBar = ({
   title,

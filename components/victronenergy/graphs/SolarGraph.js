@@ -40,7 +40,7 @@ import {
   formatAxisDate,
 } from "@/utils/date-range-utils";
 import SolarTooltip from "../tooltips/SolarTooltip";
-import { roundToOneDecimal, roundToWhole } from "@/utils/roundNumbers";
+import { roundToOneDecimal, roundToWhole } from "@/utils/numbers";
 import { UtilityPole } from "lucide-react";
 
 const getColors = (theme) => ({

@@ -27,6 +27,7 @@ import useCSVExport from "@/hooks/useCSVExport";
 import ExportModal from "../ExportModal";
 import AssociatedUsers from "../AssociatedUsers";
 import NotificationListItem from "@/components/alerts/AlertsListItem";
+import VictronEnergyPerformanceMetrics from "./VictronEnergyPerformanceMetrics";
 
 const VictronEnergyPlantDetails = () => {
   const dispatch = useDispatch();
@@ -195,6 +196,11 @@ const VictronEnergyPlantDetails = () => {
           </h2>
           <VictronEnergyFlow plant={plant} />
         </section>
+
+        <VictronEnergyPerformanceMetrics
+          theme={theme}
+          t={t}
+        />
 
         <div className="flex flex-col md:flex-row gap-6">
           <VictronEnergyEquipmentDetails token={user?.tokenIdentificador} />

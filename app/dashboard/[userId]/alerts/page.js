@@ -50,41 +50,52 @@ const NotificationsTab = () => {
   const isTouchDevice = useTouchDevice();
 
   // Initialize notifications if they're not already loaded
-  useEffect(() => {
-    const initializeNotifications = async () => {
-      if (
-        (!activeNotifications.length && !resolvedNotifications.length) ||
-        isInitializing
-      ) {
-        try {
-          await Promise.all([
-            dispatch(
-              fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
-            ).unwrap(),
-            dispatch(
-              fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
-            ).unwrap(),
-          ]);
+ useEffect(() => {
+   const initializeNotifications = async () => {
+     try {
+       // Always set initializing to true at start
+       setIsInitializing(true);
 
-          // Trigger background loads after initial fetch
-          dispatch(
-            loadAllNotificationsInBackground({ status: 0, pageSize: 200 })
-          );
-          dispatch(
-            loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
-          );
-        } catch (error) {
-          console.error("Error initializing notifications:", error);
-        } finally {
-          setIsInitializing(false);
-        }
-      } else {
-        setIsInitializing(false);
-      }
-    };
+       // Fetch both active and resolved notifications
+       const [activeResult, resolvedResult] = await Promise.all([
+         dispatch(
+           fetchActiveNotifications({ pageIndex: 1, pageSize: 200 })
+         ).unwrap(),
+         dispatch(
+           fetchResolvedNotifications({ pageIndex: 1, pageSize: 200 })
+         ).unwrap(),
+       ]);
 
-    initializeNotifications();
-  }, [dispatch, activeNotifications.length, resolvedNotifications.length]);
+       // Detailed logging for debugging
+       console.log("Active Notifications:", activeResult);
+       console.log("Resolved Notifications:", resolvedResult);
+
+       // Explicitly check for empty results
+       const hasActiveNotifications = activeResult && activeResult.length > 0;
+       const hasResolvedNotifications =
+         resolvedResult && resolvedResult.length > 0;
+
+       // Ensure initializing is set to false
+       setIsInitializing(false);
+
+       // Trigger background loads only if there are no notifications
+       if (!hasActiveNotifications && !hasResolvedNotifications) {
+         dispatch(
+           loadAllNotificationsInBackground({ status: 0, pageSize: 200 })
+         );
+         dispatch(
+           loadAllNotificationsInBackground({ status: 1, pageSize: 200 })
+         );
+       }
+     } catch (error) {
+       console.error("Error initializing notifications:", error);
+       // Ensure initializing is set to false even if there's an error
+       setIsInitializing(false);
+     }
+   };
+
+   initializeNotifications();
+ }, [dispatch]);
 
   // Reset current page when tab changes
   useEffect(() => {

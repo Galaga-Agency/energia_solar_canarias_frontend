@@ -78,8 +78,8 @@ const UsersTab = () => {
         // Search filter
         if (
           filters.search &&
-          !user.nombre.toLowerCase().includes(filters.search.toLowerCase()) &&
-          !user.apellido.toLowerCase().includes(filters.search.toLowerCase())
+          !user?.nombre?.toLowerCase().includes(filters.search.toLowerCase()) &&
+          !user?.apellido?.toLowerCase().includes(filters.search.toLowerCase())
         ) {
           return false;
         }

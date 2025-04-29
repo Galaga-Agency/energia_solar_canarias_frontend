@@ -112,39 +112,44 @@ const ClientDashboardPage = ({ params }) => {
     }
   }, [user, router, fetchPlantsIfNeeded, wasDissociated, plants.length]);
 
-  useEffect(() => {
-    if (!user?.id || !plants.length) return;
+const hasFetchedInBackgroundRef = useRef(false);
 
-    const checkForPlantListUpdate = async () => {
-      try {
-        const response = await dispatch(
-          fetchUserAssociatedPlants({
-            userId: user.id,
-            token: user.tokenIdentificador,
-          })
-        ).unwrap();
+useEffect(() => {
+  if (!user?.id || !plants.length || hasFetchedInBackgroundRef.current) return;
 
-        const localIds = new Set(plants.map((p) => p.id));
-        const serverIds = new Set(response.map((p) => p.id));
+  hasFetchedInBackgroundRef.current = true;
 
-        const isDifferent =
-          localIds.size !== serverIds.size ||
-          [...serverIds].some((id) => !localIds.has(id));
+  const checkForPlantListUpdate = async () => {
+    try {
+      const response = await dispatch(
+        fetchUserAssociatedPlants({
+          userId: user.id,
+          token: user.tokenIdentificador,
+        })
+      ).unwrap();
 
-        if (isDifferent) {
-          dispatch(clearPlantDetails());
-          dispatch({
-            type: "plants/fetchUserAssociatedPlants/fulfilled",
-            payload: response,
-          });
-        }
-      } catch (error) {
-        console.warn("🔴 Background sync failed", error);
+      const localIds = new Set(plants.map((p) => p.id));
+      const serverIds = new Set(response.map((p) => p.id));
+
+      const isDifferent =
+        localIds.size !== serverIds.size ||
+        [...serverIds].some((id) => !localIds.has(id));
+
+      if (isDifferent) {
+        dispatch(clearPlantDetails());
+        dispatch({
+          type: "plants/fetchUserAssociatedPlants/fulfilled",
+          payload: response,
+        });
       }
-    };
+    } catch (error) {
+      console.warn("🔴 Background sync failed", error);
+    }
+  };
 
-    checkForPlantListUpdate();
-  }, [dispatch, user?.id, user?.tokenIdentificador, plants]);
+  checkForPlantListUpdate();
+}, [dispatch, user?.id, user?.tokenIdentificador, plants.length]);
+
 
   useEffect(() => {
     dispatch(clearPlantDetails());

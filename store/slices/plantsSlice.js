@@ -179,7 +179,6 @@ export const fetchTotalRealPrice = createAsyncThunk(
   "plants/fetchTotalRealPrice",
   async ({ plantId, provider, token }, { rejectWithValue }) => {
     try {
-
       const totalRealPrice = await fetchTotalRealPriceAPI({
         plantId,
         provider,
@@ -574,6 +573,7 @@ const initialState = {
   totalRealPrice: null,
   totalRealPriceLoading: false,
   totalRealPriceError: null,
+  wasDissociated: false,
 };
 
 const plantsSlice = createSlice({
@@ -683,6 +683,7 @@ const plantsSlice = createSlice({
         state.loadingAssociatedPlants = false;
         state.associatedPlants = action.payload;
         state.errorAssociatedPlants = null;
+        state.wasDissociated = false;
       })
       .addCase(fetchUserAssociatedPlants.rejected, (state, action) => {
         state.loadingAssociatedPlants = false;
@@ -696,6 +697,7 @@ const plantsSlice = createSlice({
       .addCase(dissociatePlantFromUser.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
+        state.wasDissociated = true;
       })
       .addCase(dissociatePlantFromUser.rejected, (state, action) => {
         state.loading = false;

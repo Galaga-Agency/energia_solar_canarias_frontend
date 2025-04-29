@@ -56,10 +56,12 @@ const AssociatedUsers = ({ isAdmin, plantId }) => {
       .unwrap()
       .then(() => {
         dispatch(fetchAssociatedUsers({ plantId, provider, token }));
+        toast.success(t("userAddedSuccessfully"));
         console.log("User successfully associated with the plant");
       })
       .catch((error) => {
         console.error("Error associating user to plant:", error);
+        toast.error(t("Error al associar el usuario a la planta"));
       });
   };
 

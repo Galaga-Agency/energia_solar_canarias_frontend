@@ -405,7 +405,11 @@ export const selectActiveNotifications = (state) => {
     ? activeNotifications.filter((n) => n.provider === organizationFilter)
     : activeNotifications;
 
-  if (user?.clase !== "admin" && associatedPlants?.length > 0) {
+  // 🔒 Protect non-admins with no associated plants
+  if (user?.clase !== "admin") {
+    if (!associatedPlants || associatedPlants.length === 0) {
+      return []; // No plants → no alerts
+    }
     const plantIds = new Set(associatedPlants.map((plant) => plant.id));
     filteredNotifications = filteredNotifications.filter((notification) =>
       plantIds.has(notification.stationId)
@@ -420,13 +424,14 @@ export const selectResolvedNotifications = (state) => {
   const user = state.user.user;
   const associatedPlants = state.plants.associatedPlants;
 
-  // First apply organization filter
   let filteredNotifications = organizationFilter
     ? resolvedNotifications.filter((n) => n.provider === organizationFilter)
     : resolvedNotifications;
 
-  // Then apply access control for non-admin users
-  if (user?.clase !== "admin" && associatedPlants?.length > 0) {
+  if (user?.clase !== "admin") {
+    if (!associatedPlants || associatedPlants.length === 0) {
+      return []; // Protect non-admins
+    }
     const plantIds = new Set(associatedPlants.map((plant) => plant.id));
     filteredNotifications = filteredNotifications.filter((notification) =>
       plantIds.has(notification.stationId)

@@ -55,6 +55,7 @@ const ClientDashboardPage = ({ params }) => {
   const { t } = useTranslation();
   const sidebarRef = useRef(null);
   const loadingAssociatedPlants = useSelector(selectLoadingAssociatedPlants);
+  const wasDissociated = useSelector((state) => state.plants.wasDissociated);
 
   const ITEMS_PER_PAGE = 6;
   const PAGINATION_THRESHOLD = 6;
@@ -76,8 +77,8 @@ const ClientDashboardPage = ({ params }) => {
     sidebarRef.current?.updateSearch(value);
   }, []);
 
-  const fetchPlantsIfNeeded = useCallback(() => {
-    if (user?.id && !plants.length) {
+  useEffect(() => {
+    if (user?.id && (wasDissociated || !plants.length)) {
       dispatch(
         fetchUserAssociatedPlants({
           userId: user.id,
@@ -86,16 +87,64 @@ const ClientDashboardPage = ({ params }) => {
       );
       dispatch(clearPlantDetails());
     }
-  }, [dispatch, user, plants.length]);
+  }, [dispatch, user, wasDissociated, plants.length]);
+
+  const fetchPlantsIfNeeded = useCallback(() => {
+    if (user?.id) {
+      dispatch(
+        fetchUserAssociatedPlants({
+          userId: user.id,
+          token: user.tokenIdentificador,
+        })
+      );
+      dispatch(clearPlantDetails());
+    }
+  }, [dispatch, user]);
 
   useEffect(() => {
     if (!user?.id) {
       router.push("/");
     } else {
       setIsInitialLoad(false);
-      fetchPlantsIfNeeded();
+      if (wasDissociated || !plants.length) {
+        fetchPlantsIfNeeded();
+      }
     }
-  }, [user, router, fetchPlantsIfNeeded]);
+  }, [user, router, fetchPlantsIfNeeded, wasDissociated, plants.length]);
+
+  useEffect(() => {
+    if (!user?.id || !plants.length) return;
+
+    const checkForPlantListUpdate = async () => {
+      try {
+        const response = await dispatch(
+          fetchUserAssociatedPlants({
+            userId: user.id,
+            token: user.tokenIdentificador,
+          })
+        ).unwrap();
+
+        const localIds = new Set(plants.map((p) => p.id));
+        const serverIds = new Set(response.map((p) => p.id));
+
+        const isDifferent =
+          localIds.size !== serverIds.size ||
+          [...serverIds].some((id) => !localIds.has(id));
+
+        if (isDifferent) {
+          dispatch(clearPlantDetails());
+          dispatch({
+            type: "plants/fetchUserAssociatedPlants/fulfilled",
+            payload: response,
+          });
+        }
+      } catch (error) {
+        console.warn("🔴 Background sync failed", error);
+      }
+    };
+
+    checkForPlantListUpdate();
+  }, [dispatch, user?.id, user?.tokenIdentificador, plants]);
 
   useEffect(() => {
     dispatch(clearPlantDetails());
@@ -194,7 +243,7 @@ const ClientDashboardPage = ({ params }) => {
               </div>
             </div>
 
-            {loading || loadingAssociatedPlants ? (
+            {!plants.length && (loading || loadingAssociatedPlants) ? (
               <PlantsListSkeleton theme={theme} rows={ITEMS_PER_PAGE} />
             ) : (
               <div className="w-full">

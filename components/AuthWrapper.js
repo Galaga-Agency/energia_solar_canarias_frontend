@@ -13,7 +13,7 @@ const AuthWrapper = ({ children }) => {
 
   useEffect(() => {
     // Check if the current path is public
-    const isPublicPath = window.location.pathname === "/";
+    const isPublicPath = window.location.pathname === "/" || window.location.pathname === "/reset-password" || window.location.pathname === "/forgot-password";
 
     if (!user && !isPublicPath) {
       router.replace("/");

@@ -2120,5 +2120,17 @@
   "redirection_error": "Error al abrir la tienda de aplicaciones",
   "open_in_app": "Abrir en la app",
   "opening_app": "Abriendo la aplicación...",
-  "interaction_error": "Error al interactuar con la aplicación"
+  "interaction_error": "Error al interactuar con la aplicación",
+  "monthlyIncome": "Ingresos Mensuales",
+  "monthlyIncomeTooltip": "Ingresos generados en el último mes por tu instalación solar",
+  "savings": "Ahorros",
+  "daySavings": "Ahorros Diarios",
+  "monthlySavings": "Ahorros Mensuales",
+  "totalSavings": "Ahorros Totales",
+  "daySavingsTooltip": "Cantidad ahorrada hoy en comparación con los costes de electricidad de la red",
+  "monthlySavingsTooltip": "Cantidad ahorrada este mes en comparación con los costes de electricidad de la red",
+  "totalSavingsTooltip": "Cantidad total ahorrada desde la instalación en comparación con los costes de electricidad de la red",
+  "equivalentLightBulbs": "Bombillas Equivalentes",
+  "equivalentLightBulbsTooltip": "Número de bombillas que podrían alimentarse con la energía generada por tu sistema solar",
+  "todayIncome": "Ingresos Hoy"
 }

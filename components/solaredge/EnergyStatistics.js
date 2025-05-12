@@ -3,6 +3,11 @@ import { PiSunHorizon } from "react-icons/pi";
 import { BsCalendar2Month } from "react-icons/bs";
 import { IoAnalyticsOutline, IoCashOutline } from "react-icons/io5";
 import { FaEuroSign } from "react-icons/fa";
+import {
+  RiMoneyDollarCircleLine,
+  RiSafe2Line,
+  RiLineChartLine,
+} from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import EnergyStatisticsSkeleton from "@/components/loadingSkeletons/EnergyStatisticsSkeleton";
 import {
@@ -14,6 +19,7 @@ import {
 import { selectUser } from "@/store/slices/userSlice";
 import { formatLargeNumber } from "@/utils/numbers";
 import { useParams } from "next/navigation";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const SolarEdgeEnergyStatistics = ({
   plant,
@@ -28,6 +34,7 @@ const SolarEdgeEnergyStatistics = ({
   const totalRealPriceError = useSelector(selectTotalRealPriceError);
   const user = useSelector(selectUser);
   const { plantId } = useParams();
+  const { isTablet } = useDeviceType();
 
   useEffect(() => {
     if (plantId) {
@@ -54,48 +61,88 @@ const SolarEdgeEnergyStatistics = ({
   const incomeToday = totalRealPrice?.hoy?.ingreso || 0;
   const incomeMonth = totalRealPrice?.mes_actual?.ingreso || 0;
   const incomeTotal = totalRealPrice?.total?.ingreso || 0;
+  const savingsToday = totalRealPrice?.hoy?.ahorro || 0;
+  const savingsMonth = totalRealPrice?.mes_actual?.ahorro || 0;
+  const savingsTotal = totalRealPrice?.total?.ahorro || 0;
 
   // Get currency from total real price data
   const currency = totalRealPrice?.moneda || "€";
 
-  const stats = [
+  // Create the stats array with conditional filtering for tablets
+  let stats = [
+    // Energy metrics
     {
       icon: PiSunHorizon,
       title: t("energyToday"),
       value: energyToday,
       unit: "kW",
+      category: "energy",
     },
     {
       icon: BsCalendar2Month,
       title: t("energyThisMonth"),
       value: energyMonth,
       unit: "kW",
+      category: "energy",
     },
     {
       icon: IoAnalyticsOutline,
       title: t("energyTotal"),
       value: energyTotal,
       unit: "kW",
+      category: "energy",
+      hideOnTablet: true,
     },
+    // Income metrics
     {
       icon: FaEuroSign,
       title: t("todayIncome"),
       value: incomeToday,
       unit: currency,
+      category: "income",
     },
     {
       icon: IoCashOutline,
       title: t("monthlyIncome"),
       value: incomeMonth,
       unit: currency,
+      category: "income",
     },
     {
       icon: IoCashOutline,
       title: t("totalIncome"),
       value: incomeTotal,
       unit: currency,
+      category: "income",
+    },
+    // New savings metrics
+    {
+      icon: RiMoneyDollarCircleLine,
+      title: t("daySavings"),
+      value: savingsToday,
+      unit: currency,
+      category: "savings",
+    },
+    {
+      icon: RiSafe2Line,
+      title: t("monthlySavings"),
+      value: savingsMonth,
+      unit: currency,
+      category: "savings",
+    },
+    {
+      icon: RiLineChartLine,
+      title: t("totalSavings"),
+      value: savingsTotal,
+      unit: currency,
+      category: "savings",
     },
   ];
+
+  // Filter out the "Energy Total" item if on tablet
+  if (isTablet) {
+    stats = stats.filter((item) => !item.hideOnTablet);
+  }
 
   return (
     <section
@@ -106,7 +153,7 @@ const SolarEdgeEnergyStatistics = ({
       <h2 className="text-xl mb-6 text-left text-custom-dark-blue dark:text-custom-yellow">
         {t("energyStatistics")}
       </h2>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {stats.map(({ icon: Icon, title, value, unit }, index) => (
           <div
             key={index}
